@@ -276,7 +276,7 @@
         function backupAll() {
             let backup = {};
             // ADICIONAR AS CHAVES DO PRIME AQUI FUTURAMENTE
-            const keys = ['benai_tracker_main_db', 'benai_fin_main_db', 'benai_card_main_db', 'benai_diet_main_db', 'benai_coach_lib_main', 'benai_coach_stu_main', 'benai_coach_cat_main', 'fit_studio_v30_gold', 'prime_db_key']; 
+            const keys = ['benai_tracker_main_db', 'benai_fin_main_db', 'benai_card_main_db', 'benai_diet_main_db', 'benai_coach_lib_main', 'benai_coach_stu_main', 'benai_coach_cat_main', 'fit_studio_v30_gold', 'prime_main_db']; 
             keys.forEach(k => { const d = localStorage.getItem(k); if(d) backup[k] = JSON.parse(d); });
             if (Object.keys(backup).length === 0) return alert("Nada para salvar.");
             const date = new Date().toISOString().slice(0,10);
@@ -329,3 +329,4 @@
     </script>
 </body>
 </html>
+
