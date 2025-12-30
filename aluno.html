@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Benai Training</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;800&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #001F5B; --accent: #00A8E8; --bg: #f8fafc;
+            --text: #1f2937; --success: #10b981;
+            
+            /* CORES DOS MÉTODOS */
+            --c-drop: #ef4444; --c-rnp: #f59e0b; --c-iso: #06b6d4; 
+            --c-pyr: #8b5cf6; --c-fst: #ec4899; --c-bi: #00A8E8; --c-tri: #6366f1;
+            
+            --wa-green: #25D366;
+            --font-ui: 'Plus Jakarta Sans', sans-serif; --font-num: 'Outfit', sans-serif;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: var(--font-ui); }
+        body { background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+        .container { max-width: 480px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; height: 100%; background: #fff; box-shadow: 0 0 20px rgba(0,0,0,0.05); }
+
+        /* HEADER */
+        .header { background: var(--primary); padding: 25px 20px; color: white; flex-shrink: 0; border-bottom-left-radius: 24px; border-bottom-right-radius: 24px; box-shadow: 0 10px 30px -10px rgba(0, 31, 91, 0.4); z-index: 10; display: flex; justify-content: space-between; align-items: flex-start; }
+        .h-info { flex: 1; }
+        .h-brand { font-size: 0.65rem; letter-spacing: 2px; opacity: 0.7; text-transform: uppercase; margin-bottom: 4px; font-weight: 700; font-family: var(--font-num); cursor: pointer; }
+        .h-title { font-size: 1.6rem; font-weight: 800; font-family: var(--font-num); letter-spacing: -0.5px; line-height: 1.1; }
+        .h-sub { opacity: 0.9; font-size: 0.85rem; color: #bae6fd; font-weight: 500; margin-top: 2px; }
+        .h-actions { display: flex; gap: 10px; align-items: center; }
+        .h-btn { width: 42px; height: 42px; border-radius: 12px; border: none; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.4rem; cursor: pointer; transition: 0.2s; text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .btn-wa { background: var(--wa-green); animation: pulse 2s infinite; }
+        .btn-restore { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); display: none; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(37, 211, 102, 0); } 100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); } }
+
+        /* CONTENT */
+        .content { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; scroll-behavior: smooth; }
+        .tab-pane { display: none; animation: fade 0.3s; }
+        .tab-pane.active { display: block; }
+
+        /* --- BLOCOS --- */
+        
+        /* Título de Seção (Blocos Normais) */
+        .section-title {
+            color: var(--primary); font-family: var(--font-num); 
+            font-weight: 800; text-transform: uppercase; letter-spacing: 1px; 
+            font-size: 0.85rem; margin: 20px 0 10px 5px; padding-left: 10px;
+            border-left: 4px solid var(--accent);
+        }
+
+        /* Bi-Sets / Tri-Sets Containers */
+        .biset-wrap { border: 2px dashed var(--c-bi); background: #f0f9ff; margin-bottom: 20px; border-radius: 16px; padding-top: 30px; position: relative; overflow: hidden; }
+        .biset-lbl { position: absolute; top: 0; left: 0; background: var(--c-bi); color: white; font-size: 0.65rem; font-weight: 800; padding: 4px 12px; border-bottom-right-radius: 12px; }
+
+        .triset-wrap { border: 2px dashed var(--c-tri); background: #fdf4ff; margin-bottom: 20px; border-radius: 16px; padding-top: 30px; position: relative; overflow: hidden; }
+        .triset-lbl { position: absolute; top: 0; left: 0; background: var(--c-tri); color: white; font-size: 0.65rem; font-weight: 800; padding: 4px 12px; border-bottom-right-radius: 12px; }
+
+        /* --- EXERCÍCIOS (ROWS) --- */
+        
+        /* Card Padrão (Isolado) */
+        .row { 
+            padding: 15px; margin-bottom: 12px; 
+            border: 1px solid #e2e8f0; border-radius: 14px; 
+            background: white; position: relative; border-left: 4px solid #cbd5e1; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02); transition: 0.2s; 
+        }
+        
+        /* Item DENTRO de Bi/Tri-set */
+        .biset-wrap .row, .triset-wrap .row {
+            margin-bottom: 0; border: none; border-radius: 0; box-shadow: none;
+            border-left: 4px solid transparent; border-bottom: 1px dashed #cbd5e1; 
+            background: transparent;
+        }
+        .biset-wrap .row:last-child, .triset-wrap .row:last-child { border-bottom: none; }
+
+        /* Cores */
+        .row.done { opacity: 0.6; filter: grayscale(90%); background: #f8fafc !important; border-left-color: #cbd5e1 !important; }
+        
+        .row.m-Drop { border-left-color: var(--c-drop); background: #fef2f2; }
+        .row.m-RNP { border-left-color: var(--c-rnp); background: #fff7ed; }
+        .row.m-Iso { border-left-color: var(--c-iso); background: #ecfeff; }
+        .row.m-Pyr { border-left-color: var(--c-pyr); background: #faf5ff; }
+        .row.m-FST7 { border-left-color: var(--c-fst); background: #fdf2f8; }
+        .row.m-Normal { border-left-color: #cbd5e1; background: white; }
+
+        /* Componentes */
+        .m-tag { font-size: 0.55rem; font-weight: 800; color: white; padding: 3px 8px; border-radius: 6px; display: inline-block; margin-bottom: 6px; text-transform: uppercase; }
+        .ex-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
+        
+        .ex-title { font-size: 1rem; font-weight: 700; color: #1e293b; line-height: 1.3; font-family: var(--font-num); text-decoration: none; flex: 1; display: inline-flex; align-items: center; gap: 8px; }
+        .ex-title.has-video { color: var(--accent); }
+        .yt-icon { color: #ef4444; font-size: 1.2rem; transition: transform 0.2s; filter: drop-shadow(0 2px 4px rgba(239, 68, 68, 0.2)); }
+        .ex-title:active { opacity: 0.8; }
+
+        .pills { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; align-items: center; }
+        .pill { background: rgba(255,255,255,0.7); padding: 5px 10px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; color: #475569; border: 1px solid #e2e8f0; font-family: var(--font-num); }
+        .pill.timer { margin-left: auto; border-color: var(--accent); color: var(--accent); background: rgba(0,168,232,0.05); cursor: pointer; display: flex; align-items: center; gap: 6px; }
+
+        .obs { font-size: 0.8rem; color: #b45309; background: #fffbeb; padding: 10px; border-radius: 8px; margin-bottom: 12px; border-left: 3px solid #f59e0b; line-height: 1.4; word-wrap: break-word; }
+
+        .action-row { display: flex; gap: 10px; height: 42px; }
+        .load-inp { width: 60px; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0 5px; font-family: var(--font-num); font-weight: 700; color: var(--primary); text-align: center; font-size: 1rem; transition: 0.2s; background: white; }
+        .load-inp:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(0,168,232,0.1); }
+        .check-btn { flex: 1; border-radius: 10px; border: none; background: #e2e8f0; color: #64748b; font-weight: 800; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+        .row.done .check-btn { background: var(--success); color: white; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); }
+
+        /* Logic & Method Cards */
+        .logic-card { background: white; border-radius: 16px; padding: 20px; border: 1px solid #e2e8f0; margin-bottom: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+        .logic-title { font-weight: 800; color: var(--primary); margin-bottom: 15px; font-family: var(--font-num); font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
+        .logic-item { display: flex; gap: 12px; margin-bottom: 12px; align-items: flex-start; }
+        .logic-icon { min-width: 24px; height: 24px; background: #dbeafe; color: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; margin-top: 2px; }
+        .logic-text { color: #475569; font-size: 0.9rem; line-height: 1.5; font-weight: 500; }
+
+        .method-grid { display: flex; flex-direction: column; gap: 12px; }
+        .method-card { padding: 18px; border-radius: 14px; background: white; border: 1px solid rgba(0,0,0,0.05); position: relative; overflow: hidden; display: flex; gap: 15px; align-items: flex-start; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .mc-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: white; flex-shrink: 0; margin-top: 2px; }
+        .mc-content { flex: 1; }
+        .mc-title { font-family: var(--font-num); font-weight: 800; font-size: 1rem; margin-bottom: 4px; color: var(--text); }
+        .mc-text { font-size: 0.85rem; color: #475569; line-height: 1.5; }
+        .mc-danger { background: #fef2f2; border: 1px solid #fee2e2; } .mc-danger .mc-icon { background: var(--danger); }
+        .mc-blue { background: #eff6ff; border: 1px solid #dbeafe; } .mc-blue .mc-icon { background: var(--accent); }
+        .mc-purple { background: #faf5ff; border: 1px solid #f3e8ff; } .mc-purple .mc-icon { background: #8b5cf6; }
+        .mc-cyan { background: #ecfeff; border: 1px solid #cffafe; } .mc-cyan .mc-icon { background: #06b6d4; }
+        .mc-orange { background: #fff7ed; border: 1px solid #ffedd5; } .mc-orange .mc-icon { background: #f97316; }
+        .mc-green { background: #f0fdf4; border: 1px solid #dcfce7; } .mc-green .mc-icon { background: #10b981; }
+
+        /* Feedback */
+        .feedback-box { background: white; border: 1px solid #e2e8f0; border-radius: 24px; padding: 30px 20px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.05); }
+        .fb-title { font-family: var(--font-num); font-weight: 800; font-size: 1.4rem; color: var(--primary); margin-bottom: 5px; }
+        .fb-sub { color: #64748b; font-size: 0.9rem; margin-bottom: 25px; }
+        .stars { display: flex; justify-content: center; gap: 12px; margin-bottom: 25px; }
+        .star { font-size: 2.2rem; color: #e2e8f0; cursor: pointer; transition: 0.2s; }
+        .star.filled { color: #f59e0b; transform: scale(1.1); filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.3)); }
+        .fb-area { width: 100%; border: 2px solid #f1f5f9; border-radius: 16px; padding: 15px; font-family: var(--font-ui); margin-bottom: 15px; resize: none; font-size: 0.95rem; background: #f8fafc; transition: 0.3s; }
+        .fb-area:focus { border-color: var(--accent); background: white; outline: none; }
+        .btn-send-fb { background: var(--wa-green); color: white; border: none; padding: 18px; width: 100%; border-radius: 14px; font-weight: 800; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 8px 25px rgba(37, 211, 102, 0.3); transition: 0.2s; }
+        .btn-send-fb:active { transform: scale(0.98); }
+
+        /* NAV */
+        .nav { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 380px; height: 65px; background: white; border-radius: 35px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); display: flex; justify-content: space-around; align-items: center; z-index: 100; border: 1px solid rgba(0,0,0,0.05); padding: 0 10px; }
+        .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #cbd5e1; font-size: 0.65rem; font-weight: 700; cursor: pointer; transition: 0.2s; position: relative; }
+        .nav-btn.active { color: var(--primary); transform: translateY(-3px); }
+        .nav-btn.active::after { content: ''; width: 5px; height: 5px; background: var(--accent); border-radius: 50%; position: absolute; bottom: -6px; }
+        .nav-btn i { font-size: 1.3rem; }
+
+        /* TIMER */
+        .timer-ov { position: fixed; inset: 0; background: rgba(0,31,91,0.95); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; color: white; backdrop-filter: blur(5px); }
+        .t-disp { font-size: 5rem; font-weight: 900; font-family: var(--font-num); font-variant-numeric: tabular-nums; margin: 20px 0; }
+        .t-row { display: flex; gap: 20px; }
+        .t-btn { width: 70px; height: 70px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; font-size: 1.1rem; cursor: pointer; font-weight: 700; transition: 0.2s; }
+        .t-btn:active { transform: scale(0.9); background: white; color: var(--primary); }
+
+        @keyframes fade { from{opacity:0} to{opacity:1} }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="h-info">
+            <div class="h-brand" id="secretTrigger" onclick="toggleAdmin()">BENAI APP</div>
+            <div class="h-title" id="sName">Olá!</div>
+            <div class="h-sub" id="sFocus">Carregando...</div>
+        </div>
+        <div class="h-actions">
+            <button id="adminBtn" class="h-btn btn-restore" onclick="adminTriggerRestore()" title="Restaurar Dados">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+            </button>
+            <input type="file" id="adminRestoreFile" hidden onchange="adminLoadFile(this)">
+            <a href="https://wa.me/5541997222664" target="_blank" class="h-btn btn-wa" title="Falar com Benai"><i class="fa-brands fa-whatsapp"></i></a>
+        </div>
+    </div>
+
+    <div id="tab-1" class="tab-pane active content">
+        <div id="wList"></div>
+        <div style="height: 20px;"></div>
+    </div>
+
+    <div id="tab-2" class="tab-pane content">
+        <div class="logic-card">
+            <div class="logic-title"><i class="fa-solid fa-bullseye"></i> Lógica do Treino</div>
+            <div id="logicTopics"></div>
+        </div>
+        <div style="font-weight:900; color:#9ca3af; font-size:0.75rem; margin: 30px 0 15px; letter-spacing:1px; text-align:center; text-transform:uppercase;">Pilares da Alta Performance</div>
+        
+        <div class="method-grid">
+            <div class="method-card mc-danger">
+                <div class="mc-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                <div class="mc-content">
+                    <div class="mc-title">1. Dor = PARE!</div>
+                    <div class="mc-text">
+                        Aprenda a diferenciar: queimação muscular é esperada. <b>Dor articular, pontadas, fisgadas ou desconforto agudo NÃO são normais.</b> Se sentir isso, interrompa o exercício imediatamente e me avise. Não force, o risco de lesão é alto.
+                    </div>
+                </div>
+            </div>
+            <div class="method-card mc-blue"><div class="mc-icon"><i class="fa-solid fa-wind"></i></div><div class="mc-content"><div class="mc-title">2. Respiração</div><div class="mc-text"><b>Inspire</b> (nariz) na descida, <b>Expire</b> (boca) na força. Mantém a pressão intra-abdominal e oxigena o músculo.</div></div></div>
+            <div class="method-card mc-purple"><div class="mc-icon"><i class="fa-solid fa-shield-halved"></i></div><div class="mc-content"><div class="mc-title">3. Core Ativo</div><div class="mc-text">Abdômen <b>contraído</b> o tempo todo (Bracing). Imagine que vai levar um soco na barriga. Protege a lombar.</div></div></div>
+            <div class="method-card mc-cyan"><div class="mc-icon"><i class="fa-solid fa-stopwatch"></i></div><div class="mc-content"><div class="mc-title">4. Cadência 3-0-1</div><div class="mc-text">Domine a carga. Desça controlado em <b>3s</b>, não pare no ponto de descanso, suba explosivo.</div></div></div>
+            <div class="method-card mc-orange"><div class="mc-icon"><i class="fa-solid fa-hourglass-half"></i></div><div class="mc-content"><div class="mc-title">5. Descanso Real</div><div class="mc-text">Use o <b>timer</b>. Descansar de menos gera fadiga inútil, de mais esfria o corpo e perde o foco.</div></div></div>
+            <div class="method-card mc-green"><div class="mc-icon"><i class="fa-solid fa-gauge-high"></i></div><div class="mc-content"><div class="mc-title">6. Intensidade</div><div class="mc-text">A carga está certa quando você termina a série com apenas <b>1 ou 2 reps</b> no "tanque" (RPE 8-9).</div></div></div>
+        </div>
+    </div>
+
+    <div id="tab-3" class="tab-pane content">
+        <div class="feedback-box">
+            <i class="fa-solid fa-quote-left" style="font-size:2rem; color:#e2e8f0; margin-bottom:15px;"></i>
+            <div class="fb-title">O que está achando da Consultoria?</div>
+            <div class="fb-sub">Seu feedback é fundamental.</div>
+            <div class="stars">
+                <i class="fa-solid fa-star star" onclick="rate(1)"></i>
+                <i class="fa-solid fa-star star" onclick="rate(2)"></i>
+                <i class="fa-solid fa-star star" onclick="rate(3)"></i>
+                <i class="fa-solid fa-star star" onclick="rate(4)"></i>
+                <i class="fa-solid fa-star star" onclick="rate(5)"></i>
+            </div>
+            <textarea id="fbComment" class="fb-area" rows="4" placeholder="Escreva seu depoimento aqui..."></textarea>
+            <button class="btn-send-fb" onclick="generateReportFile()"><i class="fa-brands fa-whatsapp"></i> ENVIAR DEPOIMENTO</button>
+            <p style="font-size:0.7rem; color:#94a3b8; margin-top:15px; line-height:1.4;">Ao clicar, envie o arquivo gerado pelo WhatsApp.</p>
+        </div>
+    </div>
+</div>
+
+<div class="nav">
+    <div class="nav-btn active" onclick="go(1)"><i class="fa-solid fa-dumbbell"></i> TREINO</div>
+    <div class="nav-btn" onclick="go(2)"><i class="fa-solid fa-book-open"></i> MÉTODO</div>
+    <div class="nav-btn" onclick="go(3)"><i class="fa-solid fa-star"></i> FEEDBACK</div>
+</div>
+
+<div id="timer" class="timer-ov">
+    <div style="font-weight:700; letter-spacing:3px; opacity:0.7;">DESCANSO</div>
+    <div class="t-disp" id="tDisp">00:00</div>
+    <div class="t-row"><button class="t-btn" onclick="addT(-10)">-10</button><button class="t-btn" onclick="addT(10)">+10</button></div>
+    <button onclick="closeT()" style="margin-top:40px; background:white; color:var(--primary); border:none; padding:12px 40px; border-radius:30px; font-weight:800; font-size:1rem;">VOLTAR</button>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', init);
+    let tmr, sec=0, currentData=null, rating=5, adminClicks=0;
+
+    function init() {
+        const p = new URLSearchParams(window.location.search);
+        const d = p.get('data');
+        if(!d) { document.getElementById('wList').innerHTML = '<div style="text-align:center; padding:40px; color:#9ca3af;">Link inválido.</div>'; return; }
+        try {
+            const json = LZString.decompressFromEncodedURIComponent(d);
+            currentData = JSON.parse(json);
+            render(currentData);
+            restoreSession(); rate(5);
+        } catch(e) { alert("Erro ao abrir treino."); }
+    }
+
+    function render(data) {
+        document.getElementById('sName').innerText = `Olá, ${data.name.split(' ')[0]}!`;
+        document.getElementById('sFocus').innerText = data.focus;
+        
+        const logicContainer = document.getElementById('logicTopics');
+        logicContainer.innerHTML = '';
+        const logicText = data.logic || "Siga o plano.";
+        const topics = logicText.split('\n').filter(t => t.trim() !== '');
+        topics.forEach(topic => { logicContainer.innerHTML += `<div class="logic-item"><div class="logic-icon"><i class="fa-solid fa-check"></i></div><div class="logic-text">${topic}</div></div>`; });
+
+        const list = document.getElementById('wList');
+        if(data.blocks) {
+            data.blocks.forEach((b, bIdx) => {
+                let itemsHtml = '';
+                b.items.forEach((item, iIdx) => {
+                    let showTimer = true;
+                    if(b.type === 'biset' || b.type === 'triset') {
+                        if(iIdx < b.items.length - 1) showTimer = false;
+                    }
+                    itemsHtml += mkRow(bIdx, iIdx, item, showTimer);
+                });
+                
+                let wrapper = '';
+                // MUDANÇA: Removido ${b.name} dos rótulos de Bi/Tri-set
+                if(b.type === 'biset') wrapper = `<div class="biset-wrap"><div class="biset-lbl">BI-SET</div>${itemsHtml}</div>`;
+                else if(b.type === 'triset') wrapper = `<div class="triset-wrap"><div class="triset-lbl">TRI-SET</div>${itemsHtml}</div>`;
+                // Mantido título para blocos normais
+                else wrapper = `<div class="normal-wrap"><div class="section-title">${b.name}</div>${itemsHtml}</div>`; 
+
+                list.innerHTML += wrapper;
+            });
+        }
+    }
+
+    function mkRow(bIdx, iIdx, item, showTimer = true) {
+        const uid = `${bIdx}-${iIdx}`;
+        const rest = parseInt(item.rest) || 60;
+        
+        let methodClass = 'm-Normal', tag = '';
+        const m = (item.method || 'normal').toLowerCase();
+
+        if(m === 'drop') { methodClass = 'm-Drop'; tag = '<span class="m-tag" style="background:var(--c-drop)">DROP-SET</span>'; }
+        if(m === 'rnp' || m === 'rest') { methodClass = 'm-RNP'; tag = '<span class="m-tag" style="background:var(--c-rnp)">REST-PAUSE</span>'; }
+        if(m === 'iso') { methodClass = 'm-Iso'; tag = '<span class="m-tag" style="background:var(--c-iso)">ISOMETRIA</span>'; }
+        if(m === 'pyr') { methodClass = 'm-Pyr'; tag = '<span class="m-tag" style="background:var(--c-pyr)">PIRÂMIDE</span>'; }
+        if(m === 'fst7') { methodClass = 'm-FST7'; tag = '<span class="m-tag" style="background:var(--c-fst)">FST-7</span>'; }
+
+        let titleHtml = '';
+        if(item.link && item.link.length > 5) {
+            titleHtml = `<a href="${item.link}" target="_blank" class="ex-title has-video">${item.name} <i class="fa-solid fa-circle-play yt-icon"></i></a>`;
+        } else {
+            titleHtml = `<span class="ex-title">${item.name}</span>`;
+        }
+
+        let sL="Sets", rL="Reps";
+        if(m === 'drop') { sL="Sets"; rL="R.Max"; }
+        if(m === 'iso') { rL="Iso"; }
+        if(m === 'pyr') { rL="Reps"; }
+
+        let pillsHtml = `<span class="pill">${item.sets} ${sL}</span>`;
+        
+        if(m === 'iso') {
+            pillsHtml += `<span class="pill">${item.isoReps || 1}x</span>`;
+            pillsHtml += `<span class="pill mv-iso">${item.reps}s Iso</span>`;
+        } else {
+            pillsHtml += `<span class="pill">${item.reps} ${rL}</span>`;
+            if(m === 'drop' && item.drops) pillsHtml += `<span class="pill" style="color:var(--c-drop); border-color:var(--c-drop); background:white;">+${item.drops} Drops</span>`;
+            if((m === 'rnp' || m === 'rest')) {
+                 let t = item.rnpRest || '10'; 
+                 pillsHtml += `<span class="pill" style="color:var(--c-rnp); border-color:var(--c-rnp); background:white;">+${t}s Pausa</span><span class="pill" style="color:var(--c-rnp); border-color:var(--c-rnp); background:white;">+ Falha</span>`;
+            }
+        }
+
+        if(showTimer) pillsHtml += `<span class="pill timer" onclick="openT(${rest})"><i class="fa-solid fa-stopwatch"></i> ${item.rest} <i class="fa-solid fa-hand-pointer" style="font-size:0.6rem; opacity:0.5"></i></span>`;
+
+        return `
+            <div class="row ${methodClass}" id="r-${uid}" data-name="${item.name}">
+                ${tag} <div class="ex-header">${titleHtml}</div>
+                <div class="pills">${pillsHtml}</div>
+                ${item.obs ? `<div class="obs">⚠️ ${item.obs}</div>` : ''}
+                <div class="action-row">
+                    <input type="number" id="load-${uid}" class="load-inp" placeholder="kg" onchange="saveLoad('${uid}', this.value)">
+                    <button class="check-btn" onclick="toggle('${uid}')"><i class="fa-solid fa-check-circle"></i> FEITO</button>
+                </div>
+            </div>
+        `;
+    }
+
+    function toggle(uid) { const r=document.getElementById('r-'+uid); if(r.classList.contains('done')){r.classList.remove('done');localStorage.removeItem('chk_'+uid);}else{r.classList.add('done');localStorage.setItem('chk_'+uid,'1');if(navigator.vibrate)navigator.vibrate(50);} }
+    function saveLoad(uid,v) { localStorage.setItem('load_'+uid,v); }
+    function restoreSession() { document.querySelectorAll('.row').forEach(r=>{const uid=r.id.replace('r-','');if(localStorage.getItem('chk_'+uid))r.classList.add('done');const l=localStorage.getItem('load_'+uid);if(l)document.getElementById('load-'+uid).value=l;}); }
+    function go(n) { document.querySelectorAll('.tab-pane').forEach(e=>e.classList.remove('active'));document.querySelectorAll('.nav-btn').forEach(e=>e.classList.remove('active'));document.getElementById('tab-'+n).classList.add('active');document.querySelectorAll('.nav-btn')[n-1].classList.add('active');window.scrollTo(0,0); }
+    function openT(s) { sec=s;updT();document.getElementById('timer').style.display='flex';if(tmr)clearInterval(tmr);tmr=setInterval(()=>{sec--;updT();if(sec<=0){clearInterval(tmr);navigator.vibrate([200,100,200]);}},1000); }
+    function addT(v){sec+=v;updT();} function closeT(){document.getElementById('timer').style.display='none';clearInterval(tmr);} function updT(){let m=Math.floor(sec/60),s=sec%60;if(sec<0){m=0;s=0;}document.getElementById('tDisp').innerText=`${m}:${s<10?'0'+s:s}`;}
+    function toggleAdmin(){adminClicks++;if(adminClicks>=5){document.getElementById('adminBtn').style.display='flex';alert("Modo Admin");adminClicks=0;}}
+    function rate(n){rating=n;document.querySelectorAll('.star').forEach((s,i)=>{if(i<n)s.classList.add('filled');else s.classList.remove('filled');});}
+    async function generateReportFile(){const c=document.getElementById('fbComment').value;const n=currentData.name||"Aluno";const w={};document.querySelectorAll('.row').forEach(r=>{const u=r.id.replace('r-',''),d=r.classList.contains('done'),l=document.getElementById('load-'+u).value,nm=r.getAttribute('data-name');if(d||l)w[u]={name:nm,done:d,load:l};});const rep={student:n,date:new Date().toISOString(),feedback:{rating:rating,comment:c},data:w};const b=new Blob([JSON.stringify(rep,null,2)],{type:'application/json'});const f=new File([b],`Relatorio_${n.replace(/\W/g,'_')}.json`,{type:'application/json'});if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:'Relatório Benai',text:`Relatório de ${n}`});}catch(e){downloadFallback(b,f.name);}}else{downloadFallback(b,f.name);}}
+    function downloadFallback(b,n){const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=n;a.click();alert("Arquivo gerado! Envie no WhatsApp.");}
+    function adminTriggerRestore(){document.getElementById('adminRestoreFile').click();}
+    function adminLoadFile(i){const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{try{const j=JSON.parse(e.target.result);if(j.data){Object.keys(j.data).forEach(u=>{const it=j.data[u],r=document.getElementById('r-'+u);if(r){if(it.done)r.classList.add('done');if(it.load)document.getElementById('load-'+u).value=it.load;}});if(j.feedback)alert(`📝 NOTA: ${j.feedback.rating}/5\n"${j.feedback.comment}"`);else alert("Dados restaurados!");}}catch(x){alert("Erro ao ler.");}};r.readAsText(f);}
+</script>
+</body>
+</html>

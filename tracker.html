@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Benai Tracker | Final</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<script>
+        (function() {
+            // --- CONFIGURAÇÃO DA SENHA ---
+            const PIN_CORRETO = "16359001"; 
+            // -----------------------------
+
+            if (sessionStorage.getItem("benai_access_granted") === "true") return;
+
+            document.write(`
+                <style>
+                    body { visibility: hidden; overflow: hidden; }
+                    #gatekeeper {
+                        visibility: visible; position: fixed; inset: 0;
+                        background: #0f172a; color: white; z-index: 99999;
+                        display: flex; flex-direction: column; align-items: center; justify-content: center;
+                        font-family: 'Outfit', sans-serif;
+                    }
+                    .pin-box { text-align: center; animation: fadeIn 0.5s ease; width: 90%; max-width: 350px; }
+                    .pin-inp { 
+                        padding: 15px; font-size: 1.5rem; text-align: center; 
+                        border-radius: 15px; border: 2px solid rgba(56, 189, 248, 0.3); outline: none; margin-top: 25px;
+                        background: rgba(255,255,255,0.05); color: white; letter-spacing: 4px; width: 100%;
+                        transition: 0.3s;
+                    }
+                    .pin-inp:focus { border-color: #38bdf8; box-shadow: 0 0 20px rgba(56, 189, 248, 0.2); }
+                    .pin-msg { color: #f87171; margin-top: 15px; font-weight: 600; font-size: 0.9rem; height: 20px; }
+                    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+                </style>
+                <div id="gatekeeper">
+                    <div class="pin-box">
+                        <i class="fa-solid fa-shield-halved" style="font-size: 3rem; color: #38bdf8; margin-bottom: 15px;"></i>
+                        <h2 style="font-size: 1.5rem; letter-spacing: -1px;">Sistema Protegido</h2>
+                        <p style="opacity: 0.6; font-size: 0.85rem;">Insira o código de 8 dígitos</p>
+                        <input type="password" class="pin-inp" maxlength="8" placeholder="********" inputmode="numeric" autocomplete="off" onkeyup="verifyPin(this)">
+                        <div class="pin-msg" id="pin-error"></div>
+                    </div>
+                </div>
+            `);
+
+            window.verifyPin = function(el) {
+                if (el.value.length === 8) {
+                    if (el.value === PIN_CORRETO) {
+                        sessionStorage.setItem("benai_access_granted", "true");
+                        location.reload();
+                    } else {
+                        document.getElementById("pin-error").innerText = "Código Incorreto";
+                        el.value = "";
+                        if(navigator.vibrate) navigator.vibrate(200);
+                    }
+                }
+            };
+        })();
+    </script>
+    <style>
+        :root {
+            --primary: #001F5B; --primary-light: #1e3a8a;
+            --accent: #00A8E8; --accent-hover: #0284c7;
+            --bg: #fdfbf7; --surface: #ffffff; --border: #e2e8f0;
+            --text: #334155; --text-muted: #64748b;
+            --success: #10b981; --danger: #ef4444; --warn: #f59e0b;
+            --shadow: 0 8px 30px -5px rgba(0, 31, 91, 0.05);
+            --radius: 18px;
+            
+            --font-ui: 'Plus Jakarta Sans', sans-serif;
+            --font-num: 'Outfit', sans-serif;
+        }
+
+        * { -ms-overflow-style: none; scrollbar-width: none; margin:0; padding:0; box-sizing:border-box; font-family:var(--font-ui); outline:none; -webkit-tap-highlight-color:transparent; }
+        *::-webkit-scrollbar { display: none; }
+        body { background:var(--bg); color:var(--text); padding-bottom:100px; font-size:14px; overflow-x:hidden; }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 25px; }
+
+        /* HEADER */
+        header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+        .brand { font-family:var(--font-num); font-size:1.6rem; font-weight:800; color:var(--primary); display:flex; align-items:center; gap:10px; }
+        
+        /* TIMELINE CONTROLS */
+        .timeline-wrapper { display: flex; align-items: center; gap: 10px; margin-bottom: 30px; position: relative; }
+        .timeline-strip { display: flex; gap: 10px; overflow-x: auto; padding: 5px 2px; flex: 1; }
+        
+        .time-btn { 
+            min-width: 50px; height: 80px; background: var(--surface); border: 1px solid var(--border); 
+            border-radius: 14px; display: flex; align-items: center; justify-content: center; 
+            cursor: pointer; color: var(--accent); font-size: 1.2rem; transition: 0.2s;
+        }
+        .time-btn:hover { background: var(--bg); border-color: var(--accent); }
+
+        .day-card { 
+            min-width: 65px; height: 80px; background: var(--surface); border: 1px solid var(--border);
+            border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.2s; position: relative; flex-shrink: 0;
+        }
+        .day-card.active { background: var(--primary); border-color: var(--primary); color: white; transform: translateY(-3px); box-shadow: var(--shadow); }
+        .day-name { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; margin-bottom: 2px; opacity: 0.8; }
+        .day-num { font-family: var(--font-num); font-size: 1.4rem; font-weight: 700; }
+        
+        .dot-indicator { 
+            width: 6px; height: 6px; background: var(--accent); border-radius: 50%; 
+            position: absolute; bottom: 8px; display: none; 
+        }
+        .day-card.has-event .dot-indicator { display: block; }
+        .day-card.active .dot-indicator { background: white; }
+
+        /* BACK TO TODAY BUTTON */
+        .back-today {
+            display: none; position: absolute; top: -35px; left: 50%; transform: translateX(-50%);
+            background: var(--accent); color: white; padding: 5px 15px; border-radius: 20px;
+            font-size: 0.75rem; font-weight: 700; cursor: pointer; box-shadow: var(--shadow);
+            animation: fadeIn 0.3s;
+        }
+
+        /* GOALS */
+        .goals-bar { display: flex; gap: 15px; margin-bottom: 30px; overflow-x: auto; }
+        .goal-pill { background: var(--surface); border: 1px solid var(--border); padding: 8px 15px; border-radius: 50px; display: flex; align-items: center; gap: 10px; white-space: nowrap; cursor: pointer; transition: 0.2s; }
+        .goal-pill:hover { border-color: var(--accent); transform: translateY(-2px); }
+        .gp-icon { color: var(--accent); }
+        .gp-text { font-weight: 700; font-size: 0.85rem; color: var(--primary); }
+        .gp-prog { font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-num); }
+
+        /* HEADER ACTIONS */
+        .btn-icon { width:42px; height:42px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text-muted); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:0.2s; }
+        .btn-icon:hover { color:var(--primary); border-color:var(--primary); transform:translateY(-2px); box-shadow:var(--shadow); }
+        .btn-icon.sync { color:var(--accent); border-color:rgba(0,168,232,0.3); background:rgba(0,168,232,0.05); }
+
+        /* GRID */
+        .grid-layout { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 25px; align-items: start; }
+        @media (max-width: 850px) { .grid-layout { grid-template-columns: 1fr; } }
+
+        /* CARDS */
+        .card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); display: flex; flex-direction: column; overflow: hidden; height: auto; }
+        .card-head { padding: 18px 22px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: #fafbfc; }
+        .c-title { font-weight: 800; color: var(--primary); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; display:flex; align-items:center; gap:10px; }
+        .add-btn { width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--accent); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .add-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
+        .card-body { padding: 0; }
+
+        /* ITEMS */
+        .item-row { padding: 16px 22px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: flex-start; gap: 15px; transition: 0.2s; background: var(--surface); position: relative; }
+        .item-row:last-child { border-bottom: none; }
+        .item-row:hover { background: #f8fafc; }
+        .item-row.done { opacity: 0.5; filter: grayscale(1); }
+        .item-row.done .item-text { text-decoration: line-through; }
+        .check-box { width: 22px; height: 22px; border: 2px solid var(--border); border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: 0.2s; background: white; margin-top: 2px; }
+        .check-box:hover { border-color: var(--accent); }
+        .item-row.done .check-box { background: var(--success); border-color: var(--success); color: white; }
+        .item-content { flex: 1; }
+        .item-text { font-weight: 600; color: var(--text); font-size: 0.95rem; display: block; margin-bottom: 4px; line-height: 1.4; }
+        .item-meta { font-size: 0.75rem; color: var(--text-muted); display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+        .tag { background: var(--bg); padding: 3px 8px; border-radius: 6px; border: 1px solid var(--border); font-weight: 600; display: inline-flex; align-items: center; gap: 5px; }
+        .tag.loc { color: var(--accent); cursor: pointer; }
+        .tag.loc:hover { background: var(--accent); color: white; border-color: var(--accent); }
+        .item-row.priority { background: #fffbfb; }
+        .item-row.priority .check-box { border-color: var(--danger); }
+        .tag.urgent { color: var(--danger); background: #fef2f2; border-color: #fee2e2; }
+        .actions { display: flex; gap: 5px; opacity: 0; transition: 0.2s; margin-left: 5px; }
+        .item-row:hover .actions { opacity: 1; }
+        .act-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted); transition: 0.2s; font-size: 0.85rem; }
+        .act-icon:hover { background: var(--bg); color: var(--primary); }
+        .act-icon.del:hover { color: var(--danger); background: #fef2f2; }
+        .agenda-header { padding: 10px 22px; background: #fafbfc; color: var(--text-muted); font-size: 0.75rem; font-weight: 800; text-transform: uppercase; border-bottom: 1px solid var(--border); letter-spacing: 1px; }
+        .empty-state { text-align: center; padding: 30px; color: #cbd5e1; font-size: 0.85rem; font-style: italic; }
+
+        /* MODAL */
+        .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,31,91,0.6); z-index:9000; align-items:center; justify-content:center; backdrop-filter:blur(5px); }
+        .modal-box { background:var(--surface); width:90%; max-width:450px; padding:30px; border-radius:24px; animation:slideIn 0.3s; box-shadow: 0 25px 60px rgba(0,0,0,0.3); position:relative; }
+        .modal-close { position:absolute; top:20px; right:20px; color:var(--text-muted); cursor:pointer; font-size:1.4rem; transition:0.2s; }
+        .modal-close:hover { color:var(--danger); transform:rotate(90deg); }
+        .modal-head { font-family: var(--font-num); font-weight: 800; font-size: 1.3rem; color: var(--primary); margin-bottom: 25px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
+        .inp-group { margin-bottom: 18px; }
+        .lbl { display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing:0.5px; }
+        .inp { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 12px; font-family: var(--font-ui); font-size: 1rem; outline: none; background: var(--bg); transition: 0.2s; color: var(--text); }
+        .inp:focus { border-color: var(--accent); background: var(--surface); box-shadow: 0 0 0 3px rgba(0,168,232,0.1); }
+        .btn-save { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 1rem; box-shadow: 0 4px 15px rgba(0,31,91,0.2); }
+        .btn-save:hover { background: var(--primary-light); transform: translateY(-2px); }
+        
+        .sync-btn { padding:15px; border:1px solid var(--border); border-radius:12px; background:var(--bg); color:var(--text); font-weight:700; cursor:pointer; display:flex; align-items:center; gap:15px; transition:0.2s; font-size:0.95rem; width:100%; margin-bottom:12px; }
+        .sync-btn:hover { background:var(--surface); border-color:var(--accent); transform:translateY(-2px); box-shadow: var(--shadow); }
+        .sync-btn i { font-size: 1.2rem; width: 25px; text-align: center; }
+
+        #toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(100px); background:var(--primary); color:white; padding:12px 30px; border-radius:30px; font-weight:600; box-shadow:0 10px 30px rgba(0,0,0,0.3); transition:0.3s; opacity:0; z-index:9999; display:flex; align-items:center; gap:10px; }
+        #toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+
+        @keyframes slideIn { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="brand"><i class="fa-solid fa-layer-group"></i> Benai Tracker</div>
+            <div class="header-actions">
+                <button class="btn-icon sync" onclick="openModal('sync')" title="Dados & Backup"><i class="fa-solid fa-cloud"></i></button>
+            </div>
+        </header>
+
+        <div class="timeline-wrapper">
+            <div class="back-today" id="btnBackToday" onclick="resetDate()"><i class="fa-solid fa-rotate-left"></i> Voltar Hoje</div>
+            
+            <input type="date" id="date-jumper" style="position:absolute; width:50px; opacity:0; z-index:10; cursor:pointer;" onchange="jumpDate(this.value)">
+            <div class="time-btn" onclick="document.getElementById('date-jumper').showPicker()" title="Ir para data">
+                <i class="fa-regular fa-calendar-days"></i>
+            </div>
+
+            <div class="timeline-strip" id="timelineStrip"></div>
+        </div>
+
+        <div class="goals-bar" id="goalsBar">
+            <div class="goal-pill" onclick="openModal('goal')">
+                <div class="gp-text" style="color:var(--text-muted)">+ Nova Meta</div>
+            </div>
+        </div>
+
+        <div class="grid-layout">
+            <div style="display:flex; flex-direction:column; gap:25px;">
+                <div class="card">
+                    <div class="card-head">
+                        <span class="c-title" style="color:#7c3aed"><i class="fa-regular fa-calendar-days"></i> Agenda</span>
+                        <button class="add-btn" onclick="openModal('appt')"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <div class="card-body" id="list-appt"></div>
+                </div>
+                <div class="card">
+                    <div class="card-head">
+                        <span class="c-title" style="color:#059669"><i class="fa-solid fa-repeat"></i> Fixos Mensais</span>
+                        <button class="add-btn" onclick="openModal('fixed')"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <div class="card-body" id="list-fixed"></div>
+                </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:25px;">
+                <div class="card">
+                    <div class="card-head">
+                        <span class="c-title" style="color:#ea580c"><i class="fa-solid fa-list-check"></i> Tarefas</span>
+                        <button class="add-btn" onclick="openModal('task')"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <div class="card-body" id="list-task"></div>
+                </div>
+                <div class="card">
+                    <div class="card-head">
+                        <span class="c-title" style="color:#0891b2"><i class="fa-solid fa-cart-shopping"></i> Compras</span>
+                        <button class="add-btn" onclick="openModal('shop')"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <div class="card-body" id="list-shop"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-sync" class="modal">
+        <div class="modal-box">
+            <i class="fa-solid fa-xmark modal-close" onclick="closeModal('sync')"></i>
+            <div class="modal-head">Central de Dados</div>
+            <button class="sync-btn" onclick="exportData()"><i class="fa-solid fa-download" style="color:var(--accent)"></i> <div>Baixar JSON <div style="font-size:0.75rem; color:var(--text-muted); font-weight:400;">Backup PC</div></div></button>
+            <button class="sync-btn" onclick="shareData()"><i class="fa-brands fa-whatsapp" style="color:#25D366"></i> <div>Compartilhar <div style="font-size:0.75rem; color:var(--text-muted); font-weight:400;">Mobile</div></div></button>
+            <button class="sync-btn" onclick="document.getElementById('importFile').click()"><i class="fa-solid fa-upload" style="color:var(--primary)"></i> <div>Restaurar <div style="font-size:0.75rem; color:var(--text-muted); font-weight:400;">Carregar JSON</div></div></button>
+            <button class="sync-btn" style="border-color:var(--danger); color:var(--danger); margin-top:15px;" onclick="hardReset()"><i class="fa-solid fa-trash"></i> <div>Resetar Tudo</div></button>
+        </div>
+    </div>
+
+    <div id="modal-goal" class="modal">
+        <div class="modal-box">
+            <i class="fa-solid fa-xmark modal-close" onclick="closeModal('goal')"></i>
+            <div class="modal-head">Meta</div>
+            <input type="hidden" id="goal-id">
+            <div class="inp-group"><label class="lbl">Nome</label><input id="goal-title" class="inp"></div>
+            <div style="display:flex; gap:10px;">
+                <div class="inp-group" style="flex:1"><label class="lbl">Atual</label><input type="number" id="goal-cur" class="inp"></div>
+                <div class="inp-group" style="flex:1"><label class="lbl">Alvo</label><input type="number" id="goal-tar" class="inp"></div>
+            </div>
+            <div class="inp-group"><label class="lbl">Unidade</label><input id="goal-unit" class="inp" placeholder="Ex: kg"></div>
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <button class="btn-save" style="flex:1" onclick="saveItem('goal')">SALVAR</button>
+                <button class="btn-save" style="flex:0.3; background:var(--bg); color:var(--danger); box-shadow:none; border:1px solid var(--border);" onclick="delItemFromModal('goal')"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-appt" class="modal">
+        <div class="modal-box">
+            <i class="fa-solid fa-xmark modal-close" onclick="closeModal('appt')"></i>
+            <div class="modal-head">Compromisso</div>
+            <input type="hidden" id="appt-id">
+            <div class="inp-group"><label class="lbl">Título</label><input id="appt-title" class="inp"></div>
+            <div style="display:flex; gap:15px;">
+                <div class="inp-group" style="flex:1"><label class="lbl">Data</label><input type="date" id="appt-date" class="inp"></div>
+                <div class="inp-group" style="flex:0.6"><label class="lbl">Hora</label><input type="time" id="appt-time" class="inp"></div>
+            </div>
+            <div class="inp-group"><label class="lbl">Local (Maps)</label><input id="appt-loc" class="inp"></div>
+            <button class="btn-save" onclick="saveItem('appt')">SALVAR AGENDA</button>
+        </div>
+    </div>
+
+    <div id="modal-fixed" class="modal">
+        <div class="modal-box">
+            <i class="fa-solid fa-xmark modal-close" onclick="closeModal('fixed')"></i>
+            <div class="modal-head">Fixo Mensal</div>
+            <input type="hidden" id="fixed-id">
+            <div class="inp-group"><label class="lbl">Descrição</label><input id="fixed-title" class="inp"></div>
+            <div class="inp-group"><label class="lbl">Dia Vencimento</label><input type="number" id="fixed-day" class="inp"></div>
+            <button class="btn-save" onclick="saveItem('fixed')">SALVAR</button>
+        </div>
+    </div>
+
+    <div id="modal-task" class="modal">
+        <div class="modal-box">
+            <i class="fa-solid fa-xmark modal-close" onclick="closeModal('task')"></i>
+            <div class="modal-head">Tarefa</div>
+            <input type="hidden" id="task-id">
+            <div class="inp-group"><label class="lbl">Fazer:</label><input id="task-title" class="inp"></div>
+            
+            <div class="inp-group">
+                <label class="lbl">Data (Opcional)</label>
+                <input type="date" id="task-date" class="inp">
+            </div>
+
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
+                <input type="checkbox" id="task-prio" style="width:20px; height:20px; accent-color:var(--danger)">
+                <label for="task-prio" style="font-weight:700; color:var(--danger)">Prioridade 🔥</label>
+            </div>
+            <button class="btn-save" onclick="saveItem('task')">SALVAR</button>
+        </div>
+    </div>
+
+    <div id="modal-shop" class="modal">
+        <div class="modal-box">
+            <i class="fa-solid fa-xmark modal-close" onclick="closeModal('shop')"></i>
+            <div class="modal-head">Compra</div>
+            <input type="hidden" id="shop-id">
+            <div class="inp-group"><label class="lbl">Item</label><input id="shop-title" class="inp"></div>
+            <div class="inp-group"><label class="lbl">Prazo</label><input type="date" id="shop-date" class="inp"></div>
+            <button class="btn-save" onclick="saveItem('shop')">SALVAR</button>
+        </div>
+    </div>
+
+    <div id="toast"><i class="fa-solid fa-check-circle"></i> <span>Salvo!</span></div>
+    <input type="file" id="importFile" hidden onchange="importData(this)">
+
+    <script>
+        // CHAVE FIXA PARA NÃO PERDER DADOS
+        const STABLE_KEY = 'benai_tracker_main_db';
+        const OLD_KEYS = ['benai_agenda_v46', 'benai_agenda_v45']; 
+
+        let db = { appt: [], fixed: [], task: [], shop: [], goals: [{id:1, title:"Consultoria", cur:0, tar:10, unit:"alunos"}] };
+        let viewDate = new Date();
+
+        function init() {
+            // Tenta carregar da chave fixa
+            let s = localStorage.getItem(STABLE_KEY);
+            
+            // Se não achar, tenta resgatar das antigas (Migração Automática)
+            if (!s) {
+                for(let k of OLD_KEYS) {
+                    s = localStorage.getItem(k);
+                    if(s) {
+                        localStorage.setItem(STABLE_KEY, s); // Salva na nova
+                        break;
+                    }
+                }
+            }
+
+            if(s) db = JSON.parse(s);
+            
+            // Check Monthly Reset
+            const today = new Date();
+            const savedMonth = localStorage.getItem('benai_month_idx');
+            if(savedMonth != today.getMonth()) {
+                db.fixed.forEach(f => f.done = false); 
+                localStorage.setItem('benai_month_idx', today.getMonth());
+                save();
+            }
+            renderTimeline(); renderGoals(); renderAll();
+        }
+
+        function save() { 
+            localStorage.setItem(STABLE_KEY, JSON.stringify(db)); 
+            renderTimeline(); renderGoals(); renderAll(); 
+        }
+
+        // --- TIME TRAVEL LOGIC ---
+        function jumpDate(val) {
+            if(!val) return;
+            const parts = val.split('-');
+            viewDate = new Date(parts[0], parts[1]-1, parts[2]);
+            renderTimeline();
+            
+            const today = new Date();
+            const isToday = viewDate.getDate() === today.getDate() && viewDate.getMonth() === today.getMonth();
+            document.getElementById('btnBackToday').style.display = isToday ? 'none' : 'block';
+        }
+
+        function resetDate() {
+            viewDate = new Date();
+            renderTimeline();
+            document.getElementById('btnBackToday').style.display = 'none';
+        }
+
+        function renderTimeline() {
+            const el = document.getElementById('timelineStrip'); el.innerHTML = '';
+            const daysMap = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+            const today = new Date(); 
+
+            for(let i=0; i<6; i++) {
+                const d = new Date(viewDate); d.setDate(viewDate.getDate() + i);
+                const iso = d.toISOString().split('T')[0];
+                const isRealToday = d.getDate() === today.getDate() && d.getMonth() === today.getMonth();
+                const dayName = isRealToday ? 'HOJE' : daysMap[d.getDay()];
+                const isActive = i === 0; 
+                const hasEvent = db.appt.some(a => a.date === iso && !a.done);
+                
+                el.innerHTML += `
+                    <div class="day-card ${isActive?'active':''} ${hasEvent?'has-event':''}">
+                        <div class="day-name">${dayName}</div>
+                        <div class="day-num">${d.getDate()}</div>
+                        <div class="dot-indicator"></div>
+                    </div>
+                `;
+            }
+        }
+
+        function renderGoals() {
+            const el = document.getElementById('goalsBar');
+            while (el.children.length > 1) { el.removeChild(el.lastChild); }
+            db.goals.forEach(g => {
+                const div = document.createElement('div'); div.className = 'goal-pill';
+                div.onclick = () => openModal('goal', g.id);
+                div.innerHTML = `<i class="fa-solid fa-bullseye gp-icon"></i><span class="gp-text">${g.title}</span><span class="gp-prog">${g.cur}/${g.tar} ${g.unit}</span>`;
+                el.appendChild(div);
+            });
+        }
+
+        function renderAll() {
+            // AGENDA
+            const lAppt = document.getElementById('list-appt'); lAppt.innerHTML = '';
+            const sortedAppts = [...db.appt].sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time));
+            if(!sortedAppts.length) lAppt.innerHTML = `<div class="empty-state">Livre.</div>`;
+            
+            let lastDt = ''; 
+            sortedAppts.forEach(x => {
+                if(x.date !== lastDt) {
+                    const dParts = x.date.split('-');
+                    lAppt.innerHTML += `<div class="agenda-header">${dParts[2]}/${dParts[1]}</div>`;
+                    lastDt = x.date;
+                }
+                const locTag = x.loc ? `<span class="tag loc" onclick="openMap('${x.loc}', event)"><i class="fa-solid fa-location-dot"></i> Maps</span>` : '';
+                lAppt.innerHTML += createRow('appt', x, `<span class="tag"><i class="fa-regular fa-clock"></i> ${x.time||'--:--'}</span> ${locTag}`);
+            });
+
+            // FIXED
+            const lFixed = document.getElementById('list-fixed'); lFixed.innerHTML = '';
+            const todayD = new Date().getDate();
+            db.fixed.sort((a,b)=>a.day-b.day).forEach(x => {
+                const left = x.day - todayD;
+                let bg = '', txt = `Dia ${x.day}`;
+                if(!x.done) {
+                    if(left < 0) { txt="Atrasado"; bg="tag urgent"; }
+                    else if(left === 0) { txt="Hoje"; bg="tag urgent"; }
+                    else if(left <= 3) { txt=`Em ${left}d`; bg="tag"; }
+                }
+                lFixed.innerHTML += createRow('fixed', x, `<span class="tag ${bg}">${txt}</span>`);
+            });
+
+            // TASKS
+            const lTask = document.getElementById('list-task'); lTask.innerHTML = '';
+            // Sort: Priority first, then Date if exists
+            db.task.sort((a,b)=> (b.prio?1:0)-(a.prio?1:0) || (a.date||'9999').localeCompare(b.date||'9999')).forEach(x => {
+                const prioTag = x.prio ? `<span class="tag urgent">🔥 Prioridade</span>` : '';
+                const dateTag = x.date ? `<span class="tag">Para ${x.date.split('-').reverse().slice(0,2).join('/')}</span>` : '';
+                lTask.innerHTML += createRow('task', x, `${prioTag} ${dateTag}`, x.prio ? 'priority' : '');
+            });
+
+            // SHOP
+            const lShop = document.getElementById('list-shop'); lShop.innerHTML = '';
+            db.shop.forEach(x => {
+                const dt = x.date ? `<span class="tag">Até ${x.date.split('-').reverse().slice(0,2).join('/')}</span>` : '';
+                lShop.innerHTML += createRow('shop', x, dt);
+            });
+        }
+
+        function createRow(type, item, metaHtml, extraClass = '') {
+            return `<div class="item-row ${item.done?'done':''} ${extraClass}"><div class="check-box" onclick="toggle('${type}', ${item.id})">${item.done ? '<i class="fa-solid fa-check" style="font-size:0.9rem; color:var(--success)"></i>' : ''}</div><div class="item-content"><span class="item-text">${item.title}</span><div class="item-meta">${metaHtml}</div></div><div class="actions"><div class="act-icon" onclick="openModal('${type}', ${item.id})"><i class="fa-solid fa-pen"></i></div><div class="act-icon del" onclick="delItem('${type}', ${item.id})"><i class="fa-solid fa-trash"></i></div></div></div>`;
+        }
+
+        function toggle(t, id) { const x=db[t].find(i=>i.id===id); if(x){ x.done=!x.done; save(); if(x.done) confetti({particleCount:40, spread:50, origin:{y:0.7}, colors:['#001F5B','#00A8E8']}); } }
+        function delItem(t, id) { if(confirm("Excluir?")) { db[t]=db[t].filter(i=>i.id!==id); save(); } }
+        function openMap(loc, e) { e.stopPropagation(); window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(loc)}`, '_blank'); }
+
+        function openModal(type, id=null) {
+            document.querySelectorAll(`#modal-${type} input`).forEach(i=>{ if(i.type==='checkbox')i.checked=false; else i.value=''; });
+            if(id) {
+                const x = (type === 'goal') ? db.goals.find(i=>i.id===id) : db[type].find(i=>i.id===id);
+                if(x) {
+                    const p = type === 'goal' ? 'goal' : type;
+                    document.getElementById(p+'-id').value = x.id;
+                    document.getElementById(p+'-title').value = x.title;
+                    if(type==='appt') { document.getElementById('appt-date').value=x.date; document.getElementById('appt-time').value=x.time; document.getElementById('appt-loc').value=x.loc||''; }
+                    if(type==='fixed') document.getElementById('fixed-day').value=x.day;
+                    if(type==='task') {
+                        document.getElementById('task-prio').checked=x.prio;
+                        if(x.date) document.getElementById('task-date').value = x.date;
+                    }
+                    if(type==='shop') document.getElementById('shop-date').value=x.date;
+                    if(type==='goal') { document.getElementById('goal-cur').value=x.cur; document.getElementById('goal-tar').value=x.tar; document.getElementById('goal-unit').value=x.unit; }
+                }
+            } else { 
+                const idField = document.getElementById((type==='goal'?'goal':type)+'-id');
+                if(idField) idField.value = ''; 
+            }
+            document.getElementById('modal-'+type).style.display='flex';
+        }
+        function closeModal(type) { document.getElementById('modal-'+type).style.display='none'; }
+
+        function saveItem(type) {
+            const prefix = type === 'goal' ? 'goal' : type;
+            const idVal = document.getElementById(prefix+'-id').value;
+            const title = document.getElementById(prefix+'-title').value;
+            if(!title) return alert("Título necessário");
+
+            let obj = { title };
+            if(type==='appt') { obj.date=document.getElementById('appt-date').value; obj.time=document.getElementById('appt-time').value; obj.loc=document.getElementById('appt-loc').value; }
+            if(type==='fixed') obj.day=parseInt(document.getElementById('fixed-day').value);
+            
+            if(type==='task') {
+                obj.prio=document.getElementById('task-prio').checked;
+                obj.date=document.getElementById('task-date').value; 
+            }
+            
+            if(type==='shop') obj.date=document.getElementById('shop-date').value;
+            if(type==='goal') { obj.cur=parseFloat(document.getElementById('goal-cur').value); obj.tar=parseFloat(document.getElementById('goal-tar').value); obj.unit=document.getElementById('goal-unit').value; }
+
+            const targetArr = type === 'goal' ? db.goals : db[type];
+
+            if(idVal) {
+                const idx = targetArr.findIndex(x=>x.id==idVal);
+                if(idx>-1) targetArr[idx] = { ...targetArr[idx], ...obj };
+            } else {
+                obj.id = Date.now();
+                if(type!=='goal') obj.done=false;
+                targetArr.push(obj);
+            }
+            save(); closeModal(type); showToast();
+        }
+        
+        function delItemFromModal(type) {
+            const id = document.getElementById(type+'-id').value;
+            if(id && confirm("Excluir?")) {
+                if(type==='goal') db.goals = db.goals.filter(x=>x.id!=id);
+                save(); closeModal(type);
+            }
+        }
+
+        // --- SYNC ---
+        function exportData() {
+            const d = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
+            const a = document.createElement('a'); a.href = d; a.download = "benai_tracker_backup.json"; a.click();
+        }
+        function importData(i) {
+            const f = i.files[0]; if(!f) return;
+            const r = new FileReader(); r.onload = e => { db = JSON.parse(e.target.result); save(); location.reload(); };
+            r.readAsText(f);
+        }
+        async function shareData() {
+            const blob = new Blob([JSON.stringify(db)], { type: 'application/json' });
+            const file = new File([blob], "benai_tracker.json", { type: 'application/json' });
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                try { await navigator.share({ files: [file], title: 'Backup' }); } catch (err) {}
+            } else { alert("Use o botão Baixar."); }
+        }
+        function hardReset() { if(confirm("Apagar tudo?")) { localStorage.removeItem(STABLE_KEY); location.reload(); } }
+
+        function showToast() { const t=document.getElementById('toast'); t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2000); }
+
+        init();
+    </script>
+</body>
+</html>
