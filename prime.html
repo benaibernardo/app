@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SISTEMA PRIME ACQUAFIT | GESTÃO</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Outfit:wght@500;700;800&display=swap');
+
+        :root {
+            --primary: #05364F;        /* Azul Prime */
+            --secondary: #00A89A;      /* Verde Água */
+            --bg-body: #F1F5F9;
+        }
+        
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: #1e293b; }
+        h1, h2, h3, .font-heading { font-family: 'Outfit', sans-serif; }
+        
+        /* Header Restaurado */
+        .header-gradient { background: linear-gradient(135deg, #022030 0%, #05364F 100%); }
+
+        /* Utilitários */
+        .btn-modern { transition: all 0.2s; }
+        .btn-modern:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 168, 154, 0.2); }
+        .btn-modern:active { transform: scale(0.98); }
+
+        .input-modern { border: 1px solid #E2E8F0; transition: all 0.2s; }
+        .input-modern:focus { border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(0, 168, 154, 0.1); outline: none; }
+
+        /* Gaveta (Drawer) */
+        .drawer-row { transition: all 0.3s ease-out; max-height: 0; opacity: 0; overflow: hidden; background-color: #f8fafc; border-bottom: 1px solid #e2e8f0; }
+        .drawer-row.open { max-height: 500px; opacity: 1; padding: 1.5rem; }
+        
+        /* Linhas Tabela */
+        .table-row-hover:hover { background-color: #f8fafc; cursor: pointer; }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+        /* Animações Sutis */
+        .fade-in { animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body class="min-h-screen pb-10">
+
+    <header class="header-gradient text-white shadow-lg sticky top-0 z-40 border-b-4 border-yellow-400">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center shadow-sm border border-white/20">
+                    <i data-lucide="dumbbell" class="w-7 h-7 text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight leading-none">PRIME <span class="font-light text-[#00A89A]">ACQUAFIT</span></h1>
+                    <p class="text-xs text-slate-300 tracking-wide uppercase font-bold mt-0.5">GESTÃO DE ALUNOS</p>
+                </div>
+            </div>
+            
+            <button onclick="openCloudModal()" class="flex items-center gap-2 px-4 py-2 text-xs font-bold bg-white/10 hover:bg-white/20 rounded text-white transition border border-white/20">
+                <i data-lucide="cloud" class="w-4 h-4"></i> DADOS
+            </button>
+        </div>
+    </header>
+
+    <div class="bg-white shadow-sm border-b border-slate-200 sticky top-[84px] z-30">
+        <nav class="max-w-7xl mx-auto px-6">
+            <div class="flex gap-8 overflow-x-auto no-scrollbar">
+                <button onclick="switchTab('checkin')" id="btn-checkin" class="py-4 text-sm font-bold text-[#05364F] border-b-2 border-[#05364F] flex items-center gap-2 transition hover:opacity-80">
+                    <i data-lucide="check-circle-2"></i> CHECK-IN
+                </button>
+                <button onclick="switchTab('dashboard')" id="btn-dashboard" class="py-4 text-sm font-bold text-slate-400 border-b-2 border-transparent flex items-center gap-2 transition hover:text-[#05364F]">
+                    <i data-lucide="bar-chart-3"></i> AGENDA
+                </button>
+                <button onclick="switchTab('students')" id="btn-students" class="py-4 text-sm font-bold text-slate-400 border-b-2 border-transparent flex items-center gap-2 transition hover:text-[#05364F]">
+                    <i data-lucide="users"></i> ALUNOS
+                </button>
+                <button onclick="switchTab('reports')" id="btn-reports" class="py-4 text-sm font-bold text-slate-400 border-b-2 border-transparent flex items-center gap-2 transition hover:text-[#05364F]">
+                    <i data-lucide="pie-chart"></i> RELATÓRIOS
+                </button>
+            </div>
+        </nav>
+    </div>
+
+    <main class="max-w-7xl mx-auto px-6 py-8">
+
+        <section id="tab-checkin" class="block fade-in">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
+                    <div class="bg-[#05364F] p-4 flex justify-between items-center">
+                        <h2 class="text-white font-bold flex items-center gap-2">
+                            <i data-lucide="user-plus"></i> Novo Registro
+                        </h2>
+                        <span id="live-clock" class="text-[#00A89A] font-mono font-bold">00:00</span>
+                    </div>
+                    
+                    <form id="checkin-form" onsubmit="handleCheckin(event)" class="p-6 space-y-5">
+                        <div class="grid grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Data</label>
+                                <div class="relative">
+                                    <input type="text" id="checkin-display-date" class="w-full p-3 pl-10 bg-slate-50 rounded-xl border border-slate-200 text-slate-600 font-bold cursor-not-allowed" readonly>
+                                    <i data-lucide="calendar" class="absolute left-3 top-3.5 text-slate-400 w-4 h-4"></i>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Horário</label>
+                                <div class="relative">
+                                    <select id="checkin-time" class="w-full p-3 pl-10 rounded-xl input-modern bg-white text-slate-700 font-bold appearance-none"></select>
+                                    <i data-lucide="clock" class="absolute left-3 top-3.5 text-[#00A89A] w-4 h-4"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Aluno</label>
+                            <div class="relative">
+                                <select id="checkin-student" class="w-full p-3 pl-10 rounded-xl input-modern bg-white text-slate-800 font-bold appearance-none" required onchange="showStudentAlerts(this.value)">
+                                    <option value="">Selecione o aluno...</option>
+                                </select>
+                                <i data-lucide="user" class="absolute left-3 top-3.5 text-[#00A89A] w-4 h-4"></i>
+                            </div>
+                            <div id="checkin-alert-box" class="hidden mt-3 p-3 bg-red-50 border-l-4 border-red-500 rounded-r text-sm text-red-800 flex items-start gap-2">
+                                <i data-lucide="alert-triangle" class="w-4 h-4 mt-0.5 shrink-0"></i>
+                                <span id="checkin-alert-text"></span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Treino</label>
+                                <div class="relative">
+                                    <select id="checkin-workout" class="w-full p-3 pl-10 rounded-xl input-modern bg-white text-slate-700 font-bold appearance-none" onchange="toggleCustomWorkout(this.value)">
+                                        <option>QUADRICEPS</option><option>POSTERIOR/GLÚTEO</option><option>PEITO/TRÍCEPS/OMBRO</option><option>COSTAS/BÍCEPS/ANTEBRAÇO</option><option>FULL BODY</option><option>MMSS</option><option>MMII</option><option>CORE</option><option>AERÓBICO</option><option>AVALIAÇÃO</option><option value="OUTRO">OUTRO...</option>
+                                    </select>
+                                    <i data-lucide="dumbbell" class="absolute left-3 top-3.5 text-[#00A89A] w-4 h-4"></i>
+                                </div>
+                                <input type="text" id="checkin-custom-workout" class="hidden w-full p-3 mt-2 rounded-xl input-modern bg-slate-50 text-slate-800 border-2 border-[#00A89A]" placeholder="Nome do treino...">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-2 flex justify-between">
+                                    Responsável <button type="button" onclick="openProfModal()" class="text-[#00A89A] hover:underline text-[10px]">GERENCIAR</button>
+                                </label>
+                                <select id="checkin-prof" class="w-full p-3 rounded-xl input-modern bg-white text-slate-700 font-bold"></select>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full btn-modern bg-[#00A89A] text-white font-bold py-4 rounded-xl shadow-lg flex justify-center items-center gap-2 text-lg uppercase tracking-wide hover:bg-teal-600">
+                            <i data-lucide="check-circle-2"></i> Confirmar Presença
+                        </button>
+                    </form>
+                </div>
+
+                <div class="hidden lg:block bg-[#05364F] rounded-2xl shadow-xl p-8 text-white h-fit">
+                    <h3 class="text-xl font-bold mb-6 text-yellow-400 border-b border-white/10 pb-4">Resumo do Dia</h3>
+                    <div class="space-y-8">
+                        <div>
+                            <div class="flex items-center gap-3 mb-1 text-slate-300 text-sm font-bold uppercase"><i data-lucide="users" class="w-4 h-4"></i> Alunos Hoje</div>
+                            <p class="text-4xl font-black" id="stats-total-today">0</p>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-3 mb-1 text-slate-300 text-sm font-bold uppercase"><i data-lucide="trending-up" class="w-4 h-4"></i> Horário de Pico</div>
+                            <p class="text-2xl font-bold text-yellow-400" id="stats-peak-hour">-</p>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-3 mb-1 text-slate-300 text-sm font-bold uppercase"><i data-lucide="dumbbell" class="w-4 h-4"></i> Treino Top</div>
+                            <p class="text-xl font-bold text-teal-300 truncate" id="stats-popular-workout">-</p>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-3 mb-1 text-slate-300 text-sm font-bold uppercase"><i data-lucide="user-plus" class="w-4 h-4"></i> Novos Cadastros</div>
+                            <p class="text-2xl font-bold text-white" id="stats-new-students">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-dashboard" class="hidden space-y-6 fade-in">
+            <div class="bg-white rounded-2xl shadow-lg border border-slate-100 p-6">
+                <div class="flex justify-between items-end mb-6 border-b border-slate-100 pb-4">
+                    <h2 class="text-xl font-bold text-[#05364F] flex items-center gap-2"><i data-lucide="calendar-range" class="text-[#00A89A]"></i> Agenda Diária</h2>
+                    <div class="flex gap-3">
+                        <input type="date" id="dashboard-date" onchange="renderAgenda()" class="p-2 border rounded-lg font-bold text-[#05364F] text-sm">
+                        <select id="dashboard-filter-time" onchange="renderAgenda()" class="p-2 border rounded-lg font-bold text-[#05364F] text-sm"><option value="">Todas</option></select>
+                    </div>
+                </div>
+                
+                <div class="overflow-hidden rounded-xl border border-slate-200">
+                    <table class="w-full text-sm text-left">
+                        <thead class="bg-[#05364F] text-white uppercase text-xs font-bold">
+                            <tr>
+                                <th class="px-6 py-4 w-24">Hora</th>
+                                <th class="px-6 py-4">Aluno</th>
+                                <th class="px-6 py-4">Treino</th>
+                                <th class="px-6 py-4">Resp.</th>
+                                <th class="px-6 py-4 text-center w-20"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="agenda-body" class="divide-y divide-slate-100 bg-white"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-students" class="hidden fade-in">
+            <div class="bg-white rounded-2xl shadow-xl border border-slate-100 p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-[#05364F]">Base de Alunos</h2>
+                    <div class="flex gap-3">
+                        <div class="relative">
+                            <input type="text" id="student-search" placeholder="Buscar aluno..." oninput="renderStudentsTable()" class="pl-9 p-2.5 border rounded-lg w-64 text-sm font-bold">
+                            <i data-lucide="search" class="absolute left-3 top-3 text-slate-400 w-4 h-4"></i>
+                        </div>
+                        <button onclick="openModal()" class="bg-[#00A89A] text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 hover:bg-teal-700 transition">
+                            <i data-lucide="plus" class="w-4 h-4"></i> NOVO
+                        </button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-slate-200">
+                    <table class="w-full text-sm text-left">
+                        <thead class="bg-slate-50 text-slate-500 uppercase text-xs font-bold border-b border-slate-200">
+                            <tr>
+                                <th class="px-6 py-4">Nome</th>
+                                <th class="px-6 py-4">Objetivo</th>
+                                <th class="px-6 py-4">Status</th>
+                                <th class="px-6 py-4 text-right">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="students-body" class="divide-y divide-slate-100"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-reports" class="hidden fade-in space-y-6">
+             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-xl p-6 shadow-md border border-slate-200">
+                    <h3 class="text-sm font-bold text-[#05364F] mb-4 flex items-center gap-2"><i data-lucide="bar-chart-2" class="w-4 h-4 text-[#00A89A]"></i> Volume Semanal</h3>
+                    <div class="h-64"><canvas id="chart-weekly-volume"></canvas></div>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow-md border border-slate-200">
+                    <h3 class="text-sm font-bold text-[#05364F] mb-4 flex items-center gap-2"><i data-lucide="pie-chart" class="w-4 h-4 text-[#00A89A]"></i> Treinos Realizados</h3>
+                    <div class="h-64 relative"><canvas id="chart-global-workouts"></canvas></div>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                 <div class="bg-white rounded-xl p-6 shadow-md border border-slate-200">
+                    <h3 class="text-sm font-bold text-[#05364F] mb-4 flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4 text-[#00A89A]"></i> Mapa de Horários</h3>
+                    <div class="h-64"><canvas id="chart-heatmap"></canvas></div>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow-md border border-slate-200">
+                    <h3 class="text-sm font-bold text-[#05364F] mb-4 flex items-center gap-2"><i data-lucide="users" class="w-4 h-4 text-[#00A89A]"></i> Retenção (30 dias)</h3>
+                    <div class="h-64 relative flex justify-center"><canvas id="chart-retention"></canvas></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="cloud-modal" class="fixed inset-0 bg-[#05364F]/90 backdrop-blur-sm hidden flex items-center justify-center z-[90] p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full text-center">
+            <i data-lucide="database" class="w-12 h-12 text-[#00A89A] mx-auto mb-4"></i>
+            <h3 class="text-xl font-bold text-[#05364F] mb-2">Central de Dados</h3>
+            <p class="text-sm text-slate-500 mb-8">Salve, restaure ou compartilhe sua base.</p>
+            <div class="space-y-3">
+                <button onclick="backupData()" class="w-full py-3 rounded-xl bg-[#05364F] text-white font-bold hover:bg-[#032435] flex justify-center gap-2">
+                    <i data-lucide="download" class="w-4 h-4"></i> BAIXAR ARQUIVO
+                </button>
+                <label class="w-full py-3 rounded-xl border-2 border-slate-200 text-slate-600 font-bold hover:bg-slate-50 cursor-pointer flex justify-center gap-2">
+                    <i data-lucide="upload" class="w-4 h-4"></i> RESTAURAR ARQUIVO
+                    <input type="file" id="restore-file" class="hidden" accept=".json" onchange="restoreData(this)">
+                </label>
+                 <button onclick="shareWA()" class="w-full py-3 rounded-xl bg-[#25D366] text-white font-bold hover:bg-[#1ebc57] flex justify-center gap-2 transition">
+                     <i data-lucide="message-circle" class="w-4 h-4"></i> COPIAR PARA WHATSAPP
+                </button>
+            </div>
+             <button onclick="closeCloudModal()" class="mt-6 text-slate-400 hover:text-slate-600 text-xs font-bold uppercase tracking-widest">Fechar</button>
+        </div>
+    </div>
+
+    <div id="prof-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center z-[80] p-4">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-xs overflow-hidden">
+            <div class="bg-slate-50 px-4 py-3 border-b border-slate-200 flex justify-between items-center">
+                <h3 class="text-sm font-bold text-[#05364F]">Equipe</h3>
+                <button onclick="closeProfModal()"><i data-lucide="x" class="w-4 h-4 text-slate-400"></i></button>
+            </div>
+            <div class="p-4">
+                <div class="flex gap-2 mb-3">
+                    <input type="text" id="new-prof-name" placeholder="Nome..." class="flex-grow p-2 border rounded-lg text-sm outline-none focus:border-[#00A89A]">
+                    <button onclick="addProfessor()" class="bg-[#00A89A] text-white px-3 rounded-lg"><i data-lucide="plus" class="w-4 h-4"></i></button>
+                </div>
+                <ul id="prof-list" class="space-y-1 max-h-48 overflow-y-auto"></ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="edit-modal" class="fixed inset-0 bg-[#05364F]/90 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+            <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center">
+                <h3 class="text-lg font-bold text-[#05364F]" id="modal-title">Aluno</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-red-500"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <form id="edit-student-form" onsubmit="saveStudentChanges(event)" class="p-6 space-y-4">
+                <input type="hidden" id="edit-id">
+                <div><label class="text-[10px] font-bold text-slate-400 uppercase">Nome</label><input type="text" id="edit-name" class="w-full p-2 border rounded-lg font-bold text-[#05364F]" required></div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="text-[10px] font-bold text-slate-400 uppercase">Objetivo</label><input type="text" id="edit-objective" class="w-full p-2 border rounded-lg"></div>
+                    <div><label class="text-[10px] font-bold text-slate-400 uppercase">Plano</label><input type="text" id="edit-plan" class="w-full p-2 border rounded-lg"></div>
+                </div>
+                <div><label class="text-[10px] font-bold text-red-400 uppercase">Limitações</label><textarea id="edit-limitations" rows="2" class="w-full p-2 border border-red-200 bg-red-50 rounded-lg text-red-800 font-medium"></textarea></div>
+                <div><label class="text-[10px] font-bold text-blue-400 uppercase">Observações</label><textarea id="edit-notes" rows="2" class="w-full p-2 border border-blue-200 bg-blue-50 rounded-lg text-slate-700"></textarea></div>
+                <div><label class="text-[10px] font-bold text-slate-400 uppercase">Link Avaliação</label><input type="url" id="edit-link" class="w-full p-2 border rounded-lg text-blue-600"></div>
+                <button type="submit" class="w-full btn-modern bg-[#05364F] text-white font-bold py-3 rounded-xl hover:bg-[#032435]">SALVAR</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="profile-modal" class="fixed inset-0 bg-[#05364F]/95 backdrop-blur-md hidden flex items-center justify-center z-[60] p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl h-[90vh] overflow-hidden flex flex-col">
+            <div class="px-8 py-5 border-b border-slate-100 flex justify-between items-center bg-white">
+                <div>
+                    <h2 id="profile-name" class="text-2xl font-black text-[#05364F]">NOME</h2>
+                    <p class="text-xs font-bold text-[#00A89A] uppercase tracking-wider mt-1"><span id="profile-objective">OBJETIVO</span> • <span id="profile-plan">PLANO</span></p>
+                </div>
+                <button onclick="closeProfileModal()" class="bg-slate-100 p-2 rounded-full hover:bg-slate-200"><i data-lucide="x" class="w-6 h-6 text-slate-500"></i></button>
+            </div>
+            
+            <div class="p-8 overflow-y-auto space-y-8 bg-slate-50 flex-grow">
+                 <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase mb-4 flex items-center gap-2"><i data-lucide="calendar-days" class="w-4 h-4"></i> Frequência Semana Atual</h3>
+                    <div id="week-status-grid" class="grid grid-cols-6 gap-2"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="p-6 rounded-xl bg-red-50 border border-red-100">
+                        <h4 class="font-bold text-red-700 mb-3 flex items-center gap-2 text-sm uppercase"><i data-lucide="alert-triangle" class="w-4 h-4"></i> Limitações</h4>
+                        <ul id="profile-limitations-list" class="space-y-2"></ul>
+                    </div>
+                    <div class="p-6 rounded-xl bg-blue-50 border border-blue-100">
+                        <h4 class="font-bold text-blue-700 mb-3 flex items-center gap-2 text-sm uppercase"><i data-lucide="clipboard-list" class="w-4 h-4"></i> Observações</h4>
+                         <ul id="profile-notes-list" class="space-y-2"></ul>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <a id="profile-link-btn" href="#" target="_blank" class="hidden inline-flex items-center gap-2 bg-[#05364F] text-white px-6 py-3 rounded-lg font-bold shadow hover:bg-[#032d42] transition"><i data-lucide="file-bar-chart-2" class="w-4 h-4"></i> ABRIR AVALIAÇÃO FÍSICA (PDF)</a>
+                    <p id="profile-no-link" class="hidden text-slate-400 text-sm italic">Sem avaliação anexada.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-slate-200">
+                    <div class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm">
+                        <h4 class="text-xs font-bold text-slate-500 uppercase mb-4 text-center">Histórico de Presença</h4>
+                        <div class="h-60"><canvas id="chart-freq"></canvas></div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm">
+                        <h4 class="text-xs font-bold text-slate-500 uppercase mb-4 text-center">Músculos Trabalhados</h4>
+                        <div class="h-60 relative flex justify-center"><canvas id="chart-workouts"></canvas></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-6 right-6 bg-[#05364F] text-white px-5 py-3 rounded-lg shadow-xl flex items-center gap-3 z-[100] translate-x-[150%] transition-transform duration-300 border-l-4 border-[#00A89A]">
+        <i data-lucide="check-circle" class="w-5 h-5 text-[#00A89A]"></i> <span id="toast-msg" class="text-sm font-bold"></span>
+    </div>
+
+    <script>
+        const INITIAL_STUDENTS = [
+            {"id":"1","name":"NILTON FLORIANO","objective":"GANHAR MASSA","limitations":"HERNIA INGUINAL","notes":"GOSTA DE FAZER BURPEES AO FINAL DA AULA","plan":"3X","link":""},
+            {"id":"2","name":"LINDAMIR FLORIANO (MIME)","objective":"EMAGRECIMENTO","limitations":"NENHUMA","notes":"","plan":"3X","link":""},
+            {"id":"3","name":"LUCIMARA STELE","objective":"EMAGRECIMENTO","limitations":"HERNIA LOMBA L5, NÃO SENTE DORES","notes":"","plan":"3X","link":""}
+        ];
+        const INITIAL_PROFS = ['BENAI', 'JUAN', 'THUR', 'LUANA', 'BENJAMIN'];
+        const DB_KEY = 'prime_main_db'; 
+        const OLD_KEYS = ['prime_v7'];
+        
+        let db = { students: [], checkins: [], professors: [] };
+        let charts = {};
+
+        function init() {
+            let saved = localStorage.getItem(DB_KEY);
+            if(!saved) { for(let k of OLD_KEYS) { saved = localStorage.getItem(k); if(saved) { localStorage.setItem(DB_KEY, saved); break; } } }
+            if (saved) { db = JSON.parse(saved); if(!db.professors) { db.professors = INITIAL_PROFS; saveDB(); } } 
+            else { db.students = INITIAL_STUDENTS; db.professors = INITIAL_PROFS; saveDB(); }
+            lucide.createIcons(); switchTab('checkin'); updateStats();
+            setInterval(() => document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}), 1000);
+            Chart.defaults.font.family = "'Inter', sans-serif"; Chart.defaults.color = '#64748b';
+        }
+
+        function saveDB() { localStorage.setItem(DB_KEY, JSON.stringify(db)); updateStats(); }
+        // DATA COM ANO COMPLETO
+        function getFormattedDate(d=new Date()){ return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()} (${['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][d.getDay()]})`; }
+        function getISO(d=new Date()){ return d.toISOString().split('T')[0]; }
+
+        function toast(msg, err=false) {
+            const t = document.getElementById('toast'); document.getElementById('toast-msg').innerText = msg;
+            t.className = `fixed bottom-6 right-6 px-5 py-3 rounded-lg shadow-xl flex items-center gap-3 z-[100] transition-transform duration-300 border-l-4 ${err ? 'bg-red-800 border-red-500 text-white' : 'bg-[#05364F] border-[#00A89A] text-white'}`;
+            t.style.transform = 'translateX(0)'; setTimeout(() => t.style.transform = 'translateX(150%)', 3000);
+        }
+
+        function switchTab(id) {
+            ['checkin', 'dashboard', 'students', 'reports'].forEach(t => {
+                document.getElementById('tab-'+t).classList.add('hidden');
+                const btn = document.getElementById('btn-'+t); btn.classList.remove('active', 'text-[#05364F]', 'border-[#05364F]'); btn.classList.add('text-slate-400', 'border-transparent');
+            });
+            document.getElementById('tab-'+id).classList.remove('hidden');
+            const btn = document.getElementById('btn-'+id); btn.classList.remove('text-slate-400', 'border-transparent'); btn.classList.add('active', 'text-[#05364F]', 'border-[#05364F]');
+            if(id==='checkin') setupCheckin(); if(id==='dashboard') { document.getElementById('dashboard-date').value=getISO(); setupDashFilters(); renderAgenda(); }
+            if(id==='students') renderStudentsTable(); if(id==='reports') renderGlobalReports(); lucide.createIcons();
+        }
+
+        // --- CHECKIN ---
+        function setupCheckin() {
+            const now = new Date(); document.getElementById('checkin-display-date').value = getFormattedDate(now);
+            const sEl = document.getElementById('checkin-student'); sEl.innerHTML = '<option value="">Selecione...</option>'; db.students.sort((a,b)=>a.name.localeCompare(b.name)).forEach(s => sEl.innerHTML += `<option value="${s.id}">${s.name}</option>`);
+            const isSat = now.getDay() === 6; const tEl = document.getElementById('checkin-time'); tEl.innerHTML = '';
+            for(let h=(isSat?8:6); h<=(isSat?12:21); h++) { const opt = new Option(`${h}:00`, `${h}H`); if(h === now.getHours()) opt.selected = true; tEl.add(opt); }
+            renderProfOptions();
+        }
+        function renderProfOptions(){ const el=document.getElementById('checkin-prof'); el.innerHTML=''; db.professors.forEach(p=>el.innerHTML+=`<option>${p}</option>`); }
+        function showStudentAlerts(id) { const s = db.students.find(x=>x.id===id); const box = document.getElementById('checkin-alert-box'); if(s && s.limitations && s.limitations!=='NENHUMA') { document.getElementById('checkin-alert-text').textContent = s.limitations; box.classList.remove('hidden'); } else box.classList.add('hidden'); }
+        function toggleCustomWorkout(v) { const inp=document.getElementById('checkin-custom-workout'); if(v==='OUTRO') { inp.classList.remove('hidden'); setTimeout(()=>inp.focus(),100); } else inp.classList.add('hidden'); }
+        function handleCheckin(e) {
+            e.preventDefault(); const now = new Date(); if(now.getDay()===0) return toast('Domingo Fechado', true);
+            const sId = document.getElementById('checkin-student').value; if(!sId) return;
+            let wk = document.getElementById('checkin-workout').value; if(wk==='OUTRO') wk = document.getElementById('checkin-custom-workout').value.trim().toUpperCase() || 'PERSONALIZADO';
+            db.checkins.push({ id: Date.now().toString(), studentId: sId, studentName: db.students.find(x=>x.id===sId).name, isoDate: getISO(now), displayDate: getFormattedDate(now), time: document.getElementById('checkin-time').value, workout: wk, prof: document.getElementById('checkin-prof').value, timestamp: now.getTime() });
+            saveDB(); document.getElementById('checkin-student').value = ''; document.getElementById('checkin-alert-box').classList.add('hidden'); toast('Presença Confirmada!');
+        }
+        function updateStats() {
+            const today = getISO(); const todays = db.checkins.filter(c=>c.isoDate===today); document.getElementById('stats-total-today').textContent = todays.length;
+            const wC = {}; todays.forEach(c=>{ wC[c.workout]=(wC[c.workout]||0)+1 }); const popW = Object.keys(wC).reduce((a,b)=>wC[a]>wC[b]?a:b, '-'); document.getElementById('stats-popular-workout').textContent = popW.length > 12 ? popW.substring(0,10)+'...' : popW;
+            const tC = {}; todays.forEach(c=>{ tC[c.time]=(tC[c.time]||0)+1 }); document.getElementById('stats-peak-hour').textContent = Object.keys(tC).reduce((a,b)=>tC[a]>tC[b]?a:b, '-');
+            const startOfDay = new Date(today).getTime(); document.getElementById('stats-new-students').textContent = db.students.filter(s => parseInt(s.id) > startOfDay).length;
+        }
+
+        // --- AGENDA ---
+        function setupDashFilters() { const s = document.getElementById('dashboard-filter-time'); s.innerHTML='<option value="">Todos</option>'; for(let h=6; h<=21; h++) s.innerHTML+=`<option value="${h}H">${h}H</option>`; }
+        function renderAgenda() {
+            const dt = document.getElementById('dashboard-date').value; const tm = document.getElementById('dashboard-filter-time').value; const tb = document.getElementById('agenda-body'); tb.innerHTML='';
+            let list = db.checkins.filter(c=>c.isoDate===dt); if(tm) list = list.filter(c=>c.time===tm); list.sort((a,b)=>parseInt(a.time)-parseInt(b.time));
+            if(!list.length) { tb.innerHTML='<tr><td colspan="5" class="p-8 text-center text-slate-400 italic">Nenhum treino registrado.</td></tr>'; return; }
+            list.forEach(c => {
+                const tr = document.createElement('tr'); tr.className = 'border-b border-slate-100 hover:bg-slate-50 transition cursor-pointer';
+                tr.onclick = (e) => { if(!e.target.closest('button')) toggleDrawer(c.id, c.studentId); };
+                tr.innerHTML = `<td class="px-6 py-4 font-bold text-[#05364F] bg-blue-50/50">${c.time}</td><td class="px-6 py-4 text-slate-700 font-bold bg-white">${c.studentName}</td><td class="px-6 py-4 text-xs font-bold uppercase text-slate-600 bg-purple-50/50">${c.workout}</td><td class="px-6 py-4 text-xs text-slate-500 bg-emerald-50/50">${c.prof}</td><td class="px-6 py-4 text-center bg-white"><button onclick="delCheckin('${c.id}')" class="text-red-300 hover:text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>`;
+                tb.appendChild(tr); tb.appendChild(Object.assign(document.createElement('tr'), {innerHTML: `<td colspan="5" class="p-0"><div id="drawer-${c.id}" class="drawer-row"></div></td>`}));
+            }); lucide.createIcons();
+        }
+        function toggleDrawer(cid, sid) {
+            const div = document.getElementById(`drawer-${cid}`); if(div.classList.contains('open')) { div.classList.remove('open'); return; }
+            document.querySelectorAll('.drawer-row').forEach(d => d.classList.remove('open'));
+            const s = db.students.find(x=>x.id===sid); const hist = db.checkins.filter(k=>k.studentId===sid);
+            const today = new Date(); const diff = today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1); const mon = new Date(today.setDate(diff));
+            let weekHTML = '<div class="flex gap-2 overflow-x-auto">';
+            ['SEG','TER','QUA','QUI','SEX','SÁB'].forEach((day, i) => { let d = new Date(mon); d.setDate(mon.getDate() + i); const check = hist.find(k=>k.isoDate===getISO(d)); const bg = check ? 'bg-[#00A89A] text-white border-[#00A89A]' : 'bg-white border-slate-200 text-slate-300'; weekHTML += `<div class="flex-1 p-2 rounded border text-center ${bg}"><div class="text-[10px] font-bold mb-1 opacity-80">${day}</div><div class="text-[10px] font-bold leading-tight">${check ? check.workout : '.'}</div></div>`; }); weekHTML += '</div>';
+            div.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><h4 class="text-xs font-bold text-slate-400 uppercase mb-2">Análise Rápida</h4><div class="bg-white p-3 rounded border border-slate-200 mb-2"><span class="text-xs font-bold text-red-500 block">LIMITAÇÕES</span><p class="text-sm text-slate-700">${s.limitations||'Nenhuma'}</p></div></div><div><h4 class="text-xs font-bold text-slate-400 uppercase mb-2">Semana Atual</h4>${weekHTML}<button onclick="openFullProfile('${sid}')" class="w-full mt-3 text-xs font-bold text-[#05364F] hover:bg-slate-200 py-2 rounded border border-slate-300 transition flex items-center justify-center gap-2">VER PERFIL COMPLETO</button></div></div>`; div.classList.add('open');
+        }
+        function delCheckin(id) { if(confirm('Excluir?')) { db.checkins = db.checkins.filter(c=>c.id!==id); saveDB(); renderAgenda(); } }
+
+        // --- ALUNOS ---
+        function renderStudentsTable() {
+            const term = document.getElementById('student-search').value.toLowerCase(); const tb = document.getElementById('students-body'); tb.innerHTML='';
+            db.students.filter(s=>s.name.toLowerCase().includes(term)).sort((a,b)=>a.name.localeCompare(b.name)).forEach(s => {
+                const alert = s.limitations!=='NENHUMA';
+                tb.innerHTML += `<tr class="hover:bg-slate-50 transition border-b border-slate-100 group cursor-pointer" onclick="if(!event.target.closest('button')) openFullProfile('${s.id}')"><td class="px-6 py-4 font-bold text-[#05364F]">${s.name}</td><td class="px-6 py-4 text-xs text-slate-500 uppercase font-bold">${s.objective}</td><td class="px-6 py-4">${alert ? '<span class="text-red-500 font-bold text-xs flex items-center gap-1"><i data-lucide="alert-triangle" class="w-3 h-3"></i> Restrição</span>' : '<span class="text-slate-300 text-xs flex items-center gap-1"><i data-lucide="check" class="w-3 h-3"></i> Ok</span>'}</td><td class="px-6 py-4 text-right"><button onclick="openModal('${s.id}')" class="p-2 text-blue-400 hover:bg-blue-50 rounded"><i data-lucide="edit-3" class="w-4 h-4"></i></button><button onclick="delStudent('${s.id}')" class="p-2 text-red-400 hover:bg-red-50 rounded"><i data-lucide="trash" class="w-4 h-4"></i></button></td></tr>`;
+            }); lucide.createIcons();
+        }
+
+        // --- PERFIL COMPLETO (CORRIGIDO) ---
+        function openFullProfile(id) {
+            const s = db.students.find(x=>x.id===id); const h = db.checkins.filter(c=>c.studentId===id);
+            document.getElementById('profile-name').innerText = s.name; document.getElementById('profile-objective').textContent = s.objective; document.getElementById('profile-plan').textContent = s.plan;
+            
+            // Frequência Semanal (Restaurada)
+            const weekGrid = document.getElementById('week-status-grid'); weekGrid.innerHTML = '';
+            const today = new Date(); const day = today.getDay(), diff = today.getDate() - day + (day == 0 ? -6:1); const mon = new Date(today.setDate(diff));
+            ['SEG','TER','QUA','QUI','SEX','SÁB'].forEach((dName, i) => {
+                let d = new Date(mon); d.setDate(mon.getDate() + i); const check = h.find(k=>k.isoDate===getISO(d));
+                const bg = check ? 'bg-[#00A89A] text-white' : 'bg-slate-100 text-slate-300';
+                weekGrid.innerHTML += `<div class="p-2 rounded-lg text-center ${bg} flex flex-col items-center justify-center"><span class="text-[10px] font-bold mb-1">${dName}</span>${check ? '<i data-lucide="check-circle-2" class="w-5 h-5"></i>' : '<i data-lucide="x-circle" class="w-5 h-5 opacity-50"></i>'}</div>`;
+            });
+
+            // Listas sem duplicidade
+            const lList = document.getElementById('profile-limitations-list'); lList.innerHTML='';
+            if(s.limitations && s.limitations!=='NENHUMA') s.limitations.split(/,|\n/).forEach(i=>{ if(i.trim()) lList.innerHTML+=`<li class="flex items-start gap-2"><i data-lucide="dot" class="w-4 h-4 shrink-0 text-red-400"></i><span class="font-bold text-red-700">${i.trim()}</span></li>`}); else lList.innerHTML = '<li class="text-slate-400 italic font-medium pl-2">Sem restrições.</li>';
+            const nList = document.getElementById('profile-notes-list'); nList.innerHTML='';
+            if(s.notes && s.notes!=='SEM OBSERVAÇÕES') s.notes.split('\n').forEach(i=>{ if(i.trim()) nList.innerHTML+=`<li class="flex items-start gap-2"><i data-lucide="dot" class="w-4 h-4 shrink-0 text-blue-400"></i><span class="font-bold text-blue-700">${i.trim()}</span></li>`}); else nList.innerHTML = '<li class="text-slate-400 italic font-medium pl-2">Sem observações.</li>';
+
+            const lb = document.getElementById('profile-link-btn'), nl = document.getElementById('profile-no-link');
+            if(s.link) { lb.href=s.link; lb.classList.remove('hidden'); nl.classList.add('hidden'); } else { lb.classList.add('hidden'); nl.classList.remove('hidden'); }
+
+            // Gráficos
+            const freqCtx = document.getElementById('chart-freq').getContext('2d'); if(charts.freq) charts.freq.destroy();
+            const fMap={}; h.forEach(c=>{ const k=c.displayDate.substr(3,5); fMap[k]=(fMap[k]||0)+1 });
+            charts.freq = new Chart(freqCtx, {type:'line', data:{labels:Object.keys(fMap).sort(), datasets:[{label:'Freq', data:Object.values(fMap), borderColor:'#00A89A', backgroundColor:'rgba(0,168,154,0.1)', fill:true}]}, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}}});
+            const workCtx = document.getElementById('chart-workouts').getContext('2d'); if(charts.work) charts.work.destroy();
+            const wMap={}; h.forEach(c=>{ wMap[c.workout]=(wMap[c.workout]||0)+1 });
+            charts.work = new Chart(workCtx, {type:'doughnut', data:{labels:Object.keys(wMap), datasets:[{data:Object.values(wMap), backgroundColor:['#05364F','#00C9B7','#FFB300','#38BDF8']}]}, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'right'}}}});
+            document.getElementById('profile-modal').classList.remove('hidden'); lucide.createIcons();
+        }
+        function closeProfileModal() { document.getElementById('profile-modal').classList.add('hidden'); }
+
+        // --- RELATÓRIOS ---
+        function renderGlobalReports() {
+            const ctx1 = document.getElementById('chart-weekly-volume').getContext('2d'); if(charts.c1) charts.c1.destroy();
+            const days={}; const now=new Date(); for(let i=6; i>=0; i--){ const d=new Date(now); d.setDate(now.getDate()-i); days[['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][d.getDay()]] = db.checkins.filter(c=>c.isoDate===getISO(d)).length; }
+            charts.c1 = new Chart(ctx1, {type:'bar', data:{labels:Object.keys(days), datasets:[{label:'Check-ins', data:Object.values(days), backgroundColor:'#00A89A', borderRadius:4}]}, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}}});
+            const ctx2 = document.getElementById('chart-global-workouts').getContext('2d'); if(charts.c2) charts.c2.destroy();
+            const wMap={}; db.checkins.forEach(c=>{ wMap[c.workout]=(wMap[c.workout]||0)+1 });
+            charts.c2 = new Chart(ctx2, {type:'bar', data:{labels:Object.keys(wMap), datasets:[{label:'Total', data:Object.values(wMap), backgroundColor:'#05364F', borderRadius:4}]}, options:{indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}}});
+            const ctx3 = document.getElementById('chart-heatmap').getContext('2d'); if(charts.c3) charts.c3.destroy();
+            const hMap={}; db.checkins.forEach(c=>{ hMap[c.time]=(hMap[c.time]||0)+1 }); const sortedH = Object.keys(hMap).sort((a,b)=>parseInt(a)-parseInt(b));
+            charts.c3 = new Chart(ctx3, {type:'line', data:{labels:sortedH, datasets:[{label:'Fluxo', data:sortedH.map(h=>hMap[h]), borderColor:'#FFB300', tension:0.4, fill:true}]}, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}}});
+            const ctx4 = document.getElementById('chart-retention').getContext('2d'); if(charts.c4) charts.c4.destroy();
+            const d30 = new Date(); d30.setDate(d30.getDate()-30); const iso30=getISO(d30); const activeIds = new Set(db.checkins.filter(c=>c.isoDate >= iso30).map(c=>c.studentId));
+            charts.c4 = new Chart(ctx4, {type:'pie', data:{labels:['Ativos (30d)','Inativos'], datasets:[{data:[activeIds.size, db.students.length - activeIds.size], backgroundColor:['#00C9B7','#cbd5e1']}]}, options:{responsive:true, maintainAspectRatio:false}});
+        }
+
+        // --- SISTEMA ---
+        function openModal(id) { const m = document.getElementById('edit-modal'); const t = document.getElementById('modal-title'); if(id) { const s = db.students.find(x=>x.id===id); t.innerText = "Editar Aluno"; document.getElementById('edit-id').value=s.id; document.getElementById('edit-name').value=s.name; document.getElementById('edit-objective').value=s.objective; document.getElementById('edit-plan').value=s.plan; document.getElementById('edit-limitations').value=s.limitations; document.getElementById('edit-notes').value=s.notes; document.getElementById('edit-link').value=s.link; } else { t.innerText="Novo Aluno"; document.getElementById('edit-id').value="NEW"; document.getElementById('edit-student-form').reset(); document.getElementById('edit-plan').value='3X'; } m.classList.remove('hidden'); }
+        function closeModal() { document.getElementById('edit-modal').classList.add('hidden'); }
+        function saveStudentChanges(e) { e.preventDefault(); const id=document.getElementById('edit-id').value; const data={name:document.getElementById('edit-name').value.toUpperCase(), objective:document.getElementById('edit-objective').value.toUpperCase(), plan:document.getElementById('edit-plan').value, limitations:document.getElementById('edit-limitations').value.toUpperCase()||'NENHUMA', notes:document.getElementById('edit-notes').value||'SEM OBSERVAÇÕES', link:document.getElementById('edit-link').value}; if(id==='NEW') db.students.push({id:Date.now().toString(),...data}); else { const i=db.students.findIndex(x=>x.id===id); db.students[i]={...db.students[i],...data}; } saveDB(); closeModal(); renderStudentsTable(); toast('Salvo'); }
+        function delStudent(id) { if(confirm('Excluir?')) { db.students=db.students.filter(s=>s.id!==id); saveDB(); renderStudentsTable(); } }
+
+        function openCloudModal(){ document.getElementById('cloud-modal').classList.remove('hidden'); }
+        function closeCloudModal(){ document.getElementById('cloud-modal').classList.add('hidden'); }
+        function openProfModal(){ document.getElementById('prof-modal').classList.remove('hidden'); renderProfList(); }
+        function closeProfModal(){ document.getElementById('prof-modal').classList.add('hidden'); renderProfOptions(); }
+        function renderProfList(){ const l=document.getElementById('prof-list'); l.innerHTML=''; db.professors.forEach((p,i)=>l.innerHTML+=`<li class="flex justify-between p-2 bg-slate-50 text-sm font-bold text-[#05364F] rounded mb-1">${p} <i data-lucide="trash" onclick="if(confirm('Excluir?')){db.professors.splice(${i},1);saveDB();renderProfList()}" class="w-4 h-4 text-red-400 cursor-pointer"></i></li>`); lucide.createIcons(); }
+        function addProfessor(){ const n=document.getElementById('new-prof-name').value.toUpperCase(); if(n){ db.professors.push(n); saveDB(); renderProfList(); document.getElementById('new-prof-name').value=''; }}
+        function backupData() { const blob = new Blob([JSON.stringify(db)], {type: "application/json"}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `prime_backup_${getISO()}.json`; a.click(); closeCloudModal(); }
+        function restoreData(input) { const f = input.files[0]; const r = new FileReader(); r.onload = e => { try { db = JSON.parse(e.target.result); saveDB(); location.reload(); } catch { alert("Erro"); } }; r.readAsText(f); }
+        function shareWA() { navigator.clipboard.writeText(JSON.stringify(db)).then(() => { toast('Dados copiados! Cole no WhatsApp.'); closeCloudModal(); }, () => alert('Erro ao copiar.')); }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
