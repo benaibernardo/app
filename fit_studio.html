@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fit Studio OS Final</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root { 
+            --bg-body: #09090b; --bg-card: #18181b; --border: #27272a;  
+            --rose: #e11d48; --emerald: #10b981; --amber: #fbbf24; --blue: #3b82f6;
+        }
+        body { background-color: var(--bg-body); color: #e4e4e7; font-family: 'Inter', sans-serif; padding-bottom: 100px; }
+        .font-oswald { font-family: 'Oswald', sans-serif; }
+        
+        /* CARD PRINCIPAL */
+        .room-card { 
+            background: var(--bg-card); border: 1px solid var(--border); border-left: 4px solid var(--rose);
+            border-radius: 14px; margin-bottom: 12px; box-shadow: 0 10px 20px -5px rgba(0,0,0,0.3);
+            transition: all 0.3s ease; position: relative; overflow: hidden;
+        }
+        .room-card.minimized { border-left-color: var(--emerald); background: linear-gradient(90deg, #064e3b 0%, #022c22 100%); border: 1px solid #065f46; }
+        .room-card.minimized .expand-view { display: none; }
+        .room-card.minimized .mini-view { display: flex; }
+        .room-card .mini-view { display: none; }
+        .room-card .expand-view { display: block; }
+
+        /* INPUTS */
+        .clean-input { background: rgba(0,0,0,0.2); border: 1px solid #3f3f46; color: white; border-radius: 8px; padding: 10px; outline: none; width: 100%; transition: 0.2s; }
+        .clean-input:focus { border-color: var(--rose); background: rgba(0,0,0,0.4); }
+        
+        .week-wrapper { display: flex; align-items: center; background: #27272a; border: 1px solid #3f3f46; border-radius: 6px; overflow: hidden; }
+        .week-label { background: #3f3f46; color: #a1a1aa; font-size: 0.6rem; font-weight: bold; padding: 0 6px; display: flex; align-items: center; height: 100%; }
+        .week-input { text-align: center; font-weight: bold; font-size: 0.75rem; padding: 8px 4px; background: transparent; border: none; color: white; width: 100%; outline: none; }
+        .week-input:focus { background: #3f3f46; }
+
+        /* PRESETS */
+        .preset-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin-bottom: 10px; }
+        .preset-btn { background: #27272a; border: 1px solid #3f3f46; color: #e4e4e7; font-size: 0.6rem; font-weight: bold; padding: 8px 2px; border-radius: 4px; text-transform: uppercase; cursor: pointer; transition: 0.1s; text-align: center; }
+        .preset-btn:hover { background: var(--amber); color: black; border-color: var(--amber); }
+        .preset-btn.tech { border-color: var(--blue); color: var(--blue); }
+        .preset-btn.tech:hover { background: var(--blue); color: white; }
+
+        /* LISTA & UI */
+        .nice-list-item { background: #18181b; border: 1px solid #27272a; border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; transition: 0.2s; }
+        .nice-list-item:hover { border-color: var(--emerald); background: #202024; }
+        .btn-add-pulse { background: rgba(16, 185, 129, 0.1); border: 1px solid var(--emerald); color: var(--emerald); padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; animation: pulseGreen 2s infinite; }
+        @keyframes pulseGreen { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+        
+        .fab { position: fixed; bottom: 30px; right: 30px; background: var(--rose); color: white; width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(225, 29, 72, 0.5); z-index: 50; transition: transform 0.1s; }
+        .fab:active { transform: scale(0.95); }
+        
+        details > summary { list-style: none; cursor: pointer; outline: none; } details > summary::-webkit-details-marker { display: none; }
+        
+        .split-btn { text-align: left; padding: 14px; border-radius: 8px; font-family: 'Oswald', sans-serif; font-size: 0.85rem; text-transform: uppercase; border: 1px dashed #52525b; background: rgba(255,255,255,0.02); color: #a1a1aa; transition: 0.2s; width: 100%; }
+        .split-btn:hover { background: rgba(255,255,255,0.05); border-color: white; color: white; }
+        .split-btn.active { background: rgba(16, 185, 129, 0.1); border: 1px solid var(--emerald); color: var(--emerald); font-weight: 700; box-shadow: 0 0 10px rgba(16, 185, 129, 0.2); }
+        .split-grid-room { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
+
+        ::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
+        ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 2px; }
+    </style>
+</head>
+<body class="p-4 sm:p-6 max-w-4xl mx-auto">
+
+    <header class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 border-b border-zinc-800 pb-4 gap-4">
+        <div>
+            <div class="flex items-center gap-2 mb-0">
+                <img src="logo.png" alt="Fit Studio" class="h-10 w-auto object-contain" onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='flex'">
+                <div id="logo-fallback" class="hidden items-center gap-2"><div class="bg-white text-black font-black px-2 py-0.5 rounded text-lg font-oswald tracking-tighter italic">ft</div><h1 class="text-3xl font-bold text-white font-oswald italic tracking-tight">FIT STUDIO</h1></div>
+            </div>
+            <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-[0.2em] pl-1">Academia Personalizada</p>
+            <p class="text-xs text-zinc-400 font-bold uppercase mt-1 pl-1" id="date-display">--</p>
+        </div>
+        <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+            <p class="text-4xl font-bold text-white font-oswald tracking-tight mr-2" id="clock-display">00:00</p>
+            <button onclick="openStudentsModal()" class="bg-zinc-800 hover:bg-zinc-700 p-3 rounded-lg text-emerald-400 border border-zinc-700 transition"><i data-lucide="users" class="w-6 h-6"></i></button>
+            <button onclick="openCloudModal()" class="bg-zinc-800 hover:bg-zinc-700 p-3 rounded-lg text-blue-400 border border-zinc-700 transition"><i data-lucide="cloud" class="w-6 h-6"></i></button>
+            <button onclick="openLog()" class="bg-zinc-800 hover:bg-zinc-700 p-3 rounded-lg text-zinc-300 border border-zinc-700 transition"><i data-lucide="clipboard-list" class="w-6 h-6"></i></button>
+        </div>
+    </header>
+
+    <div id="room-container"></div>
+    <div id="empty-state" class="text-center py-24 opacity-30 hidden"><i data-lucide="dumbbell" class="w-16 h-16 mx-auto mb-4 text-zinc-600"></i><p class="text-xl font-oswald text-zinc-500 uppercase tracking-wide">Sala Livre</p></div>
+    <button onclick="openSearch()" class="fab"><i data-lucide="plus" class="w-8 h-8"></i></button>
+
+    <div id="modal-search" class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4"><div class="bg-zinc-900 w-full max-w-lg rounded-xl border border-zinc-700 shadow-2xl p-6"><div class="flex justify-between items-center mb-6"><h3 class="text-2xl font-bold text-white font-oswald">ADICIONAR À SALA</h3><button onclick="closeSearch()" class="p-2 bg-zinc-800 rounded-full text-zinc-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button></div><input type="text" id="search-input" onkeyup="renderResults()" placeholder="Buscar aluno..." class="clean-input text-lg font-bold mb-4"><div id="search-results" class="space-y-2 max-h-96 overflow-y-auto pr-1"></div></div></div>
+
+    <div id="modal-students" class="fixed inset-0 bg-black/95 z-50 hidden flex items-center justify-center p-4"><div class="bg-zinc-900 w-full max-w-6xl rounded-xl border border-zinc-700 shadow-2xl flex flex-col max-h-[95vh]"><div class="p-6 border-b border-zinc-800 flex justify-between items-center"><div><h3 class="text-2xl font-bold text-white font-oswald uppercase">Gestão de Alunos</h3></div><div class="flex gap-2"><button onclick="openEditStudent()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-bold text-xs uppercase flex items-center gap-2"><i data-lucide="plus-circle" class="w-4 h-4"></i> Novo</button><button onclick="closeStudentsModal()" class="p-2 bg-zinc-800 rounded-lg text-white hover:bg-rose-600"><i data-lucide="x" class="w-5 h-5"></i></button></div></div><div class="flex flex-1 overflow-hidden"><div class="w-1/3 border-r border-zinc-800 overflow-y-auto p-4 bg-zinc-950"><input type="text" id="manage-search" onkeyup="renderStudentList()" placeholder="Buscar..." class="clean-input mb-4 text-xs font-bold"><div id="student-list-manage" class="space-y-2"></div></div><div class="flex-1 p-6 overflow-y-auto bg-zinc-900" id="student-detail-view"><div class="text-center py-32 opacity-30"><i data-lucide="folder-open" class="w-20 h-20 mx-auto mb-4 text-zinc-600"></i><p class="text-lg font-oswald uppercase">Selecione um aluno</p></div></div></div></div></div>
+
+    <div id="modal-edit-student" class="fixed inset-0 bg-black/90 z-[60] hidden flex items-center justify-center p-4"><div class="bg-zinc-900 w-full max-w-5xl rounded-xl border border-zinc-700 shadow-2xl p-6 max-h-[95vh] overflow-y-auto"><div class="flex justify-between items-center mb-6"><h3 class="text-2xl font-bold text-white font-oswald" id="edit-modal-title">EDITAR DADOS</h3><button onclick="closeEditStudent()" class="text-zinc-500 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button></div><input type="hidden" id="edit-id"><div class="grid grid-cols-1 lg:grid-cols-3 gap-6"><div class="space-y-4"><div><label class="text-[10px] font-bold text-zinc-500 uppercase mb-1 block">Nome</label><input type="text" id="edit-name" class="clean-input font-bold text-lg"></div><div><label class="text-[10px] font-bold text-rose-500 uppercase mb-1 block">Limitações</label><textarea id="edit-limits" class="clean-input h-20 border-rose-900/30 focus:border-rose-500 resize-none"></textarea></div><div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800"><label class="text-[10px] font-bold text-blue-500 uppercase mb-3 block flex items-center gap-2"><i data-lucide="layers" class="w-3 h-3"></i> Divisões de Treino</label><div id="edit-splits-container" class="space-y-2 mb-3 max-h-48 overflow-y-auto"></div><div class="flex gap-2"><input type="text" id="new-split-input" placeholder="Ex: PEITO / TRICEPS" class="clean-input text-sm"><button onclick="addSplit()" class="bg-blue-600 text-white w-10 flex items-center justify-center rounded-lg hover:bg-blue-500"><i data-lucide="plus" class="w-4 h-4"></i></button></div></div></div><div class="lg:col-span-2 space-y-4 h-full flex flex-col"><div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 flex-1 flex flex-col relative"><p class="text-sm font-bold text-emerald-500 uppercase mb-3 flex items-center gap-2"><i data-lucide="calendar-range" class="w-4 h-4"></i> Periodização Trimestral</p><div class="grid grid-cols-3 gap-3 mb-4"><div class="col-span-1"><label class="text-[9px] font-bold text-zinc-500 uppercase">Título</label><input type="text" id="edit-plan-title" class="clean-input text-xs" placeholder="Ex: Força"></div><div><label class="text-[9px] font-bold text-zinc-500 uppercase">Início</label><input type="date" id="edit-start-date" class="clean-input text-xs text-zinc-400 p-1 font-bold"></div><div><label class="text-[9px] font-bold text-zinc-500 uppercase">Fim</label><input type="date" id="edit-end-date" class="clean-input text-xs text-zinc-400 p-1 font-bold"></div></div><div class="flex gap-2 mb-3 items-center"><select id="build-month" class="clean-input text-xs p-2 w-40 bg-zinc-900 font-bold"><option value="0">JANEIRO</option><option value="1">FEVEREIRO</option><option value="2">MARÇO</option><option value="3">ABRIL</option><option value="4">MAIO</option><option value="5">JUNHO</option><option value="6">JULHO</option><option value="7">AGOSTO</option><option value="8">SETEMBRO</option><option value="9">OUTUBRO</option><option value="10">NOVEMBRO</option><option value="11">DEZEMBRO</option></select><button onclick="addMonthRow()" class="bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-[10px] font-bold uppercase px-4 py-2">Adicionar Mês</button></div><div class="mb-2"><p class="text-[9px] font-bold text-zinc-500 uppercase mb-1">Preencher Carga (Clique para Inserir e Pular)</p><div class="preset-grid"><button onclick="fillPreset('3x10')" class="preset-btn">3x10</button><button onclick="fillPreset('4x10')" class="preset-btn">4x10</button><button onclick="fillPreset('3x12')" class="preset-btn">3x12</button><button onclick="fillPreset('4x8')" class="preset-btn">4x8</button><button onclick="fillPreset('4x6')" class="preset-btn">4x6</button><button onclick="fillPreset('3x8')" class="preset-btn">3x8</button><button onclick="fillPreset('3x15')" class="preset-btn">3x15</button><button onclick="fillPreset('3x20')" class="preset-btn">3x20</button><button onclick="fillPreset('12-10-8')" class="preset-btn special">12-10-8</button><button onclick="fillPreset('15-12-10')" class="preset-btn special">15-12-10</button><button onclick="fillPreset('20-15-10')" class="preset-btn special">20-15-10</button><button onclick="fillPreset('Rest\'N\'Pause')" class="preset-btn tech">R'N'P</button><button onclick="fillPreset('DROP')" class="preset-btn tech">DROP</button><button onclick="fillPreset('TABATA')" class="preset-btn tech">TABATA</button></div></div><div id="plan-builder-container" class="space-y-2 overflow-y-auto flex-1 bg-zinc-900/50 p-2 rounded-lg border border-zinc-800"></div></div></div></div><div class="flex gap-3 mt-6 pt-4 border-t border-zinc-800"><button onclick="deleteStudent()" id="btn-delete-student" class="bg-red-950/30 text-red-500 border border-red-900/50 px-4 py-2 rounded-lg font-bold text-xs uppercase hover:bg-red-900 hover:text-white transition">Excluir</button><div class="flex-1"></div><button onclick="closeEditStudent()" class="px-6 py-2 rounded-lg font-bold text-xs uppercase text-zinc-400 hover:text-white">Cancelar</button><button onclick="saveStudent()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-2 rounded-lg font-bold text-sm uppercase shadow-lg shadow-emerald-900/20">Salvar Dados</button></div></div></div>
+
+    <div id="modal-log" class="fixed inset-0 bg-black/95 z-50 hidden flex items-center justify-center p-4"><div class="bg-zinc-900 w-full max-w-5xl rounded-xl border border-zinc-700 shadow-2xl flex flex-col max-h-[90vh]"><div class="p-6 border-b border-zinc-800 flex flex-col sm:flex-row justify-between items-center bg-zinc-900 rounded-t-xl gap-4"><div><h3 class="text-2xl font-bold text-white font-oswald">DIÁRIO DO DIA</h3><p class="text-xs text-zinc-500 uppercase font-bold mt-1">Controle de Fluxo</p></div><div class="flex gap-3 w-full sm:w-auto"><input type="text" id="log-search" onkeyup="renderLogList()" placeholder="Buscar nome..." class="clean-input w-full sm:w-48 text-sm"><select id="log-filter-time" onchange="renderLogList()" class="bg-zinc-800 text-white text-sm p-2 rounded-lg border border-zinc-700 font-bold outline-none cursor-pointer hover:border-rose-500 transition"><option value="all">Horários</option><option value="06">06h</option><option value="07">07h</option><option value="08">08h</option><option value="09">09h</option><option value="10">10h</option><option value="16">16h</option><option value="17">17h</option><option value="18">18h</option><option value="19">19h</option><option value="20">20h</option></select><button onclick="closeLog()" class="p-2 bg-zinc-800 rounded-lg text-white hover:bg-rose-600 transition"><i data-lucide="x" class="w-6 h-6"></i></button></div></div><div class="grid grid-cols-12 gap-2 px-6 py-3 bg-zinc-950 text-[10px] font-bold text-zinc-500 uppercase tracking-wider border-b border-zinc-800"><div class="col-span-2">Entrada / Saída</div><div class="col-span-4">Aluno</div><div class="col-span-3">Periodização</div><div class="col-span-3">Treino</div></div><div id="log-list" class="overflow-y-auto flex-1 bg-zinc-900 p-2 sm:p-0"></div><div class="p-4 border-t border-zinc-800 bg-zinc-950 rounded-b-xl text-right"><span class="text-xs font-bold text-zinc-500 uppercase mr-2">Total Finalizados:</span><span id="log-total" class="text-xl font-bold text-white font-oswald">0</span></div></div></div>
+
+    <div id="modal-cloud" class="fixed inset-0 bg-black/90 z-50 hidden flex items-center justify-center p-4"><div class="bg-zinc-900 w-full max-w-md rounded-xl border border-zinc-700 shadow-2xl p-6"><div class="flex justify-between items-center mb-6"><h3 class="text-xl font-bold text-white font-oswald flex items-center gap-2"><i data-lucide="cloud" class="text-blue-500"></i> Backup</h3><button onclick="closeCloudModal()" class="p-2 bg-zinc-800 rounded-full text-zinc-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button></div><div class="grid grid-cols-2 gap-4 mb-6"><button onclick="performBackup()" class="bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 p-4 rounded-lg flex flex-col items-center gap-2 transition group"><i data-lucide="upload-cloud" class="w-8 h-8 text-green-500 group-hover:scale-110 transition"></i><span class="text-xs font-bold text-white uppercase">Salvar</span></button><button onclick="performRestore()" class="bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 p-4 rounded-lg flex flex-col items-center gap-2 transition group"><i data-lucide="download-cloud" class="w-8 h-8 text-blue-500 group-hover:scale-110 transition"></i><span class="text-xs font-bold text-white uppercase">Restaurar</span></button></div><div class="border-t border-zinc-800 pt-4 space-y-3"><input type="text" id="gh-filename" placeholder="Nome do arquivo (ex: fit_db.json)" class="clean-input text-xs" value="fit_studio_db.json"><p class="text-[10px] text-zinc-600">Tokens são configurados internamente.</p></div><p id="cloud-status" class="text-center text-xs font-bold mt-4 h-4 text-zinc-500"></p></div></div>
+
+    <script>
+        const DB_KEY = 'fit_studio_v30_gold';
+        const CLOUD_KEY = 'fit_studio_cloud_config_v30';
+        
+        // --- INSIRA SUAS CHAVES AQUI ---
+        const GH_TOKEN = ''; // Cole seu Token GitHub aqui
+        const GH_GIST_ID = ''; // Cole seu Gist ID aqui
+
+        const initialStudents = [
+            { id: 'ia', name: 'IAZANA', limits: 'Raras dores Joelho/Lombar', splits: ['ANTERIOR GERAL', 'POSTERIOR GERAL', 'CORE / CARDIO'], currentCycle: 'S2: 4x10', startDate: '2025-12-01', endDate: '2026-03-01', planRows: [{ month: 'DEZ', weeks: 5, values: ['3x10','4x8','3x15','3x15','RECESSO'] }, { month: 'JAN', weeks: 4, values: ['3x15','4x10','3x20','CARGA ALTA'] }], archivedPlans: [] },
+            { id: 'si', name: 'SIMONE NAKAKOGUE', limits: 'Condromalácia Patelar', splits: ['POSTERIOR COXA / LOMBAR', 'MEMBROS SUPERIORES', 'ANTERIOR COXA / CORE'], currentCycle: 'S2: 4x10', startDate: '2025-12-01', endDate: '2026-03-01', planRows: [], archivedPlans: [] },
+            { id: 'jl', name: 'JEAN LUIS LOURENÇO', limits: 'Sem restrições', splits: ['PEITO / TRICEPS', 'ANTERIOR COXA', 'COSTAS / BICEPS', 'POSTERIOR COXA'], currentCycle: 'S2: 4x8', planRows: [], archivedPlans: [] },
+            { id: 'dg', name: 'DANIELLA GREGO MACHADO', limits: 'Lombar / Mounjaro', splits: ['ANTERIOR / CORE', 'MEMBROS SUPERIORES', 'POSTERIOR / LOMBAR'], currentCycle: 'S2: VIAGEM', planRows: [], archivedPlans: [] },
+            { id: 'dr', name: 'DOMINGOS RIBEIRO', limits: 'Bursite Ombro / Post. Coxa', splits: ['ANTERIOR GERAL', 'POSTERIOR GERAL'], currentCycle: 'S2: 4x8', planRows: [], archivedPlans: [] }
+        ];
+
+        let state = JSON.parse(localStorage.getItem(DB_KEY));
+        if (!state || !state.students || state.students.length === 0) { state = { room: [], logs: [], students: initialStudents }; localStorage.setItem(DB_KEY, JSON.stringify(state)); }
+        
+        let tempSplits = [], planRows = [], lastFocusedInput = null;
+
+        function save() { localStorage.setItem(DB_KEY, JSON.stringify(state)); }
+        function init() { renderRoom(); lucide.createIcons(); updateClock(); setInterval(updateClock, 1000); }
+        function updateClock() { const now = new Date(); document.getElementById('clock-display').innerText = now.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}); document.getElementById('date-display').innerText = now.toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' }).toUpperCase(); }
+
+        // --- LÓGICA DE CALENDÁRIO ---
+        const MONTH_NAMES = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"];
+        
+        function getWeeksInMonth(monthIndex) {
+            // REGRA ESTRITA: Janeiro(0) e Outubro(9) sempre 4 semanas.
+            if (monthIndex === 0 || monthIndex === 9) return 4;
+
+            const year = new Date().getFullYear();
+            const firstDay = new Date(year, monthIndex, 1).getDay(); // 0=Dom ... 
+            const totalDays = new Date(year, monthIndex + 1, 0).getDate();
+            
+            // Regra: 30+ dias E começa Seg(1), Ter(2), Qua(3) -> 5 Semanas
+            if (totalDays >= 30 && (firstDay >= 1 && firstDay <= 3)) return 5;
+            return 4;
+        }
+
+        // --- BUILDER ---
+        function addMonthRow() {
+            const mIdx = parseInt(document.getElementById('build-month').value);
+            const weeks = getWeeksInMonth(mIdx);
+            planRows.push({ month: MONTH_NAMES[mIdx], weeks: weeks, values: Array(weeks).fill('') });
+            renderPlanBuilder();
+        }
+        function renderPlanBuilder() {
+            const container = document.getElementById('plan-builder-container'); container.innerHTML = '';
+            planRows.forEach((row, rIdx) => {
+                let inputsHTML = '';
+                for(let w=0; w<row.weeks; w++) { inputsHTML += `<div class="week-wrapper"><div class="week-label">S${w+1}</div><input type="text" id="input-${rIdx}-${w}" value="${row.values[w]}" class="week-input" onfocus="setFocus(${rIdx}, ${w})" onchange="updateRowValue(${rIdx}, ${w}, this.value)"></div>`; }
+                container.innerHTML += `<div class="flex items-center gap-2 bg-zinc-950 p-2 rounded border border-zinc-800"><span class="text-xs font-bold text-amber-500 w-8">${row.month}</span><div class="grid grid-cols-${row.weeks} gap-1 flex-1">${inputsHTML}</div><button onclick="removeRow(${rIdx})" class="text-zinc-600 hover:text-red-500"><i data-lucide="x" class="w-3 h-3"></i></button></div>`;
+            }); lucide.createIcons();
+        }
+        function setFocus(r, w) { lastFocusedInput = { r, w }; }
+        function updateRowValue(r, w, val) { planRows[r].values[w] = val; }
+        function removeRow(idx) { planRows.splice(idx, 1); renderPlanBuilder(); }
+        function fillPreset(val) {
+            if(!lastFocusedInput) return alert("Selecione uma semana!");
+            const { r, w } = lastFocusedInput; planRows[r].values[w] = val; renderPlanBuilder();
+            let nextW = w + 1, nextR = r; if (nextW >= planRows[r].weeks) { nextW = 0; nextR++; }
+            if (nextR < planRows.length) { setTimeout(() => { const nextEl = document.getElementById(`input-${nextR}-${nextW}`); if(nextEl) { nextEl.focus(); setFocus(nextR, nextW); } }, 50); }
+        }
+
+        // --- SPLITS ---
+        function renderEditSplits() { document.getElementById('edit-splits-container').innerHTML = tempSplits.map((split, index) => `<div class="nice-list-item"><span class="text-xs text-white font-bold">${split}</span><div class="flex gap-2"><button onclick="startEditSplit(${index})" class="text-zinc-500 hover:text-white"><i data-lucide="pencil" class="w-3 h-3"></i></button><button onclick="removeSplit(${index})" class="text-zinc-500 hover:text-red-500"><i data-lucide="trash-2" class="w-3 h-3"></i></button></div></div>`).join(''); lucide.createIcons(); }
+        function startEditSplit(idx) { const newVal = prompt("Nome:", tempSplits[idx]); if(newVal) { tempSplits[idx] = newVal.toUpperCase(); renderEditSplits(); }}
+        function addSplit() { const val = document.getElementById('new-split-input').value; if(val) { tempSplits.push(val.toUpperCase()); document.getElementById('new-split-input').value = ''; renderEditSplits(); }}
+        function removeSplit(index) { tempSplits.splice(index, 1); renderEditSplits(); }
+
+        // --- PERFIL & COPIAR EVO8 ---
+        function showStudentDetail(id) {
+            const s = state.students.find(x => x.id === id);
+            let statusBadge = ''; if(s.endDate) { const daysLeft = Math.ceil((new Date(s.endDate) - new Date()) / (1000 * 60 * 60 * 24)); const percent = Math.max(0, Math.min(100, (daysLeft / 90) * 100)); statusBadge = `<div class="mt-4"><div class="flex justify-between text-[10px] uppercase font-bold text-zinc-500 mb-1"><span>Validade</span><span class="${daysLeft<10?'text-rose-500':'text-emerald-500'}">${daysLeft} dias</span></div><div class="h-1 bg-zinc-800 rounded-full overflow-hidden"><div class="h-full ${daysLeft<10?'bg-rose-500':'bg-emerald-500'}" style="width: ${percent}%"></div></div></div>`; }
+            let planHTML = '<p class="text-xs text-zinc-500 italic">Sem planejamento.</p>'; if(s.planRows && s.planRows.length > 0) { planHTML = s.planRows.map(r => `<div class="flex gap-2 mb-1 text-[10px]"><span class="text-amber-500 font-bold w-6">${r.month}</span><div class="flex gap-1">${r.values.map((v, i) => `<span class="bg-zinc-800 px-1.5 rounded text-zinc-300 border border-zinc-700 font-bold"><span class="text-zinc-600 mr-1">S${i+1}</span>${v || '-'}</span>`).join('')}</div></div>`).join(''); }
+            let splitsHTML = s.splits.map(split => `<div class="bg-zinc-950 border border-zinc-700 p-3 rounded-lg text-xs font-bold text-white uppercase text-center hover:border-emerald-500 transition">${split}</div>`).join('');
+            
+            document.getElementById('student-detail-view').innerHTML = `
+                <div class="flex justify-between items-start mb-6"><h2 class="text-3xl font-black text-white font-oswald uppercase">${s.name}</h2><div class="flex gap-2"><button onclick="copyToEvo8('${s.id}')" class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded-lg font-bold text-xs uppercase shadow-lg flex items-center gap-1"><i data-lucide="copy" class="w-3 h-3"></i> EVO8</button><button onclick="openEditStudent('${s.id}')" class="bg-zinc-800 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-xs uppercase border border-zinc-700">Editar</button></div></div>
+                <div class="bg-zinc-950 p-4 rounded-lg border border-red-900/30 mb-6"><p class="text-[10px] font-bold text-red-500 uppercase mb-2">Limitações / Obs</p><p class="text-sm text-zinc-300">${s.limits || 'Sem restrições.'}</p></div>
+                <div class="bg-zinc-950 p-6 rounded-xl border border-zinc-800 mb-6 relative overflow-hidden"><div class="absolute top-0 left-0 w-1 h-full bg-amber-500"></div><p class="text-xs font-bold text-amber-500 uppercase tracking-widest mb-1">Plano Atual: ${s.planTitle || ''}</p><div class="bg-zinc-900 p-4 rounded-lg border border-zinc-800 overflow-x-auto">${planHTML}</div>${statusBadge}</div>
+                <div class="bg-zinc-950 p-4 rounded-lg border border-zinc-800 mb-6"><p class="text-[10px] font-bold text-zinc-500 uppercase mb-2">Divisões de Treino</p><div class="grid grid-cols-2 gap-2">${splitsHTML}</div></div>
+                <div class="border-t border-zinc-800 pt-4"><div class="flex justify-between items-center mb-3"><h4 class="text-lg font-bold text-white font-oswald">Histórico de Presença</h4><input type="month" id="history-filter-date" onchange="renderHistory('${s.id}')" class="clean-input w-32 text-xs p-1 h-8"></div><div id="student-history-list" class="space-y-1 flex flex-wrap gap-2"></div></div>
+                <details class="mt-6 group border-t border-zinc-800 pt-4"><summary class="text-xs font-bold text-zinc-500 uppercase cursor-pointer hover:text-white flex items-center gap-2"><i data-lucide="archive" class="w-3 h-3"></i> Periodizações Antigas</summary><div class="mt-2 pl-4 border-l border-zinc-800 space-y-2">${s.archivedPlans && s.archivedPlans.length > 0 ? s.archivedPlans.map(p => `<div class="text-[10px] text-zinc-400 bg-zinc-950 p-2 rounded"><p class="font-bold text-zinc-300">${p.title} (Arq: ${p.date})</p></div>`).join('') : '<p class="text-zinc-600 text-xs italic">Vazio</p>'}</div></details>
+            `;
+            renderHistory(s.id); lucide.createIcons();
+        }
+
+        function copyToEvo8(id) {
+            const s = state.students.find(x => x.id === id); if(!s) return;
+            const splitsText = s.splits.map((split, i) => `${String.fromCharCode(65 + i)} - ${split}`).join('\n');
+            const planText = s.planRows && s.planRows.length > 0 ? s.planRows.map(r => `${r.month}: ` + r.values.map((v, i) => `S${i+1} (${v || '-'})`).join(' | ')).join('\n') : "Sem periodização definida.";
+            
+            const finalFormat = `OBS:\n* ${s.limits || 'Sem limitações'}\n\n========================================================\n\n${splitsText}\n\n========================================================\n\n${planText}`;
+            
+            navigator.clipboard.writeText(finalFormat).then(() => alert("Copiado para o EVO8!")).catch(err => alert("Erro ao copiar."));
+        }
+
+        function renderHistory(id) {
+            const filterVal = document.getElementById('history-filter-date').value;
+            const logs = state.logs.filter(l => l.studentId === id);
+            let filteredLogs = filterVal ? logs.filter(l => l.dateStr.split('/')[1] === filterVal.split('-')[1]) : logs;
+            document.getElementById('student-history-list').innerHTML = filteredLogs.length === 0 ? '<p class="text-zinc-600 text-xs italic w-full">Nenhum registro.</p>' : filteredLogs.map(l => `<div class="bg-zinc-900 border border-zinc-700 px-3 py-1 rounded text-[10px] text-zinc-400 font-bold uppercase">${l.dateStr} - ${l.train}</div>`).join('');
+        }
+
+        // --- EDITAR ---
+        function openEditStudent(id) {
+            const modal = document.getElementById('modal-edit-student'); const delBtn = document.getElementById('btn-delete-student'); modal.classList.remove('hidden'); document.getElementById('new-split-input').value = '';
+            if (id) { const s = state.students.find(x => x.id === id); document.getElementById('edit-modal-title').innerText = "EDITAR ALUNO"; document.getElementById('edit-id').value = s.id; document.getElementById('edit-name').value = s.name; document.getElementById('edit-limits').value = s.limits; document.getElementById('edit-plan-title').value = s.planTitle || ''; document.getElementById('edit-start-date').value = s.startDate || ''; document.getElementById('edit-end-date').value = s.endDate || ''; tempSplits = [...s.splits]; planRows = s.planRows ? JSON.parse(JSON.stringify(s.planRows)) : []; delBtn.classList.remove('hidden'); } else { document.getElementById('edit-modal-title').innerText = "NOVO ALUNO"; document.getElementById('edit-id').value = ''; document.getElementById('edit-name').value = ''; document.getElementById('edit-limits').value = ''; document.getElementById('edit-plan-title').value = ''; tempSplits = []; planRows = []; delBtn.classList.add('hidden'); }
+            renderEditSplits(); renderPlanBuilder();
+        }
+        function closeEditStudent() { document.getElementById('modal-edit-student').classList.add('hidden'); }
+        function saveStudent() {
+            const id = document.getElementById('edit-id').value; const name = document.getElementById('edit-name').value; if(!name) return alert("Nome é obrigatório");
+            let existing = id ? state.students.find(x => x.id === id) : null; let archived = existing ? [...(existing.archivedPlans || [])] : [];
+            if(existing && existing.planTitle !== document.getElementById('edit-plan-title').value && existing.planTitle) { archived.push({ title: existing.planTitle, date: new Date().toLocaleDateString('pt-BR') }); }
+            const studentData = { id: id || Date.now().toString(), name: name.toUpperCase(), limits: document.getElementById('edit-limits').value, planTitle: document.getElementById('edit-plan-title').value, startDate: document.getElementById('edit-start-date').value, endDate: document.getElementById('edit-end-date').value, planRows: planRows, currentCycle: "S1: Início", splits: tempSplits, archivedPlans: archived };
+            if (id) { const idx = state.students.findIndex(x => x.id === id); studentData.currentCycle = state.students[idx].currentCycle; state.students[idx] = studentData; } else { state.students.push(studentData); }
+            save(); closeEditStudent(); renderStudentList(); if(id) showStudentDetail(id);
+        }
+        function deleteStudent() { if(confirm("Apagar aluno?")) { const id = document.getElementById('edit-id').value; state.students = state.students.filter(x => x.id !== id); save(); closeEditStudent(); renderStudentList(); document.getElementById('student-detail-view').innerHTML = ''; }}
+
+        // --- SALA ---
+        function renderRoom() {
+            const container = document.getElementById('room-container'); const empty = document.getElementById('empty-state'); if(state.room.length === 0) { container.innerHTML = ''; empty.classList.remove('hidden'); return; } empty.classList.add('hidden'); container.innerHTML = '';
+            state.room.forEach(s => {
+                const data = state.students.find(d => d.id === s.id); if(!data) return; const lastLog = state.logs.find(l => l.studentId === s.id); const lastTrainName = lastLog ? lastLog.train : "Nenhum";
+                const logs = state.logs.filter(l => l.studentId === s.id).slice(0,5);
+                let historyHTML = logs.length > 0 ? `<div class="flex flex-wrap gap-2 pb-2">` + logs.map(l => `<div class="bg-zinc-900 border border-zinc-700 px-3 py-1 rounded text-[10px] text-zinc-400 font-bold whitespace-nowrap uppercase">${l.dateStr} - ${l.train}</div>`).join('') + `</div>` : `<p class="text-[10px] text-zinc-600 font-bold uppercase italic">Sem registros</p>`;
+                let splitsHTML = data.splits.map(split => `<button onclick="selectSplit('${s.id}', '${split}')" class="split-btn ${s.selectedSplit === split ? 'active' : ''}">${split}</button>`).join('');
+                container.innerHTML += `<div class="room-card ${s.minimized ? 'minimized' : ''}"><div class="mini-view flex items-center justify-between p-4 cursor-pointer h-24 sm:h-20" onclick="toggleCard('${s.id}')"><div class="flex items-center gap-4 w-full"><div class="flex flex-col items-center justify-center w-14 border-r border-emerald-700/50 pr-4 flex-shrink-0"><span class="text-xl font-bold text-rose-300 font-oswald leading-none">${s.entryTime}</span><span class="text-[8px] font-bold text-emerald-200 uppercase mt-1">Entrada</span></div><div class="flex-1 min-w-0"><h3 class="text-lg font-bold text-white font-oswald truncate leading-tight">${data.name}</h3><div class="flex items-center gap-2 mt-1"><span class="text-[10px] bg-amber-900/60 text-amber-300 px-1.5 rounded font-bold uppercase border border-amber-700/50 whitespace-nowrap">${s.currentCycle}</span><span class="text-sm font-bold text-emerald-300 uppercase truncate">${s.selectedSplit}</span></div></div><button onclick="event.stopPropagation(); quickFinish('${s.id}')" class="bg-rose-600 hover:bg-rose-700 text-white p-3 rounded-lg transition border border-rose-500 shadow-lg flex-shrink-0 ml-2"><i data-lucide="log-out" class="w-5 h-5"></i></button></div></div><div class="expand-view p-5"><div class="flex justify-between items-start mb-4"><div><h3 class="text-3xl font-bold text-white font-oswald leading-none">${data.name}</h3><div class="flex items-center gap-2 mt-2"><div class="flex items-center gap-1 bg-rose-500/10 border border-rose-500/30 px-2 py-1 rounded"><i data-lucide="clock" class="w-3 h-3 text-rose-500"></i><span class="text-rose-500 text-xs font-bold font-oswald">ENTRADA: ${s.entryTime}</span></div><span class="text-[10px] text-zinc-500 font-bold uppercase mt-1">Último: ${lastTrainName}</span></div></div><button onclick="toggleCard('${s.id}')" class="text-zinc-500 hover:text-white p-2 bg-zinc-800 rounded-lg"><i data-lucide="chevron-up"></i></button></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"><div class="bg-red-900/10 border border-red-900/40 p-3 rounded-lg"><p class="text-[10px] font-bold text-red-500 uppercase mb-1">Atenção / Limitações</p><p class="text-sm font-medium text-red-200 leading-tight">${data.limits}</p></div><div class="bg-zinc-950 border border-zinc-800 p-3 rounded-lg"><p class="text-[10px] font-bold text-zinc-500 uppercase mb-2">Histórico Recente</p>${historyHTML}</div></div><div class="bg-zinc-900/60 border border-zinc-800 p-5 rounded-xl mb-4 relative overflow-hidden"><div class="mb-6"><p class="text-[10px] font-bold text-amber-500 uppercase mb-1 tracking-widest pl-1">Periodização</p><input type="text" value="${s.currentCycle}" onchange="updateCycle('${s.id}', this.value)" class="w-full bg-zinc-950 border border-zinc-700 text-amber-400 font-oswald text-2xl p-3 rounded-lg focus:border-amber-500 outline-none shadow-sm"></div><div><p class="text-[10px] font-bold text-emerald-500 uppercase mb-2 tracking-widest pl-1">Selecionar Treino</p><div class="split-grid-room">${splitsHTML}</div></div></div><div class="flex items-center gap-3 border-t border-zinc-800 pt-4"><div class="flex-1"><input type="text" placeholder="Observações..." class="clean-input text-sm" value="${s.notes || ''}" onchange="updateNotes('${s.id}', this.value)"></div><button onclick="quickFinish('${s.id}')" class="bg-rose-600 hover:bg-rose-700 text-white px-6 py-3 rounded-lg font-bold font-oswald uppercase tracking-wide flex items-center gap-2 transition shadow-lg shadow-rose-900/20"><i data-lucide="door-open" class="w-5 h-5"></i> Sair</button></div></div></div>`;
+            });
+            lucide.createIcons();
+        }
+
+        // Functions reused (Logic matches v29)
+        function selectSplit(id, split) { const idx = state.room.findIndex(x => x.id === id); if(idx !== -1) { state.room[idx].selectedSplit = split; state.room[idx].minimized = true; save(); renderRoom(); }}
+        function toggleCard(id) { const idx = state.room.findIndex(x => x.id === id); if(idx !== -1) { state.room[idx].minimized = !state.room[idx].minimized; save(); renderRoom(); }}
+        function updateCycle(id, val) { const idx = state.room.findIndex(x => x.id === id); if(idx !== -1) { state.room[idx].currentCycle = val; save(); }}
+        function updateNotes(id, val) { const idx = state.room.findIndex(x => x.id === id); if(idx !== -1) { state.room[idx].notes = val; save(); }}
+        function quickFinish(id) { if(confirm("Confirmar saída?")) { const idx = state.room.findIndex(x => x.id === id); if(idx !== -1) { const s = state.room[idx]; const data = state.students.find(d => d.id === s.id); const outTime = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}); const dateStr = new Date().toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'}); state.logs.unshift({ studentId: data.id, name: data.name, in: s.entryTime, out: outTime, cycle: s.currentCycle, train: s.selectedSplit || "N/A", obs: s.notes || "", dateStr: dateStr }); state.room.splice(idx, 1); save(); renderRoom(); }}}
+        function openSearch() { document.getElementById('modal-search').classList.remove('hidden'); document.getElementById('search-input').value=''; document.getElementById('search-input').focus(); renderResults(); }
+        function closeSearch() { document.getElementById('modal-search').classList.add('hidden'); }
+        function renderResults() { const term = document.getElementById('search-input').value.toLowerCase(); const container = document.getElementById('search-results'); container.innerHTML = ''; state.students.filter(s => s.name.toLowerCase().includes(term)).forEach(s => { const inRoom = state.room.find(r => r.id === s.id); container.innerHTML += `<div onclick="addToRoom('${s.id}')" class="nice-list-item cursor-pointer ${inRoom ? 'opacity-50 pointer-events-none' : ''}"><div><p class="text-lg font-bold text-white font-oswald leading-none">${s.name}</p><p class="text-[10px] text-zinc-500 uppercase font-bold mt-1">${s.planTitle || 'Sem plano'}</p></div>${inRoom ? '<span class="text-xs font-bold text-emerald-500 uppercase">Na Sala</span>' : '<div class="btn-add-pulse"><i data-lucide="plus" class="w-5 h-5"></i></div>'}</div>`; }); lucide.createIcons(); }
+        function addToRoom(id) { const time = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}); const data = state.students.find(d => d.id === id); state.room.unshift({ id: id, entryTime: time, selectedSplit: null, currentCycle: data.currentCycle, notes: "", minimized: false }); save(); closeSearch(); renderRoom(); }
+        
+        // Log & Cloud
+        function openLog() { document.getElementById('modal-log').classList.remove('hidden'); renderLogList(); }
+        function closeLog() { document.getElementById('modal-log').classList.add('hidden'); }
+        function renderLogList() { const container = document.getElementById('log-list'); const term = document.getElementById('log-search').value.toLowerCase(); const timeFilter = document.getElementById('log-filter-time').value; container.innerHTML = ''; const filtered = state.logs.filter(l => { const nameMatch = l.name.toLowerCase().includes(term); const timeMatch = timeFilter === 'all' ? true : l.in.startsWith(timeFilter); return nameMatch && timeMatch; }); document.getElementById('log-total').innerText = filtered.length; if(filtered.length === 0) { container.innerHTML = '<p class="text-center text-zinc-600 text-sm mt-10">Vazio.</p>'; return; } filtered.forEach(l => { container.innerHTML += `<div class="grid grid-cols-12 gap-2 px-6 py-4 border-b border-zinc-800 items-center hover:bg-zinc-800/50 transition"><div class="col-span-2 flex items-center gap-2"><span class="text-rose-500 font-bold font-mono text-sm bg-rose-500/10 px-1 rounded">${l.in}</span><span class="text-zinc-500">➜</span><span class="text-emerald-500 font-bold font-mono text-sm bg-emerald-500/10 px-1 rounded">${l.out}</span></div><div class="col-span-4 pl-2"><span class="text-white font-bold font-oswald text-base block truncate">${l.name}</span></div><div class="col-span-3"><span class="text-amber-400 font-bold text-[10px] uppercase bg-amber-900/20 px-2 py-1 rounded border border-amber-900/30">${l.cycle}</span></div><div class="col-span-3"><span class="text-emerald-400 font-bold text-xs uppercase truncate block">${l.train}</span></div></div>`; }); }
+        
+        function openCloudModal() { document.getElementById('modal-cloud').classList.remove('hidden'); loadCloudConfig(); }
+        function closeCloudModal() { document.getElementById('modal-cloud').classList.add('hidden'); }
+        function loadCloudConfig() { const config = JSON.parse(localStorage.getItem(CLOUD_KEY)); if(config) { document.getElementById('gh-filename').value = config.filename; }}
+        function saveCloudConfig() { const config = { token: GH_TOKEN, gistId: GH_GIST_ID, filename: document.getElementById('gh-filename').value }; localStorage.setItem(CLOUD_KEY, JSON.stringify(config)); setStatus("Configurações salvas!", "text-emerald-500"); }
+        async function performBackup() { if(!GH_TOKEN) return setStatus("Adicione o Token no Código!", "text-red-500"); setStatus("Enviando...", "text-amber-500"); try { const filename = document.getElementById('gh-filename').value; const res = await fetch(`https://api.github.com/gists/${GH_GIST_ID}`, { method: 'PATCH', headers: { 'Authorization': `token ${GH_TOKEN}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ files: { [filename]: { content: JSON.stringify(state) } } }) }); if(res.ok) setStatus("Sucesso!", "text-emerald-500"); else setStatus("Erro.", "text-red-500"); } catch { setStatus("Erro.", "text-red-500"); }}
+        async function performRestore() { if(!GH_TOKEN) return setStatus("Adicione o Token no Código!", "text-red-500"); setStatus("Baixando...", "text-amber-500"); try { const filename = document.getElementById('gh-filename').value; const res = await fetch(`https://api.github.com/gists/${GH_GIST_ID}`, { headers: { 'Authorization': `token ${GH_TOKEN}` } }); const data = await res.json(); state = JSON.parse(data.files[filename].content); save(); renderRoom(); setStatus("Restaurado!", "text-emerald-500"); setTimeout(()=>location.reload(), 1000); } catch { setStatus("Erro.", "text-red-500"); }}
+        function setStatus(msg, cls) { document.getElementById('cloud-status').innerText = msg; document.getElementById('cloud-status').className = `text-center text-xs font-bold mt-4 h-4 ${cls}`; }
+        function openStudentsModal() { document.getElementById('modal-students').classList.remove('hidden'); renderStudentList(); }
+        function closeStudentsModal() { document.getElementById('modal-students').classList.add('hidden'); }
+        function renderStudentList() { const container = document.getElementById('student-list-manage'); const term = document.getElementById('manage-search').value.toLowerCase(); container.innerHTML = ''; state.students.filter(s => s.name.toLowerCase().includes(term)).forEach(s => { container.innerHTML += `<div onclick="showStudentDetail('${s.id}')" class="nice-list-item cursor-pointer hover:border-emerald-500"><p class="font-bold text-white font-oswald truncate text-sm">${s.name}</p></div>`; }); }
+
+        init();
+    </script>
+</body>
+</html>
