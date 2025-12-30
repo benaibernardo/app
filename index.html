@@ -152,6 +152,7 @@
         .card-tracker .ac-icon { color: #38bdf8; } .card-fin .ac-icon { color: #4ade80; }
         .card-c6 .ac-icon { color: #fbbf24; } .card-diet .ac-icon { color: #f472b6; }
         .card-coach .ac-icon { color: #c084fc; } .card-aluno .ac-icon { color: #a78bfa; }
+        .card-fit .ac-icon { color: #ef4444; } /* Fit Studio Color */
 
         .sortable-ghost { opacity: 0.3; background: var(--accent-glow); border: 2px dashed var(--accent); }
 
@@ -219,6 +220,11 @@
         <div class="section-wrapper" style="margin-bottom: 60px;">
             <div class="section-header">Profissional</div>
             <div class="grid-apps" id="gridWork">
+                <a href="fit_studio.html" class="app-card card-fit" data-id="fit_studio">
+                    <div class="ac-icon"><i class="fa-solid fa-users-gear"></i></div>
+                    <div class="ac-name">Fit Studio</div>
+                    <div class="ac-desc">Controle de Alunos</div>
+                </a>
                 <a href="gerador.html" class="app-card card-coach" data-id="gerador">
                     <div class="ac-icon"><i class="fa-solid fa-dumbbell"></i></div>
                     <div class="ac-name">Gerador</div>
@@ -261,7 +267,7 @@
         
         function backupAll() {
             let backup = {};
-            const keys = ['benai_tracker_main_db', 'benai_fin_main_db', 'benai_card_main_db', 'benai_diet_main_db', 'benai_coach_lib_main', 'benai_coach_stu_main', 'benai_coach_cat_main'];
+            const keys = ['benai_tracker_main_db', 'benai_fin_main_db', 'benai_card_main_db', 'benai_diet_main_db', 'benai_coach_lib_main', 'benai_coach_stu_main', 'benai_coach_cat_main', 'fit_studio_v30_gold'];
             keys.forEach(k => { const d = localStorage.getItem(k); if(d) backup[k] = JSON.parse(d); });
             if (Object.keys(backup).length === 0) return alert("Nada para salvar.");
             const date = new Date().toISOString().slice(0,10);
@@ -281,7 +287,7 @@
                 try {
                     const data = JSON.parse(e.target.result);
                     Object.keys(data).forEach(key => {
-                        if(key.startsWith('benai_')) { localStorage.setItem(key, JSON.stringify(data[key])); }
+                        if(key.startsWith('benai_') || key.startsWith('fit_studio_')) { localStorage.setItem(key, JSON.stringify(data[key])); }
                     });
                     alert(`Restauração concluída!`); location.reload();
                 } catch(err) { alert("Arquivo inválido."); }
