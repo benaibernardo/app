@@ -156,6 +156,11 @@
         .t-btn { width: 70px; height: 70px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; font-size: 1.1rem; cursor: pointer; font-weight: 700; transition: 0.2s; }
         .t-btn:active { transform: scale(0.9); background: white; color: var(--primary); }
 
+        /* Loading */
+        .loading-state { text-align:center; padding:50px 20px; color:#94a3b8; }
+        .spin { animation: spin 1s linear infinite; font-size: 2rem; margin-bottom: 15px; color: var(--accent); }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
         @keyframes fade { from{opacity:0} to{opacity:1} }
     </style>
 </head>
@@ -178,7 +183,12 @@
     </div>
 
     <div id="tab-1" class="tab-pane active content">
-        <div id="wList"></div>
+        <div id="wList">
+            <div class="loading-state">
+                <i class="fa-solid fa-circle-notch spin"></i>
+                <div>Buscando seu treino...</div>
+            </div>
+        </div>
         <div style="height: 20px;"></div>
     </div>
 
@@ -243,16 +253,41 @@
     document.addEventListener('DOMContentLoaded', init);
     let tmr, sec=0, currentData=null, rating=5, adminClicks=0;
 
-    function init() {
+    async function init() {
         const p = new URLSearchParams(window.location.search);
-        const d = p.get('data');
-        if(!d) { document.getElementById('wList').innerHTML = '<div style="text-align:center; padding:40px; color:#9ca3af;">Link inválido.</div>'; return; }
-        try {
-            const json = LZString.decompressFromEncodedURIComponent(d);
-            currentData = JSON.parse(json);
-            render(currentData);
-            restoreSession(); rate(5);
-        } catch(e) { alert("Erro ao abrir treino."); }
+        
+        // --- NOVA LÓGICA: BUSCA POR ID NA NUVEM ---
+        const id = p.get('id');
+        const dataOld = p.get('data'); // Mantém compatibilidade com links antigos se quiser
+
+        if(id) {
+            try {
+                // Busca no GitHub Gist
+                const req = await fetch(`https://api.github.com/gists/${id}`);
+                if(!req.ok) throw new Error("Treino não encontrado");
+                
+                const json = await req.json();
+                const content = json.files["treino.json"].content;
+                currentData = JSON.parse(content);
+                
+                render(currentData);
+                restoreSession(); 
+                rate(5);
+            } catch(e) {
+                document.getElementById('wList').innerHTML = `<div style="text-align:center; padding:40px; color:#ef4444;"><i class="fa-solid fa-triangle-exclamation" style="font-size:2rem;margin-bottom:10px;"></i><br>Erro ao baixar treino.<br><small>Verifique sua conexão.</small></div>`;
+            }
+        } else if (dataOld) {
+            // Lógica antiga (Backup)
+            try {
+                const json = LZString.decompressFromEncodedURIComponent(dataOld);
+                currentData = JSON.parse(json);
+                render(currentData);
+                restoreSession();
+                rate(5);
+            } catch(e) { alert("Link antigo corrompido."); }
+        } else {
+            document.getElementById('wList').innerHTML = '<div style="text-align:center; padding:40px; color:#9ca3af;">Link incompleto.</div>';
+        }
     }
 
     function render(data) {
@@ -266,6 +301,8 @@
         topics.forEach(topic => { logicContainer.innerHTML += `<div class="logic-item"><div class="logic-icon"><i class="fa-solid fa-check"></i></div><div class="logic-text">${topic}</div></div>`; });
 
         const list = document.getElementById('wList');
+        list.innerHTML = ''; // Limpa o loading
+        
         if(data.blocks) {
             data.blocks.forEach((b, bIdx) => {
                 let itemsHtml = '';
@@ -278,10 +315,8 @@
                 });
                 
                 let wrapper = '';
-                // MUDANÇA: Removido ${b.name} dos rótulos de Bi/Tri-set
                 if(b.type === 'biset') wrapper = `<div class="biset-wrap"><div class="biset-lbl">BI-SET</div>${itemsHtml}</div>`;
                 else if(b.type === 'triset') wrapper = `<div class="triset-wrap"><div class="triset-lbl">TRI-SET</div>${itemsHtml}</div>`;
-                // Mantido título para blocos normais
                 else wrapper = `<div class="normal-wrap"><div class="section-title">${b.name}</div>${itemsHtml}</div>`; 
 
                 list.innerHTML += wrapper;
