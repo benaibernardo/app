@@ -569,11 +569,9 @@
     </div>
 
     <script>
-        // --- CONSTANTES & CHAVES ---
         const DB_KEY = 'benai_card_main_db'; 
         const TOKEN_KEY = 'benai_coach_gh_token';
         const GIST_DESC = 'BENAI_PERSONAL_DB'; 
-        // LISTA DE CHAVES ANTIGAS (Adicionei mais variações para garantir)
         const OLD_KEYS = ['benai_card_v1', 'controle_fin_v83', 'controle_fin_v82', 'controle_fin_v81'];
 
         const DEFAULT_CATS = ['Alimentação', 'Transporte', 'Hospedagem', 'Passeios', 'Compras', 'Mercado', 'Outros', 'Presentes', 'Passagens Aéreas'];
@@ -587,18 +585,13 @@
         let gistId = null; 
 
         async function init() {
-            // 1. TENTATIVA DE RESGATE LOCAL (MIGRAÇÃO FORÇADA)
             let saved = localStorage.getItem(DB_KEY);
-            
-            // Se a chave nova estiver vazia ou com dados "default", tenta buscar nas antigas
             if (!saved || saved.length < 50) { 
-                console.log("Tentando migrar dados antigos...");
                 for (let k of OLD_KEYS) {
                     let oldData = localStorage.getItem(k);
                     if (oldData && oldData.length > 50) {
-                        console.log("Dados encontrados na chave antiga:", k);
                         saved = oldData;
-                        localStorage.setItem(DB_KEY, saved); // Salva na nova imediatamente
+                        localStorage.setItem(DB_KEY, saved); 
                         break; 
                     }
                 }
@@ -607,25 +600,17 @@
             if(saved) {
                 try {
                     db = sanitize(JSON.parse(saved));
-                } catch(e) {
-                    console.error("Erro ao ler dados locais:", e);
-                    // Se der erro, não zera, mantém o que tem na memória se possível
-                }
+                } catch(e) { }
             } else {
-                // Só cria default se REALMENTE não achou nada em lugar nenhum
-                console.log("Nenhum dado encontrado. Criando padrão.");
                 createDefault();
             }
 
             initInstallmentSelect();
             refreshUI();
-
-            // 2. Tenta Nuvem (Background)
-            // Se a nuvem tiver dados, ela vai sobrescrever o local (Sync)
             await syncCloud();
         }
 
-        // --- LÓGICA DE NUVEM ---
+        // --- LÓGICA DE NUVEM (MANTIDA) ---
         function updateCloudStatus(status) {
             const el = document.getElementById('cloudIndicator');
             if(el) el.className = 'cloud-status ' + status;
@@ -648,99 +633,49 @@
                 if(gistId) {
                     const res = await fetch(`https://api.github.com/gists/${gistId}`, { headers: { 'Authorization': `token ${token}` } });
                     const json = await res.json();
-                    
                     if(json.files["c6_card.json"]) {
                         const cloudData = JSON.parse(json.files["c6_card.json"].content);
-                        // MESCLAGEM INTELIGENTE (Prioridade Nuvem se for mais recente/completa)
                         if (cloudData.trips && cloudData.trips.length > 0) {
                             db = sanitize(cloudData);
                             saveLocal();
                             refreshUI();
                         }
                         updateCloudStatus('ok');
-                    } else {
-                        await pushCloud(); // Sobe o local se não tiver na nuvem
-                    }
-                } else {
-                    await pushCloud();
-                }
-            } catch(e) {
-                console.error(e);
-                updateCloudStatus('error');
-            }
+                    } else { await pushCloud(); }
+                } else { await pushCloud(); }
+            } catch(e) { console.error(e); updateCloudStatus('error'); }
         }
 
         async function pushCloud() {
             const token = localStorage.getItem(TOKEN_KEY);
             if(!token) return;
-
             updateCloudStatus('syncing');
             try {
                 let url = 'https://api.github.com/gists';
                 let method = 'POST';
                 if(gistId) { url += '/' + gistId; method = 'PATCH'; }
-
-                const payload = {
-                    description: GIST_DESC,
-                    public: false,
-                    files: { "c6_card.json": { content: JSON.stringify(db) } }
-                };
-
-                const res = await fetch(url, {
-                    method: method,
-                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if(!res.ok) throw new Error('Falha no upload');
+                const payload = { description: GIST_DESC, public: false, files: { "c6_card.json": { content: JSON.stringify(db) } } };
+                const res = await fetch(url, { method: method, headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if(!res.ok) throw new Error('Falha');
                 const json = await res.json();
                 gistId = json.id;
                 updateCloudStatus('ok');
-            } catch(e) {
-                console.error(e);
-                updateCloudStatus('error');
-            }
+            } catch(e) { console.error(e); updateCloudStatus('error'); }
         }
 
-        function forceSync() {
-            if(confirm("Baixar dados da nuvem? Isso substituirá os dados locais.")) {
-                syncCloud();
-                closeModal('sync');
-            }
-        }
-
+        function forceSync() { if(confirm("Baixar dados da nuvem?")) { syncCloud(); closeModal('sync'); } }
         function saveLocal() { localStorage.setItem(DB_KEY, JSON.stringify(db)); }
-        
-        function save() { 
-            saveLocal(); 
-            refreshUI(); 
-            pushCloud(); 
-        }
+        function save() { saveLocal(); refreshUI(); pushCloud(); }
 
-        // --- BACKUP LOCAL ---
+        // --- BACKUP ---
         function openModal(id) { document.getElementById('modal-'+id).style.display='flex'; }
         function closeModal(id) { document.getElementById('modal-'+id).style.display='none'; }
-        
-        function exportData() {
-            const d = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
-            const a = document.createElement('a'); a.href = d; a.download = "benai_card_backup.json"; a.click();
-        }
-        function shareData() {
-            const blob = new Blob([JSON.stringify(db)], { type: 'application/json' });
-            const file = new File([blob], "benai_card.json", { type: 'application/json' });
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                navigator.share({ files: [file], title: 'Backup Cartão Benai' });
-            } else { alert("Use o botão Baixar."); }
-        }
-        function importData(input) {
-            const f = input.files[0]; if(!f) return;
-            const r = new FileReader(); r.onload = e => { 
-                try { db = sanitize(JSON.parse(e.target.result)); save(); location.reload(); } catch(err) { alert("Erro ao importar"); } 
-            }; r.readAsText(f);
-        }
+        function exportData() { const d = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db)); const a = document.createElement('a'); a.href = d; a.download = "benai_card_backup.json"; a.click(); }
+        function shareData() { const blob = new Blob([JSON.stringify(db)], { type: 'application/json' }); const file = new File([blob], "benai_card.json", { type: 'application/json' }); if (navigator.canShare && navigator.canShare({ files: [file] })) { navigator.share({ files: [file], title: 'Backup Cartão Benai' }); } else { alert("Use o botão Baixar."); } }
+        function importData(input) { const f = input.files[0]; if(!f) return; const r = new FileReader(); r.onload = e => { try { db = sanitize(JSON.parse(e.target.result)); save(); location.reload(); } catch(err) { alert("Erro ao importar"); } }; r.readAsText(f); }
         function hardReset() { if(confirm("Apagar tudo?")) { localStorage.removeItem(DB_KEY); location.reload(); } }
 
-        // --- CORE LOGIC (MANTIDA IGUAL) ---
+        // --- CORE LOGIC ---
         function initInstallmentSelect() { const s = document.getElementById('fInst'); s.innerHTML = ''; for(let i=1; i<=12; i++) s.add(new Option(i + 'x', i)); }
         function sanitize(data) {
             if(!data.trips) data.trips = [];
@@ -779,7 +714,6 @@
         function getUnifiedTransactions() {
             let allTrans = [];
             if(!active || !active.transactions) return []; 
-            
             active.transactions.forEach(t => { allTrans.push({...t, origin: 'local', originId: active.id}); });
             if (active.startDate && active.endDate) {
                 db.trips.forEach(t => {
@@ -838,10 +772,8 @@
 
             const isMonth = active.type === 'month';
             document.getElementById('tripSummaryPanel').style.display = isMonth ? 'none' : 'grid';
-            
             const invPanel = document.getElementById('invoicePanel');
             if (isMonth) invPanel.classList.remove('trip-mode'); else invPanel.classList.add('trip-mode');
-
             document.getElementById('divLimCartao').style.display = isMonth ? 'block' : 'none';
             document.getElementById('divVenc').style.display = isMonth ? 'block' : 'none';
             document.getElementById('c6Info').style.display = isMonth ? 'block' : 'none';
@@ -974,69 +906,75 @@
         function confBudget(e) { e.stopPropagation(); active.budget = parse(document.getElementById('newBudgetInp').value); save(); }
         function cancBudget(e) { e.stopPropagation(); save(); } 
 
+        // --- RENDER LIST (CORRIGIDO PARA IGNORAR ERROS) ---
         function renderList(data) {
             const list = document.getElementById('listContainer'); list.innerHTML = '';
             
-            // FILTRO DE SEGURANÇA 1: Se data for inválida, loga erro mas não quebra
+            // FILTRO DE SEGURANÇA 1: Ordenação segura
             const arr = data.sort((a,b) => {
                 try { return new Date(b.date) - new Date(a.date); } catch(e) { return 0; }
             });
 
+            // Recupera e limpa filtros
             const filter = document.getElementById('filTxt').value.toLowerCase();
             const fCat = document.getElementById('filCat').value || 'all';
             const fDate = document.getElementById('filDate');
             
-            // FILTRO DE SEGURANÇA 2: Garante que o valor do filtro seja válido
-            const currentSel = fDate.value || 'all';
-            
-            // Limpa e recria opções de data
+            // Popula datas
             fDate.innerHTML = '<option value="all">Todas Datas</option>';
-            const dates = [...new Set(arr.map(t=>t.date))].sort();
-            dates.forEach(d => { 
-                if(d) { // Só adiciona se data for válida
-                    const opt = new Option(d.split('-').reverse().join('/'), d); 
-                    fDate.add(opt); 
-                }
+            const dates = [...new Set(arr.map(t=>t.date))].filter(d => d); // Remove nulos
+            dates.sort().forEach(d => { 
+                const opt = new Option(d.split('-').reverse().join('/'), d); 
+                fDate.add(opt); 
             });
             
-            // Restaura seleção anterior se ainda existir
-            if(dates.includes(currentSel)) fDate.value = currentSel;
-            
-            // Popula categorias se vazio
+            // Popula categorias
             if(document.getElementById('filCat').options.length <= 1) db.categories.forEach(c => document.getElementById('filCat').add(new Option(c,c)));
 
+            // FILTRAGEM DEFENSIVA
             const filteredArr = arr.filter(t => {
                 if(!t) return false;
-                // FILTRO DE SEGURANÇA 3: Lógica robusta
-                if(fCat !== 'all' && fCat !== '' && t.category !== fCat) return false;
-                if(fDate.value !== 'all' && fDate.value !== '' && t.date !== fDate.value) return false;
+                
+                // DATA PADRÃO SE VAZIA
+                if(!t.date) t.date = new Date().toISOString().split('T')[0];
+
+                if(fCat !== 'all' && t.category !== fCat) return false;
+                if(fDate.value !== 'all' && t.date !== fDate.value) return false;
                 
                 const txt = (t.desc + ' ' + (t.local||'')).toLowerCase();
                 if(filter && !txt.includes(filter)) return false;
+                
                 return true;
             });
 
-            if(filteredArr.length === 0) {
-                list.innerHTML = '<div style="padding:20px; text-align:center; color:#94a3b8; font-style:italic;">Nenhum item encontrado.</div>';
-                return;
-            }
-
+            // RENDERIZAÇÃO
             filteredArr.forEach((t) => {
                 try {
+                    // GARANTIA DE DADOS
+                    if(!t.desc) t.desc = "Item sem nome";
+                    if(!t.amount) t.amount = 0;
+                    if(!t.installments) t.installments = 1;
+                    if(!t.paidInstallments) t.paidInstallments = 0;
+
                     const isPaid = (t.paidInstallments >= t.installments);
                     let visualPaid = isPaid;
                     if(t.isProjection && t.currentInst <= t.paidInstallments) visualPaid = true;
+                    
                     const valClass = visualPaid ? 'val-paid' : 'val-pend';
                     const linkBadge = t.isImported ? `<span class="badge-link"><i class="fa-solid fa-link"></i> ${t.origin}</span>` : '';
+                    
                     let cardIcon = '';
                     if(t.payment === 'credit' || t.payment === 'debit') {
                         if(t.cardType === 'virtual') cardIcon = '<i class="fa-solid fa-mobile-screen" title="Cartão Virtual" style="font-size:0.6rem; color:#94a3b8; margin-left:3px;"></i>';
                         else cardIcon = '<i class="fa-regular fa-credit-card" title="Cartão Físico" style="font-size:0.6rem; color:#94a3b8; margin-left:3px;"></i>';
                     }
+                    
                     let recurIcon = t.recur ? '<span title="Assinatura" style="font-size:0.8rem; margin-left:5px;">🔁</span>' : '';
                     const d = document.createElement('div');
                     d.className = `item-container ${visualPaid ? 'paid' : 'pending'}`;
+                    
                     let checkHTML = t.installments > 1 ? `<div onclick="toggleDrawer('${t.id}', '${t.originId}')" class="btn-drawer-left"><i class="fa-solid fa-layer-group"></i> ${t.paidInstallments}/${t.installments} <i class="fa-solid fa-caret-down"></i></div>` : `<input type="checkbox" class="check" ${visualPaid?'checked':''} onchange="toggleFullPay('${t.id}', '${t.originId}')">`;
+                    
                     let subInfo = '';
                     if(t.installments > 1) {
                         const displayTotal = t.isProjection ? (t.amount * t.installments) : t.amount;
@@ -1046,30 +984,39 @@
                         for(let i=0; i<t.installments; i++) segs += `<div class="seg ${i < t.paidInstallments ? 'paid' : ''}"></div>`;
                         subInfo = `<div class="i-sub-info"><div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span class="val-paid">Pg: ${fmt(displayPaid)}</span> <span class="val-pend">R: ${fmt(displayRest)}</span></div><div class="seg-bar">${segs}</div></div>`;
                     }
+                    
                     let routeInfo = '';
-                    if(t.category && t.category.toLowerCase().includes('transporte') && t.transportFrom && t.transportTo) { routeInfo = `<div class="route-info"><i class="fa-solid fa-location-dot"></i> ${t.transportFrom} <i class="fa-solid fa-arrow-right"></i> ${t.transportTo}</div>`; } 
-                    else if (t.local) { routeInfo = `<div class="local-info"><i class="fa-solid fa-location-dot"></i> ${t.local}</div>`; }
+                    if(t.category && t.category.toLowerCase().includes('transporte') && t.transportFrom && t.transportTo) { 
+                        routeInfo = `<div class="route-info"><i class="fa-solid fa-location-dot"></i> ${t.transportFrom} <i class="fa-solid fa-arrow-right"></i> ${t.transportTo}</div>`; 
+                    } else if (t.local) { 
+                        routeInfo = `<div class="local-info"><i class="fa-solid fa-location-dot"></i> ${t.local}</div>`; 
+                    }
                     
                     const catIndex = db.categories.indexOf(t.category);
                     const catColor = DISTINCT_COLORS[catIndex % DISTINCT_COLORS.length] || '#64748b';
                     const actions = `<div class="i-acts"><button class="btn-act" onclick="editT('${t.id}', '${t.originId}')"><i class="fa-solid fa-pen"></i></button><button class="btn-act del" onclick="delT('${t.id}', '${t.originId}')"><i class="fa-solid fa-trash"></i></button></div>`;
+                    
                     let displayAmount = t.amount;
                     let installNote = '';
-                    if(t.isProjection) { if(t.recur) installNote = ` <small style="font-size:0.6rem; color:#64748b;">(Assinatura)</small>`; else installNote = ` <small style="font-size:0.6rem; color:#64748b;">(${t.currentInst}/${t.installments})</small>`; }
+                    if(t.isProjection) { 
+                        if(t.recur) installNote = ` <small style="font-size:0.6rem; color:#64748b;">(Assinatura)</small>`; 
+                        else installNote = ` <small style="font-size:0.6rem; color:#64748b;">(${t.currentInst}/${t.installments})</small>`; 
+                    }
                     
-                    // SAFE DATE PARSING
-                    let dateStr = t.date;
-                    try { dateStr = t.date.split('-').reverse().slice(0,2).join('/'); } catch(e) { dateStr = '??/??'; }
+                    // SAFE DATE DISPLAY
+                    let dateDisplay = "??/??";
+                    if(t.date && t.date.includes('-')) {
+                        dateDisplay = t.date.split('-').reverse().slice(0,2).join('/');
+                    }
 
-                    d.innerHTML = `<div class="item-main">${checkHTML}<div><div class="i-row1"><span class="i-desc">${t.desc}</span>${linkBadge} ${cardIcon} ${recurIcon}</div><div class="i-row2"><span class="i-date">${dateStr}</span><span class="i-cat" style="background:${catColor}">${t.category}</span></div>${routeInfo}</div><div class="i-right"><span class="i-val ${valClass}">${fmt(displayAmount)}${installNote}</span>${subInfo}${actions}</div></div><div id="drawer-${t.id}" class="install-drawer"><div class="inst-info">Marque as parcelas pagas:</div><div class="install-grid" id="grid-${t.id}"></div></div>`;
+                    d.innerHTML = `<div class="item-main">${checkHTML}<div><div class="i-row1"><span class="i-desc">${t.desc}</span>${linkBadge} ${cardIcon} ${recurIcon}</div><div class="i-row2"><span class="i-date">${dateDisplay}</span><span class="i-cat" style="background:${catColor}">${t.category || 'Geral'}</span></div>${routeInfo}</div><div class="i-right"><span class="i-val ${valClass}">${fmt(displayAmount)}${installNote}</span>${subInfo}${actions}</div></div><div id="drawer-${t.id}" class="install-drawer"><div class="inst-info">Marque as parcelas pagas:</div><div class="install-grid" id="grid-${t.id}"></div></div>`;
                     list.appendChild(d);
                     if(t.installments > 1) renderInstallGrid(t); 
-                } catch(err) {
-                    console.error("Erro ao renderizar item", t, err);
-                }
+                } catch(e) { console.error("Item pulado por erro:", e); }
             });
         }
         
+        // RESTO DO CÓDIGO (Igual)
         let c1, c2, c3, c4, cG;
         function renderCharts(data) { const ctx1=document.getElementById('c1'), ctx2=document.getElementById('c2'), ctx3=document.getElementById('c3'), ctx4=document.getElementById('c4'); const cats={}, pays={}, days={}, locs={}; let allTrans = []; db.trips.forEach(trip => { allTrans = allTrans.concat(trip.transactions); }); allTrans.forEach(t=>{ const v=parseFloat(t.amount); const catKey = t.category ? t.category : "Sem Categoria"; cats[catKey]=(cats[catKey]||0)+v; pays[t.payment]=(pays[t.payment]||0)+v; days[t.date]=(days[t.date]||0)+v; if(t.local) locs[t.local]=(locs[t.local]||0)+v; }); const catKeys = Object.keys(cats); const catCols = catKeys.map(c => { const idx = db.categories.indexOf(c); return idx >= 0 ? DISTINCT_COLORS[idx % DISTINCT_COLORS.length] : '#94a3b8'; }); const payLabels = Object.keys(pays).map(k => LABEL_MAP[k] || k); const payCols = ['#6366f1','#10b981','#f59e0b','#64748b'].slice(0, payLabels.length); const createLegend = (id, labels, colors) => { const div = document.getElementById(id); div.innerHTML=''; labels.forEach((l,i) => { const c = colors[i] || '#ccc'; div.innerHTML += `<div class="legend-item"><div class="dot-leg" style="background:${c}"></div> ${l}</div>`; }); }; if(c1) c1.destroy(); c1=new Chart(ctx1,{type:'doughnut',data:{labels:catKeys,datasets:[{data:Object.values(cats),borderWidth:0, backgroundColor:catCols}]},options:{maintainAspectRatio:false, plugins:{legend:{display:false}, title:{display:true, text:'Categorias (Global)'}}}}); createLegend('leg1', catKeys, catCols); if(c2) c2.destroy(); c2=new Chart(ctx2,{type:'pie',data:{labels:payLabels,datasets:[{data:Object.values(pays),borderWidth:0, backgroundColor:payCols}]},options:{maintainAspectRatio:false, plugins:{legend:{display:false}, title:{display:true, text:'Formas Pgto (Global)'}}}}); createLegend('leg2', payLabels, payCols); const sD = Object.keys(days).sort(); if(c3) c3.destroy(); c3=new Chart(ctx3,{type:'bar',data:{labels:sD.map(d=>d.split('-').reverse().slice(0,2).join('/')),datasets:[{label:'R$',data:sD.map(d=>days[d]),backgroundColor:'#4f46e5',borderRadius:4}]},options:{maintainAspectRatio:false, plugins:{legend:{display:false}, title:{display:true, text:'Gasto Diário'}} }}); const sL = Object.entries(locs).sort((a,b)=>b[1]-a[1]).slice(0,5); if(c4) c4.destroy(); c4=new Chart(ctx4,{type:'bar',data:{labels:sL.map(i=>i[0]),datasets:[{label:'Total',data:sL.map(i=>i[1]),backgroundColor:'#10b981',borderRadius:4}]},options:{indexAxis:'y', maintainAspectRatio:false, plugins:{legend:{display:false}, title:{display:true, text:'Top 5 Locais'}} }}); }
         function toggleDrawer(id, originId) { const d = document.getElementById(`drawer-${id}`); if(d) d.style.display = d.style.display === 'block' ? 'none' : 'block'; }
