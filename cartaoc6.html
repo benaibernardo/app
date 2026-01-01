@@ -568,12 +568,13 @@
         </div>
     </div>
 
-    <script>
+<script>
         // --- CONSTANTES & CHAVES ---
         const DB_KEY = 'benai_card_main_db'; 
         const TOKEN_KEY = 'benai_coach_gh_token';
-        const GIST_DESC = 'BENAI_PERSONAL_DB'; // Mesmo Gist do Tracker e Financeiro
-        const OLD_KEYS = ['benai_card_v1', 'controle_fin_v83'];
+        const GIST_DESC = 'BENAI_PERSONAL_DB'; 
+        // LISTA DE CHAVES ANTIGAS (Adicionei mais variações para garantir)
+        const OLD_KEYS = ['benai_card_v1', 'controle_fin_v83', 'controle_fin_v82', 'controle_fin_v81'];
 
         const DEFAULT_CATS = ['Alimentação', 'Transporte', 'Hospedagem', 'Passeios', 'Compras', 'Mercado', 'Outros', 'Presentes', 'Passagens Aéreas'];
         const DISTINCT_COLORS = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4', '#ec4899', '#f97316', '#6366f1', '#14b8a6', '#84cc16', '#a855f7', '#eab308', '#0ea5e9', '#d946ef'];
@@ -583,31 +584,51 @@
         let active = null;
         let editId = null;
         let editingOriginId = null;
-        let gistId = null; // ID da nuvem
+        let gistId = null; 
 
         async function init() {
-            // 1. Tenta Local
+            // 1. TENTATIVA DE RESGATE LOCAL (MIGRAÇÃO FORÇADA)
             let saved = localStorage.getItem(DB_KEY);
-            if(!saved) { // Migração
-                for(let k of OLD_KEYS) {
-                    saved = localStorage.getItem(k);
-                    if(saved) { localStorage.setItem(DB_KEY, saved); break; }
+            
+            // Se a chave nova estiver vazia ou com dados "default", tenta buscar nas antigas
+            if (!saved || saved.length < 50) { 
+                console.log("Tentando migrar dados antigos...");
+                for (let k of OLD_KEYS) {
+                    let oldData = localStorage.getItem(k);
+                    if (oldData && oldData.length > 50) {
+                        console.log("Dados encontrados na chave antiga:", k);
+                        saved = oldData;
+                        localStorage.setItem(DB_KEY, saved); // Salva na nova imediatamente
+                        break; 
+                    }
                 }
             }
-            if(saved) db = sanitize(JSON.parse(saved));
-            else createDefault();
+
+            if(saved) {
+                try {
+                    db = sanitize(JSON.parse(saved));
+                } catch(e) {
+                    console.error("Erro ao ler dados locais:", e);
+                    // Se der erro, não zera, mantém o que tem na memória se possível
+                }
+            } else {
+                // Só cria default se REALMENTE não achou nada em lugar nenhum
+                console.log("Nenhum dado encontrado. Criando padrão.");
+                createDefault();
+            }
 
             initInstallmentSelect();
             refreshUI();
 
-            // 2. Tenta Nuvem
+            // 2. Tenta Nuvem (Background)
+            // Se a nuvem tiver dados, ela vai sobrescrever o local (Sync)
             await syncCloud();
         }
 
         // --- LÓGICA DE NUVEM ---
         function updateCloudStatus(status) {
             const el = document.getElementById('cloudIndicator');
-            el.className = 'cloud-status ' + status;
+            if(el) el.className = 'cloud-status ' + status;
         }
 
         async function syncCloud() {
@@ -617,7 +638,6 @@
             updateCloudStatus('syncing');
 
             try {
-                // Busca ID se não tiver
                 if(!gistId) {
                     const search = await fetch('https://api.github.com/gists', { headers: { 'Authorization': `token ${token}` } });
                     const gists = await search.json();
@@ -626,19 +646,20 @@
                 }
 
                 if(gistId) {
-                    // Baixa e mescla (Nuvem é a verdade)
                     const res = await fetch(`https://api.github.com/gists/${gistId}`, { headers: { 'Authorization': `token ${token}` } });
                     const json = await res.json();
                     
                     if(json.files["c6_card.json"]) {
                         const cloudData = JSON.parse(json.files["c6_card.json"].content);
-                        db = sanitize(cloudData);
-                        saveLocal();
-                        refreshUI();
+                        // MESCLAGEM INTELIGENTE (Prioridade Nuvem se for mais recente/completa)
+                        if (cloudData.trips && cloudData.trips.length > 0) {
+                            db = sanitize(cloudData);
+                            saveLocal();
+                            refreshUI();
+                        }
                         updateCloudStatus('ok');
                     } else {
-                        // Se não tem o arquivo específico ainda, sobe o local
-                        await pushCloud();
+                        await pushCloud(); // Sobe o local se não tiver na nuvem
                     }
                 } else {
                     await pushCloud();
@@ -659,8 +680,6 @@
                 let method = 'POST';
                 if(gistId) { url += '/' + gistId; method = 'PATCH'; }
 
-                // Atenção: Aqui usamos "c6_card.json" para não sobrescrever o "tracker.json"
-                // O Gist suporta múltiplos arquivos.
                 const payload = {
                     description: GIST_DESC,
                     public: false,
@@ -684,7 +703,7 @@
         }
 
         function forceSync() {
-            if(confirm("Baixar da nuvem?")) {
+            if(confirm("Baixar dados da nuvem? Isso substituirá os dados locais.")) {
                 syncCloud();
                 closeModal('sync');
             }
@@ -695,7 +714,7 @@
         function save() { 
             saveLocal(); 
             refreshUI(); 
-            pushCloud(); // Auto-save na nuvem
+            pushCloud(); 
         }
 
         // --- BACKUP LOCAL ---
@@ -721,7 +740,7 @@
         }
         function hardReset() { if(confirm("Apagar tudo?")) { localStorage.removeItem(DB_KEY); location.reload(); } }
 
-        // --- CORE LOGIC (MANTIDA) ---
+        // --- CORE LOGIC (MANTIDA IGUAL) ---
         function initInstallmentSelect() { const s = document.getElementById('fInst'); s.innerHTML = ''; for(let i=1; i<=12; i++) s.add(new Option(i + 'x', i)); }
         function sanitize(data) {
             if(!data.trips) data.trips = [];
@@ -759,6 +778,8 @@
 
         function getUnifiedTransactions() {
             let allTrans = [];
+            if(!active || !active.transactions) return []; // Proteção
+            
             active.transactions.forEach(t => { allTrans.push({...t, origin: 'local', originId: active.id}); });
             if (active.startDate && active.endDate) {
                 db.trips.forEach(t => {
@@ -906,6 +927,7 @@
             renderFilters(); renderCharts(unifiedData); renderGlobal(); renderRoadmap(); fillCats();
         }
 
+        // --- MANIPULAÇÃO UI ---
         function editT(id, originId) { let targetTrip = active; if(originId && originId !== active.id) targetTrip = db.trips.find(x => x.id === originId); const t = targetTrip.transactions.find(x=>x.id===id); if(!t) return; editId = id; editingOriginId = originId; document.getElementById('fDate').value = t.date; document.getElementById('fDesc').value = t.desc; document.getElementById('fCat').value = t.category; document.getElementById('fLoc').value = t.local || ''; document.getElementById('fVal').value = fmt(t.amount); document.getElementById('fPay').value = t.payment; document.getElementById('fInst').value = t.installments; document.getElementById('fFrom').value = t.transportFrom||t.origin||''; document.getElementById('fTo').value = t.transportTo||t.destination||''; document.getElementById('fCardType').value = t.cardType || 'physical'; document.getElementById('fRecur').checked = t.recur || false; document.getElementById('fCat').dispatchEvent(new Event('change')); document.getElementById('fPay').dispatchEvent(new Event('change')); document.getElementById('btnSubmit').innerText = "ATUALIZAR"; document.getElementById('btnCancel').style.display = "block"; document.querySelector('.container').scrollIntoView({behavior:'smooth'}); }
         function resetForm() { editId = null; editingOriginId = null; document.getElementById('addForm').reset(); document.getElementById('btnSubmit').innerText = "SALVAR"; document.getElementById('btnCancel').style.display = "none"; document.getElementById('transPanel').style.display = "none"; document.getElementById('fDate').value = new Date().toISOString().split('T')[0]; document.getElementById('fPay').dispatchEvent(new Event('change'));}
         function switchTrip(id) { db.currentId = id; save(); }
@@ -915,7 +937,6 @@
             if(type === 'month') { 
                 const input = prompt("Digite o Mês/Ano (ex: Janeiro/2026):"); 
                 if(!input) return; 
-                let dateObj = null;
                 const ptMonths = { 'janeiro':0, 'fevereiro':1, 'março':2, 'marco':2, 'abril':3, 'maio':4, 'junho':5, 'julho':6, 'agosto':7, 'setembro':8, 'outubro':9, 'novembro':10, 'dezembro':11, 'jan':0, 'fev':1, 'mar':2, 'abr':3, 'mai':4, 'jun':5, 'jul':6, 'ago':7, 'set':8, 'out':9, 'nov':10, 'dez':11 };
                 const parts = input.toLowerCase().split(/[\/\- ]+/);
                 if(parts.length >= 2) {
@@ -1032,3 +1053,4 @@
     </script>
 </body>
 </html>
+
