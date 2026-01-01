@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Benai - Nutrição</title>
+    <title>Benai - Nutrição Cloud</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script>
+    
+    <script>
         (function() {
-            // --- CONFIGURAÇÃO DA SENHA ---
+            // --- CONFIGURAÇÃO DA SENHA (IGUAL FINANCEIRO) ---
             const PIN_CORRETO = "16359001"; 
             // -----------------------------
 
@@ -62,50 +63,47 @@
             };
         })();
     </script>
+
     <style>
         :root {
-            /* TEMA: Clean Nutrition */
-            --bg: #fdfbf7;       
-            --card: #ffffff;     
-            --text: #334155;     
-            --primary: #15803d; 
-            --accent: #22c55e;
-            --border: #e2e8f0;
-            --danger: #ef4444;
-            
-            /* Cores Macros */
+            --bg: #fdfbf7; --card: #ffffff; --text: #334155;
+            --primary: #15803d; --accent: #22c55e; --border: #e2e8f0;
+            --danger: #ef4444; --success: #10b981;
             --prot-bg: #eff6ff; --prot-text: #1d4ed8;
             --carb-bg: #fff7ed; --carb-text: #c2410c;
             --fat-bg: #fefce8;  --fat-text: #a16207;
             --veg-bg: #f0fdf4;  --veg-text: #15803d;
-
-            --radius: 20px;
-            --font: 'Plus Jakarta Sans', sans-serif;
-            --font-num: 'Outfit', sans-serif;
+            --radius: 20px; --font: 'Plus Jakarta Sans', sans-serif; --font-num: 'Outfit', sans-serif;
             --shadow: 0 8px 30px rgba(0,0,0,0.04);
         }
 
         * { margin:0; padding:0; box-sizing:border-box; font-family:var(--font); outline:none; -webkit-tap-highlight-color:transparent; }
-        body { background:var(--bg); color:var(--text); padding:20px; padding-bottom:110px; font-size:14px; }
-        .container { max-width:600px; margin:0 auto; animation:fadeIn 0.6s ease; }
+        body { background:var(--bg); color:var(--text); padding:20px 20px 100px 20px; font-size:14px; }
+        .container { max-width:600px; margin:0 auto; animation:fadeIn 0.5s ease; }
 
         /* HEADER */
         header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
-        .logo { font-size:1.3rem; font-weight:800; color:var(--primary); letter-spacing:-0.5px; display:flex; align-items:center; gap:10px; font-family:var(--font-num); }
+        .logo { font-size:1.4rem; font-weight:800; color:var(--primary); letter-spacing:-0.5px; display:flex; align-items:center; gap:10px; font-family:var(--font-num); }
         .logo i { background:var(--prot-bg); color:var(--primary); padding:8px; border-radius:12px; font-size:1rem; }
         
-        .header-actions { display:flex; gap:8px; }
-        .action-btn { width:40px; height:40px; border-radius:12px; border:1px solid var(--border); background:var(--card); color:#64748b; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:0.2s; box-shadow:var(--shadow); }
+        .header-actions { display:flex; gap:10px; }
+        .action-btn { width:42px; height:42px; border-radius:12px; border:1px solid var(--border); background:var(--card); color:#64748b; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:0.2s; box-shadow:var(--shadow); position: relative; }
         .action-btn:hover { color:var(--primary); border-color:var(--primary); transform:translateY(-2px); }
-        .action-btn.sync { color:var(--accent); border-color:rgba(34, 197, 94, 0.3); background:rgba(34, 197, 94, 0.05); }
+        .action-btn.sync { color:var(--accent); background:rgba(34, 197, 94, 0.05); }
 
-        .view { display: none; animation: fadeIn 0.4s ease; }
-        .view.active { display: block; }
+        .cloud-dot { width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1; position:absolute; top:8px; right:8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+        .cloud-dot.ok { background: var(--success); }
+        .cloud-dot.error { background: var(--danger); }
+        .cloud-dot.sync { background: var(--accent); animation: pulse 1s infinite; }
+
+        /* VIEWS */
+        .view { display: none; }
+        .view.active { display: block; animation: fadeIn 0.3s ease; }
 
         /* CARDS */
         .meta-card { background:linear-gradient(135deg, #15803d 0%, #166534 100%); color:white; border-radius:24px; padding:25px; margin-bottom:25px; box-shadow:0 10px 25px rgba(21, 128, 61, 0.25); position:relative; overflow:hidden; }
-        .meta-lbl { font-size:0.85rem; opacity:0.9; font-weight:600; margin-bottom:5px; display:block; letter-spacing:0.5px; text-transform:uppercase; }
-        .meta-val { font-size:2.5rem; font-weight:800; line-height:1; letter-spacing:-1px; font-family:var(--font-num); }
+        .meta-lbl { font-size:0.85rem; opacity:0.9; font-weight:600; margin-bottom:5px; display:block; text-transform:uppercase; }
+        .meta-val { font-size:2.5rem; font-weight:800; line-height:1; font-family:var(--font-num); }
         .meta-sub { display:flex; gap:15px; margin-top:15px; }
         .tag-status { background:rgba(255,255,255,0.2); padding:6px 12px; border-radius:10px; font-weight:700; font-size:0.85rem; backdrop-filter:blur(5px); display:flex; align-items:center; gap:6px; }
 
@@ -117,7 +115,6 @@
         .meal-card { background:var(--card); border-radius:22px; margin-bottom:20px; box-shadow:var(--shadow); border:1px solid var(--border); overflow:hidden; }
         .meal-head { padding:15px 20px; background:#f8fafc; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
         .mh-left { display:flex; align-items:center; gap:10px; }
-        .meal-icon { font-size:1.2rem; }
         .meal-name { font-weight:800; color:#1e293b; font-size:1rem; }
         .meal-time { font-weight:700; color:#64748b; font-size:0.8rem; background:white; padding:4px 10px; border-radius:8px; border:1px solid var(--border); font-family:var(--font-num); }
 
@@ -139,7 +136,7 @@
         .btn-swap { width:32px; height:32px; border-radius:10px; background:white; border:1px solid var(--border); color:#94a3b8; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:0.2s; }
         .btn-swap:hover { border-color:var(--accent); color:var(--accent); background:#f0fdf4; }
 
-        /* EVOLUTION & ADMIN */
+        /* EVOLUTION */
         .stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px; }
         .stat-card { background:white; padding:15px; border-radius:18px; text-align:center; border:1px solid var(--border); box-shadow:var(--shadow); }
         .stat-inp { width:100%; border:none; font-size:1.8rem; font-weight:800; text-align:center; color:var(--primary); background:transparent; font-family:var(--font-num); }
@@ -147,42 +144,17 @@
         .json-box { width:100%; height:120px; background:#1e293b; color:#a5b4fc; border-radius:12px; padding:15px; font-family:monospace; font-size:0.85rem; border:none; margin-bottom:15px; resize:none; }
         .btn-full { width:100%; padding:16px; background:var(--primary); color:white; border:none; border-radius:16px; font-weight:800; font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:10px; box-shadow:0 5px 15px rgba(21, 128, 61, 0.3); }
 
-        /* MODAL SYNC (PADRÃO) */
+        /* MODAL */
         .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,31,91,0.6); z-index:1000; align-items:center; justify-content:center; backdrop-filter:blur(5px); }
         .modal-box { background:var(--card); width:90%; max-width:400px; padding:30px; border-radius:24px; animation:slideUp 0.3s; box-shadow:0 25px 60px rgba(0,0,0,0.3); position:relative; }
         .modal-close { position:absolute; top:20px; right:20px; color:#94a3b8; cursor:pointer; font-size:1.4rem; transition:0.2s; }
         .modal-close:hover { color:var(--danger); transform:rotate(90deg); }
         
-        .modal-head { margin-bottom: 25px; }
-        .modal-head h3 { font-family: var(--font-num); font-weight: 800; font-size: 1.3rem; color: var(--primary); margin: 0 0 5px 0; }
-        .modal-head p { font-size: 0.85rem; color: #64748b; margin: 0; }
-
-        .sync-btn { 
-            width: 100%; padding: 18px 20px; margin-bottom: 15px;
-            border: 1px solid #e2e8f0; border-radius: 16px; background: white;
-            display: flex; align-items: center; gap: 20px;
-            cursor: pointer; transition: 0.2s; text-align: left;
-        }
+        .sync-btn { width: 100%; padding: 18px; margin-bottom: 12px; border: 1px solid var(--border); border-radius: 16px; background: white; display: flex; align-items: center; gap: 20px; cursor: pointer; transition: 0.2s; text-align: left; }
         .sync-btn:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         .sync-btn i { font-size: 1.4rem; width: 30px; text-align: center; }
-        
-        .sb-down i { color: var(--accent); }
-        .sb-share i { color: #25D366; }
-        .sb-up i { color: var(--primary); }
-        
-        .sb-reset { border-color: #fee2e2; color: var(--danger); background: #fffbfb; margin-top: 20px; }
-        .sb-reset:hover { background: #fef2f2; border-color: var(--danger); }
-        .sb-reset i { color: var(--danger); }
-
-        .sb-txt { display: flex; flex-direction: column; }
-        .sb-title { font-weight: 700; font-size: 0.95rem; color: var(--primary); margin-bottom: 2px; }
+        .sb-title { font-weight: 700; font-size: 0.95rem; color: var(--primary); display:block; margin-bottom: 2px; }
         .sb-desc { font-size: 0.75rem; color: #94a3b8; }
-        .sb-reset .sb-title { color: var(--danger); }
-        .sb-reset .sb-desc { color: #fca5a5; }
-
-        /* MODAL SUBS (Estilo Simples) */
-        #modalSubs { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:900; align-items:center; justify-content:center; backdrop-filter:blur(4px); }
-        .sub-opt { padding:15px; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; align-items:center; cursor:pointer; }
 
         /* DOCK */
         .nav-dock { position:fixed; bottom:25px; left:50%; transform:translateX(-50%); background:white; padding:10px 25px; border-radius:25px; display:flex; gap:30px; box-shadow:0 15px 40px rgba(0,0,0,0.1); z-index:100; border:1px solid rgba(0,0,0,0.05); }
@@ -192,6 +164,7 @@
 
         @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
         @keyframes slideUp { from{transform:translateY(20px); opacity:0;} to{transform:translateY(0); opacity:1;} }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -200,17 +173,20 @@
         <header>
             <div class="logo"><i class="fa-solid fa-leaf"></i> Benai</div>
             <div class="header-actions">
-                <button class="action-btn" onclick="finishDay()" title="Concluir Dia"><i class="fa-solid fa-check"></i></button>
-                <button class="action-btn sync" onclick="openModal('sync')" title="Central de Dados"><i class="fa-solid fa-cloud"></i></button>
+                <button class="action-btn" onclick="finishDay()" title="Salvar Dia"><i class="fa-solid fa-check"></i></button>
+                <button class="action-btn sync" onclick="openModal('sync')" title="Nuvem">
+                    <i class="fa-solid fa-cloud"></i>
+                    <div id="cloudDot" class="cloud-dot"></div>
+                </button>
             </div>
         </header>
         
         <div id="view-diet" class="view active">
             <div class="meta-card">
-                <div><span class="meta-lbl">Meta Diária (Jan)</span><div class="meta-val" id="metaKcal">2100</div></div>
+                <div><span class="meta-lbl">Meta Diária</span><div class="meta-val" id="metaKcal">2100</div></div>
                 <div class="meta-sub">
                     <div class="tag-status"><i class="fa-solid fa-fire"></i> Déficit -550</div>
-                    <div class="tag-status"><i class="fa-solid fa-weight-scale"></i> <span id="dispWeight">76.5</span> kg</div>
+                    <div class="tag-status"><i class="fa-solid fa-weight-scale"></i> <span id="dispWeight">--.-</span> kg</div>
                 </div>
             </div>
             <div class="day-toggle" id="dayButtons"></div>
@@ -218,81 +194,54 @@
         </div>
 
         <div id="view-evo" class="view">
-            <h2 style="margin-bottom:20px; color:var(--primary);">Sua Evolução</h2>
+            <h2 style="margin-bottom:20px; color:var(--primary);">Evolução</h2>
             <div class="stat-grid">
                 <div class="stat-card">
-                    <input type="number" id="inpWeight" class="stat-inp" value="76.5" onchange="updateBio()">
-                    <span style="font-size:0.8rem; font-weight:700; color:#64748b; text-transform:uppercase;">Peso Atual (kg)</span>
+                    <input type="number" id="inpWeight" class="stat-inp" placeholder="0.0" onchange="updateBio()">
+                    <span style="font-size:0.8rem; font-weight:700; color:#64748b;">PESO (kg)</span>
                 </div>
                 <div class="stat-card">
-                    <input type="number" id="inpSteps" class="stat-inp" value="0" style="color:var(--accent);" onchange="updateBio()">
-                    <span style="font-size:0.8rem; font-weight:700; color:#64748b; text-transform:uppercase;">Passos Hoje</span>
+                    <input type="number" id="inpSteps" class="stat-inp" placeholder="0" style="color:var(--accent);" onchange="updateBio()">
+                    <span style="font-size:0.8rem; font-weight:700; color:#64748b;">PASSOS</span>
                 </div>
             </div>
             <div style="background:white; padding:15px; border-radius:20px; border:1px solid var(--border); height:250px; margin-bottom:20px;"><canvas id="weightChart"></canvas></div>
-            <h3 style="font-size:1rem; color:#64748b; margin-bottom:10px;">Histórico</h3>
             <div id="historyList"></div>
         </div>
 
         <div id="view-admin" class="view">
-            <h2 style="margin-bottom:10px; color:var(--primary);">Gestão Avançada</h2>
-            <p style="margin-bottom:15px; color:#64748b;">Editor JSON manual (para desenvolvedores).</p>
-            <textarea id="jsonInput" class="json-box" placeholder="Cole JSON aqui..."></textarea>
-            <button class="btn-full" onclick="importPlan()"><i class="fa-solid fa-code"></i> Atualizar via Texto</button>
-            <button class="btn-full" onclick="exportPlanClipboard()" style="background:#475569;"><i class="fa-solid fa-copy"></i> Copiar Texto</button>
+            <h2 style="margin-bottom:10px; color:var(--primary);">Avançado</h2>
+            <textarea id="jsonInput" class="json-box" placeholder="JSON Raw Data..."></textarea>
+            <button class="btn-full" onclick="importFromText()"><i class="fa-solid fa-code"></i> Carregar Texto</button>
+            <button class="btn-full" onclick="exportToClipboard()" style="background:#475569;"><i class="fa-solid fa-copy"></i> Copiar Texto</button>
         </div>
     </div>
 
     <div id="modal-sync" class="modal">
         <div class="modal-box">
             <i class="fa-solid fa-xmark modal-close" onclick="closeModal('sync')"></i>
-            
-            <div class="modal-head">
-                <h3>Central de Dados</h3>
-                <p>Sincronize entre PC e Celular via arquivo.</p>
-            </div>
-            
-            <button class="sync-btn sb-down" onclick="exportData()">
-                <i class="fa-solid fa-download"></i> 
-                <div class="sb-txt">
-                    <span class="sb-title">Baixar Arquivo JSON</span>
-                    <span class="sb-desc">Para salvar no PC</span>
-                </div>
+            <h3 style="color:var(--primary); margin-bottom:5px; font-weight:800; font-family:var(--font-num);">Central de Dados</h3>
+            <p style="font-size:0.85rem; color:#64748b; margin-bottom:20px;">GitHub Cloud + Backup Local</p>
+
+            <button class="sync-btn" onclick="forceSync()">
+                <i class="fa-solid fa-cloud-arrow-down" style="color:var(--accent)"></i> 
+                <div><span class="sb-title">Forçar Download</span><span class="sb-desc">Baixar da Nuvem</span></div>
             </button>
 
-            <button class="sync-btn sb-share" onclick="shareData()">
-                <i class="fa-brands fa-whatsapp"></i> 
-                <div class="sb-txt">
-                    <span class="sb-title">Compartilhar (Mobile)</span>
-                    <span class="sb-desc">Enviar para WhatsApp/Drive</span>
-                </div>
+            <button class="sync-btn" onclick="exportFile()">
+                <i class="fa-solid fa-download" style="color:#334155"></i> 
+                <div><span class="sb-title">Baixar Arquivo</span><span class="sb-desc">Salvar .json no celular</span></div>
             </button>
 
-            <button class="sync-btn sb-up" onclick="document.getElementById('importFile').click()">
-                <i class="fa-solid fa-upload"></i> 
-                <div class="sb-txt">
-                    <span class="sb-title">Restaurar Backup</span>
-                    <span class="sb-desc">Carregar arquivo JSON</span>
-                </div>
+            <button class="sync-btn" onclick="document.getElementById('importFile').click()">
+                <i class="fa-solid fa-upload" style="color:#334155"></i> 
+                <div><span class="sb-title">Restaurar Arquivo</span><span class="sb-desc">Carregar backup .json</span></div>
             </button>
             
-            <button class="sync-btn sb-reset" onclick="hardReset()">
+             <button class="sync-btn" style="border-color:var(--danger); color:var(--danger); margin-bottom:0;" onclick="hardReset()">
                 <i class="fa-solid fa-trash"></i> 
-                <div class="sb-txt">
-                    <span class="sb-title">Resetar Tudo</span>
-                    <span class="sb-desc">Cuidado! Apaga todos os dados.</span>
-                </div>
+                <div><span class="sb-title" style="color:var(--danger)">Resetar Tudo</span><span class="sb-desc">Limpar dados locais</span></div>
             </button>
-        </div>
-    </div>
-
-    <div id="modalSubs">
-        <div class="modal-box">
-            <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
-                <h3 style="color:var(--primary); margin:0;">Substituir</h3>
-                <i class="fa-solid fa-xmark" onclick="closeModal('modalSubs')" style="cursor:pointer; font-size:1.5rem; color:#94a3b8;"></i>
-            </div>
-            <div id="subsList"></div>
         </div>
     </div>
 
@@ -302,169 +251,371 @@
         <div class="dock-item" id="btn-admin" onclick="setView('admin')"><i class="fa-solid fa-sliders"></i></div>
     </div>
 
-    <input type="file" id="importFile" hidden onchange="importData(this)">
+    <input type="file" id="importFile" hidden onchange="handleFileImport(this)">
 
     <script>
-        // CHAVE MESTRA FIXA
-        const KEY = 'benai_diet_main_db'; 
-        const OLD_KEYS = ['benai_diet_v4', 'benai_v4']; // Lista de migração
+        // --- CONSTANTES ---
+        const DB_KEY = 'benai_diet_main_db'; 
+        const TOKEN_KEY = 'benai_coach_gh_token'; 
+        const GIST_DESC = 'BENAI_PERSONAL_DB';
+        
+        // Estrutura Padrão (Fallback)
+        const DEFAULT_DATA = { 
+            "meta": { "kcal": 2100, "weight": 75.0, "steps": 0 }, 
+            "currentDay": "A", 
+            "history": [], 
+            "days": { 
+                "A": { "label": "Padrão", "meals": [] } 
+            } 
+        };
 
-        const DEFAULT_DATA = { "meta": { "kcal": 2100, "deficit": 550, "weight": 76.5, "steps": 0 }, "currentDay": "A", "history": [], "days": { "A": { "label": "🏠 Principal", "meals": [ { "time": "06:00", "name": "Café da Manhã", "icon": "☕", "foods": [ { "n": "Ovos Inteiros", "q": "3 un", "t": "prot" }, { "n": "Tapioca (Goma)", "q": "50g", "t": "carb" }, { "n": "Requeijão Light", "q": "20g", "t": "fat" }, { "n": "Café + Leite", "q": "250ml", "t": "veg" } ] }, { "time": "09:00", "name": "Pré-Treino (Bowl)", "icon": "⚡", "foods": [ { "n": "Iogurte Natural", "q": "170g", "t": "prot" }, { "n": "Banana Prata", "q": "1 un", "t": "carb" }, { "n": "Farelo de Aveia", "q": "20g", "t": "carb" }, { "n": "Leite em Pó", "q": "15g", "t": "prot" }, { "n": "Chia + Cacau", "q": "10g", "t": "fat" } ] }, { "time": "12:00", "name": "Almoço (Pós-Treino)", "icon": "🍗", "foods": [ { "n": "Frango/Carne (Pronto)", "q": "140g", "t": "prot" }, { "n": "Arroz Cozido", "q": "250g", "t": "carb" }, { "n": "Vegetais Cozidos", "q": "200g", "t": "veg" }, { "n": "Salada Folhas", "q": "Livre", "t": "veg" } ] }, { "time": "16:00", "name": "Lanche Tarde", "icon": "🥞", "foods": [ { "n": "Tapioca (Goma)", "q": "50g", "t": "carb" }, { "n": "Ovos Mexidos", "q": "2 un", "t": "prot" }, { "n": "Requeijão Light", "q": "10g", "t": "fat" }, { "n": "Fruta", "q": "1 un", "t": "veg" } ] }, { "time": "19:30", "name": "Jantar (Patê)", "icon": "🥪", "foods": [ { "n": "Pão Integral", "q": "2 fat", "t": "carb" }, { "n": "Patê de Frango", "q": "120g", "t": "prot" }, { "n": "RECEITA DO PATÊ:", "q": "Info", "t": "fat" }, { "n": "Base:", "q": "600g Frango", "t": "veg" }, { "n": "Liga:", "q": "1 Pote Req.", "t": "veg" } ] } ] }, "B": { "label": "🔄 Variação", "meals": [ { "time": "06:00", "name": "Opção Pão", "icon": "🍞", "foods": [ { "n": "Pão Francês s/ miolo", "q": "1 un", "t": "carb" }, { "n": "Frango Desfiado", "q": "100g", "t": "prot" }, { "n": "Requeijão Light", "q": "20g", "t": "fat" } ] }, { "time": "09:00", "name": "Opção Vitamina", "icon": "🥤", "foods": [ { "n": "Leite Semidesn.", "q": "250ml", "t": "prot" }, { "n": "Banana Prata", "q": "1 un", "t": "carb" }, { "n": "Aveia", "q": "30g", "t": "carb" }, { "n": "Ovo Cozido (Comer)", "q": "1 un", "t": "prot" } ] }, { "time": "12:00", "name": "Opção Batata", "icon": "🥩", "foods": [ { "n": "Carne Moida/Suina", "q": "140g", "t": "prot" }, { "n": "Batata Inglesa", "q": "350g", "t": "carb" }, { "n": "Vegetais", "q": "Livre", "t": "veg" } ] }, { "time": "16:00", "name": "Opção Sanduíche", "icon": "🥪", "foods": [ { "n": "Pão Integral", "q": "2 fat", "t": "carb" }, { "n": "Patê de Frango", "q": "100g", "t": "prot" }, { "n": "Fruta", "q": "1 un", "t": "veg" } ] }, { "time": "19:30", "name": "Jantar (Sardinha)", "icon": "🐟", "foods": [ { "n": "Pão Integral", "q": "2 fat", "t": "carb" }, { "n": "Sardinha (Drenada)", "q": "2 latas", "t": "prot" }, { "n": "Milho/Vegetais", "q": "A gosto", "t": "veg" } ] } ] } } };
-        const FOOD_DB = { 'prot': [ {n:'Ovos (3un)', q:'3 un'}, {n:'Frango (100g)', q:'100g'}, {n:'Sardinha (2 latas)', q:'170g'}, {n:'Leite em Pó', q:'15g'} ], 'carb': [ {n:'Tapioca', q:'50g'}, {n:'Pão Francês', q:'1 un'}, {n:'Arroz', q:'250g'}, {n:'Batata', q:'350g'}, {n:'Aveia', q:'20g'}, {n:'Banana', q:'1 un'} ], 'fat': [ {n:'Requeijão', q:'20g'}, {n:'Azeite', q:'5ml'}, {n:'Chia', q:'1 col'} ], 'veg': [ {n:'Brócolis', q:'Livre'}, {n:'Salada', q:'Livre'} ] };
+        // Estado Global
+        let appData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+        let chartInst = null;
+        let gistId = null;
 
-        let data = DEFAULT_DATA;
-        let chartInstance = null;
-        let subCtx = null;
-
-        function getFoodIcon(name, type) { const n = name.toLowerCase(); if(n.includes('ovo')) return '🥚'; if(n.includes('frango') || n.includes('patê')) return '🍗'; if(n.includes('carne')) return '🥩'; if(n.includes('peixe') || n.includes('sardinha')) return '🐟'; if(n.includes('arroz')) return '🍚'; if(n.includes('batata')) return '🥔'; if(n.includes('pão')) return '🍞'; if(n.includes('tapioca')) return '🥞'; if(n.includes('banana')) return '🍎'; if(n.includes('café')) return '☕'; if(n.includes('iogurte')) return '🥛'; if(type === 'prot') return '🍗'; if(type === 'carb') return '⚡'; if(type === 'fat') return '💧'; return '🍽️'; }
-
-        function init() {
-            // MIGRATION CHECK
-            let saved = localStorage.getItem(KEY);
-            if(!saved) {
-                // Tenta migrar automaticamente
-                for(let k of OLD_KEYS) {
-                    const old = localStorage.getItem(k);
-                    if(old) {
-                        saved = old;
-                        localStorage.setItem(KEY, saved); // Salva na nova
-                        console.log("Dados migrados de " + k);
-                        break;
-                    }
-                }
+        // --- INICIALIZAÇÃO ---
+        async function init() {
+            // 1. Tenta carregar do LocalStorage
+            const saved = localStorage.getItem(DB_KEY);
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    // Validação simples para evitar tela branca
+                    if (parsed && parsed.days) appData = parsed;
+                } catch(e) { console.error("Dados locais corrompidos", e); }
             }
-            
-            if(saved) {
-                try { data = JSON.parse(saved); } catch(e) { console.error(e); }
-            }
-            
-            renderDiet(); updateBio(); renderChart();
+
+            // 2. Renderiza o que tiver (mesmo que seja padrão)
+            renderAll();
+
+            // 3. Tenta conectar na Nuvem (sem travar)
+            await syncCloud();
         }
 
-        function save() { localStorage.setItem(KEY, JSON.stringify(data)); }
+        // --- RENDERIZAÇÃO ---
+        function renderAll() {
+            renderDiet();
+            renderStats();
+            renderChart();
+        }
 
         function renderDiet() {
-            document.getElementById('metaKcal').innerText = data.meta.kcal;
-            document.getElementById('dispWeight').innerText = data.meta.weight;
-            
+            // Garante que existam metas
+            if (!appData.meta) appData.meta = DEFAULT_DATA.meta;
+            document.getElementById('metaKcal').innerText = appData.meta.kcal || 0;
+            document.getElementById('dispWeight').innerText = appData.meta.weight || 0;
+
+            // Botões dos Dias
             const btnCont = document.getElementById('dayButtons');
             btnCont.innerHTML = '';
-            Object.keys(data.days).forEach(key => {
-                const isActive = data.currentDay === key;
-                btnCont.innerHTML += `<div class="toggle-btn ${isActive?'active':''}" onclick="setDay('${key}')">${data.days[key].label}</div>`;
+            if (!appData.days) appData.days = DEFAULT_DATA.days;
+            
+            Object.keys(appData.days).forEach(key => {
+                const isActive = appData.currentDay === key;
+                btnCont.innerHTML += `<div class="toggle-btn ${isActive?'active':''}" onclick="changeDay('${key}')">${appData.days[key].label}</div>`;
             });
 
+            // Lista de Refeições
             const list = document.getElementById('mealList');
             list.innerHTML = '';
-            const plan = data.days[data.currentDay];
+            
+            const currentPlan = appData.days[appData.currentDay];
+            if (!currentPlan || !currentPlan.meals || currentPlan.meals.length === 0) {
+                list.innerHTML = '<div style="text-align:center; padding:40px; color:#94a3b8; font-style:italic;">Nenhuma refeição neste dia.</div>';
+                return;
+            }
 
-            if(!plan.meals.length) { list.innerHTML = '<div style="text-align:center; padding:30px; color:#94a3b8;">Sem dados.</div>'; return; }
-
-            plan.meals.forEach((meal, mIdx) => {
+            currentPlan.meals.forEach(meal => {
                 let foodsHTML = '';
-                meal.foods.forEach((f, fIdx) => {
-                    const icon = getFoodIcon(f.n, f.t);
-                    const showSwap = FOOD_DB[f.t] ? '' : 'display:none;';
-                    foodsHTML += `<div class="food-item"><div class="fi-main"><div class="fi-icon">${icon}</div><div class="fi-info"><span class="fi-name">${f.n}</span><span class="fi-macro ${f.t}">${f.t}</span></div></div><div class="fi-actions"><span class="fi-qty ${f.t}">${f.q}</span><div class="btn-swap" style="${showSwap}" onclick="openSubs('${f.t}', ${mIdx}, ${fIdx})"><i class="fa-solid fa-rotate"></i></div></div></div>`;
-                });
-                list.innerHTML += `<div class="meal-card"><div class="meal-head"><div class="mh-left"><span class="meal-icon">${meal.icon || '🍽️'}</span><span class="meal-name">${meal.name}</span></div><span class="meal-time">${meal.time}</span></div><div>${foodsHTML}</div></div>`;
+                if(meal.foods) {
+                    meal.foods.forEach(f => {
+                        const icon = getFoodIcon(f.n, f.t);
+                        foodsHTML += `
+                        <div class="food-item">
+                            <div class="fi-main">
+                                <div class="fi-icon">${icon}</div>
+                                <div class="fi-info">
+                                    <span class="fi-name">${f.n}</span>
+                                    <span class="fi-macro ${f.t}">${f.t}</span>
+                                </div>
+                            </div>
+                            <div class="fi-actions">
+                                <span class="fi-qty ${f.t}">${f.q}</span>
+                            </div>
+                        </div>`;
+                    });
+                }
+                list.innerHTML += `
+                <div class="meal-card">
+                    <div class="meal-head">
+                        <div class="mh-left">
+                            <span class="meal-icon">${meal.icon || '🍽️'}</span>
+                            <span class="meal-name">${meal.name}</span>
+                        </div>
+                        <span class="meal-time">${meal.time}</span>
+                    </div>
+                    <div>${foodsHTML}</div>
+                </div>`;
             });
         }
 
-        function setDay(key) { data.currentDay = key; save(); renderDiet(); }
+        function renderStats() {
+            document.getElementById('inpWeight').value = appData.meta.weight;
+            document.getElementById('inpSteps').value = appData.meta.steps || 0;
+            
+            const hList = document.getElementById('historyList');
+            hList.innerHTML = '';
+            if(appData.history && appData.history.length > 0) {
+                // Copia e inverte para mostrar mais recente primeiro
+                [...appData.history].reverse().slice(0, 10).forEach(h => {
+                    hList.innerHTML += `<div style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid #f1f5f9; color:#475569;"><span>${h.date}</span><span><b>${h.weight}</b> kg</span></div>`;
+                });
+            }
+        }
+
+        function renderChart() {
+            const ctx = document.getElementById('weightChart');
+            if(!appData.history) return;
+            
+            const recent = appData.history.slice(-7); // Últimos 7 registros
+            
+            if(chartInst) chartInst.destroy();
+            chartInst = new Chart(ctx, {
+                type: 'line',
+                data: { 
+                    labels: recent.map(h => h.date), 
+                    datasets: [{ 
+                        label: 'Peso', 
+                        data: recent.map(h => h.weight), 
+                        borderColor: '#15803d', 
+                        backgroundColor: 'rgba(21, 128, 61, 0.1)', 
+                        tension: 0.4, 
+                        fill: true 
+                    }] 
+                },
+                options: { 
+                    responsive:true, 
+                    maintainAspectRatio:false, 
+                    plugins:{legend:{display:false}}, 
+                    scales:{y:{suggestedMin:60, suggestedMax:100}} 
+                }
+            });
+        }
+
+        // --- AÇÕES ---
+        function changeDay(key) {
+            appData.currentDay = key;
+            save();
+            renderDiet();
+        }
+
         function updateBio() {
             const w = parseFloat(document.getElementById('inpWeight').value);
             const s = parseInt(document.getElementById('inpSteps').value);
-            if(w) data.meta.weight = w;
-            if(s) data.meta.steps = s;
+            if(w) appData.meta.weight = w;
+            if(s) appData.meta.steps = s;
             save();
+            renderDiet(); // Atualiza card
         }
-        function finishDay() {
-            if(!confirm("Salvar dia?")) return;
-            data.history.push({ date: new Date().toLocaleDateString('pt-BR').substring(0,5), weight: data.meta.weight, steps: data.meta.steps });
-            save(); renderChart(); alert("Salvo!");
-        }
-        function renderChart() {
-            const ctx = document.getElementById('weightChart').getContext('2d');
-            const hist = data.history.slice(-7);
-            if(chartInstance) chartInstance.destroy();
-            chartInstance = new Chart(ctx, {
-                type: 'line',
-                data: { labels: hist.map(h => h.date), datasets: [{ label: 'Peso', data: hist.map(h => h.weight), borderColor: '#15803d', backgroundColor: 'rgba(21, 128, 61, 0.1)', tension: 0.4, fill: true }] },
-                options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{y:{suggestedMin:70, suggestedMax:80}} }
-            });
-            const hList = document.getElementById('historyList');
-            hList.innerHTML = '';
-            [...data.history].reverse().slice(0,5).forEach(h => { hList.innerHTML += `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #f1f5f9; color:#475569;"><span>${h.date}</span><span>${h.weight}kg</span></div>`; });
-        }
-        function openSubs(type, mIdx, fIdx) {
-            subCtx = { m: mIdx, f: fIdx };
-            const list = document.getElementById('subsList');
-            list.innerHTML = '';
-            if(FOOD_DB[type]) {
-                FOOD_DB[type].forEach(i => {
-                    const ic = getFoodIcon(i.n, type);
-                    list.innerHTML += `<div class="sub-opt" onclick="applySub('${i.n}', '${i.q}')"><span style="display:flex; gap:10px; align-items:center;"><span>${ic}</span> ${i.n}</span><strong style="color:var(--primary);">${i.q}</strong></div>`;
-                });
-            }
-            document.getElementById('modalSubs').style.display='flex';
-        }
-        function applySub(n, q) {
-            const {m, f} = subCtx;
-            data.days[data.currentDay].meals[m].foods[f].n = n;
-            data.days[data.currentDay].meals[m].foods[f].q = q;
-            save(); renderDiet(); closeModal('modalSubs');
-        }
-        function setView(v) {
-            document.querySelectorAll('.view').forEach(e=>e.classList.remove('active'));
-            document.querySelectorAll('.dock-item').forEach(e=>e.classList.remove('active'));
-            document.getElementById('view-'+v).classList.add('active');
-            document.getElementById('btn-'+v).classList.add('active');
-        }
-        
-        // SYNC (PADRONIZADO)
-        function openModal(id) { 
-            const m = document.getElementById('modal-'+id); 
-            if(m) m.style.display='flex'; 
-        }
-        function closeModal(id) { 
-            const m = document.getElementById(id.startsWith('modal') ? id : 'modal-'+id); 
-            if(m) m.style.display='none'; 
-        }
-        
-        function exportData() {
-            const d = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
-            const a = document.createElement('a'); a.href = d; a.download = "benai_diet_backup.json"; a.click();
-        }
-        function shareData() {
-            const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
-            const file = new File([blob], "benai_diet.json", { type: 'application/json' });
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                navigator.share({ files: [file], title: 'Backup Dieta Benai' });
-            } else { alert("Use o botão Baixar."); }
-        }
-        function importData(input) {
-            const f = input.files[0]; if(!f) return;
-            const reader = new FileReader();
-            reader.onload = e => { 
-                try { data = JSON.parse(e.target.result); save(); location.reload(); } catch(err) { alert("Erro ao importar"); } 
-            };
-            reader.readAsText(f);
-        }
-        function hardReset() { if(confirm("Apagar tudo?")) { localStorage.removeItem(KEY); location.reload(); } }
 
-        function triggerRestore() { document.getElementById('importFile').click(); }
+        function finishDay() {
+            if(!confirm("Concluir o dia e salvar histórico?")) return;
+            
+            const today = new Date().toLocaleDateString('pt-BR').substring(0,5); // DD/MM
+            if(!appData.history) appData.history = [];
+            
+            // Remove entrada de hoje se já existir para substituir
+            appData.history = appData.history.filter(h => h.date !== today);
+            
+            appData.history.push({ 
+                date: today, 
+                weight: appData.meta.weight, 
+                steps: appData.meta.steps 
+            });
+            
+            save();
+            renderChart();
+            renderStats();
+            alert("Histórico Salvo!");
+        }
+
+        function getFoodIcon(name, type) { 
+            const n = name.toLowerCase(); 
+            if(n.includes('ovo')) return '🥚'; 
+            if(n.includes('frango') || n.includes('carne') || n.includes('patê')) return '🥩'; 
+            if(n.includes('peixe') || n.includes('sardinha')) return '🐟'; 
+            if(n.includes('arroz')) return '🍚'; 
+            if(n.includes('batata')) return '🥔'; 
+            if(n.includes('pão')) return '🍞'; 
+            if(n.includes('banana') || n.includes('fruta')) return '🍎'; 
+            if(n.includes('café')) return '☕'; 
+            if(n.includes('iogurte') || n.includes('leite')) return '🥛'; 
+            return '🍽️'; 
+        }
+
+        // --- SISTEMA DE NUVEM (IDÊNTICO AO TRACKER) ---
+        function updateStatus(status) {
+            const el = document.getElementById('cloudDot');
+            if(el) el.className = 'cloud-dot ' + status;
+        }
+
+        async function syncCloud() {
+            const token = localStorage.getItem(TOKEN_KEY);
+            if(!token) { updateStatus('error'); return; }
+            
+            updateStatus('sync');
+            try {
+                // 1. Busca Gist ID
+                if(!gistId) {
+                    const s = await fetch('https://api.github.com/gists', { headers: { 'Authorization': `token ${token}` } });
+                    const gists = await s.json();
+                    const found = gists.find(g => g.description === GIST_DESC);
+                    if(found) gistId = found.id;
+                }
+
+                // 2. Se tiver ID, lê arquivo
+                if(gistId) {
+                    const r = await fetch(`https://api.github.com/gists/${gistId}`, { headers: { 'Authorization': `token ${token}` } });
+                    const gistData = await r.json();
+                    if(gistData.files && gistData.files["diet.json"]) {
+                        const cloudContent = JSON.parse(gistData.files["diet.json"].content);
+                        // Verifica se o cloud tem dados válidos antes de substituir
+                        if(cloudContent && cloudContent.days) {
+                            appData = cloudContent;
+                            saveLocal();
+                            renderAll();
+                        }
+                    } else {
+                        // Se não tem arquivo, cria
+                        await pushCloud();
+                    }
+                    updateStatus('ok');
+                } else {
+                    // Se não tem Gist, cria
+                    await pushCloud();
+                }
+            } catch(e) {
+                console.error(e);
+                updateStatus('error');
+            }
+        }
+
+        async function pushCloud() {
+            const token = localStorage.getItem(TOKEN_KEY);
+            if(!token) return;
+            
+            updateStatus('sync');
+            try {
+                const url = gistId ? `https://api.github.com/gists/${gistId}` : 'https://api.github.com/gists';
+                const method = gistId ? 'PATCH' : 'POST';
+                
+                const payload = {
+                    description: GIST_DESC,
+                    public: false,
+                    files: {
+                        "diet.json": { content: JSON.stringify(appData) }
+                    }
+                };
+
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if(res.ok) {
+                    if(!gistId) { const j = await res.json(); gistId = j.id; }
+                    updateStatus('ok');
+                } else {
+                    updateStatus('error');
+                }
+            } catch(e) {
+                console.error(e);
+                updateStatus('error');
+            }
+        }
+
+        function forceSync() {
+            if(confirm("Isso substituirá os dados locais pela versão da Nuvem. Continuar?")) {
+                syncCloud();
+                closeModal('sync');
+            }
+        }
+
+        // --- SISTEMA LOCAL E UTILITÁRIOS ---
+        function saveLocal() { localStorage.setItem(DB_KEY, JSON.stringify(appData)); }
+        function save() { saveLocal(); pushCloud(); }
+
+        // Modais
+        function openModal(id) { document.getElementById('modal-'+id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById('modal-'+id).style.display = 'none'; }
         
+        // Views
+        function setView(vId) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.dock-item').forEach(d => d.classList.remove('active'));
+            document.getElementById('view-'+vId).classList.add('active');
+            document.getElementById('btn-'+vId).classList.add('active');
+        }
+
+        // Import/Export
+        function exportFile() {
+            const blob = new Blob([JSON.stringify(appData)], {type: "application/json"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = "benai_diet_backup.json";
+            a.click();
+        }
+
+        function handleFileImport(input) {
+            const file = input.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const json = JSON.parse(e.target.result);
+                    if(json.days) {
+                        appData = json;
+                        save();
+                        renderAll();
+                        alert("Backup restaurado com sucesso!");
+                    } else {
+                        alert("Arquivo inválido (estrutura incorreta).");
+                    }
+                } catch(err) { alert("Erro ao ler arquivo JSON."); }
+            };
+            reader.readAsText(file);
+        }
+
+        function hardReset() {
+            if(confirm("Tem certeza? Isso apagará TUDO deste dispositivo.")) {
+                localStorage.removeItem(DB_KEY);
+                location.reload();
+            }
+        }
+
+        // Admin Text Import/Export
         function exportPlanClipboard() {
-            document.getElementById('jsonInput').value = JSON.stringify(data, null, 2);
+            document.getElementById('jsonInput').value = JSON.stringify(appData, null, 2);
             document.getElementById('jsonInput').select();
             document.execCommand('copy');
-            alert("Copiado!");
+            alert("JSON copiado para área de transferência!");
         }
-        function importPlan() {
-            try { data = JSON.parse(document.getElementById('jsonInput').value); save(); init(); alert("Atualizado!"); setView('diet'); } catch(e) { alert("JSON Inválido"); }
+        function importFromText() {
+            try {
+                const txt = document.getElementById('jsonInput').value;
+                const json = JSON.parse(txt);
+                if(json.days) {
+                    appData = json;
+                    save();
+                    renderAll();
+                    alert("Dados atualizados via texto!");
+                } else { alert("Estrutura JSON inválida."); }
+            } catch(e) { alert("Erro de sintaxe no JSON."); }
         }
 
+        // Start
         init();
     </script>
 </body>
