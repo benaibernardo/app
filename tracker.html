@@ -3,66 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Benai Tracker | Final</title>
+    <title>Benai Tracker | Cloud</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-<script>
-        (function() {
-            // --- CONFIGURAÇÃO DA SENHA ---
-            const PIN_CORRETO = "16359001"; 
-            // -----------------------------
-
-            if (sessionStorage.getItem("benai_access_granted") === "true") return;
-
-            document.write(`
-                <style>
-                    body { visibility: hidden; overflow: hidden; }
-                    #gatekeeper {
-                        visibility: visible; position: fixed; inset: 0;
-                        background: #0f172a; color: white; z-index: 99999;
-                        display: flex; flex-direction: column; align-items: center; justify-content: center;
-                        font-family: 'Outfit', sans-serif;
-                    }
-                    .pin-box { text-align: center; animation: fadeIn 0.5s ease; width: 90%; max-width: 350px; }
-                    .pin-inp { 
-                        padding: 15px; font-size: 1.5rem; text-align: center; 
-                        border-radius: 15px; border: 2px solid rgba(56, 189, 248, 0.3); outline: none; margin-top: 25px;
-                        background: rgba(255,255,255,0.05); color: white; letter-spacing: 4px; width: 100%;
-                        transition: 0.3s;
-                    }
-                    .pin-inp:focus { border-color: #38bdf8; box-shadow: 0 0 20px rgba(56, 189, 248, 0.2); }
-                    .pin-msg { color: #f87171; margin-top: 15px; font-weight: 600; font-size: 0.9rem; height: 20px; }
-                    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-                </style>
-                <div id="gatekeeper">
-                    <div class="pin-box">
-                        <i class="fa-solid fa-shield-halved" style="font-size: 3rem; color: #38bdf8; margin-bottom: 15px;"></i>
-                        <h2 style="font-size: 1.5rem; letter-spacing: -1px;">Sistema Protegido</h2>
-                        <p style="opacity: 0.6; font-size: 0.85rem;">Insira o código de 8 dígitos</p>
-                        <input type="password" class="pin-inp" maxlength="8" placeholder="********" inputmode="numeric" autocomplete="off" onkeyup="verifyPin(this)">
-                        <div class="pin-msg" id="pin-error"></div>
-                    </div>
-                </div>
-            `);
-
-            window.verifyPin = function(el) {
-                if (el.value.length === 8) {
-                    if (el.value === PIN_CORRETO) {
-                        sessionStorage.setItem("benai_access_granted", "true");
-                        location.reload();
-                    } else {
-                        document.getElementById("pin-error").innerText = "Código Incorreto";
-                        el.value = "";
-                        if(navigator.vibrate) navigator.vibrate(200);
-                    }
-                }
-            };
-        })();
-    </script>
     <style>
         :root {
             --primary: #001F5B; --primary-light: #1e3a8a;
@@ -72,7 +19,6 @@
             --success: #10b981; --danger: #ef4444; --warn: #f59e0b;
             --shadow: 0 8px 30px -5px rgba(0, 31, 91, 0.05);
             --radius: 18px;
-            
             --font-ui: 'Plus Jakarta Sans', sans-serif;
             --font-num: 'Outfit', sans-serif;
         }
@@ -85,8 +31,19 @@
 
         /* HEADER */
         header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
-        .brand { font-family:var(--font-num); font-size:1.6rem; font-weight:800; color:var(--primary); display:flex; align-items:center; gap:10px; }
+        .brand { font-family:var(--font-num); font-size:1.6rem; font-weight:800; color:var(--primary); display:flex; align-items:center; gap:10px; cursor: pointer; }
         
+        /* STATUS DA NUVEM */
+        .cloud-status {
+            width: 10px; height: 10px; border-radius: 50%;
+            background: #cbd5e1; display: inline-block;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1); transition: 0.3s;
+        }
+        .cloud-status.ok { background: var(--success); box-shadow: 0 0 8px var(--success); }
+        .cloud-status.error { background: var(--danger); }
+        .cloud-status.syncing { background: var(--accent); animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
         /* TIMELINE CONTROLS */
         .timeline-wrapper { display: flex; align-items: center; gap: 10px; margin-bottom: 30px; position: relative; }
         .timeline-strip { display: flex; gap: 10px; overflow-x: auto; padding: 5px 2px; flex: 1; }
@@ -114,7 +71,6 @@
         .day-card.has-event .dot-indicator { display: block; }
         .day-card.active .dot-indicator { background: white; }
 
-        /* BACK TO TODAY BUTTON */
         .back-today {
             display: none; position: absolute; top: -35px; left: 50%; transform: translateX(-50%);
             background: var(--accent); color: white; padding: 5px 15px; border-radius: 20px;
@@ -131,10 +87,9 @@
         .gp-prog { font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-num); }
 
         /* HEADER ACTIONS */
-        .btn-icon { width:42px; height:42px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text-muted); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:0.2s; }
+        .btn-icon { width:42px; height:42px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text-muted); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:0.2s; position:relative; }
         .btn-icon:hover { color:var(--primary); border-color:var(--primary); transform:translateY(-2px); box-shadow:var(--shadow); }
-        .btn-icon.sync { color:var(--accent); border-color:rgba(0,168,232,0.3); background:rgba(0,168,232,0.05); }
-
+        
         /* GRID */
         .grid-layout { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 25px; align-items: start; }
         @media (max-width: 850px) { .grid-layout { grid-template-columns: 1fr; } }
@@ -200,9 +155,12 @@
 
     <div class="container">
         <header>
-            <div class="brand"><i class="fa-solid fa-layer-group"></i> Benai Tracker</div>
+            <div class="brand" onclick="location.href='index.html'"><i class="fa-solid fa-layer-group"></i> Benai Tracker</div>
             <div class="header-actions">
-                <button class="btn-icon sync" onclick="openModal('sync')" title="Dados & Backup"><i class="fa-solid fa-cloud"></i></button>
+                <button class="btn-icon" onclick="forceSync()" title="Forçar Sincronização">
+                    <i class="fa-solid fa-cloud"></i>
+                    <div id="cloudIndicator" class="cloud-status" style="position:absolute; top:8px; right:8px;"></div>
+                </button>
             </div>
         </header>
 
@@ -260,17 +218,6 @@
         </div>
     </div>
 
-    <div id="modal-sync" class="modal">
-        <div class="modal-box">
-            <i class="fa-solid fa-xmark modal-close" onclick="closeModal('sync')"></i>
-            <div class="modal-head">Central de Dados</div>
-            <button class="sync-btn" onclick="exportData()"><i class="fa-solid fa-download" style="color:var(--accent)"></i> <div>Baixar JSON <div style="font-size:0.75rem; color:var(--text-muted); font-weight:400;">Backup PC</div></div></button>
-            <button class="sync-btn" onclick="shareData()"><i class="fa-brands fa-whatsapp" style="color:#25D366"></i> <div>Compartilhar <div style="font-size:0.75rem; color:var(--text-muted); font-weight:400;">Mobile</div></div></button>
-            <button class="sync-btn" onclick="document.getElementById('importFile').click()"><i class="fa-solid fa-upload" style="color:var(--primary)"></i> <div>Restaurar <div style="font-size:0.75rem; color:var(--text-muted); font-weight:400;">Carregar JSON</div></div></button>
-            <button class="sync-btn" style="border-color:var(--danger); color:var(--danger); margin-top:15px;" onclick="hardReset()"><i class="fa-solid fa-trash"></i> <div>Resetar Tudo</div></button>
-        </div>
-    </div>
-
     <div id="modal-goal" class="modal">
         <div class="modal-box">
             <i class="fa-solid fa-xmark modal-close" onclick="closeModal('goal')"></i>
@@ -321,12 +268,7 @@
             <div class="modal-head">Tarefa</div>
             <input type="hidden" id="task-id">
             <div class="inp-group"><label class="lbl">Fazer:</label><input id="task-title" class="inp"></div>
-            
-            <div class="inp-group">
-                <label class="lbl">Data (Opcional)</label>
-                <input type="date" id="task-date" class="inp">
-            </div>
-
+            <div class="inp-group"><label class="lbl">Data (Opcional)</label><input type="date" id="task-date" class="inp"></div>
             <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
                 <input type="checkbox" id="task-prio" style="width:20px; height:20px; accent-color:var(--danger)">
                 <label for="task-prio" style="font-weight:700; color:var(--danger)">Prioridade 🔥</label>
@@ -347,47 +289,130 @@
     </div>
 
     <div id="toast"><i class="fa-solid fa-check-circle"></i> <span>Salvo!</span></div>
-    <input type="file" id="importFile" hidden onchange="importData(this)">
 
     <script>
-        // CHAVE FIXA PARA NÃO PERDER DADOS
-        const STABLE_KEY = 'benai_tracker_main_db';
+        // --- CHAVES E BANCO ---
+        const DB_KEY = 'benai_tracker_main_db';
+        const TOKEN_KEY = 'benai_coach_gh_token';
+        const GIST_DESC = 'BENAI_PERSONAL_DB'; // Descrição única do Gist Pessoal
         const OLD_KEYS = ['benai_agenda_v46', 'benai_agenda_v45']; 
 
         let db = { appt: [], fixed: [], task: [], shop: [], goals: [{id:1, title:"Consultoria", cur:0, tar:10, unit:"alunos"}] };
         let viewDate = new Date();
+        let gistId = null;
 
-        function init() {
-            // Tenta carregar da chave fixa
-            let s = localStorage.getItem(STABLE_KEY);
-            
-            // Se não achar, tenta resgatar das antigas (Migração Automática)
-            if (!s) {
+        async function init() {
+            // Tenta carregar do LocalStorage primeiro
+            let s = localStorage.getItem(DB_KEY);
+            if (!s) { // Migração de legado
                 for(let k of OLD_KEYS) {
                     s = localStorage.getItem(k);
-                    if(s) {
-                        localStorage.setItem(STABLE_KEY, s); // Salva na nova
-                        break;
-                    }
+                    if(s) { localStorage.setItem(DB_KEY, s); break; }
                 }
             }
-
             if(s) db = JSON.parse(s);
-            
-            // Check Monthly Reset
+
+            // Reset Mensal
             const today = new Date();
             const savedMonth = localStorage.getItem('benai_month_idx');
             if(savedMonth != today.getMonth()) {
                 db.fixed.forEach(f => f.done = false); 
                 localStorage.setItem('benai_month_idx', today.getMonth());
-                save();
+                saveLocal();
             }
+
             renderTimeline(); renderGoals(); renderAll();
+            
+            // --- SYNC COM A NUVEM ---
+            await syncCloud();
+        }
+
+        // --- LÓGICA DE NUVEM ---
+        function updateCloudStatus(status) {
+            const el = document.getElementById('cloudIndicator');
+            el.className = 'cloud-status ' + status;
+        }
+
+        async function syncCloud() {
+            const token = localStorage.getItem(TOKEN_KEY);
+            if(!token) return updateCloudStatus('error'); // Sem token, fica offline
+
+            updateCloudStatus('syncing');
+
+            try {
+                // 1. Procurar Gist ID se não tiver
+                if(!gistId) {
+                    const search = await fetch('https://api.github.com/gists', { headers: { 'Authorization': `token ${token}` } });
+                    const gists = await search.json();
+                    const found = gists.find(g => g.description === GIST_DESC);
+                    if(found) gistId = found.id;
+                }
+
+                // 2. Se achou, baixa e mescla (Download)
+                if(gistId) {
+                    const res = await fetch(`https://api.github.com/gists/${gistId}`, { headers: { 'Authorization': `token ${token}` } });
+                    const json = await res.json();
+                    const cloudData = JSON.parse(json.files["tracker.json"].content);
+                    db = cloudData; // Nuvem vence (Single Source of Truth)
+                    saveLocal();
+                    renderTimeline(); renderGoals(); renderAll();
+                    updateCloudStatus('ok');
+                } else {
+                    // 3. Se não achou, cria um novo (Upload inicial)
+                    await pushCloud();
+                }
+            } catch(e) {
+                console.error(e);
+                updateCloudStatus('error');
+            }
+        }
+
+        async function pushCloud() {
+            const token = localStorage.getItem(TOKEN_KEY);
+            if(!token) return;
+
+            updateCloudStatus('syncing');
+            try {
+                let url = 'https://api.github.com/gists';
+                let method = 'POST';
+                if(gistId) { url += '/' + gistId; method = 'PATCH'; }
+
+                const payload = {
+                    description: GIST_DESC,
+                    public: false,
+                    files: { "tracker.json": { content: JSON.stringify(db) } }
+                };
+
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if(!res.ok) throw new Error('Falha no upload');
+                const json = await res.json();
+                gistId = json.id;
+                updateCloudStatus('ok');
+            } catch(e) {
+                console.error(e);
+                updateCloudStatus('error');
+            }
+        }
+
+        function saveLocal() {
+            localStorage.setItem(DB_KEY, JSON.stringify(db));
         }
 
         function save() { 
-            localStorage.setItem(STABLE_KEY, JSON.stringify(db)); 
-            renderTimeline(); renderGoals(); renderAll(); 
+            saveLocal();
+            renderTimeline(); renderGoals(); renderAll();
+            pushCloud(); // Salva na nuvem a cada alteração
+        }
+
+        function forceSync() {
+            if(confirm("Baixar dados da nuvem agora? Isso pode sobrescrever alterações não salvas.")) {
+                syncCloud();
+            }
         }
 
         // --- TIME TRAVEL LOGIC ---
@@ -396,7 +421,6 @@
             const parts = val.split('-');
             viewDate = new Date(parts[0], parts[1]-1, parts[2]);
             renderTimeline();
-            
             const today = new Date();
             const isToday = viewDate.getDate() === today.getDate() && viewDate.getMonth() === today.getMonth();
             document.getElementById('btnBackToday').style.display = isToday ? 'none' : 'block';
@@ -475,7 +499,6 @@
 
             // TASKS
             const lTask = document.getElementById('list-task'); lTask.innerHTML = '';
-            // Sort: Priority first, then Date if exists
             db.task.sort((a,b)=> (b.prio?1:0)-(a.prio?1:0) || (a.date||'9999').localeCompare(b.date||'9999')).forEach(x => {
                 const prioTag = x.prio ? `<span class="tag urgent">🔥 Prioridade</span>` : '';
                 const dateTag = x.date ? `<span class="tag">Para ${x.date.split('-').reverse().slice(0,2).join('/')}</span>` : '';
@@ -508,10 +531,7 @@
                     document.getElementById(p+'-title').value = x.title;
                     if(type==='appt') { document.getElementById('appt-date').value=x.date; document.getElementById('appt-time').value=x.time; document.getElementById('appt-loc').value=x.loc||''; }
                     if(type==='fixed') document.getElementById('fixed-day').value=x.day;
-                    if(type==='task') {
-                        document.getElementById('task-prio').checked=x.prio;
-                        if(x.date) document.getElementById('task-date').value = x.date;
-                    }
+                    if(type==='task') { document.getElementById('task-prio').checked=x.prio; if(x.date) document.getElementById('task-date').value = x.date; }
                     if(type==='shop') document.getElementById('shop-date').value=x.date;
                     if(type==='goal') { document.getElementById('goal-cur').value=x.cur; document.getElementById('goal-tar').value=x.tar; document.getElementById('goal-unit').value=x.unit; }
                 }
@@ -532,12 +552,7 @@
             let obj = { title };
             if(type==='appt') { obj.date=document.getElementById('appt-date').value; obj.time=document.getElementById('appt-time').value; obj.loc=document.getElementById('appt-loc').value; }
             if(type==='fixed') obj.day=parseInt(document.getElementById('fixed-day').value);
-            
-            if(type==='task') {
-                obj.prio=document.getElementById('task-prio').checked;
-                obj.date=document.getElementById('task-date').value; 
-            }
-            
+            if(type==='task') { obj.prio=document.getElementById('task-prio').checked; obj.date=document.getElementById('task-date').value; }
             if(type==='shop') obj.date=document.getElementById('shop-date').value;
             if(type==='goal') { obj.cur=parseFloat(document.getElementById('goal-cur').value); obj.tar=parseFloat(document.getElementById('goal-tar').value); obj.unit=document.getElementById('goal-unit').value; }
 
@@ -561,25 +576,6 @@
                 save(); closeModal(type);
             }
         }
-
-        // --- SYNC ---
-        function exportData() {
-            const d = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
-            const a = document.createElement('a'); a.href = d; a.download = "benai_tracker_backup.json"; a.click();
-        }
-        function importData(i) {
-            const f = i.files[0]; if(!f) return;
-            const r = new FileReader(); r.onload = e => { db = JSON.parse(e.target.result); save(); location.reload(); };
-            r.readAsText(f);
-        }
-        async function shareData() {
-            const blob = new Blob([JSON.stringify(db)], { type: 'application/json' });
-            const file = new File([blob], "benai_tracker.json", { type: 'application/json' });
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                try { await navigator.share({ files: [file], title: 'Backup' }); } catch (err) {}
-            } else { alert("Use o botão Baixar."); }
-        }
-        function hardReset() { if(confirm("Apagar tudo?")) { localStorage.removeItem(STABLE_KEY); location.reload(); } }
 
         function showToast() { const t=document.getElementById('toast'); t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2000); }
 
