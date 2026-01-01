@@ -3,72 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Benai Generator | Cloud</title>
+    <title>Benai Generator | Cloud Sync</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;800&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 
-<script>
-        (function() {
-            // --- CONFIGURAÇÃO DA SENHA ---
-            const PIN_CORRETO = "16359001"; 
-            // -----------------------------
-
-            if (sessionStorage.getItem("benai_access_granted") === "true") return;
-
-            document.write(`
-                <style>
-                    body { visibility: hidden; overflow: hidden; }
-                    #gatekeeper {
-                        visibility: visible; position: fixed; inset: 0;
-                        background: #0f172a; color: white; z-index: 99999;
-                        display: flex; flex-direction: column; align-items: center; justify-content: center;
-                        font-family: 'Outfit', sans-serif;
-                    }
-                    .pin-box { text-align: center; animation: fadeIn 0.5s ease; width: 90%; max-width: 350px; }
-                    .pin-inp { 
-                        padding: 15px; font-size: 1.5rem; text-align: center; 
-                        border-radius: 15px; border: 2px solid rgba(56, 189, 248, 0.3); outline: none; margin-top: 25px;
-                        background: rgba(255,255,255,0.05); color: white; letter-spacing: 4px; width: 100%;
-                        transition: 0.3s;
-                    }
-                    .pin-inp:focus { border-color: #38bdf8; box-shadow: 0 0 20px rgba(56, 189, 248, 0.2); }
-                    .pin-msg { color: #f87171; margin-top: 15px; font-weight: 600; font-size: 0.9rem; height: 20px; }
-                    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-                </style>
-                <div id="gatekeeper">
-                    <div class="pin-box">
-                        <i class="fa-solid fa-shield-halved" style="font-size: 3rem; color: #38bdf8; margin-bottom: 15px;"></i>
-                        <h2 style="font-size: 1.5rem; letter-spacing: -1px;">Sistema Protegido</h2>
-                        <p style="opacity: 0.6; font-size: 0.85rem;">Insira o código de 8 dígitos</p>
-                        <input type="password" class="pin-inp" maxlength="8" placeholder="********" inputmode="numeric" autocomplete="off" onkeyup="verifyPin(this)">
-                        <div class="pin-msg" id="pin-error"></div>
-                    </div>
-                </div>
-            `);
-
-            window.verifyPin = function(el) {
-                if (el.value.length === 8) {
-                    if (el.value === PIN_CORRETO) {
-                        sessionStorage.setItem("benai_access_granted", "true");
-                        location.reload();
-                    } else {
-                        document.getElementById("pin-error").innerText = "Código Incorreto";
-                        el.value = "";
-                        if(navigator.vibrate) navigator.vibrate(200);
-                    }
-                }
-            };
-        })();
-    </script>
     <style>
         :root {
             --primary: #001F5B; --accent: #00A8E8; --bg: #f0f2f5;
             --surface: #ffffff; --border: #e2e8f0; --text: #1f2937;
             --success: #10b981; --danger: #ef4444; 
             
-            /* CORES IDÊNTICAS AO ALUNO.HTML */
             --c-drop: #ef4444; --c-rnp: #f59e0b; --c-iso: #06b6d4; 
             --c-pyr: #8b5cf6; --c-fst: #ec4899; --c-bi: #00A8E8; --c-tri: #6366f1;
             
@@ -82,12 +28,10 @@
 
         body { margin: 0; height: 100vh; display: grid; grid-template-columns: 280px 1fr 320px; overflow: hidden; background: var(--bg); color: var(--text); font-size: 13px; }
 
-        /* SIDEBARS */
         .sidebar { background: var(--surface); display: flex; flex-direction: column; padding: 20px; border-right: 1px solid var(--border); border-left: 1px solid var(--border); z-index: 10; height: 100vh; overflow: hidden; }
         .brand-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-shrink: 0; }
         .brand { color: var(--primary); font-family: var(--font-num); font-weight: 800; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; text-transform:uppercase; letter-spacing:0.5px;}
         
-        /* Botões de Config */
         .icon-btn { width: 34px; height: 34px; border-radius: 10px; background: rgba(0, 168, 232, 0.05); color: var(--accent); border: 1px solid rgba(0, 168, 232, 0.2); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
         .icon-btn:hover { background: var(--accent); color: white; }
         
@@ -105,16 +49,13 @@
         .st-del { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #cbd5e1; cursor: pointer; padding: 6px; z-index: 5; }
         .st-del:hover { color: var(--danger); background: #fee2e2; border-radius: 6px; }
 
-        /* BUTTONS */
         .btn { padding: 10px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.85rem; transition: 0.2s; }
         .btn-pri { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(0,31,91,0.2); }
         .btn-sec { background: white; border: 1px solid var(--border); color: var(--text); }
         .btn-acc { background: var(--accent); color: white; }
         .btn:hover { transform: translateY(-1px); opacity: 0.9; }
 
-        /* CENTER AREA */
         .col-center { display: flex; flex-direction: column; background: #e2e8f0; height: 100vh; overflow: hidden; }
-        
         .toolbar { background: var(--surface); padding: 12px 20px; border-bottom: 1px solid var(--border); display: flex; gap: 10px; align-items: center; overflow-x: auto; white-space: nowrap; flex-shrink: 0; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
         .toolbar-label { font-weight: 800; color: var(--primary); font-size: 0.7rem; margin-right: 5px; }
         .chip { padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; cursor: pointer; border: 1px solid var(--border); background: white; color: #64748b; transition: 0.2s; display: flex; flex-direction: column; align-items: center; line-height: 1.1; min-width: 70px; }
@@ -122,7 +63,6 @@
         .chip:hover { border-color: var(--accent); background: var(--accent); color: white; transform: translateY(-1px); }
 
         .canvas { flex: 1; overflow-y: auto; padding: 30px; display: flex; justify-content: center; align-items: flex-start; scroll-behavior: smooth; }
-        
         .phone { width: 100%; max-width: 480px; background: white; border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); display: flex; flex-direction: column; min-height: 800px; border: 1px solid #cbd5e1; overflow: hidden; margin-bottom: 50px; }
         .ph-header { background: var(--primary); padding: 25px 20px; color: white; }
         .ph-inp { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 10px 12px; border-radius: 8px; width: 100%; margin-bottom: 8px; font-weight: 600; font-family: var(--font-ui); font-size: 0.95rem; }
@@ -130,16 +70,11 @@
         .ph-inp:focus { background: rgba(255,255,255,0.2); border-color: white; outline: none; }
         .ph-body { padding: 15px; background: #f8fafc; flex: 1; display: flex; flex-direction: column; gap: 15px; }
 
-        /* --- BLOCOS (ESTILO FINAL) --- */
-        
-        /* 1. Normal: Invisivel (Sem borda dupla) */
         .normal-wrap { background: transparent; border: none; margin-bottom: 15px; transition: 0.2s; }
         .normal-wrap .block-head { background: transparent; padding: 0 0 5px 5px; border-bottom: 1px solid #e2e8f0; margin-bottom: 10px; }
         .normal-wrap .block-body { padding: 0; }
-        /* Título Normal */
         .w-title { background: transparent; border: none; font-weight: 800; font-family:var(--font-num); color: var(--primary); font-size: 0.85rem; text-transform: uppercase; width: 100%; }
 
-        /* 2. Bi/Tri: Visível com Borda Pontilhada */
         .biset-cont { border: 2px dashed var(--c-bi); background: #f0f9ff; border-radius: 16px; margin-bottom: 15px; overflow:hidden; transition: 0.2s; }
         .biset-cont .block-head { background: #e0f2fe; padding: 8px 12px; border-bottom:1px solid rgba(0,0,0,0.05); }
         .biset-cont .block-body { padding: 10px; }
@@ -148,43 +83,19 @@
         .triset-cont .block-head { background: #f3e8ff; padding: 8px 12px; border-bottom:1px solid rgba(0,0,0,0.05); }
         .triset-cont .block-body { padding: 10px; }
 
-        /* DESTAQUE DE BLOCO ATIVO (PEDIDO) */
-        .active-block {
-            border: 2px solid var(--primary) !important; /* Borda Sólida Escura */
-            box-shadow: 0 0 0 4px rgba(0, 31, 91, 0.1);
-        }
-        /* Para o bloco normal, como ele é transparente, colocamos uma borda sutil para indicar seleção */
-        .normal-wrap.active-block {
-            border: 2px solid var(--primary) !important;
-            background: rgba(255,255,255,0.5);
-            padding: 10px;
-            border-radius: 16px;
-        }
+        .active-block { border: 2px solid var(--primary) !important; box-shadow: 0 0 0 4px rgba(0, 31, 91, 0.1); }
+        .normal-wrap.active-block { border: 2px solid var(--primary) !important; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 16px; }
 
         .block-head { display: flex; justify-content: space-between; align-items: center; gap:10px; }
         .blk-actions { display:flex; gap:5px; }
         .blk-btn { width:24px; height:24px; border-radius:4px; background:rgba(255,255,255,0.5); display:flex; align-items:center; justify-content:center; cursor:pointer; color:#64748b; font-size:0.7rem; }
         .blk-btn:hover { background:white; color:var(--primary); }
 
-        /* ROWS */
-        .ex-row { 
-            padding: 12px; border: 1px solid #e2e8f0; background: white; 
-            border-radius: 12px; position: relative; margin-bottom: 10px; 
-            border-left-width: 4px; border-left-color: #cbd5e1; cursor: pointer;
-            transition: 0.2s;
-        }
-        /* Seleção de Exercício */
+        .ex-row { padding: 12px; border: 1px solid #e2e8f0; background: white; border-radius: 12px; position: relative; margin-bottom: 10px; border-left-width: 4px; border-left-color: #cbd5e1; cursor: pointer; transition: 0.2s; }
         .ex-row.selected { border: 2px solid var(--accent); background: #f0f9ff; }
-        
-        /* Dentro de Bi/Tri */
-        .biset-cont .ex-row, .triset-cont .ex-row {
-            border: none; border-radius: 0; margin-bottom: 0; 
-            border-bottom: 1px dashed #cbd5e1; background: transparent;
-            border-left-width: 4px; 
-        }
+        .biset-cont .ex-row, .triset-cont .ex-row { border: none; border-radius: 0; margin-bottom: 0; border-bottom: 1px dashed #cbd5e1; background: transparent; border-left-width: 4px; }
         .biset-cont .ex-row:last-child, .triset-cont .ex-row:last-child { border-bottom: none; }
 
-        /* Cores de Método */
         .ex-row[data-method="Drop"] { border-left-color: var(--c-drop); } 
         .ex-row[data-method="RNP"] { border-left-color: var(--c-rnp); } 
         .ex-row[data-method="Iso"] { border-left-color: var(--c-iso); } 
@@ -340,8 +251,6 @@
     </div>
 </div>
 
-<input type="file" id="importFile" hidden onchange="importData(this)">
-
 <div id="modal-sync" class="modal">
     <div class="modal-box">
         <i class="fa-solid fa-xmark modal-close" onclick="closeModal('sync')"></i>
@@ -352,8 +261,10 @@
     </div>
 </div>
 
+<input type="file" id="importFile" hidden onchange="importData(this)">
+
 <script>
-    // --- DADOS ---
+    // --- DADOS E CHAVES ---
     const KEY_LIB = 'benai_coach_lib_main';
     const KEY_STU = 'benai_coach_stu_main';
     const KEY_CAT = 'benai_coach_cat_main';
@@ -367,12 +278,10 @@
     init();
 
     function init() {
-        // Carrega Dados Locais
         appData.library = JSON.parse(localStorage.getItem(KEY_LIB)) || [];
         appData.students = JSON.parse(localStorage.getItem(KEY_STU)) || [];
         appData.categories = JSON.parse(localStorage.getItem(KEY_CAT)) || ["Peito","Costas","Pernas","Ombros","Bíceps","Tríceps","Core","Mobilidade","Cardio"];
         
-        // Token Check
         const t = localStorage.getItem(KEY_TOKEN);
         if(t) document.getElementById('ghTokenInp').value = t;
 
@@ -387,7 +296,7 @@
         localStorage.setItem(KEY_CAT, JSON.stringify(appData.categories));
     }
 
-    // --- NUVEM (GIST) ---
+    // --- NUVEM: SALVAR E ATUALIZAR (LÓGICA CORRIGIDA) ---
     function saveToken() {
         const t = document.getElementById('ghTokenInp').value;
         if(t) { localStorage.setItem(KEY_TOKEN, t); alert("Token Salvo!"); closeModal('cloud-config'); }
@@ -400,11 +309,12 @@
 
         const btn = document.getElementById('btn-generate');
         const msg = document.getElementById('status-msg');
-        btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+        btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
         
+        // Garante que salvou localmente antes
         saveCurrent();
 
-        // Prepara JSON Limpo
+        // Prepara o Objeto do Treino
         const l=(currentWorkout.logicList||[]).join('\n');
         const workoutData = {
             name: currentWorkout.name,
@@ -422,9 +332,18 @@
         };
 
         try {
-            // Cria Gist
-            const res = await fetch('https://api.github.com/gists', {
-                method: 'POST',
+            // DECISÃO: CRIAR OU ATUALIZAR?
+            let url = 'https://api.github.com/gists';
+            let method = 'POST'; // Padrão: Criar Novo
+
+            // Se o aluno JÁ TEM um ID de nuvem salvo, usamos PATCH para atualizar
+            if (currentWorkout.cloudId) {
+                url += '/' + currentWorkout.cloudId;
+                method = 'PATCH';
+            }
+
+            const res = await fetch(url, {
+                method: method,
                 headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     description: `Treino: ${currentWorkout.name}`,
@@ -435,20 +354,30 @@
                 })
             });
 
-            if(!res.ok) throw new Error("Erro GitHub");
-            const json = await res.json();
-            const gistId = json.id;
+            if(!res.ok) {
+                // Se der erro 404 (Gist não existe mais), tenta criar um novo
+                if(res.status === 404 && currentWorkout.cloudId) {
+                    currentWorkout.cloudId = null; // Limpa ID inválido
+                    return saveToCloudAndLink(); // Tenta de novo como POST
+                }
+                throw new Error("Erro GitHub: " + res.status);
+            }
 
-            // Gera Link
+            const json = await res.json();
+            
+            // IMPORTANTE: Salva o ID retornado na ficha do aluno
+            currentWorkout.cloudId = json.id;
+            saveCurrent(); // Persiste o ID localmente
+
+            // Gera o Link usando o ID (que agora é fixo)
             let p = window.location.href.split('?')[0];
             p = p.substring(0, p.lastIndexOf('/')+1);
-            const finalLink = `${p}aluno.html?id=${gistId}`;
+            const finalLink = `${p}aluno.html?id=${currentWorkout.cloudId}`;
 
             navigator.clipboard.writeText(finalLink);
-            msg.innerText = "Link copiado para a memória!";
+            msg.innerText = "Link copiado e salvo!";
             msg.style.color = "#10b981";
             
-            // Reabilita em 2s
             setTimeout(() => { btn.disabled = false; btn.innerHTML = '<i class="fas fa-link"></i> Link Copiado!'; }, 500);
             setTimeout(() => { btn.innerHTML = '<i class="fas fa-cloud-arrow-up"></i> SALVAR E GERAR LINK'; msg.innerText = ""; }, 3000);
 
@@ -458,40 +387,21 @@
         }
     }
 
-    // --- MANIPULAÇÃO (Igual Anterior) ---
-    function applyPreset(s, r, t) {
-        if(!activeExerciseId) return alert("Selecione um exercício.");
-        const { blockId, itemIdx, subIdx } = activeExerciseId;
-        const b = getB(blockId);
-        let item = (subIdx !== null && b.items[itemIdx].data) ? b.items[itemIdx].data[subIdx] : b.items[itemIdx];
-        item.sets = s; item.reps = r; item.rest = t;
-        saveCurrent(); renderBuilder();
-    }
-
-    function renderLogic() {
-        const c = document.getElementById('logicContainer'); c.innerHTML = '';
-        if(!currentWorkout.logicList) currentWorkout.logicList = [];
-        currentWorkout.logicList.forEach((txt, idx) => {
-            const row = document.createElement('div'); row.className = 'logic-item';
-            row.innerHTML = `<input class="logic-inp" value="${txt}" onchange="updLogic(${idx}, this.value)"><div class="logic-del" onclick="delLogic(${idx})"><i class="fas fa-trash"></i></div>`;
-            c.appendChild(row);
-        });
-    }
-    function addLogicTopic() { if(!currentWorkout.logicList) currentWorkout.logicList = []; currentWorkout.logicList.push(""); saveCurrent(); renderLogic(); }
-    function updLogic(idx, val) { currentWorkout.logicList[idx] = val; saveCurrent(); }
-    function delLogic(idx) { currentWorkout.logicList.splice(idx, 1); saveCurrent(); renderLogic(); }
-
+    // --- MANIPULAÇÃO DE TREINO ---
     function createNewWorkout() {
-        currentWorkout = { id: Date.now(), name: '', focus: '', logicList: [], blocks: [] };
+        // ID: timestamp, cloudId: null (para criar novo gist na primeira vez)
+        currentWorkout = { id: Date.now(), cloudId: null, name: '', focus: '', logicList: [], blocks: [] };
         addBlock('Normal'); document.getElementById('sName').value = ''; document.getElementById('sFocus').value = '';
         activeExerciseId = null; renderBuilder(); renderLogic();
     }
+
     function addBlock(type) {
         if(!currentWorkout) createNewWorkout();
         let name = 'Bloco Principal'; if(type==='BiSet') name = 'Bi-Set'; if(type==='TriSet') name = 'Tri-Set';
         currentWorkout.blocks.push({ id: Date.now(), type: type, name: name, items: [] });
         saveCurrent(); renderBuilder();
     }
+
     function saveCurrent() {
         if(!currentWorkout) return;
         currentWorkout.name = document.getElementById('sName').value;
@@ -502,11 +412,17 @@
             saveData(); renderStudentList();
         }
     }
+
     function loadStudent(id) {
         const s = appData.students.find(x => x.id === id);
         if(s) { currentWorkout = JSON.parse(JSON.stringify(s)); if(!currentWorkout.logicList) currentWorkout.logicList = (currentWorkout.logic||'').split('\n').filter(x=>x); activeExerciseId = null; renderBuilder(); renderLogic(); }
     }
 
+    function filterStudents(v){const l=document.getElementById('studentList');l.innerHTML='';appData.students.filter(s=>s.name.toLowerCase().includes(v.toLowerCase())).forEach(s=>{const d=document.createElement('div');d.className=`student-item ${currentWorkout&&s.id===currentWorkout.id?'active':''}`;d.innerHTML=`<div><span class="st-name">${s.name}</span><span class="st-focus">${s.focus||'Sem objetivo'}</span></div><i class="fas fa-trash st-del" onclick="delStudent(${s.id},event)"></i>`;d.onclick=()=>loadStudent(s.id);l.appendChild(d);});}
+    function delStudent(id,e){ e.stopPropagation(); if(confirm("Apagar aluno permanentemente?")){ appData.students=appData.students.filter(s=>s.id!==id); saveData(); if(currentWorkout&&currentWorkout.id===id) createNewWorkout(); renderStudentList(); } }
+    function renderStudentList(){filterStudents('');}
+
+    // --- BUILDER RENDER ---
     function renderBuilder() {
         document.getElementById('sName').value = currentWorkout.name || '';
         document.getElementById('sFocus').value = currentWorkout.focus || '';
@@ -541,6 +457,7 @@
         return `<div class="ex-row ${isActive?'selected':''}" data-method="${item.method}" onclick="selectExercise(${bId},${idx},null)"><div class="ex-header"><span class="ex-name">${item.name}</span></div>${tabsHtml}<div class="pills-edit">${fieldsHtml}<div class="pill-group pill-int"><span class="pill-lbl">INT FINAL</span><input class="pill-inp" type="text" value="${item.rest}" onchange="updItem(${bId},${idx},'rest',this.value)" onclick="event.stopPropagation()"></div></div><input class="obs-inp" value="${item.obs}" placeholder="Carga / Obs..." onchange="updItem(${bId},${idx},'obs',this.value)" onclick="event.stopPropagation()"><div class="row-actions"><div class="act-btn" onclick="moveItem(${bId},${idx},-1);event.stopPropagation();"><i class="fas fa-arrow-up"></i></div><div class="act-btn" onclick="moveItem(${bId},${idx},1);event.stopPropagation();"><i class="fas fa-arrow-down"></i></div><div class="act-btn" style="color:var(--danger);" onclick="delItem(${bId},${idx});event.stopPropagation();"><i class="fas fa-trash"></i></div></div></div>`;
     }
 
+    // FUNÇÕES DE SUPORTE
     function getB(id) { return currentWorkout.blocks.find(b=>b.id===id); }
     function updBlock(id, val) { getB(id).name = val; saveCurrent(); }
     function selectExercise(bId, idx, sIdx) { activeExerciseId = { blockId: bId, itemIdx: idx, subIdx: sIdx }; renderBuilder(); }
@@ -551,9 +468,11 @@
     function delItem(bId,idx){const b=getB(bId);b.items.splice(idx,1);activeExerciseId=null;saveCurrent();renderBuilder();}
     function moveItem(bId,idx,d){const b=getB(bId);if(idx+d<0||idx+d>=b.items.length)return;const t=b.items[idx];b.items[idx]=b.items[idx+d];b.items[idx+d]=t;if(activeExerciseId&&activeExerciseId.blockId===bId&&activeExerciseId.itemIdx===idx)activeExerciseId.itemIdx+=d;saveCurrent();renderBuilder();}
     function renderLib(){const l=document.getElementById('libList'),t=document.getElementById('searchLib').value.toLowerCase(),c=document.getElementById('catFilter').value;l.innerHTML='';appData.library.filter(x=>x.name.toLowerCase().includes(t)&&(c==='Todas'||x.cat===c)).forEach(x=>{const d=document.createElement('div');d.className='item-card';d.innerHTML=`<div style="font-weight:600;color:var(--text);font-size:0.85rem;"><span class="cat-dot" style="background:${catColors[x.cat]||'#999'}"></span> ${x.name}</div><div style="display:flex;gap:8px;"><i class="fas fa-pen" style="color:#cbd5e1;font-size:0.7rem;" onclick="editEx(${x.id},event)"></i><i class="fas fa-trash" style="color:#cbd5e1;font-size:0.7rem;" onclick="delEx(${x.id},event)"></i></div>`;d.onclick=(e)=>{if(e.target.tagName!=='I')addItem(x)};l.appendChild(d);});}
-    function filterStudents(v){const l=document.getElementById('studentList');l.innerHTML='';appData.students.filter(s=>s.name.toLowerCase().includes(v.toLowerCase())).forEach(s=>{const d=document.createElement('div');d.className=`student-item ${currentWorkout&&s.id===currentWorkout.id?'active':''}`;d.innerHTML=`<div><span class="st-name">${s.name}</span><span class="st-focus">${s.focus||'Sem objetivo'}</span></div><i class="fas fa-trash st-del" onclick="delStudent(${s.id},event)"></i>`;d.onclick=()=>loadStudent(s.id);l.appendChild(d);});}
-    function delStudent(id,e){ e.stopPropagation(); if(confirm("Apagar aluno permanentemente?")){ appData.students=appData.students.filter(s=>s.id!==id); saveData(); if(currentWorkout&&currentWorkout.id===id) createNewWorkout(); renderStudentList(); } }
-    function renderStudentList(){filterStudents('');}
+    function renderLogic() { const c = document.getElementById('logicContainer'); c.innerHTML = ''; if(!currentWorkout.logicList) currentWorkout.logicList = []; currentWorkout.logicList.forEach((txt, idx) => { const row = document.createElement('div'); row.className = 'logic-item'; row.innerHTML = `<input class="logic-inp" value="${txt}" onchange="updLogic(${idx}, this.value)"><div class="logic-del" onclick="delLogic(${idx})"><i class="fas fa-trash"></i></div>`; c.appendChild(row); }); }
+    function addLogicTopic() { if(!currentWorkout.logicList) currentWorkout.logicList = []; currentWorkout.logicList.push(""); saveCurrent(); renderLogic(); }
+    function updLogic(idx, val) { currentWorkout.logicList[idx] = val; saveCurrent(); }
+    function delLogic(idx) { currentWorkout.logicList.splice(idx, 1); saveCurrent(); renderLogic(); }
+    function applyPreset(s, r, t) { if(!activeExerciseId) return alert("Selecione um exercício."); const { blockId, itemIdx, subIdx } = activeExerciseId; const b = getB(blockId); let item = (subIdx !== null && b.items[itemIdx].data) ? b.items[itemIdx].data[subIdx] : b.items[itemIdx]; item.sets = s; item.reps = r; item.rest = t; saveCurrent(); renderBuilder(); }
     function populateCats(){const s=[document.getElementById('catFilter'),document.getElementById('exCat')];s[0].innerHTML='<option value="Todas">Todas</option>';s[1].innerHTML='';appData.categories.forEach(c=>{s[0].add(new Option(c,c));s[1].add(new Option(c,c));});}
     function openExModal(){document.getElementById('exId').value='';document.getElementById('exName').value='';document.getElementById('exLink').value='';openModal('ex');}
     function editEx(id,e){e.stopPropagation();const x=appData.library.find(z=>z.id===id);document.getElementById('exId').value=x.id;document.getElementById('exName').value=x.name;document.getElementById('exCat').value=x.cat;document.getElementById('exLink').value=x.link||'';openModal('ex');}
