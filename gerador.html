@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Benai Generator | Final Master</title>
+    <title>Benai Generator | Cloud</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -86,7 +86,10 @@
         .sidebar { background: var(--surface); display: flex; flex-direction: column; padding: 20px; border-right: 1px solid var(--border); border-left: 1px solid var(--border); z-index: 10; height: 100vh; overflow: hidden; }
         .brand-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-shrink: 0; }
         .brand { color: var(--primary); font-family: var(--font-num); font-weight: 800; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; text-transform:uppercase; letter-spacing:0.5px;}
-        .cloud-btn { width: 34px; height: 34px; border-radius: 10px; background: rgba(0, 168, 232, 0.05); color: var(--accent); border: 1px solid rgba(0, 168, 232, 0.2); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+        
+        /* Botões de Config */
+        .icon-btn { width: 34px; height: 34px; border-radius: 10px; background: rgba(0, 168, 232, 0.05); color: var(--accent); border: 1px solid rgba(0, 168, 232, 0.2); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+        .icon-btn:hover { background: var(--accent); color: white; }
         
         .list-header { font-weight: 800; color: var(--text); font-size: 0.75rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0; }
         .list-scroll { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; padding-right: 5px; padding-bottom: 20px; }
@@ -202,11 +205,9 @@
         .pills-edit { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; align-items: flex-end; }
         .pill-group { display: flex; flex-direction: column; align-items: flex-start; }
         .pill-lbl { font-size: 0.6rem; color: #94a3b8; font-weight: 800; text-transform: uppercase; margin-bottom: 2px; letter-spacing: 0.5px; }
-        
         .pill-inp { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px; font-size: 0.85rem; font-weight: 700; color: var(--primary); width: 60px; text-align: center; font-family: var(--font-num); }
         .pill-inp:focus { border-color: var(--accent); outline:none; }
         .pill-inp:disabled { background: #f1f5f9; color: #94a3b8; border-color: #e2e8f0; }
-        
         .pill-int { margin-left: auto; border-left: 1px solid #e2e8f0; padding-left: 15px; }
         .obs-inp { width: 100%; border: none; background: #fffbeb; padding: 8px; font-size: 0.8rem; color: #b45309; border-radius: 6px; }
 
@@ -214,12 +215,6 @@
         .act-btn { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #cbd5e1; transition: 0.2s; }
         .act-btn:hover { background: #f1f5f9; color: var(--danger); }
 
-        /* Helpers */
-        .btn { padding: 10px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.85rem; transition: 0.2s; }
-        .btn-pri { background: var(--primary); color: white; }
-        .btn-sec { background: white; border: 1px solid var(--border); color: var(--text); }
-        .btn-acc { background: var(--accent); color: white; }
-        
         .logic-list { display: flex; flex-direction: column; gap: 8px; }
         .logic-item { display: flex; gap: 5px; }
         .logic-inp { flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.85rem; font-family:var(--font-ui); background: white; }
@@ -237,7 +232,10 @@
 <body>
 
 <div class="sidebar col-left">
-    <div class="brand-area"><div class="brand"><i class="fas fa-bolt"></i> BENAI GENERATOR</div><div class="cloud-btn" onclick="openModal('sync')"><i class="fa-solid fa-cloud"></i></div></div>
+    <div class="brand-area">
+        <div class="brand"><i class="fas fa-bolt"></i> BENAI GENERATOR</div>
+        <div class="icon-btn" onclick="openModal('cloud-config')" title="Configurar Token"><i class="fa-solid fa-gear"></i></div>
+    </div>
     <button class="btn btn-pri" style="width:100%; margin-bottom:15px;" onclick="createNewWorkout()"><i class="fas fa-user-plus"></i> Novo Aluno</button>
     <input class="search-inp" placeholder="Buscar aluno..." onkeyup="filterStudents(this.value)">
     <div class="list-header">Meus Alunos</div><div class="list-scroll" id="studentList"></div>
@@ -299,19 +297,20 @@
     <div class="list-scroll" id="libList"></div>
 
     <div style="padding-top:20px; border-top:1px solid var(--border); margin-top:auto;">
-        <button class="btn btn-acc" style="width:100%; height:50px; font-size:1rem;" onclick="generateLink()">
-            <i class="fas fa-link"></i> SALVAR E GERAR LINK
+        <button class="btn btn-acc" id="btn-generate" style="width:100%; height:50px; font-size:1rem;" onclick="saveToCloudAndLink()">
+            <i class="fas fa-cloud-arrow-up"></i> SALVAR E GERAR LINK
         </button>
+        <p id="status-msg" style="text-align:center; font-size:0.75rem; color:#64748b; margin-top:8px; height:15px;"></p>
     </div>
 </div>
 
-<div id="modal-sync" class="modal">
+<div id="modal-cloud-config" class="modal">
     <div class="modal-box">
-        <i class="fa-solid fa-xmark modal-close" onclick="closeModal('sync')"></i>
-        <div style="font-weight:800; font-size:1.2rem; color:var(--primary); margin-bottom:20px;">Central de Dados</div>
-        <button class="sync-btn" onclick="exportData()"><i class="fa-solid fa-download" style="color:var(--accent)"></i> <div>Baixar JSON (Backup PC)</div></button>
-        <button class="sync-btn" onclick="document.getElementById('importFile').click()"><i class="fa-solid fa-upload" style="color:var(--primary)"></i> <div>Restaurar JSON</div></button>
-        <button class="sync-btn" style="border-color:var(--danger); color:var(--danger); margin-top:10px;" onclick="hardReset()"><i class="fa-solid fa-trash"></i> Resetar Tudo</button>
+        <div class="modal-h">Configuração Nuvem</div>
+        <p style="font-size:0.8rem; color:#64748b; margin-bottom:10px;">Insira seu Token do GitHub para ativar o envio de treinos.</p>
+        <input class="search-inp" id="ghTokenInp" type="password" placeholder="GitHub Token (ghp_...)">
+        <button class="btn btn-pri" style="width:100%" onclick="saveToken()">Salvar</button>
+        <button class="btn btn-sec" style="width:100%; margin-top:10px;" onclick="closeModal('cloud-config')">Fechar</button>
     </div>
 </div>
 
@@ -343,62 +342,43 @@
 
 <input type="file" id="importFile" hidden onchange="importData(this)">
 
+<div id="modal-sync" class="modal">
+    <div class="modal-box">
+        <i class="fa-solid fa-xmark modal-close" onclick="closeModal('sync')"></i>
+        <div style="font-weight:800; font-size:1.2rem; color:var(--primary); margin-bottom:20px;">Central de Dados</div>
+        <button class="sync-btn" onclick="exportData()"><i class="fa-solid fa-download" style="color:var(--accent)"></i> <div>Baixar JSON (Backup PC)</div></button>
+        <button class="sync-btn" onclick="document.getElementById('importFile').click()"><i class="fa-solid fa-upload" style="color:var(--primary)"></i> <div>Restaurar JSON</div></button>
+        <button class="sync-btn" style="border-color:var(--danger); color:var(--danger); margin-top:10px;" onclick="hardReset()"><i class="fa-solid fa-trash"></i> Resetar Tudo</button>
+    </div>
+</div>
+
 <script>
-    // CHAVES MESTRAS PARA EVITAR PERDA DE DADOS
+    // --- DADOS ---
     const KEY_LIB = 'benai_coach_lib_main';
     const KEY_STU = 'benai_coach_stu_main';
     const KEY_CAT = 'benai_coach_cat_main';
-    
-    // Lista de chaves antigas para migração automática
-    const OLD_KEYS_LIB = ['benai_lib_v13', 'benai_lib_v12', 'benai_lib_v11'];
-    const OLD_KEYS_STU = ['benai_students_v13', 'benai_students_v12'];
-    const OLD_KEYS_CAT = ['benai_cats_v13', 'benai_cats_v12'];
+    const KEY_TOKEN = 'benai_coach_gh_token';
 
-    let appData = {
-        library: [],
-        students: [],
-        categories: []
-    };
-
+    let appData = { library: [], students: [], categories: [] };
     let currentWorkout = null;
     let activeExerciseId = null; 
-    
     const catColors = { 'Peito':'#ef4444', 'Costas':'#3b82f6', 'Pernas':'#eab308', 'Ombros':'#f97316', 'Bíceps':'#a855f7', 'Tríceps':'#ec4899', 'Core':'#10b981', 'Mobilidade':'#06b6d4', 'Cardio':'#6366f1' };
 
     init();
 
     function init() {
-        // Tenta carregar Main
-        let lib = localStorage.getItem(KEY_LIB);
-        let stu = localStorage.getItem(KEY_STU);
-        let cat = localStorage.getItem(KEY_CAT);
-
-        // Se vazio, tenta migrar
-        if(!lib) lib = migrate(OLD_KEYS_LIB, KEY_LIB);
-        if(!stu) stu = migrate(OLD_KEYS_STU, KEY_STU);
-        if(!cat) cat = migrate(OLD_KEYS_CAT, KEY_CAT);
-
-        appData.library = JSON.parse(lib) || [];
-        appData.students = JSON.parse(stu) || [];
-        appData.categories = JSON.parse(cat) || ["Peito","Costas","Pernas","Ombros","Bíceps","Tríceps","Core","Mobilidade","Cardio"];
-
-        populateCats();
-        renderLib(); 
-        renderStudentList();
+        // Carrega Dados Locais
+        appData.library = JSON.parse(localStorage.getItem(KEY_LIB)) || [];
+        appData.students = JSON.parse(localStorage.getItem(KEY_STU)) || [];
+        appData.categories = JSON.parse(localStorage.getItem(KEY_CAT)) || ["Peito","Costas","Pernas","Ombros","Bíceps","Tríceps","Core","Mobilidade","Cardio"];
         
+        // Token Check
+        const t = localStorage.getItem(KEY_TOKEN);
+        if(t) document.getElementById('ghTokenInp').value = t;
+
+        populateCats(); renderLib(); renderStudentList();
         if(appData.students.length > 0) loadStudent(appData.students[0].id);
         else createNewWorkout();
-    }
-
-    function migrate(oldKeys, newKey) {
-        for(let k of oldKeys) {
-            let d = localStorage.getItem(k);
-            if(d) {
-                localStorage.setItem(newKey, d); // Salva na nova
-                return d;
-            }
-        }
-        return null;
     }
 
     function saveData() {
@@ -407,9 +387,80 @@
         localStorage.setItem(KEY_CAT, JSON.stringify(appData.categories));
     }
 
-    // --- PROTOCOLS (PRESETS) ---
+    // --- NUVEM (GIST) ---
+    function saveToken() {
+        const t = document.getElementById('ghTokenInp').value;
+        if(t) { localStorage.setItem(KEY_TOKEN, t); alert("Token Salvo!"); closeModal('cloud-config'); }
+    }
+
+    async function saveToCloudAndLink() {
+        if(!currentWorkout.name) return alert("Preencha o nome!");
+        const token = localStorage.getItem(KEY_TOKEN);
+        if(!token) return alert("Configure o Token do GitHub na engrenagem!");
+
+        const btn = document.getElementById('btn-generate');
+        const msg = document.getElementById('status-msg');
+        btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+        
+        saveCurrent();
+
+        // Prepara JSON Limpo
+        const l=(currentWorkout.logicList||[]).join('\n');
+        const workoutData = {
+            name: currentWorkout.name,
+            focus: currentWorkout.focus,
+            logic: l,
+            blocks: currentWorkout.blocks.map(b=>({
+                name: b.name,
+                type: b.type==='BiSet'?'biset':(b.type==='TriSet'?'triset':'block'),
+                items: b.items.map(i=>({
+                    name:i.name, link:i.link, sets:i.sets, reps:i.reps, 
+                    rest:i.rest, obs:i.obs, method:i.method, 
+                    drops:i.drops, isoReps:i.isoReps, rnpRest:i.rnpRest
+                }))
+            }))
+        };
+
+        try {
+            // Cria Gist
+            const res = await fetch('https://api.github.com/gists', {
+                method: 'POST',
+                headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    description: `Treino: ${currentWorkout.name}`,
+                    public: false,
+                    files: {
+                        "treino.json": { content: JSON.stringify(workoutData) }
+                    }
+                })
+            });
+
+            if(!res.ok) throw new Error("Erro GitHub");
+            const json = await res.json();
+            const gistId = json.id;
+
+            // Gera Link
+            let p = window.location.href.split('?')[0];
+            p = p.substring(0, p.lastIndexOf('/')+1);
+            const finalLink = `${p}aluno.html?id=${gistId}`;
+
+            navigator.clipboard.writeText(finalLink);
+            msg.innerText = "Link copiado para a memória!";
+            msg.style.color = "#10b981";
+            
+            // Reabilita em 2s
+            setTimeout(() => { btn.disabled = false; btn.innerHTML = '<i class="fas fa-link"></i> Link Copiado!'; }, 500);
+            setTimeout(() => { btn.innerHTML = '<i class="fas fa-cloud-arrow-up"></i> SALVAR E GERAR LINK'; msg.innerText = ""; }, 3000);
+
+        } catch(e) {
+            alert("Erro ao enviar: " + e.message);
+            btn.disabled = false; btn.innerHTML = 'Tentar Novamente';
+        }
+    }
+
+    // --- MANIPULAÇÃO (Igual Anterior) ---
     function applyPreset(s, r, t) {
-        if(!activeExerciseId) return alert("Selecione um exercício para aplicar.");
+        if(!activeExerciseId) return alert("Selecione um exercício.");
         const { blockId, itemIdx, subIdx } = activeExerciseId;
         const b = getB(blockId);
         let item = (subIdx !== null && b.items[itemIdx].data) ? b.items[itemIdx].data[subIdx] : b.items[itemIdx];
@@ -417,224 +468,92 @@
         saveCurrent(); renderBuilder();
     }
 
-    // --- LOGIC TOPICS ---
     function renderLogic() {
-        const c = document.getElementById('logicContainer');
-        c.innerHTML = '';
+        const c = document.getElementById('logicContainer'); c.innerHTML = '';
         if(!currentWorkout.logicList) currentWorkout.logicList = [];
-        
         currentWorkout.logicList.forEach((txt, idx) => {
-            const row = document.createElement('div');
-            row.className = 'logic-item';
-            row.innerHTML = `
-                <input class="logic-inp" value="${txt}" onchange="updLogic(${idx}, this.value)">
-                <div class="logic-del" onclick="delLogic(${idx})"><i class="fas fa-trash"></i></div>
-            `;
+            const row = document.createElement('div'); row.className = 'logic-item';
+            row.innerHTML = `<input class="logic-inp" value="${txt}" onchange="updLogic(${idx}, this.value)"><div class="logic-del" onclick="delLogic(${idx})"><i class="fas fa-trash"></i></div>`;
             c.appendChild(row);
         });
     }
-    function addLogicTopic() {
-        if(!currentWorkout.logicList) currentWorkout.logicList = [];
-        currentWorkout.logicList.push("");
-        saveCurrent(); renderLogic();
-    }
-    function updLogic(idx, val) {
-        currentWorkout.logicList[idx] = val;
-        saveCurrent();
-    }
-    function delLogic(idx) {
-        currentWorkout.logicList.splice(idx, 1);
-        saveCurrent(); renderLogic();
-    }
+    function addLogicTopic() { if(!currentWorkout.logicList) currentWorkout.logicList = []; currentWorkout.logicList.push(""); saveCurrent(); renderLogic(); }
+    function updLogic(idx, val) { currentWorkout.logicList[idx] = val; saveCurrent(); }
+    function delLogic(idx) { currentWorkout.logicList.splice(idx, 1); saveCurrent(); renderLogic(); }
 
-    // --- WORKOUT BUILDER ---
     function createNewWorkout() {
         currentWorkout = { id: Date.now(), name: '', focus: '', logicList: [], blocks: [] };
-        addBlock('Normal'); 
-        document.getElementById('sName').value = '';
-        document.getElementById('sFocus').value = '';
-        activeExerciseId = null;
-        renderBuilder(); renderLogic();
+        addBlock('Normal'); document.getElementById('sName').value = ''; document.getElementById('sFocus').value = '';
+        activeExerciseId = null; renderBuilder(); renderLogic();
     }
-
     function addBlock(type) {
         if(!currentWorkout) createNewWorkout();
-        let name = 'Bloco Principal';
-        if(type==='BiSet') name = 'Bi-Set';
-        if(type==='TriSet') name = 'Tri-Set';
-        
-        const blk = { id: Date.now(), type: type, name: name, items: [] };
-        currentWorkout.blocks.push(blk);
+        let name = 'Bloco Principal'; if(type==='BiSet') name = 'Bi-Set'; if(type==='TriSet') name = 'Tri-Set';
+        currentWorkout.blocks.push({ id: Date.now(), type: type, name: name, items: [] });
         saveCurrent(); renderBuilder();
     }
-
     function saveCurrent() {
         if(!currentWorkout) return;
         currentWorkout.name = document.getElementById('sName').value;
         currentWorkout.focus = document.getElementById('sFocus').value;
-        
         if(currentWorkout.name.trim() !== "") {
             const idx = appData.students.findIndex(s => s.id === currentWorkout.id);
-            if(idx >= 0) appData.students[idx] = currentWorkout;
-            else appData.students.push(currentWorkout);
-            saveData(); 
-            renderStudentList();
+            if(idx >= 0) appData.students[idx] = currentWorkout; else appData.students.push(currentWorkout);
+            saveData(); renderStudentList();
         }
     }
-
     function loadStudent(id) {
         const s = appData.students.find(x => x.id === id);
-        if(s) { 
-            currentWorkout = JSON.parse(JSON.stringify(s)); 
-            if(!currentWorkout.logicList) currentWorkout.logicList = (currentWorkout.logic||'').split('\n').filter(x=>x); 
-            activeExerciseId = null;
-            renderBuilder(); renderLogic();
-        }
+        if(s) { currentWorkout = JSON.parse(JSON.stringify(s)); if(!currentWorkout.logicList) currentWorkout.logicList = (currentWorkout.logic||'').split('\n').filter(x=>x); activeExerciseId = null; renderBuilder(); renderLogic(); }
     }
 
-    // --- RENDERIZADOR PRINCIPAL ---
     function renderBuilder() {
         document.getElementById('sName').value = currentWorkout.name || '';
         document.getElementById('sFocus').value = currentWorkout.focus || '';
         const cont = document.getElementById('blocksContainer'); cont.innerHTML = '';
-        
         currentWorkout.blocks.forEach(blk => {
             let cls = 'block-container';
-            if(blk.type === 'BiSet') cls += ' biset-cont';
-            else if(blk.type === 'TriSet') cls += ' triset-cont';
-            else cls += ' normal-wrap';
-            
-            // SELEÇÃO DO BLOCO
+            if(blk.type === 'BiSet') cls += ' biset-cont'; else if(blk.type === 'TriSet') cls += ' triset-cont'; else cls += ' normal-wrap';
             if(activeExerciseId && activeExerciseId.blockId === blk.id) cls += ' active-block';
-
-            const div = document.createElement('div');
-            div.className = cls;
-            
-            let itemsHtml = '';
-            if(blk.items.length === 0) {
-                itemsHtml = `<div style="text-align:center; padding:20px; color:#94a3b8; font-size:0.8rem;">Toque num exercício da biblioteca</div>`;
-            } else {
-                itemsHtml = blk.items.map((it, idx) => renderRow(blk.id, idx, it, null)).join('');
-            }
-
-            // Header com inputs e botoes
-            let headHtml = `<div class="block-head">
-                <input class="w-title" value="${blk.name}" placeholder="Nome do Bloco" onchange="updBlock(${blk.id}, this.value)">
-                <div class="blk-actions">
-                    <div class="blk-btn" onclick="moveBlock(${blk.id}, -1)"><i class="fas fa-arrow-up"></i></div>
-                    <div class="blk-btn" onclick="moveBlock(${blk.id}, 1)"><i class="fas fa-arrow-down"></i></div>
-                    <div class="blk-btn" style="color:var(--danger)" onclick="delBlock(${blk.id})"><i class="fas fa-trash"></i></div>
-                </div>
-            </div>`;
-
-            div.innerHTML = `${headHtml}<div class="block-body">${itemsHtml}</div>`;
-            
-            // Click to select block logic
-            div.onclick = (e) => {
-                // Avoid triggering on inputs/buttons inside
-                if(!e.target.closest('input') && !e.target.closest('button') && !e.target.closest('.m-tab') && !e.target.closest('.act-btn') && !e.target.closest('.blk-btn')) {
-                    if(activeExerciseId?.blockId !== blk.id) {
-                        activeExerciseId = { blockId: blk.id, itemIdx: null };
-                        renderBuilder();
-                    }
-                }
-            };
+            const div = document.createElement('div'); div.className = cls;
+            let itemsHtml = blk.items.length === 0 ? `<div style="text-align:center; padding:20px; color:#94a3b8; font-size:0.8rem;">Toque num exercício da biblioteca</div>` : blk.items.map((it, idx) => renderRow(blk.id, idx, it, null)).join('');
+            div.innerHTML = `<div class="block-head"><input class="w-title" value="${blk.name}" placeholder="Nome do Bloco" onchange="updBlock(${blk.id}, this.value)"><div class="blk-actions"><div class="blk-btn" onclick="moveBlock(${blk.id}, -1)"><i class="fas fa-arrow-up"></i></div><div class="blk-btn" onclick="moveBlock(${blk.id}, 1)"><i class="fas fa-arrow-down"></i></div><div class="blk-btn" style="color:var(--danger)" onclick="delBlock(${blk.id})"><i class="fas fa-trash"></i></div></div></div><div class="block-body">${itemsHtml}</div>`;
+            div.onclick = (e) => { if(!e.target.closest('input') && !e.target.closest('button') && !e.target.closest('.m-tab') && !e.target.closest('.act-btn') && !e.target.closest('.blk-btn')) { if(activeExerciseId?.blockId !== blk.id) { activeExerciseId = { blockId: blk.id, itemIdx: null }; renderBuilder(); } } };
             cont.appendChild(div);
         });
     }
 
     function renderRow(bId, idx, item, sIdx) {
-        const isActive = activeExerciseId && activeExerciseId.blockId === bId && activeExerciseId.itemIdx === idx && activeExerciseId.subIdx === sIdx;
-        const activeClass = isActive ? 'selected' : '';
-        
+        const isActive = activeExerciseId && activeExerciseId.blockId === bId && activeExerciseId.itemIdx === idx;
         let lblReps="Reps", repsInputType="number", repsWidth="55px", showDrops=false;
         if(item.method==='Drop'){ lblReps="Reps Max"; showDrops=true; }
         if(item.method==='Iso') lblReps="Tempo(s)";
         if(item.method==='Pyr'){ lblReps="Escada"; repsInputType="text"; repsWidth="80px"; }
         
-        const methods = ['Normal', 'Drop', 'RNP', 'Iso', 'Pyr'];
-        let tabsHtml = `<div class="method-tabs">`;
-        methods.forEach(m => {
-            tabsHtml += `<button class="m-tab ${item.method===m?'active':''}" data-m="${m}" onclick="updItem(${bId}, ${idx}, 'method', '${m}'); event.stopPropagation();">${m}</button>`;
-        });
-        tabsHtml += `</div>`;
+        let methods = ['Normal', 'Drop', 'RNP', 'Iso', 'Pyr'];
+        let tabsHtml = `<div class="method-tabs">` + methods.map(m => `<button class="m-tab ${item.method===m?'active':''}" onclick="updItem(${bId}, ${idx}, 'method', '${m}'); event.stopPropagation();">${m}</button>`).join('') + `</div>`;
         
-        let fieldsHtml = '';
-        if(item.method==='Iso') fieldsHtml=`<div class="pill-group"><span class="pill-lbl">SETS</span><input class="pill-inp" type="number" value="${item.sets}" onchange="updItem(${bId},${idx},'sets',this.value)" onclick="event.stopPropagation()"></div><div class="pill-group"><span class="pill-lbl">REPS</span><input class="pill-inp" type="number" value="${item.isoReps||1}" onchange="updItem(${bId},${idx},'isoReps',this.value)" onclick="event.stopPropagation()"></div><div class="pill-group"><span class="pill-lbl">ISO(s)</span><input class="pill-inp" type="number" value="${item.reps}" onchange="updItem(${bId},${idx},'reps',this.value)" onclick="event.stopPropagation()"></div>`;
-        // RNP COM CAMPO EXTRA DE FALHA
-        else if(item.method==='RNP') fieldsHtml=`<div class="pill-group"><span class="pill-lbl">SETS</span><input class="pill-inp" type="number" value="${item.sets}" onchange="updItem(${bId},${idx},'sets',this.value)" onclick="event.stopPropagation()"></div><div class="pill-group"><span class="pill-lbl">REPS</span><input class="pill-inp" type="text" value="${item.reps}" onchange="updItem(${bId},${idx},'reps',this.value)" onclick="event.stopPropagation()"></div><div class="pill-group"><span class="pill-lbl">PAUSA(s)</span><input class="pill-inp" type="number" value="${item.rnpRest||10}" onchange="updItem(${bId},${idx},'rnpRest',this.value)" onclick="event.stopPropagation()"></div><div class="pill-group"><span class="pill-lbl">EXTRA</span><input class="pill-inp" type="text" value="+ Falha" disabled style="width:50px;font-size:0.7rem;color:#94a3b8; background:#f1f5f9;"></div>`;
-        else fieldsHtml=`<div class="pill-group"><span class="pill-lbl">SETS</span><input class="pill-inp" type="number" value="${item.sets}" onchange="updItem(${bId},${idx},'sets',this.value)" onclick="event.stopPropagation()"></div><div class="pill-group"><span class="pill-lbl">${lblReps.toUpperCase()}</span><input class="pill-inp" type="${repsInputType}" style="width:${repsWidth}" value="${item.reps}" onchange="updItem(${bId},${idx},'reps',this.value)" onclick="event.stopPropagation()"></div>`;
-        
+        let fieldsHtml = `<div class="pill-group"><span class="pill-lbl">SETS</span><input class="pill-inp" type="number" value="${item.sets}" onchange="updItem(${bId},${idx},'sets',this.value)" onclick="event.stopPropagation()"></div><div class="pill-group"><span class="pill-lbl">${lblReps.toUpperCase()}</span><input class="pill-inp" type="${repsInputType}" style="width:${repsWidth}" value="${item.reps}" onchange="updItem(${bId},${idx},'reps',this.value)" onclick="event.stopPropagation()"></div>`;
+        if(item.method==='Iso') fieldsHtml=`<div class="pill-group"><span class="pill-lbl">SETS</span><input class="pill-inp" type="number" value="${item.sets}" onchange="updItem(${bId},${idx},'sets',this.value)" onclick="event.stopPropagation()"></div><div class="pill-group"><span class="pill-lbl">ISO(s)</span><input class="pill-inp" type="number" value="${item.reps}" onchange="updItem(${bId},${idx},'reps',this.value)" onclick="event.stopPropagation()"></div>`;
+        if(item.method==='RNP') fieldsHtml+=`<div class="pill-group"><span class="pill-lbl">PAUSA</span><input class="pill-inp" type="number" value="${item.rnpRest||10}" onchange="updItem(${bId},${idx},'rnpRest',this.value)" onclick="event.stopPropagation()"></div>`;
         if(showDrops) fieldsHtml+=`<div class="pill-group"><span class="pill-lbl">DROPS</span><input class="pill-inp" type="number" value="${item.drops||0}" onchange="updItem(${bId},${idx},'drops',this.value)" onclick="event.stopPropagation()"></div>`;
 
-        return `<div class="ex-row ${activeClass}" data-method="${item.method}" onclick="selectExercise(${bId},${idx},null)"><div class="ex-header"><span class="ex-name">${item.name}</span></div>${tabsHtml}<div class="pills-edit">${fieldsHtml}<div class="pill-group pill-int"><span class="pill-lbl">INT FINAL</span><input class="pill-inp" type="text" value="${item.rest}" onchange="updItem(${bId},${idx},'rest',this.value)" onclick="event.stopPropagation()"></div></div><input class="obs-inp" value="${item.obs}" placeholder="Carga / Obs..." onchange="updItem(${bId},${idx},'obs',this.value)" onclick="event.stopPropagation()"><div class="row-actions"><div class="act-btn" onclick="moveItem(${bId},${idx},-1);event.stopPropagation();"><i class="fas fa-arrow-up"></i></div><div class="act-btn" onclick="moveItem(${bId},${idx},1);event.stopPropagation();"><i class="fas fa-arrow-down"></i></div><div class="act-btn" style="color:var(--danger);" onclick="delItem(${bId},${idx});event.stopPropagation();"><i class="fas fa-trash"></i></div></div></div>`;
+        return `<div class="ex-row ${isActive?'selected':''}" data-method="${item.method}" onclick="selectExercise(${bId},${idx},null)"><div class="ex-header"><span class="ex-name">${item.name}</span></div>${tabsHtml}<div class="pills-edit">${fieldsHtml}<div class="pill-group pill-int"><span class="pill-lbl">INT FINAL</span><input class="pill-inp" type="text" value="${item.rest}" onchange="updItem(${bId},${idx},'rest',this.value)" onclick="event.stopPropagation()"></div></div><input class="obs-inp" value="${item.obs}" placeholder="Carga / Obs..." onchange="updItem(${bId},${idx},'obs',this.value)" onclick="event.stopPropagation()"><div class="row-actions"><div class="act-btn" onclick="moveItem(${bId},${idx},-1);event.stopPropagation();"><i class="fas fa-arrow-up"></i></div><div class="act-btn" onclick="moveItem(${bId},${idx},1);event.stopPropagation();"><i class="fas fa-arrow-down"></i></div><div class="act-btn" style="color:var(--danger);" onclick="delItem(${bId},${idx});event.stopPropagation();"><i class="fas fa-trash"></i></div></div></div>`;
     }
 
-    // LOGIC
     function getB(id) { return currentWorkout.blocks.find(b=>b.id===id); }
     function updBlock(id, val) { getB(id).name = val; saveCurrent(); }
-    
-    function selectExercise(bId, idx, sIdx) {
-        activeExerciseId = { blockId: bId, itemIdx: idx, subIdx: sIdx };
-        renderBuilder();
-    }
-
-    function delBlock(id) { 
-        if(confirm("Excluir bloco?")) {
-            currentWorkout.blocks = currentWorkout.blocks.filter(b=>b.id!==id);
-            activeExerciseId = null;
-            saveCurrent(); renderBuilder();
-        }
-    }
-
-    // MOVE BLOCK LOGIC
-    function moveBlock(id, dir) {
-        const idx = currentWorkout.blocks.findIndex(b => b.id === id);
-        if(idx + dir < 0 || idx + dir >= currentWorkout.blocks.length) return;
-        const temp = currentWorkout.blocks[idx];
-        currentWorkout.blocks[idx] = currentWorkout.blocks[idx + dir];
-        currentWorkout.blocks[idx + dir] = temp;
-        saveCurrent(); renderBuilder();
-    }
-
-    function addItem(ex){
-        if(!currentWorkout)createNewWorkout();
-        let t;
-        if(activeExerciseId) t=activeExerciseId.blockId;
-        else{
-            if(currentWorkout.blocks.length===0)addBlock('Normal');
-            t=currentWorkout.blocks[currentWorkout.blocks.length-1].id;
-        }
-        let b=getB(t);
-        // Default new item logic
-        b.items.push({name:ex.name,link:ex.link||'',sets:'3',reps:'10',rest:'60s',obs:'',method:'Normal',drops:0,isoReps:1,rnpRest:10});
-        activeExerciseId={blockId:t,itemIdx:b.items.length-1,subIdx:null};
-        saveCurrent();renderBuilder();
-        const c=document.querySelector('.canvas');c.scrollTop=c.scrollHeight;
-    }
-    
-    function updItem(bId,idx,f,v){const b=getB(bId);b.items[idx][f]=v;if(f==='method'){if(v==='Iso'){b.items[idx].reps='30';b.items[idx].isoReps=1;}if(v==='RNP'){b.items[idx].reps='10';b.items[idx].rnpRest=10;}}saveCurrent();renderBuilder();}
+    function selectExercise(bId, idx, sIdx) { activeExerciseId = { blockId: bId, itemIdx: idx, subIdx: sIdx }; renderBuilder(); }
+    function delBlock(id) { if(confirm("Excluir bloco?")) { currentWorkout.blocks = currentWorkout.blocks.filter(b=>b.id!==id); activeExerciseId = null; saveCurrent(); renderBuilder(); } }
+    function moveBlock(id, dir) { const idx = currentWorkout.blocks.findIndex(b => b.id === id); if(idx + dir < 0 || idx + dir >= currentWorkout.blocks.length) return; const temp = currentWorkout.blocks[idx]; currentWorkout.blocks[idx] = currentWorkout.blocks[idx + dir]; currentWorkout.blocks[idx + dir] = temp; saveCurrent(); renderBuilder(); }
+    function addItem(ex){ if(!currentWorkout)createNewWorkout(); let t; if(activeExerciseId) t=activeExerciseId.blockId; else{ if(currentWorkout.blocks.length===0)addBlock('Normal'); t=currentWorkout.blocks[currentWorkout.blocks.length-1].id; } let b=getB(t); b.items.push({name:ex.name,link:ex.link||'',sets:'3',reps:'10',rest:'60s',obs:'',method:'Normal',drops:0,isoReps:1,rnpRest:10}); activeExerciseId={blockId:t,itemIdx:b.items.length-1,subIdx:null}; saveCurrent();renderBuilder(); const c=document.querySelector('.canvas');c.scrollTop=c.scrollHeight; }
+    function updItem(bId,idx,f,v){const b=getB(bId);b.items[idx][f]=v;saveCurrent();renderBuilder();}
     function delItem(bId,idx){const b=getB(bId);b.items.splice(idx,1);activeExerciseId=null;saveCurrent();renderBuilder();}
     function moveItem(bId,idx,d){const b=getB(bId);if(idx+d<0||idx+d>=b.items.length)return;const t=b.items[idx];b.items[idx]=b.items[idx+d];b.items[idx+d]=t;if(activeExerciseId&&activeExerciseId.blockId===bId&&activeExerciseId.itemIdx===idx)activeExerciseId.itemIdx+=d;saveCurrent();renderBuilder();}
     function renderLib(){const l=document.getElementById('libList'),t=document.getElementById('searchLib').value.toLowerCase(),c=document.getElementById('catFilter').value;l.innerHTML='';appData.library.filter(x=>x.name.toLowerCase().includes(t)&&(c==='Todas'||x.cat===c)).forEach(x=>{const d=document.createElement('div');d.className='item-card';d.innerHTML=`<div style="font-weight:600;color:var(--text);font-size:0.85rem;"><span class="cat-dot" style="background:${catColors[x.cat]||'#999'}"></span> ${x.name}</div><div style="display:flex;gap:8px;"><i class="fas fa-pen" style="color:#cbd5e1;font-size:0.7rem;" onclick="editEx(${x.id},event)"></i><i class="fas fa-trash" style="color:#cbd5e1;font-size:0.7rem;" onclick="delEx(${x.id},event)"></i></div>`;d.onclick=(e)=>{if(e.target.tagName!=='I')addItem(x)};l.appendChild(d);});}
     function filterStudents(v){const l=document.getElementById('studentList');l.innerHTML='';appData.students.filter(s=>s.name.toLowerCase().includes(v.toLowerCase())).forEach(s=>{const d=document.createElement('div');d.className=`student-item ${currentWorkout&&s.id===currentWorkout.id?'active':''}`;d.innerHTML=`<div><span class="st-name">${s.name}</span><span class="st-focus">${s.focus||'Sem objetivo'}</span></div><i class="fas fa-trash st-del" onclick="delStudent(${s.id},event)"></i>`;d.onclick=()=>loadStudent(s.id);l.appendChild(d);});}
-    
-    // DELETE BUG FIX
-    function delStudent(id,e){
-        e.stopPropagation();
-        if(confirm("Apagar aluno permanentemente?")){
-            appData.students=appData.students.filter(s=>s.id!==id);
-            saveData();
-            if(currentWorkout&&currentWorkout.id===id) createNewWorkout();
-            
-            // Hard refresh of list
-            document.getElementById('studentList').innerHTML = '';
-            filterStudents(document.querySelector('.search-inp').value);
-        }
-    }
+    function delStudent(id,e){ e.stopPropagation(); if(confirm("Apagar aluno permanentemente?")){ appData.students=appData.students.filter(s=>s.id!==id); saveData(); if(currentWorkout&&currentWorkout.id===id) createNewWorkout(); renderStudentList(); } }
     function renderStudentList(){filterStudents('');}
-
-    // ... Modals lib mantidos ...
     function populateCats(){const s=[document.getElementById('catFilter'),document.getElementById('exCat')];s[0].innerHTML='<option value="Todas">Todas</option>';s[1].innerHTML='';appData.categories.forEach(c=>{s[0].add(new Option(c,c));s[1].add(new Option(c,c));});}
     function openExModal(){document.getElementById('exId').value='';document.getElementById('exName').value='';document.getElementById('exLink').value='';openModal('ex');}
     function editEx(id,e){e.stopPropagation();const x=appData.library.find(z=>z.id===id);document.getElementById('exId').value=x.id;document.getElementById('exName').value=x.name;document.getElementById('exCat').value=x.cat;document.getElementById('exLink').value=x.link||'';openModal('ex');}
@@ -647,7 +566,6 @@
     function tryRescueOldData(){const k=['benai_lib_v13','benai_lib_v12'];for(let x of k){const d=localStorage.getItem(x);if(d){try{appData.library=JSON.parse(d);saveData();return;}catch(e){}}}}
     function rescueData(){tryRescueOldData();location.reload();}
     function hardReset(){if(confirm("Apagar tudo?")){localStorage.clear(); location.reload();}}
-    function generateLink(){if(!currentWorkout.name)return alert("Preencha o nome!");saveCurrent();const l=(currentWorkout.logicList||[]).join('\n');const m={name:currentWorkout.name,focus:currentWorkout.focus,logic:l,blocks:currentWorkout.blocks.map(b=>({name:b.name,type:b.type==='BiSet'?'biset':(b.type==='TriSet'?'triset':'block'),items:b.items.map(i=>({name:i.name,link:i.link,sets:i.sets,reps:i.reps,rest:i.rest,obs:i.obs,method:i.method,drops:i.drops,isoReps:i.isoReps,rnpRest:i.rnpRest}))}))};const j=JSON.stringify(m);const c=LZString.compressToEncodedURIComponent(j);let p=window.location.href.split('?')[0];p=p.substring(0,p.lastIndexOf('/')+1);const u=`${p}aluno.html?data=${c}`;navigator.clipboard.writeText(u).then(()=>alert("🔗 Link Copiado!"));}
 </script>
 </body>
 </html>
