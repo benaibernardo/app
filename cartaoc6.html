@@ -74,30 +74,31 @@
         .btn-trip { background:linear-gradient(135deg, #4f46e5, #8b5cf6); }
         .btn-month { background:linear-gradient(135deg, #059669, #10b981); }
         
-        .btn-icon { width:42px; height:42px; border-radius:12px; border:1px solid #e2e8f0; background:white; color:#94a3b8; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:0.2s; font-size:1.1rem; position:relative; }
+        .btn-icon { width:42px; height:42px; border-radius:12px; border:1px solid #e2e8f0; background:white; color:#94a3b8; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:0.2s; font-size:1.1rem; position: relative; }
         .btn-icon:hover { color:var(--primary); border-color:var(--primary); transform:translateY(-2px); box-shadow:0 4px 10px rgba(0,0,0,0.05); }
         .btn-icon.sync { color:var(--accent); border-color:var(--accent); background:#eef2ff; }
-
-        /* CLOUD STATUS DOT (Adicionado) */
+        
+        /* CLOUD DOT */
         .cloud-status { width: 10px; height: 10px; border-radius: 50%; background: #cbd5e1; display: inline-block; position:absolute; top:8px; right:8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); transition: 0.3s; }
         .cloud-status.ok { background: var(--safe); box-shadow: 0 0 8px var(--safe); }
         .cloud-status.error { background: var(--danger); }
         .cloud-status.syncing { background: var(--accent); animation: pulse 1s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
-        /* INVOICE PANEL */
+        /* INVOICE PANEL (DYNAMIC) */
         .invoice-panel { background:white; border:1px solid #e2e8f0; border-radius:14px; margin-bottom:25px; overflow:hidden; box-shadow:0 8px 15px -3px rgba(0,0,0,0.03); }
         .inv-header { background:#fffbeb; padding:10px 25px; font-size:0.75rem; color:#b45309; font-weight:700; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #fef3c7; }
         
         .inv-body { padding:18px 25px; display:flex; align-items:center; gap:30px; }
         
-        .credit-info-block { flex: 1.2; } 
+        .credit-info-block { flex: 1.2; } /* Shows Limit/Spent */
         .couple-split { flex: 1; display:flex; gap:15px; justify-content:center; align-items:center; }
         .action-block { margin-left: 10px; display:flex; gap:8px; }
 
+        /* Trip Mode: Hide credit info & actions, Center Split */
         .trip-mode .credit-info-block { display:none; }
         .trip-mode .action-block { display:none; }
-        .trip-mode .inv-header { display:none; }
+        .trip-mode .inv-header { display:none; } /* Hide yellow header in trip */
         .trip-mode .couple-split { flex: 1; width: 100%; justify-content: space-around; }
 
         .limit-row { display:flex; justify-content:space-between; font-size:0.8rem; font-weight:600; color:#64748b; margin-bottom:6px; }
@@ -227,7 +228,12 @@
         .inst-box.paid { background:var(--safe); color:white; border-color:var(--safe); }
         .inst-info { font-size:0.7rem; color:#64748b; margin-bottom:5px; font-weight:600; }
 
-        /* MODAL & SYNC STYLES (ADICIONADO) */
+        /* CAT MODAL SPECIFIC */
+        .cat-modal-box { background:white; width:90%; max-width:350px; padding:20px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.1); position: relative; }
+        .cat-item-row { display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #f1f5f9; align-items:center; }
+        .cat-del-btn { color: #ef4444; cursor: pointer; }
+
+        /* NOVO MODAL DE SYNC (ESTILO) */
         .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,31,91,0.6); z-index:1000; align-items:center; justify-content:center; backdrop-filter:blur(5px); }
         .modal-box { background:white; width:90%; max-width:450px; padding:30px; border-radius:24px; animation:slideIn 0.3s; box-shadow: 0 25px 60px rgba(0,0,0,0.3); position:relative; }
         .modal-close { position:absolute; top:20px; right:20px; color:#94a3b8; cursor:pointer; font-size:1.4rem; transition:0.2s; }
@@ -252,10 +258,6 @@
         .sb-reset .sb-title { color: var(--danger); }
         .sb-reset .sb-desc { color: #fca5a5; }
 
-        /* CAT MODAL SPECIFIC */
-        .cat-modal-box { background:white; width:90%; max-width:350px; padding:20px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.1); position: relative; }
-        .cat-item-row { display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #f1f5f9; align-items:center; }
-        .cat-del-btn { color: #ef4444; cursor: pointer; }
         
         @media (max-width: 850px) {
             header { flex-direction:column; gap:15px; } .trip-header-block { width:100%; } .trip-card-select { width:100%; } .actions { width:100%; justify-content:space-between; } .btn { flex:1; justify-content:center; }
@@ -292,7 +294,6 @@
             <div class="actions">
                 <button class="btn btn-trip" onclick="createNewTrip('trip')"><i class="fa-solid fa-plane"></i> Nova Viagem</button>
                 <button class="btn btn-month" onclick="createNewTrip('month')"><i class="fa-solid fa-calendar"></i> Novo Mês</button>
-                
                 <button class="btn-icon sync" onclick="openModal('sync')" title="Central de Dados">
                     <i class="fa-solid fa-cloud"></i>
                     <div id="cloudIndicator" class="cloud-status" style="display:none;"></div>
@@ -549,11 +550,12 @@
     </div>
 
     <script>
-        // --- CONSTANTES & CHAVES (NUVEM ADICIONADA) ---
-        const KEY = 'benai_card_main_db'; // Chave definitiva
-        const OLD_KEYS = ['benai_card_v1', 'controle_fin_v83']; // Chaves antigas
-        const TOKEN_KEY = 'benai_coach_gh_token'; // Chave do Token
-        const GIST_DESC = 'BENAI_PERSONAL_DB'; // ID do Gist
+        // --- CHAVES E CONSTANTES (NUVEM ADICIONADA) ---
+        const PIN_CORRETO = "16359001"; 
+        const KEY = 'benai_card_main_db'; 
+        const TOKEN_KEY = 'benai_coach_gh_token'; 
+        const GIST_DESC = 'BENAI_PERSONAL_DB'; 
+        const OLD_KEYS = ['benai_card_v1', 'controle_fin_v83']; 
 
         const DEFAULT_CATS = ['Alimentação', 'Transporte', 'Hospedagem', 'Passeios', 'Compras', 'Mercado', 'Outros', 'Presentes', 'Passagens Aéreas'];
         const DISTINCT_COLORS = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4', '#ec4899', '#f97316', '#6366f1', '#14b8a6', '#84cc16', '#a855f7', '#eab308', '#0ea5e9', '#d946ef'];
@@ -565,21 +567,16 @@
         let editingOriginId = null;
         let gistId = null;
 
+        // --- INIT COM NUVEM ---
         async function init() {
             try {
                 let saved = localStorage.getItem(KEY);
-                
-                // Rotina de Migração Automática
                 if(!saved) {
                     for(let k of OLD_KEYS) {
                         saved = localStorage.getItem(k);
-                        if(saved) {
-                            localStorage.setItem(KEY, saved);
-                            break; 
-                        }
+                        if(saved) { localStorage.setItem(KEY, saved); break; }
                     }
                 }
-
                 if(saved) {
                     db = sanitize(JSON.parse(saved));
                 } else {
@@ -590,18 +587,18 @@
             initInstallmentSelect();
             refreshUI();
 
-            // --- SYNC AUTOMÁTICO (Adicionado) ---
-            await syncCloud();
+            // SYNC BACKGROUND (SEM BLOQUEAR)
+            syncCloud();
         }
 
-        // --- NUVEM (Funções Adicionadas) ---
+        // --- NUVEM LOGIC ---
         function updateCloudStatus(status) {
             const el = document.getElementById('cloudIndicator');
             if(el) {
                 el.style.display = 'block';
                 if(status === 'ok') el.style.background = '#10b981';
                 if(status === 'error') el.style.background = '#ef4444';
-                if(status === 'syncing') el.style.background = '#00A8E8'; // Azul piscando idealmente
+                if(status === 'syncing') el.style.background = '#00A8E8';
             }
         }
 
@@ -625,23 +622,15 @@
                     
                     if(json.files["c6_card.json"]) {
                         const cloudData = JSON.parse(json.files["c6_card.json"].content);
-                        // Se nuvem tem dados, sobrescreve local (Sync)
                         if (cloudData.trips && cloudData.trips.length > 0) {
                             db = sanitize(cloudData);
                             saveLocal();
                             refreshUI();
                         }
                         updateCloudStatus('ok');
-                    } else {
-                        await pushCloud(); // Sobe o local se não tiver na nuvem
-                    }
-                } else {
-                    await pushCloud();
-                }
-            } catch(e) {
-                console.error(e);
-                updateCloudStatus('error');
-            }
+                    } else { await pushCloud(); }
+                } else { await pushCloud(); }
+            } catch(e) { console.error(e); updateCloudStatus('error'); }
         }
 
         async function pushCloud() {
@@ -670,10 +659,7 @@
                 const json = await res.json();
                 gistId = json.id;
                 updateCloudStatus('ok');
-            } catch(e) {
-                console.error(e);
-                updateCloudStatus('error');
-            }
+            } catch(e) { console.error(e); updateCloudStatus('error'); }
         }
 
         function forceSync() {
@@ -684,8 +670,23 @@
         }
 
         function saveLocal() { localStorage.setItem(KEY, JSON.stringify(db)); }
+        
+        // MODIFICADO PARA CHAMAR O PUSH
+        function save() { 
+            saveLocal(); 
+            refreshUI(); 
+            pushCloud(); 
+        }
 
-        // --- Funções Padrão (MANTIDAS EXATAMENTE IGUAIS) ---
+        // --- BACKUP ---
+        function openModal(id) { const m = document.getElementById('modal-'+id); if(m) m.style.display='flex'; }
+        function closeModal(id) { const m = document.getElementById(id ? 'modal-'+id : 'modal-sync'); if(m) m.style.display='none'; }
+        function exportData() { const d = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db)); const a = document.createElement('a'); a.href = d; a.download = "benai_card_backup.json"; a.click(); }
+        function shareData() { const blob = new Blob([JSON.stringify(db)], { type: 'application/json' }); const file = new File([blob], "benai_card.json", { type: 'application/json' }); if (navigator.canShare && navigator.canShare({ files: [file] })) { navigator.share({ files: [file], title: 'Backup Cartão Benai' }); } else { alert("Use o botão Baixar."); } }
+        function importData(input) { const f = input.files[0]; if(!f) return; const r = new FileReader(); r.onload = e => { try { db = sanitize(JSON.parse(e.target.result)); save(); location.reload(); } catch(err) { alert("Erro ao importar"); } }; r.readAsText(f); }
+        function hardReset() { if(confirm("Apagar tudo?")) { localStorage.removeItem(KEY); location.reload(); } }
+
+        // --- CORE LOGIC (MANTIDA ORIGINAL) ---
         function initInstallmentSelect() { const s = document.getElementById('fInst'); s.innerHTML = ''; for(let i=1; i<=12; i++) s.add(new Option(i + 'x', i)); }
         function sanitize(data) {
             if(!data.trips) data.trips = [];
@@ -699,13 +700,6 @@
             return { currentId: data.currentId, categories: Array.from(allCats), trips: data.trips, roadmap: data.roadmap || [] };
         }
         function createDefault() { db = { trips: [{id:'def', name:'Meu Controle', type:'trip', budget:0, creditLimit:0, transactions:[]}], currentId:'def', categories: [...DEFAULT_CATS], roadmap:[{text:'Controle Pessoal', done:false, cat:1}, {text:'Metas de Economia', done:false, cat:2}] }; save(); }
-        
-        // MODIFICADO APENAS PARA CHAMAR PUSHCLOUD
-        function save() { 
-            saveLocal(); 
-            refreshUI(); 
-            pushCloud(); // Auto-save na nuvem
-        }
 
         function getInstallmentForMonth(t, monthStartStr, monthEndStr) {
             const tDateStr = t.date; 
