@@ -569,6 +569,7 @@
     </div>
 
     <script>
+        // --- CONSTANTES & CHAVES ---
         const DB_KEY = 'benai_card_main_db'; 
         const TOKEN_KEY = 'benai_coach_gh_token';
         const GIST_DESC = 'BENAI_PERSONAL_DB'; 
@@ -859,7 +860,6 @@
             renderFilters(); renderCharts(unifiedData); renderGlobal(); renderRoadmap(); fillCats();
         }
 
-        // --- MANIPULAÇÃO UI ---
         function editT(id, originId) { let targetTrip = active; if(originId && originId !== active.id) targetTrip = db.trips.find(x => x.id === originId); const t = targetTrip.transactions.find(x=>x.id===id); if(!t) return; editId = id; editingOriginId = originId; document.getElementById('fDate').value = t.date; document.getElementById('fDesc').value = t.desc; document.getElementById('fCat').value = t.category; document.getElementById('fLoc').value = t.local || ''; document.getElementById('fVal').value = fmt(t.amount); document.getElementById('fPay').value = t.payment; document.getElementById('fInst').value = t.installments; document.getElementById('fFrom').value = t.transportFrom||t.origin||''; document.getElementById('fTo').value = t.transportTo||t.destination||''; document.getElementById('fCardType').value = t.cardType || 'physical'; document.getElementById('fRecur').checked = t.recur || false; document.getElementById('fCat').dispatchEvent(new Event('change')); document.getElementById('fPay').dispatchEvent(new Event('change')); document.getElementById('btnSubmit').innerText = "ATUALIZAR"; document.getElementById('btnCancel').style.display = "block"; document.querySelector('.container').scrollIntoView({behavior:'smooth'}); }
         function resetForm() { editId = null; editingOriginId = null; document.getElementById('addForm').reset(); document.getElementById('btnSubmit').innerText = "SALVAR"; document.getElementById('btnCancel').style.display = "none"; document.getElementById('transPanel').style.display = "none"; document.getElementById('fDate').value = new Date().toISOString().split('T')[0]; document.getElementById('fPay').dispatchEvent(new Event('change'));}
         function switchTrip(id) { db.currentId = id; save(); }
@@ -906,56 +906,54 @@
         function confBudget(e) { e.stopPropagation(); active.budget = parse(document.getElementById('newBudgetInp').value); save(); }
         function cancBudget(e) { e.stopPropagation(); save(); } 
 
-        // --- RENDER LIST (CORRIGIDO PARA IGNORAR ERROS) ---
+        // --- RENDER LIST (CORRIGIDO E BLINDADO) ---
         function renderList(data) {
             const list = document.getElementById('listContainer'); list.innerHTML = '';
             
-            // FILTRO DE SEGURANÇA 1: Ordenação segura
-            const arr = data.sort((a,b) => {
-                try { return new Date(b.date) - new Date(a.date); } catch(e) { return 0; }
-            });
+            // 1. FILTRAGEM DE SEGURANÇA (Se a data não existir, cria uma data falsa pra não quebrar)
+            const arr = data.map(t => {
+                if (!t.date || t.date === "") t.date = new Date().toISOString().split('T')[0];
+                return t;
+            }).sort((a,b) => new Date(b.date) - new Date(a.date));
 
-            // Recupera e limpa filtros
+            // 2. FILTRO (Se estiver vazio, assume 'all')
             const filter = document.getElementById('filTxt').value.toLowerCase();
-            const fCat = document.getElementById('filCat').value || 'all';
-            const fDate = document.getElementById('filDate');
+            let fCat = document.getElementById('filCat').value;
+            let fDate = document.getElementById('filDate').value;
             
-            // Popula datas
-            fDate.innerHTML = '<option value="all">Todas Datas</option>';
-            const dates = [...new Set(arr.map(t=>t.date))].filter(d => d); // Remove nulos
-            dates.sort().forEach(d => { 
+            if(!fCat) fCat = 'all';
+            if(!fDate) fDate = 'all';
+
+            // Recria as opções de data (sempre)
+            const selectDate = document.getElementById('filDate');
+            selectDate.innerHTML = '<option value="all">Todas Datas</option>';
+            const dates = [...new Set(arr.map(t=>t.date))].sort();
+            dates.forEach(d => { 
                 const opt = new Option(d.split('-').reverse().join('/'), d); 
-                fDate.add(opt); 
+                selectDate.add(opt); 
             });
-            
-            // Popula categorias
+            // Tenta manter a seleção anterior
+            if(dates.includes(fDate)) selectDate.value = fDate;
+
+            // Recria as categorias se estiver vazio
             if(document.getElementById('filCat').options.length <= 1) db.categories.forEach(c => document.getElementById('filCat').add(new Option(c,c)));
 
-            // FILTRAGEM DEFENSIVA
+            // 3. FILTRAGEM FINAL
             const filteredArr = arr.filter(t => {
-                if(!t) return false;
-                
-                // DATA PADRÃO SE VAZIA
-                if(!t.date) t.date = new Date().toISOString().split('T')[0];
-
                 if(fCat !== 'all' && t.category !== fCat) return false;
-                if(fDate.value !== 'all' && t.date !== fDate.value) return false;
-                
+                if(fDate !== 'all' && t.date !== fDate) return false;
                 const txt = (t.desc + ' ' + (t.local||'')).toLowerCase();
                 if(filter && !txt.includes(filter)) return false;
-                
                 return true;
             });
 
-            // RENDERIZAÇÃO
+            if (filteredArr.length === 0) {
+                list.innerHTML = '<div style="padding:20px; text-align:center; color:#94a3b8;">Nenhum item encontrado.</div>';
+                return;
+            }
+
             filteredArr.forEach((t) => {
                 try {
-                    // GARANTIA DE DADOS
-                    if(!t.desc) t.desc = "Item sem nome";
-                    if(!t.amount) t.amount = 0;
-                    if(!t.installments) t.installments = 1;
-                    if(!t.paidInstallments) t.paidInstallments = 0;
-
                     const isPaid = (t.paidInstallments >= t.installments);
                     let visualPaid = isPaid;
                     if(t.isProjection && t.currentInst <= t.paidInstallments) visualPaid = true;
@@ -1003,20 +1001,16 @@
                         else installNote = ` <small style="font-size:0.6rem; color:#64748b;">(${t.currentInst}/${t.installments})</small>`; 
                     }
                     
-                    // SAFE DATE DISPLAY
                     let dateDisplay = "??/??";
-                    if(t.date && t.date.includes('-')) {
-                        dateDisplay = t.date.split('-').reverse().slice(0,2).join('/');
-                    }
+                    try { dateDisplay = t.date.split('-').reverse().slice(0,2).join('/'); } catch(e) {}
 
                     d.innerHTML = `<div class="item-main">${checkHTML}<div><div class="i-row1"><span class="i-desc">${t.desc}</span>${linkBadge} ${cardIcon} ${recurIcon}</div><div class="i-row2"><span class="i-date">${dateDisplay}</span><span class="i-cat" style="background:${catColor}">${t.category || 'Geral'}</span></div>${routeInfo}</div><div class="i-right"><span class="i-val ${valClass}">${fmt(displayAmount)}${installNote}</span>${subInfo}${actions}</div></div><div id="drawer-${t.id}" class="install-drawer"><div class="inst-info">Marque as parcelas pagas:</div><div class="install-grid" id="grid-${t.id}"></div></div>`;
                     list.appendChild(d);
                     if(t.installments > 1) renderInstallGrid(t); 
-                } catch(e) { console.error("Item pulado por erro:", e); }
+                } catch(e) { console.error("Erro ao renderizar item", e); }
             });
         }
         
-        // RESTO DO CÓDIGO (Igual)
         let c1, c2, c3, c4, cG;
         function renderCharts(data) { const ctx1=document.getElementById('c1'), ctx2=document.getElementById('c2'), ctx3=document.getElementById('c3'), ctx4=document.getElementById('c4'); const cats={}, pays={}, days={}, locs={}; let allTrans = []; db.trips.forEach(trip => { allTrans = allTrans.concat(trip.transactions); }); allTrans.forEach(t=>{ const v=parseFloat(t.amount); const catKey = t.category ? t.category : "Sem Categoria"; cats[catKey]=(cats[catKey]||0)+v; pays[t.payment]=(pays[t.payment]||0)+v; days[t.date]=(days[t.date]||0)+v; if(t.local) locs[t.local]=(locs[t.local]||0)+v; }); const catKeys = Object.keys(cats); const catCols = catKeys.map(c => { const idx = db.categories.indexOf(c); return idx >= 0 ? DISTINCT_COLORS[idx % DISTINCT_COLORS.length] : '#94a3b8'; }); const payLabels = Object.keys(pays).map(k => LABEL_MAP[k] || k); const payCols = ['#6366f1','#10b981','#f59e0b','#64748b'].slice(0, payLabels.length); const createLegend = (id, labels, colors) => { const div = document.getElementById(id); div.innerHTML=''; labels.forEach((l,i) => { const c = colors[i] || '#ccc'; div.innerHTML += `<div class="legend-item"><div class="dot-leg" style="background:${c}"></div> ${l}</div>`; }); }; if(c1) c1.destroy(); c1=new Chart(ctx1,{type:'doughnut',data:{labels:catKeys,datasets:[{data:Object.values(cats),borderWidth:0, backgroundColor:catCols}]},options:{maintainAspectRatio:false, plugins:{legend:{display:false}, title:{display:true, text:'Categorias (Global)'}}}}); createLegend('leg1', catKeys, catCols); if(c2) c2.destroy(); c2=new Chart(ctx2,{type:'pie',data:{labels:payLabels,datasets:[{data:Object.values(pays),borderWidth:0, backgroundColor:payCols}]},options:{maintainAspectRatio:false, plugins:{legend:{display:false}, title:{display:true, text:'Formas Pgto (Global)'}}}}); createLegend('leg2', payLabels, payCols); const sD = Object.keys(days).sort(); if(c3) c3.destroy(); c3=new Chart(ctx3,{type:'bar',data:{labels:sD.map(d=>d.split('-').reverse().slice(0,2).join('/')),datasets:[{label:'R$',data:sD.map(d=>days[d]),backgroundColor:'#4f46e5',borderRadius:4}]},options:{maintainAspectRatio:false, plugins:{legend:{display:false}, title:{display:true, text:'Gasto Diário'}} }}); const sL = Object.entries(locs).sort((a,b)=>b[1]-a[1]).slice(0,5); if(c4) c4.destroy(); c4=new Chart(ctx4,{type:'bar',data:{labels:sL.map(i=>i[0]),datasets:[{label:'Total',data:sL.map(i=>i[1]),backgroundColor:'#10b981',borderRadius:4}]},options:{indexAxis:'y', maintainAspectRatio:false, plugins:{legend:{display:false}, title:{display:true, text:'Top 5 Locais'}} }}); }
         function toggleDrawer(id, originId) { const d = document.getElementById(`drawer-${id}`); if(d) d.style.display = d.style.display === 'block' ? 'none' : 'block'; }
