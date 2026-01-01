@@ -45,8 +45,6 @@
         .tab-pane.active { display: block; }
 
         /* --- BLOCOS --- */
-        
-        /* Título de Seção (Blocos Normais) */
         .section-title {
             color: var(--primary); font-family: var(--font-num); 
             font-weight: 800; text-transform: uppercase; letter-spacing: 1px; 
@@ -54,34 +52,23 @@
             border-left: 4px solid var(--accent);
         }
 
-        /* Bi-Sets / Tri-Sets Containers */
         .biset-wrap { border: 2px dashed var(--c-bi); background: #f0f9ff; margin-bottom: 20px; border-radius: 16px; padding-top: 30px; position: relative; overflow: hidden; }
         .biset-lbl { position: absolute; top: 0; left: 0; background: var(--c-bi); color: white; font-size: 0.65rem; font-weight: 800; padding: 4px 12px; border-bottom-right-radius: 12px; }
 
         .triset-wrap { border: 2px dashed var(--c-tri); background: #fdf4ff; margin-bottom: 20px; border-radius: 16px; padding-top: 30px; position: relative; overflow: hidden; }
         .triset-lbl { position: absolute; top: 0; left: 0; background: var(--c-tri); color: white; font-size: 0.65rem; font-weight: 800; padding: 4px 12px; border-bottom-right-radius: 12px; }
 
-        /* --- EXERCÍCIOS (ROWS) --- */
-        
-        /* Card Padrão (Isolado) */
+        /* --- EXERCÍCIOS --- */
         .row { 
             padding: 15px; margin-bottom: 12px; 
             border: 1px solid #e2e8f0; border-radius: 14px; 
             background: white; position: relative; border-left: 4px solid #cbd5e1; 
             box-shadow: 0 2px 8px rgba(0,0,0,0.02); transition: 0.2s; 
         }
-        
-        /* Item DENTRO de Bi/Tri-set */
-        .biset-wrap .row, .triset-wrap .row {
-            margin-bottom: 0; border: none; border-radius: 0; box-shadow: none;
-            border-left: 4px solid transparent; border-bottom: 1px dashed #cbd5e1; 
-            background: transparent;
-        }
+        .biset-wrap .row, .triset-wrap .row { margin-bottom: 0; border: none; border-radius: 0; box-shadow: none; border-left: 4px solid transparent; border-bottom: 1px dashed #cbd5e1; background: transparent; }
         .biset-wrap .row:last-child, .triset-wrap .row:last-child { border-bottom: none; }
 
-        /* Cores */
         .row.done { opacity: 0.6; filter: grayscale(90%); background: #f8fafc !important; border-left-color: #cbd5e1 !important; }
-        
         .row.m-Drop { border-left-color: var(--c-drop); background: #fef2f2; }
         .row.m-RNP { border-left-color: var(--c-rnp); background: #fff7ed; }
         .row.m-Iso { border-left-color: var(--c-iso); background: #ecfeff; }
@@ -89,7 +76,6 @@
         .row.m-FST7 { border-left-color: var(--c-fst); background: #fdf2f8; }
         .row.m-Normal { border-left-color: #cbd5e1; background: white; }
 
-        /* Componentes */
         .m-tag { font-size: 0.55rem; font-weight: 800; color: white; padding: 3px 8px; border-radius: 6px; display: inline-block; margin-bottom: 6px; text-transform: uppercase; }
         .ex-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
         
@@ -174,7 +160,7 @@
             <div class="h-sub" id="sFocus">Carregando...</div>
         </div>
         <div class="h-actions">
-            <button id="adminBtn" class="h-btn btn-restore" onclick="adminTriggerRestore()" title="Restaurar Dados">
+            <button id="adminBtn" class="h-btn btn-restore" onclick="adminTriggerRestore()" title="Ver Relatório do Aluno">
                 <i class="fa-solid fa-cloud-arrow-up"></i>
             </button>
             <input type="file" id="adminRestoreFile" hidden onchange="adminLoadFile(this)">
@@ -204,23 +190,21 @@
                 <div class="mc-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
                 <div class="mc-content">
                     <div class="mc-title">1. Dor = PARE!</div>
-                    <div class="mc-text">
-                        Aprenda a diferenciar: queimação muscular é esperada. <b>Dor articular, pontadas, fisgadas ou desconforto agudo NÃO são normais.</b> Se sentir isso, interrompa o exercício imediatamente e me avise. Não force, o risco de lesão é alto.
-                    </div>
+                    <div class="mc-text">Aprenda a diferenciar: queimação muscular é esperada. <b>Dor articular NÃO é normal.</b></div>
                 </div>
             </div>
-            <div class="method-card mc-blue"><div class="mc-icon"><i class="fa-solid fa-wind"></i></div><div class="mc-content"><div class="mc-title">2. Respiração</div><div class="mc-text"><b>Inspire</b> (nariz) na descida, <b>Expire</b> (boca) na força. Mantém a pressão intra-abdominal e oxigena o músculo.</div></div></div>
-            <div class="method-card mc-purple"><div class="mc-icon"><i class="fa-solid fa-shield-halved"></i></div><div class="mc-content"><div class="mc-title">3. Core Ativo</div><div class="mc-text">Abdômen <b>contraído</b> o tempo todo (Bracing). Imagine que vai levar um soco na barriga. Protege a lombar.</div></div></div>
-            <div class="method-card mc-cyan"><div class="mc-icon"><i class="fa-solid fa-stopwatch"></i></div><div class="mc-content"><div class="mc-title">4. Cadência 3-0-1</div><div class="mc-text">Domine a carga. Desça controlado em <b>3s</b>, não pare no ponto de descanso, suba explosivo.</div></div></div>
-            <div class="method-card mc-orange"><div class="mc-icon"><i class="fa-solid fa-hourglass-half"></i></div><div class="mc-content"><div class="mc-title">5. Descanso Real</div><div class="mc-text">Use o <b>timer</b>. Descansar de menos gera fadiga inútil, de mais esfria o corpo e perde o foco.</div></div></div>
-            <div class="method-card mc-green"><div class="mc-icon"><i class="fa-solid fa-gauge-high"></i></div><div class="mc-content"><div class="mc-title">6. Intensidade</div><div class="mc-text">A carga está certa quando você termina a série com apenas <b>1 ou 2 reps</b> no "tanque" (RPE 8-9).</div></div></div>
+            <div class="method-card mc-blue"><div class="mc-icon"><i class="fa-solid fa-wind"></i></div><div class="mc-content"><div class="mc-title">2. Respiração</div><div class="mc-text"><b>Inspire</b> na descida, <b>Expire</b> na força.</div></div></div>
+            <div class="method-card mc-purple"><div class="mc-icon"><i class="fa-solid fa-shield-halved"></i></div><div class="mc-content"><div class="mc-title">3. Core Ativo</div><div class="mc-text">Abdômen <b>contraído</b> o tempo todo (Bracing).</div></div></div>
+            <div class="method-card mc-cyan"><div class="mc-icon"><i class="fa-solid fa-stopwatch"></i></div><div class="mc-content"><div class="mc-title">4. Cadência 3-0-1</div><div class="mc-text">Desça em <b>3s</b>, suba explosivo.</div></div></div>
+            <div class="method-card mc-orange"><div class="mc-icon"><i class="fa-solid fa-hourglass-half"></i></div><div class="mc-content"><div class="mc-title">5. Descanso Real</div><div class="mc-text">Use o <b>timer</b>. Não esfrie o corpo.</div></div></div>
+            <div class="method-card mc-green"><div class="mc-icon"><i class="fa-solid fa-gauge-high"></i></div><div class="mc-content"><div class="mc-title">6. Intensidade</div><div class="mc-text">Termine a série com apenas <b>1 ou 2 reps</b> no "tanque".</div></div></div>
         </div>
     </div>
 
     <div id="tab-3" class="tab-pane content">
         <div class="feedback-box">
             <i class="fa-solid fa-quote-left" style="font-size:2rem; color:#e2e8f0; margin-bottom:15px;"></i>
-            <div class="fb-title">O que está achando da Consultoria?</div>
+            <div class="fb-title">Como foi o treino?</div>
             <div class="fb-sub">Seu feedback é fundamental.</div>
             <div class="stars">
                 <i class="fa-solid fa-star star" onclick="rate(1)"></i>
@@ -229,9 +213,9 @@
                 <i class="fa-solid fa-star star" onclick="rate(4)"></i>
                 <i class="fa-solid fa-star star" onclick="rate(5)"></i>
             </div>
-            <textarea id="fbComment" class="fb-area" rows="4" placeholder="Escreva seu depoimento aqui..."></textarea>
-            <button class="btn-send-fb" onclick="generateReportFile()"><i class="fa-brands fa-whatsapp"></i> ENVIAR DEPOIMENTO</button>
-            <p style="font-size:0.7rem; color:#94a3b8; margin-top:15px; line-height:1.4;">Ao clicar, envie o arquivo gerado pelo WhatsApp.</p>
+            <textarea id="fbComment" class="fb-area" rows="4" placeholder="Alguma dor? Cargas aumentaram? Comente..."></textarea>
+            <button class="btn-send-fb" onclick="generateReportFile()"><i class="fa-brands fa-whatsapp"></i> GERAR RELATÓRIO</button>
+            <p style="font-size:0.7rem; color:#94a3b8; margin-top:15px; line-height:1.4;">Ao clicar, envie o arquivo gerado para o WhatsApp do Benai.</p>
         </div>
     </div>
 </div>
@@ -255,14 +239,12 @@
 
     async function init() {
         const p = new URLSearchParams(window.location.search);
-        
-        // --- NOVA LÓGICA: BUSCA POR ID NA NUVEM ---
         const id = p.get('id');
-        const dataOld = p.get('data'); // Mantém compatibilidade com links antigos se quiser
+        const dataOld = p.get('data'); 
 
         if(id) {
             try {
-                // Busca no GitHub Gist
+                // Lógica Nova: GitHub Gist
                 const req = await fetch(`https://api.github.com/gists/${id}`);
                 if(!req.ok) throw new Error("Treino não encontrado");
                 
@@ -277,7 +259,7 @@
                 document.getElementById('wList').innerHTML = `<div style="text-align:center; padding:40px; color:#ef4444;"><i class="fa-solid fa-triangle-exclamation" style="font-size:2rem;margin-bottom:10px;"></i><br>Erro ao baixar treino.<br><small>Verifique sua conexão.</small></div>`;
             }
         } else if (dataOld) {
-            // Lógica antiga (Backup)
+            // Lógica Antiga: Link Gigante (Backup)
             try {
                 const json = LZString.decompressFromEncodedURIComponent(dataOld);
                 currentData = JSON.parse(json);
@@ -301,7 +283,7 @@
         topics.forEach(topic => { logicContainer.innerHTML += `<div class="logic-item"><div class="logic-icon"><i class="fa-solid fa-check"></i></div><div class="logic-text">${topic}</div></div>`; });
 
         const list = document.getElementById('wList');
-        list.innerHTML = ''; // Limpa o loading
+        list.innerHTML = ''; 
         
         if(data.blocks) {
             data.blocks.forEach((b, bIdx) => {
@@ -384,12 +366,34 @@
     function go(n) { document.querySelectorAll('.tab-pane').forEach(e=>e.classList.remove('active'));document.querySelectorAll('.nav-btn').forEach(e=>e.classList.remove('active'));document.getElementById('tab-'+n).classList.add('active');document.querySelectorAll('.nav-btn')[n-1].classList.add('active');window.scrollTo(0,0); }
     function openT(s) { sec=s;updT();document.getElementById('timer').style.display='flex';if(tmr)clearInterval(tmr);tmr=setInterval(()=>{sec--;updT();if(sec<=0){clearInterval(tmr);navigator.vibrate([200,100,200]);}},1000); }
     function addT(v){sec+=v;updT();} function closeT(){document.getElementById('timer').style.display='none';clearInterval(tmr);} function updT(){let m=Math.floor(sec/60),s=sec%60;if(sec<0){m=0;s=0;}document.getElementById('tDisp').innerText=`${m}:${s<10?'0'+s:s}`;}
-    function toggleAdmin(){adminClicks++;if(adminClicks>=5){document.getElementById('adminBtn').style.display='flex';alert("Modo Admin");adminClicks=0;}}
+    
+    // ADMIN RESTORE (Secreto: toque 5x no titulo "Benai App" no header)
+    function toggleAdmin(){adminClicks++;if(adminClicks>=5){document.getElementById('adminBtn').style.display='flex';alert("Modo Admin Ativado");adminClicks=0;}}
+    
     function rate(n){rating=n;document.querySelectorAll('.star').forEach((s,i)=>{if(i<n)s.classList.add('filled');else s.classList.remove('filled');});}
-    async function generateReportFile(){const c=document.getElementById('fbComment').value;const n=currentData.name||"Aluno";const w={};document.querySelectorAll('.row').forEach(r=>{const u=r.id.replace('r-',''),d=r.classList.contains('done'),l=document.getElementById('load-'+u).value,nm=r.getAttribute('data-name');if(d||l)w[u]={name:nm,done:d,load:l};});const rep={student:n,date:new Date().toISOString(),feedback:{rating:rating,comment:c},data:w};const b=new Blob([JSON.stringify(rep,null,2)],{type:'application/json'});const f=new File([b],`Relatorio_${n.replace(/\W/g,'_')}.json`,{type:'application/json'});if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:'Relatório Benai',text:`Relatório de ${n}`});}catch(e){downloadFallback(b,f.name);}}else{downloadFallback(b,f.name);}}
-    function downloadFallback(b,n){const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=n;a.click();alert("Arquivo gerado! Envie no WhatsApp.");}
+    
+    async function generateReportFile(){
+        if(!currentData) return alert("Erro: Treino não carregado.");
+        const c=document.getElementById('fbComment').value;
+        const n=currentData.name||"Aluno";
+        const w={};
+        document.querySelectorAll('.row').forEach(r=>{
+            const u=r.id.replace('r-',''),d=r.classList.contains('done'),l=document.getElementById('load-'+u).value,nm=r.getAttribute('data-name');
+            if(d||l)w[u]={name:nm,done:d,load:l};
+        });
+        const rep={student:n,date:new Date().toISOString(),feedback:{rating:rating,comment:c},data:w};
+        const b=new Blob([JSON.stringify(rep,null,2)],{type:'application/json'});
+        const f=new File([b],`Relatorio_${n.replace(/\W/g,'_')}_${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.json`,{type:'application/json'});
+        
+        if(navigator.canShare&&navigator.canShare({files:[f]})){
+            try{await navigator.share({files:[f],title:'Relatório Benai',text:`Relatório de ${n}`});}catch(e){downloadFallback(b,f.name);}
+        }else{downloadFallback(b,f.name);}
+    }
+    
+    function downloadFallback(b,n){const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=n;a.click();alert("Arquivo gerado! Envie para o Benai no WhatsApp.");}
+    
     function adminTriggerRestore(){document.getElementById('adminRestoreFile').click();}
-    function adminLoadFile(i){const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{try{const j=JSON.parse(e.target.result);if(j.data){Object.keys(j.data).forEach(u=>{const it=j.data[u],r=document.getElementById('r-'+u);if(r){if(it.done)r.classList.add('done');if(it.load)document.getElementById('load-'+u).value=it.load;}});if(j.feedback)alert(`📝 NOTA: ${j.feedback.rating}/5\n"${j.feedback.comment}"`);else alert("Dados restaurados!");}}catch(x){alert("Erro ao ler.");}};r.readAsText(f);}
+    function adminLoadFile(i){const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{try{const j=JSON.parse(e.target.result);if(j.data){Object.keys(j.data).forEach(u=>{const it=j.data[u],r=document.getElementById('r-'+u);if(r){if(it.done)r.classList.add('done');if(it.load)document.getElementById('load-'+u).value=it.load;}});if(j.feedback)alert(`📝 NOTA: ${j.feedback.rating}/5\n"${j.feedback.comment}"`);else alert("Dados restaurados!");}}catch(x){alert("Erro ao ler arquivo.");}};r.readAsText(f);}
 </script>
 </body>
 </html>
