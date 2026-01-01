@@ -3,21 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>C6 | Benai</title>
+    <title>C6 | Benai Cloud</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;800&family=Plus+Jakarta+Sans:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<script>
+    <script>
         (function() {
-            // --- CONFIGURAÇÃO DA SENHA ---
             const PIN_CORRETO = "16359001"; 
-            // -----------------------------
-
             if (sessionStorage.getItem("benai_access_granted") === "true") return;
-
             document.write(`
                 <style>
                     body { visibility: hidden; overflow: hidden; }
@@ -48,7 +44,6 @@
                     </div>
                 </div>
             `);
-
             window.verifyPin = function(el) {
                 if (el.value.length === 8) {
                     if (el.value === PIN_CORRETO) {
@@ -96,6 +91,17 @@
         .st-open { background:#dcfce7; color:#166534; border:1px solid #86efac; }
         .st-closed { background:#1e293b; color:white; border:1px solid black; }
 
+        /* CLOUD STATUS */
+        .cloud-status {
+            width: 10px; height: 10px; border-radius: 50%;
+            background: #cbd5e1; display: inline-block; position:absolute; top:8px; right:8px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1); transition: 0.3s;
+        }
+        .cloud-status.ok { background: var(--safe); box-shadow: 0 0 8px var(--safe); }
+        .cloud-status.error { background: var(--danger); }
+        .cloud-status.syncing { background: var(--accent); animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
         /* BUTTONS */
         .actions { display:flex; gap:8px; flex-wrap:wrap; }
         .btn { padding:8px 14px; border-radius:8px; cursor:pointer; font-size:0.8rem; font-weight:600; border:none; display:inline-flex; align-items:center; gap:6px; color:white; transition:0.2s; box-shadow:0 2px 5px rgba(0,0,0,0.1); white-space:nowrap; }
@@ -103,25 +109,22 @@
         .btn-trip { background:linear-gradient(135deg, #4f46e5, #8b5cf6); }
         .btn-month { background:linear-gradient(135deg, #059669, #10b981); }
         
-        /* Ícones Header */
-        .btn-icon { width:42px; height:42px; border-radius:12px; border:1px solid #e2e8f0; background:white; color:#94a3b8; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:0.2s; font-size:1.1rem; }
+        .btn-icon { width:42px; height:42px; border-radius:12px; border:1px solid #e2e8f0; background:white; color:#94a3b8; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:0.2s; font-size:1.1rem; position: relative; }
         .btn-icon:hover { color:var(--primary); border-color:var(--primary); transform:translateY(-2px); box-shadow:0 4px 10px rgba(0,0,0,0.05); }
         .btn-icon.sync { color:var(--accent); border-color:var(--accent); background:#eef2ff; }
 
-        /* INVOICE PANEL (DYNAMIC) */
+        /* INVOICE PANEL */
         .invoice-panel { background:white; border:1px solid #e2e8f0; border-radius:14px; margin-bottom:25px; overflow:hidden; box-shadow:0 8px 15px -3px rgba(0,0,0,0.03); }
         .inv-header { background:#fffbeb; padding:10px 25px; font-size:0.75rem; color:#b45309; font-weight:700; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #fef3c7; }
         
         .inv-body { padding:18px 25px; display:flex; align-items:center; gap:30px; }
-        
-        .credit-info-block { flex: 1.2; } /* Shows Limit/Spent */
+        .credit-info-block { flex: 1.2; }
         .couple-split { flex: 1; display:flex; gap:15px; justify-content:center; align-items:center; }
         .action-block { margin-left: 10px; display:flex; gap:8px; }
 
-        /* Trip Mode: Hide credit info & actions, Center Split */
         .trip-mode .credit-info-block { display:none; }
         .trip-mode .action-block { display:none; }
-        .trip-mode .inv-header { display:none; } /* Hide yellow header in trip */
+        .trip-mode .inv-header { display:none; }
         .trip-mode .couple-split { flex: 1; width: 100%; justify-content: space-around; }
 
         .limit-row { display:flex; justify-content:space-between; font-size:0.8rem; font-weight:600; color:#64748b; margin-bottom:6px; }
@@ -137,7 +140,7 @@
         .btn-pay { background:linear-gradient(135deg, #16a34a, #15803d); padding:8px 14px; font-size:0.75rem; box-shadow:0 3px 6px rgba(22,163,74,0.2); border:none; border-radius:6px; color:white; cursor:pointer; font-weight:700; }
         .btn-undo { background:white; border:1px solid #fdba74; color:#c2410c; padding:8px 10px; font-size:0.75rem; font-weight:700; transition:0.2s; border-radius:6px; cursor:pointer; }
 
-        /* TABS */
+        /* TABS & CONTENT */
         .tabs { display:flex; gap:8px; margin-bottom:20px; padding-bottom:5px; overflow-x: auto; }
         .t-btn { padding:10px 20px; border:none; background:transparent; color:#64748b; font-weight:600; cursor:pointer; font-size:0.85rem; border-radius:8px; transition:0.2s; display:flex; align-items:center; gap:6px; white-space:nowrap; flex-shrink:0; }
         .t-btn:hover { background:#e2e8f0; }
@@ -146,7 +149,7 @@
         .tab-content { display:none; animation:fadeIn 0.3s; }
         .tab-content.active { display:block; }
 
-        /* SUMMARY & PROGRESS */
+        /* SUMMARY */
         .summary { display:grid; grid-template-columns:repeat(4,1fr); gap:15px; margin-bottom:25px; }
         .sum-box { padding:18px; border-radius:14px; background:white; border-bottom:4px solid rgba(0,0,0,0.05); box-shadow:0 4px 6px -1px rgba(0,0,0,0.02); transition:transform 0.2s; }
         .sum-box:hover { transform:translateY(-3px); }
@@ -167,12 +170,11 @@
         .prog-wrap { height:10px; background:#f1f5f9; border-radius:5px; overflow:hidden; margin-top:5px; }
         .prog-bar { height:100%; width:0%; transition:width 0.6s, background 0.3s; }
 
-        /* MAIN GRID */
+        /* GRID & LIST */
         .main-grid { display:grid; grid-template-columns:300px 1fr; gap:20px; }
         .card { background:white; border-radius:14px; border:1px solid #e2e8f0; padding:20px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.02); }
         h2 { font-size:0.9rem; color:var(--primary); margin-bottom:15px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; display:flex; align-items:center; gap:8px; }
 
-        /* FORM */
         .inp-g { margin-bottom:12px; position:relative; }
         .inp-icon { position:absolute; left:10px; top:30px; color:#94a3b8; font-size:0.8rem; }
         .form-row { display:flex; gap:10px; }
@@ -181,12 +183,10 @@
         input:focus, select:focus { border-color:var(--accent); background:white; box-shadow:0 0 0 3px rgba(79, 70, 229, 0.1); }
         .cat-wrapper { display:flex; gap:5px; align-items:stretch; }
         #fCat { flex: 1; margin:0; }
-        .btn-manage-cat { width:42px; background:#f1f5f9; border:1px solid #e2e8f0; border-radius:8px; cursor:pointer; color:#64748b; flex-shrink: 0; display:flex; align-items:center; justify-content:center; }
-        .btn-add-cat { width:42px; background:#e2e8f0; border:none; border-radius:8px; cursor:pointer; color:#64748b; flex-shrink: 0; display:flex; align-items:center; justify-content:center; }
+        .btn-manage-cat, .btn-add-cat { width:42px; background:#f1f5f9; border:1px solid #e2e8f0; border-radius:8px; cursor:pointer; color:#64748b; flex-shrink: 0; display:flex; align-items:center; justify-content:center; }
         .btn-save { width:100%; padding:12px; background:var(--safe); color:white; border:none; border-radius:8px; font-weight:700; cursor:pointer; margin-top:5px; transition:0.2s; box-shadow:0 4px 6px rgba(16,185,129,0.2); }
         .btn-cancel { width:100%; padding:10px; background:#f1f5f9; color:#64748b; border:1px solid #e2e8f0; border-radius:8px; font-weight:700; cursor:pointer; margin-top:5px; display:none; }
 
-        /* LISTA */
         .list-filters { display:flex; gap:8px; margin-bottom:15px; overflow-x: auto; padding-bottom:5px; }
         .list-filters select, .list-filters input { padding:8px 12px; min-width:100px; background:white; font-size:0.8rem; border-radius:8px; }
         .list-box { max-height:600px; overflow-y:auto; padding-right:5px; }
@@ -243,7 +243,6 @@
         #toast { position:fixed; bottom:20px; left:20px; background:#1e293b; color:white; padding:10px 20px; border-radius:8px; font-size:0.85rem; transform:translateY(100px); transition:0.3s; opacity:0; z-index:1000; box-shadow:0 5px 20px rgba(0,0,0,0.2); font-weight:600; display:flex; align-items:center; gap:8px; }
         #toast.show { transform:translateY(0); opacity:1; }
 
-        /* INSTALLMENT DRAWER */
         .install-drawer { display:none; background:rgba(255,255,255,0.5); padding:10px 15px; border-top:1px solid #e2e8f0; animation:slideDown 0.2s; }
         .install-grid { display:flex; flex-wrap:wrap; gap:5px; margin-top:5px; }
         .inst-box { width:28px; height:28px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:700; cursor:pointer; border:1px solid #cbd5e1; color:#64748b; background:white; transition:0.2s; }
@@ -251,7 +250,7 @@
         .inst-box.paid { background:var(--safe); color:white; border-color:var(--safe); }
         .inst-info { font-size:0.7rem; color:#64748b; margin-bottom:5px; font-weight:600; }
 
-        /* MODAL & SYNC STYLES */
+        /* MODAL SYNC */
         .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,31,91,0.6); z-index:1000; align-items:center; justify-content:center; backdrop-filter:blur(5px); }
         .modal-box { background:white; width:90%; max-width:450px; padding:30px; border-radius:24px; animation:slideIn 0.3s; box-shadow: 0 25px 60px rgba(0,0,0,0.3); position:relative; }
         .modal-close { position:absolute; top:20px; right:20px; color:#94a3b8; cursor:pointer; font-size:1.4rem; transition:0.2s; }
@@ -261,37 +260,26 @@
         .modal-head h3 { font-family: var(--font-num); font-weight: 800; font-size: 1.3rem; color: #1e293b; margin: 0 0 5px 0; }
         .modal-head p { font-size: 0.85rem; color: #64748b; margin: 0; }
 
-        .sync-btn { 
-            width: 100%; padding: 18px 20px; margin-bottom: 15px;
-            border: 1px solid #e2e8f0; border-radius: 16px; background: white;
-            display: flex; align-items: center; gap: 20px;
-            cursor: pointer; transition: 0.2s; text-align: left;
-        }
+        .sync-btn { width: 100%; padding: 18px 20px; margin-bottom: 15px; border: 1px solid #e2e8f0; border-radius: 16px; background: white; display: flex; align-items: center; gap: 20px; cursor: pointer; transition: 0.2s; text-align: left; }
         .sync-btn:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         .sync-btn i { font-size: 1.4rem; width: 30px; text-align: center; }
         
-        .sb-down i { color: var(--accent); }
-        .sb-share i { color: #25D366; }
-        .sb-up i { color: #1e293b; }
-        
+        .sb-down i { color: var(--accent); } .sb-share i { color: #25D366; } .sb-up i { color: #1e293b; }
         .sb-reset { border-color: #fee2e2; color: var(--danger); background: #fffbfb; margin-top: 20px; }
-        .sb-reset:hover { background: #fef2f2; border-color: var(--danger); }
-        .sb-reset i { color: var(--danger); }
-
+        .sb-reset:hover { background: #fef2f2; border-color: var(--danger); } .sb-reset i { color: var(--danger); }
+        
         .sb-txt { display: flex; flex-direction: column; }
         .sb-title { font-weight: 700; font-size: 0.95rem; color: #1e293b; margin-bottom: 2px; }
         .sb-desc { font-size: 0.75rem; color: #94a3b8; }
-        .sb-reset .sb-title { color: var(--danger); }
-        .sb-reset .sb-desc { color: #fca5a5; }
+        .sb-reset .sb-title { color: var(--danger); } .sb-reset .sb-desc { color: #fca5a5; }
 
-        /* CAT MODAL SPECIFIC */
         .cat-modal-box { background:white; width:90%; max-width:350px; padding:20px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.1); position: relative; }
         .cat-item-row { display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #f1f5f9; align-items:center; }
         .cat-del-btn { color: #ef4444; cursor: pointer; }
         
         @media (max-width: 850px) {
             header { flex-direction:column; gap:15px; } .trip-header-block { width:100%; } .trip-card-select { width:100%; } .actions { width:100%; justify-content:space-between; } .btn { flex:1; justify-content:center; }
-            .inv-body { flex-direction:column; gap:15px; padding:15px; } .couple-split { width:100%; justify-content:space-between; gap:10px; } .person { min-width:100px; flex:1; justify-content:center; } .inv-actions { width:100%; justify-content:space-between; margin-left:0; margin-top:5px; } .inv-actions button { flex:1; }
+            .inv-body { flex-direction:column; gap:15px; padding:15px; } .couple-split { width:100%; justify-content:space-between; gap:10px; } .person { min-width:100px; flex:1; justify-content:center; } .inv-actions { width:100%; justify-content:space-between; margin-left:0; margin-top:5px; }
             .main-grid { grid-template-columns:1fr; gap:15px; } .summary { grid-template-columns:1fr 1fr; gap:10px; } .sum-box { padding:15px; } .sum-box .val { font-size:1.2rem; }
             .set-grid { grid-template-columns:1fr 1fr; } .inp-g[style*="grid-column: span 2"] { grid-column: span 2; }
             .chart-grid { grid-template-columns:1fr; } .item-main { grid-template-columns: 55px 1fr; gap:10px; padding:10px; align-items:start; } .i-right { grid-column: span 2; display:flex; justify-content:space-between; align-items:center; border-top:1px solid #f1f5f9; padding-top:8px; margin-top:5px; text-align:left; } .i-val { font-size:1rem; } .i-acts { margin-top:0; opacity:1; } .roadmap-list { grid-template-columns: 1fr; }
@@ -324,7 +312,11 @@
             <div class="actions">
                 <button class="btn btn-trip" onclick="createNewTrip('trip')"><i class="fa-solid fa-plane"></i> Nova Viagem</button>
                 <button class="btn btn-month" onclick="createNewTrip('month')"><i class="fa-solid fa-calendar"></i> Novo Mês</button>
-                <button class="btn-icon sync" onclick="openModal('sync')" title="Central de Dados"><i class="fa-solid fa-cloud"></i></button>
+                
+                <button class="btn-icon sync" onclick="openModal('sync')" title="Central de Dados">
+                    <i class="fa-solid fa-cloud"></i>
+                    <div id="cloudIndicator" class="cloud-status"></div>
+                </button>
             </div>
         </header>
 
@@ -515,32 +507,43 @@
     <div id="modal-sync" class="modal">
         <div class="modal-box">
             <i class="fa-solid fa-xmark modal-close" onclick="closeModal('sync')"></i>
-            
             <div class="modal-head">
                 <h3>Central de Dados</h3>
-                <p>Sincronize entre PC e Celular via arquivo.</p>
+                <p>Nuvem (Sync) e Arquivo Local (Backup)</p>
             </div>
             
+            <div style="margin-bottom:20px; border-bottom:1px solid #e2e8f0; padding-bottom:20px;">
+                <div class="lbl" style="color:var(--accent)">Nuvem (Benai Personal DB)</div>
+                <button class="sync-btn sb-down" onclick="forceSync()">
+                    <i class="fa-solid fa-cloud-arrow-down"></i> 
+                    <div class="sb-txt">
+                        <span class="sb-title">Forçar Download</span>
+                        <span class="sb-desc">Baixar dados da Nuvem agora</span>
+                    </div>
+                </button>
+            </div>
+
+            <div class="lbl">Arquivo Local</div>
             <button class="sync-btn sb-down" onclick="exportData()">
                 <i class="fa-solid fa-download"></i> 
                 <div class="sb-txt">
-                    <span class="sb-title">Baixar Arquivo JSON</span>
-                    <span class="sb-desc">Para salvar no PC</span>
+                    <span class="sb-title">Baixar JSON</span>
+                    <span class="sb-desc">Salvar no dispositivo</span>
                 </div>
             </button>
 
             <button class="sync-btn sb-share" onclick="shareData()">
                 <i class="fa-brands fa-whatsapp"></i> 
                 <div class="sb-txt">
-                    <span class="sb-title">Compartilhar (Mobile)</span>
-                    <span class="sb-desc">Enviar para WhatsApp/Drive</span>
+                    <span class="sb-title">Compartilhar</span>
+                    <span class="sb-desc">Enviar por WhatsApp</span>
                 </div>
             </button>
 
             <button class="sync-btn sb-up" onclick="document.getElementById('importFile').click()">
                 <i class="fa-solid fa-upload"></i> 
                 <div class="sb-txt">
-                    <span class="sb-title">Restaurar Backup</span>
+                    <span class="sb-title">Restaurar</span>
                     <span class="sb-desc">Carregar arquivo JSON</span>
                 </div>
             </button>
@@ -549,7 +552,7 @@
                 <i class="fa-solid fa-trash"></i> 
                 <div class="sb-txt">
                     <span class="sb-title">Resetar Tudo</span>
-                    <span class="sb-desc">Cuidado! Apaga todos os dados.</span>
+                    <span class="sb-desc">Apaga tudo localmente</span>
                 </div>
             </button>
         </div>
@@ -566,9 +569,11 @@
     </div>
 
     <script>
-        // CHAVES MESTRAS PARA EVITAR PERDA DE DADOS
-        const KEY = 'benai_card_main_db'; // Chave definitiva
-        const OLD_KEYS = ['benai_card_v1', 'controle_fin_v83']; // Chaves antigas para migração
+        // --- CONSTANTES & CHAVES ---
+        const DB_KEY = 'benai_card_main_db'; 
+        const TOKEN_KEY = 'benai_coach_gh_token';
+        const GIST_DESC = 'BENAI_PERSONAL_DB'; // Mesmo Gist do Tracker e Financeiro
+        const OLD_KEYS = ['benai_card_v1', 'controle_fin_v83'];
 
         const DEFAULT_CATS = ['Alimentação', 'Transporte', 'Hospedagem', 'Passeios', 'Compras', 'Mercado', 'Outros', 'Presentes', 'Passagens Aéreas'];
         const DISTINCT_COLORS = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4', '#ec4899', '#f97316', '#6366f1', '#14b8a6', '#84cc16', '#a855f7', '#eab308', '#0ea5e9', '#d946ef'];
@@ -578,35 +583,145 @@
         let active = null;
         let editId = null;
         let editingOriginId = null;
+        let gistId = null; // ID da nuvem
 
-        function init() {
-            try {
-                let saved = localStorage.getItem(KEY);
-                
-                // Rotina de Migração Automática
-                if(!saved) {
-                    for(let k of OLD_KEYS) {
-                        saved = localStorage.getItem(k);
-                        if(saved) {
-                            // Salva na chave mestra
-                            localStorage.setItem(KEY, saved);
-                            break; 
-                        }
-                    }
+        async function init() {
+            // 1. Tenta Local
+            let saved = localStorage.getItem(DB_KEY);
+            if(!saved) { // Migração
+                for(let k of OLD_KEYS) {
+                    saved = localStorage.getItem(k);
+                    if(saved) { localStorage.setItem(DB_KEY, saved); break; }
                 }
+            }
+            if(saved) db = sanitize(JSON.parse(saved));
+            else createDefault();
 
-                if(saved) {
-                    db = sanitize(JSON.parse(saved));
-                } else {
-                    createDefault();
-                }
-            } catch(e) { console.error("Erro init", e); createDefault(); }
-            
             initInstallmentSelect();
             refreshUI();
+
+            // 2. Tenta Nuvem
+            await syncCloud();
         }
 
-        // Funções Padrão
+        // --- LÓGICA DE NUVEM ---
+        function updateCloudStatus(status) {
+            const el = document.getElementById('cloudIndicator');
+            el.className = 'cloud-status ' + status;
+        }
+
+        async function syncCloud() {
+            const token = localStorage.getItem(TOKEN_KEY);
+            if(!token) return updateCloudStatus('error'); 
+
+            updateCloudStatus('syncing');
+
+            try {
+                // Busca ID se não tiver
+                if(!gistId) {
+                    const search = await fetch('https://api.github.com/gists', { headers: { 'Authorization': `token ${token}` } });
+                    const gists = await search.json();
+                    const found = gists.find(g => g.description === GIST_DESC);
+                    if(found) gistId = found.id;
+                }
+
+                if(gistId) {
+                    // Baixa e mescla (Nuvem é a verdade)
+                    const res = await fetch(`https://api.github.com/gists/${gistId}`, { headers: { 'Authorization': `token ${token}` } });
+                    const json = await res.json();
+                    
+                    if(json.files["c6_card.json"]) {
+                        const cloudData = JSON.parse(json.files["c6_card.json"].content);
+                        db = sanitize(cloudData);
+                        saveLocal();
+                        refreshUI();
+                        updateCloudStatus('ok');
+                    } else {
+                        // Se não tem o arquivo específico ainda, sobe o local
+                        await pushCloud();
+                    }
+                } else {
+                    await pushCloud();
+                }
+            } catch(e) {
+                console.error(e);
+                updateCloudStatus('error');
+            }
+        }
+
+        async function pushCloud() {
+            const token = localStorage.getItem(TOKEN_KEY);
+            if(!token) return;
+
+            updateCloudStatus('syncing');
+            try {
+                let url = 'https://api.github.com/gists';
+                let method = 'POST';
+                if(gistId) { url += '/' + gistId; method = 'PATCH'; }
+
+                // Atenção: Aqui usamos "c6_card.json" para não sobrescrever o "tracker.json"
+                // O Gist suporta múltiplos arquivos.
+                const payload = {
+                    description: GIST_DESC,
+                    public: false,
+                    files: { "c6_card.json": { content: JSON.stringify(db) } }
+                };
+
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if(!res.ok) throw new Error('Falha no upload');
+                const json = await res.json();
+                gistId = json.id;
+                updateCloudStatus('ok');
+            } catch(e) {
+                console.error(e);
+                updateCloudStatus('error');
+            }
+        }
+
+        function forceSync() {
+            if(confirm("Baixar da nuvem?")) {
+                syncCloud();
+                closeModal('sync');
+            }
+        }
+
+        function saveLocal() { localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+        
+        function save() { 
+            saveLocal(); 
+            refreshUI(); 
+            pushCloud(); // Auto-save na nuvem
+        }
+
+        // --- BACKUP LOCAL ---
+        function openModal(id) { document.getElementById('modal-'+id).style.display='flex'; }
+        function closeModal(id) { document.getElementById('modal-'+id).style.display='none'; }
+        
+        function exportData() {
+            const d = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
+            const a = document.createElement('a'); a.href = d; a.download = "benai_card_backup.json"; a.click();
+        }
+        function shareData() {
+            const blob = new Blob([JSON.stringify(db)], { type: 'application/json' });
+            const file = new File([blob], "benai_card.json", { type: 'application/json' });
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                navigator.share({ files: [file], title: 'Backup Cartão Benai' });
+            } else { alert("Use o botão Baixar."); }
+        }
+        function importData(input) {
+            const f = input.files[0]; if(!f) return;
+            const r = new FileReader(); r.onload = e => { 
+                try { db = sanitize(JSON.parse(e.target.result)); save(); location.reload(); } catch(err) { alert("Erro ao importar"); } 
+            }; r.readAsText(f);
+        }
+        function hardReset() { if(confirm("Apagar tudo?")) { localStorage.removeItem(DB_KEY); location.reload(); } }
+
+        // --- CORE LOGIC (MANTIDA) ---
         function initInstallmentSelect() { const s = document.getElementById('fInst'); s.innerHTML = ''; for(let i=1; i<=12; i++) s.add(new Option(i + 'x', i)); }
         function sanitize(data) {
             if(!data.trips) data.trips = [];
@@ -621,8 +736,6 @@
         }
         function createDefault() { db = { trips: [{id:'def', name:'Meu Controle', type:'trip', budget:0, creditLimit:0, transactions:[]}], currentId:'def', categories: [...DEFAULT_CATS], roadmap:[{text:'Controle Pessoal', done:false, cat:1}, {text:'Metas de Economia', done:false, cat:2}] }; save(); }
         
-        function save() { localStorage.setItem(KEY, JSON.stringify(db)); refreshUI(); }
-
         function getInstallmentForMonth(t, monthStartStr, monthEndStr) {
             const tDateStr = t.date; 
             const mStartStr = monthStartStr.substring(0, 7); 
@@ -793,111 +906,6 @@
             renderFilters(); renderCharts(unifiedData); renderGlobal(); renderRoadmap(); fillCats();
         }
 
-        // --- BACKUP & SYNC ---
-        function openModal(id) { 
-            const m = document.getElementById('modal-'+id); 
-            if(m) m.style.display='flex'; 
-        }
-        function closeModal(id) { 
-            const m = document.getElementById(id ? 'modal-'+id : 'modal-sync'); 
-            if(m) m.style.display='none'; 
-        }
-        
-        function exportData() {
-            const d = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
-            const a = document.createElement('a'); a.href = d; a.download = "benai_card_backup.json"; a.click();
-        }
-        function shareData() {
-            const blob = new Blob([JSON.stringify(db)], { type: 'application/json' });
-            const file = new File([blob], "benai_card.json", { type: 'application/json' });
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                navigator.share({ files: [file], title: 'Backup Cartão Benai' });
-            } else { alert("Use o botão Baixar."); }
-        }
-        function importData(input) {
-            const f = input.files[0]; if(!f) return;
-            const r = new FileReader(); r.onload = e => { 
-                try { db = sanitize(JSON.parse(e.target.result)); save(); location.reload(); } catch(err) { alert("Erro ao importar"); } 
-            }; r.readAsText(f);
-        }
-        function hardReset() { if(confirm("Apagar tudo?")) { localStorage.removeItem(KEY); location.reload(); } }
-
-        // --- OUTRAS FUNÇÕES UI ---
-        function renderFilters() { const unifiedData = getUnifiedTransactions(); renderList(unifiedData); }
-        function renderList(data) {
-            const list = document.getElementById('listContainer'); list.innerHTML = '';
-            const arr = data.sort((a,b) => new Date(b.date) - new Date(a.date));
-            const filter = document.getElementById('filTxt').value.toLowerCase();
-            const fCat = document.getElementById('filCat').value;
-            const fDate = document.getElementById('filDate');
-            const currentSel = fDate.value;
-            fDate.innerHTML = '<option value="all">Todas Datas</option>';
-            const dates = [...new Set(arr.map(t=>t.date))].sort();
-            dates.forEach(d => { const opt = new Option(d.split('-').reverse().join('/'), d); fDate.add(opt); });
-            if(dates.includes(currentSel)) fDate.value = currentSel;
-            if(document.getElementById('filCat').options.length <= 1) db.categories.forEach(c => document.getElementById('filCat').add(new Option(c,c)));
-
-            const filteredArr = arr.filter(t => {
-                if(fCat !== 'all' && t.category !== fCat) return false;
-                if(fDate.value !== 'all' && t.date !== fDate.value) return false;
-                const txt = (t.desc + ' ' + (t.local||'')).toLowerCase();
-                if(filter && !txt.includes(filter)) return false;
-                return true;
-            });
-
-            filteredArr.forEach((t) => {
-                const isPaid = (t.paidInstallments >= t.installments);
-                let visualPaid = isPaid;
-                if(t.isProjection && t.currentInst <= t.paidInstallments) visualPaid = true;
-                const valClass = visualPaid ? 'val-paid' : 'val-pend';
-                const linkBadge = t.isImported ? `<span class="badge-link"><i class="fa-solid fa-link"></i> ${t.origin}</span>` : '';
-                let cardIcon = '';
-                if(t.payment === 'credit' || t.payment === 'debit') {
-                    if(t.cardType === 'virtual') cardIcon = '<i class="fa-solid fa-mobile-screen" title="Cartão Virtual" style="font-size:0.6rem; color:#94a3b8; margin-left:3px;"></i>';
-                    else cardIcon = '<i class="fa-regular fa-credit-card" title="Cartão Físico" style="font-size:0.6rem; color:#94a3b8; margin-left:3px;"></i>';
-                }
-                let recurIcon = t.recur ? '<span title="Assinatura" style="font-size:0.8rem; margin-left:5px;">🔁</span>' : '';
-                const d = document.createElement('div');
-                d.className = `item-container ${visualPaid ? 'paid' : 'pending'}`;
-                let checkHTML = t.installments > 1 ? `<div onclick="toggleDrawer('${t.id}', '${t.originId}')" class="btn-drawer-left"><i class="fa-solid fa-layer-group"></i> ${t.paidInstallments}/${t.installments} <i class="fa-solid fa-caret-down"></i></div>` : `<input type="checkbox" class="check" ${visualPaid?'checked':''} onchange="toggleFullPay('${t.id}', '${t.originId}')">`;
-                let subInfo = '';
-                if(t.installments > 1) {
-                    const displayTotal = t.isProjection ? (t.amount * t.installments) : t.amount;
-                    const displayPaid = (displayTotal / t.installments) * t.paidInstallments;
-                    const displayRest = displayTotal - displayPaid;
-                    let segs = '';
-                    for(let i=0; i<t.installments; i++) segs += `<div class="seg ${i < t.paidInstallments ? 'paid' : ''}"></div>`;
-                    subInfo = `<div class="i-sub-info"><div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span class="text-green">Pg: ${fmt(displayPaid)}</span> <span class="text-red">R: ${fmt(displayRest)}</span></div><div class="seg-bar">${segs}</div></div>`;
-                }
-                let routeInfo = '';
-                if(t.category.toLowerCase().includes('transporte') && t.transportFrom && t.transportTo) { routeInfo = `<div class="route-info"><i class="fa-solid fa-location-dot"></i> ${t.transportFrom} <i class="fa-solid fa-arrow-right"></i> ${t.transportTo}</div>`; } 
-                else if (t.local) { routeInfo = `<div class="local-info"><i class="fa-solid fa-location-dot"></i> ${t.local}</div>`; }
-                const catIndex = db.categories.indexOf(t.category);
-                const catColor = DISTINCT_COLORS[catIndex % DISTINCT_COLORS.length] || '#64748b';
-                const actions = `<div class="i-acts"><button class="btn-act" onclick="editT('${t.id}', '${t.originId}')"><i class="fa-solid fa-pen"></i></button><button class="btn-act del" onclick="delT('${t.id}', '${t.originId}')"><i class="fa-solid fa-trash"></i></button></div>`;
-                let displayAmount = t.amount;
-                let installNote = '';
-                if(t.isProjection) { if(t.recur) installNote = ` <small style="font-size:0.6rem; color:#64748b;">(Assinatura)</small>`; else installNote = ` <small style="font-size:0.6rem; color:#64748b;">(${t.currentInst}/${t.installments})</small>`; }
-                d.innerHTML = `<div class="item-main">${checkHTML}<div><div class="i-row1"><span class="i-desc">${t.desc}</span>${linkBadge} ${cardIcon} ${recurIcon}</div><div class="i-row2"><span class="i-date">${t.date.split('-').reverse().slice(0,2).join('/')}</span><span class="i-cat" style="background:${catColor}">${t.category}</span></div>${routeInfo}</div><div class="i-right"><span class="i-val ${valClass}">${fmt(displayAmount)}${installNote}</span>${subInfo}${actions}</div></div><div id="drawer-${t.id}" class="install-drawer"><div class="inst-info">Marque as parcelas pagas:</div><div class="install-grid" id="grid-${t.id}"></div></div>`;
-                list.appendChild(d);
-                if(t.installments > 1) renderInstallGrid(t); 
-            });
-        }
-        
-        let c1, c2, c3, c4, cG;
-        function renderCharts(data) { const ctx1=document.getElementById('c1'), ctx2=document.getElementById('c2'), ctx3=document.getElementById('c3'), ctx4=document.getElementById('c4'); const cats={}, pays={}, days={}, locs={}; let allTrans = []; db.trips.forEach(trip => { allTrans = allTrans.concat(trip.transactions); }); allTrans.forEach(t=>{ const v=parseFloat(t.amount); const catKey = t.category ? t.category : "Sem Categoria"; cats[catKey]=(cats[catKey]||0)+v; pays[t.payment]=(pays[t.payment]||0)+v; days[t.date]=(days[t.date]||0)+v; if(t.local) locs[t.local]=(locs[t.local]||0)+v; }); const catKeys = Object.keys(cats); const catCols = catKeys.map(c => { const idx = db.categories.indexOf(c); return idx >= 0 ? DISTINCT_COLORS[idx % DISTINCT_COLORS.length] : '#94a3b8'; }); const payLabels = Object.keys(pays).map(k => LABEL_MAP[k] || k); const payCols = ['#6366f1','#10b981','#f59e0b','#64748b'].slice(0, payLabels.length); const createLegend = (id, labels, colors) => { const div = document.getElementById(id); div.innerHTML=''; labels.forEach((l,i) => { const c = colors[i] || '#ccc'; div.innerHTML += `<div class="legend-item"><div class="dot-leg" style="background:${c}"></div> ${l}</div>`; }); }; if(c1) c1.destroy(); c1=new Chart(ctx1,{type:'doughnut',data:{labels:catKeys,datasets:[{data:Object.values(cats),borderWidth:0, backgroundColor:catCols}]},options:{maintainAspectRatio:false, plugins:{legend:{display:false}, title:{display:true, text:'Categorias (Global)'}}}}); createLegend('leg1', catKeys, catCols); if(c2) c2.destroy(); c2=new Chart(ctx2,{type:'pie',data:{labels:payLabels,datasets:[{data:Object.values(pays),borderWidth:0, backgroundColor:payCols}]},options:{maintainAspectRatio:false, plugins:{legend:{display:false}, title:{display:true, text:'Formas Pgto (Global)'}}}}); createLegend('leg2', payLabels, payCols); const sD = Object.keys(days).sort(); if(c3) c3.destroy(); c3=new Chart(ctx3,{type:'bar',data:{labels:sD.map(d=>d.split('-').reverse().slice(0,2).join('/')),datasets:[{label:'R$',data:sD.map(d=>days[d]),backgroundColor:'#4f46e5',borderRadius:4}]},options:{maintainAspectRatio:false, plugins:{legend:{display:false}, title:{display:true, text:'Gasto Diário'}} }}); const sL = Object.entries(locs).sort((a,b)=>b[1]-a[1]).slice(0,5); if(c4) c4.destroy(); c4=new Chart(ctx4,{type:'bar',data:{labels:sL.map(i=>i[0]),datasets:[{label:'Total',data:sL.map(i=>i[1]),backgroundColor:'#10b981',borderRadius:4}]},options:{indexAxis:'y', maintainAspectRatio:false, plugins:{legend:{display:false}, title:{display:true, text:'Top 5 Locais'}} }}); }
-        function toggleDrawer(id, originId) { const d = document.getElementById(`drawer-${id}`); if(d) d.style.display = d.style.display === 'block' ? 'none' : 'block'; }
-        function renderInstallGrid(t) { const grid = document.getElementById(`grid-${t.id}`); if(!grid) return; grid.innerHTML = ''; const r = document.createElement('div'); r.className = 'inst-box'; r.innerText = '0'; r.onclick = () => setInstallment(t.id, 0, t.originId); grid.appendChild(r); for(let i=1; i<=t.installments; i++) { const b = document.createElement('div'); b.className = `inst-box ${i <= t.paidInstallments ? 'paid' : ''}`; b.innerText = i; b.onclick = () => setInstallment(t.id, i, t.originId); grid.appendChild(b); } }
-        function setInstallment(id, count, originId) { let targetTrip = active; if(originId && originId !== active.id) targetTrip = db.trips.find(x => x.id === originId); if(!targetTrip) return; const t = targetTrip.transactions.find(x => x.id === id); if(t) { t.paidInstallments = count; t.paid = (count === t.installments); save(); } }
-        function toggleFullPay(id, originId) { let targetTrip = active; if(originId && originId !== active.id) targetTrip = db.trips.find(x => x.id === originId); if(!targetTrip) return; const t = targetTrip.transactions.find(x => x.id === id); if(t) { const isPaid = (t.paidInstallments >= t.installments); t.paidInstallments = isPaid ? 0 : t.installments; t.paid = !isPaid; save(); } }
-        function delT(id, originId) { if(confirm("Apagar?")) { let targetTrip = active; if(originId && originId !== active.id) targetTrip = db.trips.find(x => x.id === originId); targetTrip.transactions = targetTrip.transactions.filter(x => x.id !== id); save(); } }
-        function renderGlobal() { let tot=0; const ms={}; db.trips.forEach(t=>t.transactions.forEach(tr=>{ const v=parseFloat(tr.amount); tot+=v; const m = tr.date ? tr.date.substring(0,7) : '---'; ms[m]=(ms[m]||0)+v; })); document.getElementById('globalTotal').innerText = fmt(tot); const sM = Object.keys(ms).sort(); if(cG) cG.destroy(); cG = new Chart(document.getElementById('cG'),{type:'line',data:{labels:sM,datasets:[{label:'Evolução',data:sM.map(m=>ms[m]),borderColor:'#4f46e5',tension:0.3,fill:true,backgroundColor:'rgba(79, 70, 229, 0.1)'}]},options:{maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}}}); }
-        function renderRoadmap() { const l=document.getElementById('roadmapList'); l.innerHTML=''; db.roadmap.forEach((r,i)=>{ l.innerHTML+=`<li class="roadmap-item ${r.cat===1?'rm-cat-1':r.cat===2?'rm-cat-2':'rm-cat-3'} ${r.done?'checked':''}"><div class="rm-header"><div class="rm-icon"><i class="fa-solid fa-check"></i></div><input type="checkbox" class="rm-check" ${r.done?'checked':''} onchange="togRoad(${i})"></div><div style="font-weight:600; color:#334155;">${r.text}</div></li>`; }); }
-        window.togRoad=(i)=>{ db.roadmap[i].done=!db.roadmap[i].done; save(); }
-
-        document.getElementById('fPay').addEventListener('change', function() { const val = this.value; if(val === 'credit' || val === 'debit') document.getElementById('divCardType').style.display = 'block'; else document.getElementById('divCardType').style.display = 'none'; });
-        document.getElementById('addForm').addEventListener('submit', (e) => { e.preventDefault(); const val = parse(document.getElementById('fVal').value); if(val<=0) return; const newT = { id: editId || Date.now().toString(), date: document.getElementById('fDate').value, desc: document.getElementById('fDesc').value, category: document.getElementById('fCat').value, local: document.getElementById('fLoc').value, transportFrom: document.getElementById('fFrom').value, transportTo: document.getElementById('fTo').value, amount: val, payment: document.getElementById('fPay').value, cardType: document.getElementById('fCardType').value || 'physical', installments: parseInt(document.getElementById('fInst').value), paidInstallments: 0, paid: false, origin: document.getElementById('fFrom').value, destination: document.getElementById('fTo').value, recur: document.getElementById('fRecur').checked }; if(editId) { let targetTrip = active; if(editingOriginId && editingOriginId !== active.id) { targetTrip = db.trips.find(x => x.id === editingOriginId); } const idx = targetTrip.transactions.findIndex(x=>x.id===editId); if(idx >= 0) { newT.paidInstallments = targetTrip.transactions[idx].paidInstallments; newT.paid = targetTrip.transactions[idx].paid; targetTrip.transactions[idx] = newT; } } else { active.transactions.push(newT); } resetForm(); showToast("Lançamento Salvo!"); save(); });
-        document.getElementById('fCat').addEventListener('change', function(){ const v=this.value.toLowerCase(); document.getElementById('transPanel').style.display = (v.includes('transporte')||v.includes('uber')) ? 'flex' : 'none'; });
         function editT(id, originId) { let targetTrip = active; if(originId && originId !== active.id) targetTrip = db.trips.find(x => x.id === originId); const t = targetTrip.transactions.find(x=>x.id===id); if(!t) return; editId = id; editingOriginId = originId; document.getElementById('fDate').value = t.date; document.getElementById('fDesc').value = t.desc; document.getElementById('fCat').value = t.category; document.getElementById('fLoc').value = t.local || ''; document.getElementById('fVal').value = fmt(t.amount); document.getElementById('fPay').value = t.payment; document.getElementById('fInst').value = t.installments; document.getElementById('fFrom').value = t.transportFrom||t.origin||''; document.getElementById('fTo').value = t.transportTo||t.destination||''; document.getElementById('fCardType').value = t.cardType || 'physical'; document.getElementById('fRecur').checked = t.recur || false; document.getElementById('fCat').dispatchEvent(new Event('change')); document.getElementById('fPay').dispatchEvent(new Event('change')); document.getElementById('btnSubmit').innerText = "ATUALIZAR"; document.getElementById('btnCancel').style.display = "block"; document.querySelector('.container').scrollIntoView({behavior:'smooth'}); }
         function resetForm() { editId = null; editingOriginId = null; document.getElementById('addForm').reset(); document.getElementById('btnSubmit').innerText = "SALVAR"; document.getElementById('btnCancel').style.display = "none"; document.getElementById('transPanel').style.display = "none"; document.getElementById('fDate').value = new Date().toISOString().split('T')[0]; document.getElementById('fPay').dispatchEvent(new Event('change'));}
         function switchTrip(id) { db.currentId = id; save(); }
@@ -944,6 +952,81 @@
         document.getElementById('budgetBox').onclick = function(e) { if(e.target.closest('button') || this.querySelector('input')) return; this.innerHTML = `<small><i class="fa-solid fa-sack-dollar"></i> Orçamento</small><div class="budget-edit-wrap"><input id="newBudgetInp" class="budget-inp" value="${fmt(active.budget)}"><button class="b-btn b-ok" onclick="confBudget(event)"><i class="fa-solid fa-check"></i></button><button class="b-btn b-cancel" onclick="cancBudget(event)"><i class="fa-solid fa-xmark"></i></button></div>`; const inp=document.getElementById('newBudgetInp'); inp.focus(); inp.addEventListener('input', function(){ maskMoney(this); }); };
         function confBudget(e) { e.stopPropagation(); active.budget = parse(document.getElementById('newBudgetInp').value); save(); }
         function cancBudget(e) { e.stopPropagation(); save(); } 
+
+        function renderList(data) {
+            const list = document.getElementById('listContainer'); list.innerHTML = '';
+            const arr = data.sort((a,b) => new Date(b.date) - new Date(a.date));
+            const filter = document.getElementById('filTxt').value.toLowerCase();
+            const fCat = document.getElementById('filCat').value;
+            const fDate = document.getElementById('filDate');
+            const currentSel = fDate.value;
+            fDate.innerHTML = '<option value="all">Todas Datas</option>';
+            const dates = [...new Set(arr.map(t=>t.date))].sort();
+            dates.forEach(d => { const opt = new Option(d.split('-').reverse().join('/'), d); fDate.add(opt); });
+            if(dates.includes(currentSel)) fDate.value = currentSel;
+            if(document.getElementById('filCat').options.length <= 1) db.categories.forEach(c => document.getElementById('filCat').add(new Option(c,c)));
+
+            const filteredArr = arr.filter(t => {
+                if(fCat !== 'all' && t.category !== fCat) return false;
+                if(fDate.value !== 'all' && t.date !== fDate.value) return false;
+                const txt = (t.desc + ' ' + (t.local||'')).toLowerCase();
+                if(filter && !txt.includes(filter)) return false;
+                return true;
+            });
+
+            filteredArr.forEach((t) => {
+                const isPaid = (t.paidInstallments >= t.installments);
+                let visualPaid = isPaid;
+                if(t.isProjection && t.currentInst <= t.paidInstallments) visualPaid = true;
+                const valClass = visualPaid ? 'val-paid' : 'val-pend';
+                const linkBadge = t.isImported ? `<span class="badge-link"><i class="fa-solid fa-link"></i> ${t.origin}</span>` : '';
+                let cardIcon = '';
+                if(t.payment === 'credit' || t.payment === 'debit') {
+                    if(t.cardType === 'virtual') cardIcon = '<i class="fa-solid fa-mobile-screen" title="Cartão Virtual" style="font-size:0.6rem; color:#94a3b8; margin-left:3px;"></i>';
+                    else cardIcon = '<i class="fa-regular fa-credit-card" title="Cartão Físico" style="font-size:0.6rem; color:#94a3b8; margin-left:3px;"></i>';
+                }
+                let recurIcon = t.recur ? '<span title="Assinatura" style="font-size:0.8rem; margin-left:5px;">🔁</span>' : '';
+                const d = document.createElement('div');
+                d.className = `item-container ${visualPaid ? 'paid' : 'pending'}`;
+                let checkHTML = t.installments > 1 ? `<div onclick="toggleDrawer('${t.id}', '${t.originId}')" class="btn-drawer-left"><i class="fa-solid fa-layer-group"></i> ${t.paidInstallments}/${t.installments} <i class="fa-solid fa-caret-down"></i></div>` : `<input type="checkbox" class="check" ${visualPaid?'checked':''} onchange="toggleFullPay('${t.id}', '${t.originId}')">`;
+                let subInfo = '';
+                if(t.installments > 1) {
+                    const displayTotal = t.isProjection ? (t.amount * t.installments) : t.amount;
+                    const displayPaid = (displayTotal / t.installments) * t.paidInstallments;
+                    const displayRest = displayTotal - displayPaid;
+                    let segs = '';
+                    for(let i=0; i<t.installments; i++) segs += `<div class="seg ${i < t.paidInstallments ? 'paid' : ''}"></div>`;
+                    subInfo = `<div class="i-sub-info"><div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span class="val-paid">Pg: ${fmt(displayPaid)}</span> <span class="val-pend">R: ${fmt(displayRest)}</span></div><div class="seg-bar">${segs}</div></div>`;
+                }
+                let routeInfo = '';
+                if(t.category.toLowerCase().includes('transporte') && t.transportFrom && t.transportTo) { routeInfo = `<div class="route-info"><i class="fa-solid fa-location-dot"></i> ${t.transportFrom} <i class="fa-solid fa-arrow-right"></i> ${t.transportTo}</div>`; } 
+                else if (t.local) { routeInfo = `<div class="local-info"><i class="fa-solid fa-location-dot"></i> ${t.local}</div>`; }
+                const catIndex = db.categories.indexOf(t.category);
+                const catColor = DISTINCT_COLORS[catIndex % DISTINCT_COLORS.length] || '#64748b';
+                const actions = `<div class="i-acts"><button class="btn-act" onclick="editT('${t.id}', '${t.originId}')"><i class="fa-solid fa-pen"></i></button><button class="btn-act del" onclick="delT('${t.id}', '${t.originId}')"><i class="fa-solid fa-trash"></i></button></div>`;
+                let displayAmount = t.amount;
+                let installNote = '';
+                if(t.isProjection) { if(t.recur) installNote = ` <small style="font-size:0.6rem; color:#64748b;">(Assinatura)</small>`; else installNote = ` <small style="font-size:0.6rem; color:#64748b;">(${t.currentInst}/${t.installments})</small>`; }
+                d.innerHTML = `<div class="item-main">${checkHTML}<div><div class="i-row1"><span class="i-desc">${t.desc}</span>${linkBadge} ${cardIcon} ${recurIcon}</div><div class="i-row2"><span class="i-date">${t.date.split('-').reverse().slice(0,2).join('/')}</span><span class="i-cat" style="background:${catColor}">${t.category}</span></div>${routeInfo}</div><div class="i-right"><span class="i-val ${valClass}">${fmt(displayAmount)}${installNote}</span>${subInfo}${actions}</div></div><div id="drawer-${t.id}" class="install-drawer"><div class="inst-info">Marque as parcelas pagas:</div><div class="install-grid" id="grid-${t.id}"></div></div>`;
+                list.appendChild(d);
+                if(t.installments > 1) renderInstallGrid(t); 
+            });
+        }
+        
+        let c1, c2, c3, c4, cG;
+        function renderCharts(data) { const ctx1=document.getElementById('c1'), ctx2=document.getElementById('c2'), ctx3=document.getElementById('c3'), ctx4=document.getElementById('c4'); const cats={}, pays={}, days={}, locs={}; let allTrans = []; db.trips.forEach(trip => { allTrans = allTrans.concat(trip.transactions); }); allTrans.forEach(t=>{ const v=parseFloat(t.amount); const catKey = t.category ? t.category : "Sem Categoria"; cats[catKey]=(cats[catKey]||0)+v; pays[t.payment]=(pays[t.payment]||0)+v; days[t.date]=(days[t.date]||0)+v; if(t.local) locs[t.local]=(locs[t.local]||0)+v; }); const catKeys = Object.keys(cats); const catCols = catKeys.map(c => { const idx = db.categories.indexOf(c); return idx >= 0 ? DISTINCT_COLORS[idx % DISTINCT_COLORS.length] : '#94a3b8'; }); const payLabels = Object.keys(pays).map(k => LABEL_MAP[k] || k); const payCols = ['#6366f1','#10b981','#f59e0b','#64748b'].slice(0, payLabels.length); const createLegend = (id, labels, colors) => { const div = document.getElementById(id); div.innerHTML=''; labels.forEach((l,i) => { const c = colors[i] || '#ccc'; div.innerHTML += `<div class="legend-item"><div class="dot-leg" style="background:${c}"></div> ${l}</div>`; }); }; if(c1) c1.destroy(); c1=new Chart(ctx1,{type:'doughnut',data:{labels:catKeys,datasets:[{data:Object.values(cats),borderWidth:0, backgroundColor:catCols}]},options:{maintainAspectRatio:false, plugins:{legend:{display:false}, title:{display:true, text:'Categorias (Global)'}}}}); createLegend('leg1', catKeys, catCols); if(c2) c2.destroy(); c2=new Chart(ctx2,{type:'pie',data:{labels:payLabels,datasets:[{data:Object.values(pays),borderWidth:0, backgroundColor:payCols}]},options:{maintainAspectRatio:false, plugins:{legend:{display:false}, title:{display:true, text:'Formas Pgto (Global)'}}}}); createLegend('leg2', payLabels, payCols); const sD = Object.keys(days).sort(); if(c3) c3.destroy(); c3=new Chart(ctx3,{type:'bar',data:{labels:sD.map(d=>d.split('-').reverse().slice(0,2).join('/')),datasets:[{label:'R$',data:sD.map(d=>days[d]),backgroundColor:'#4f46e5',borderRadius:4}]},options:{maintainAspectRatio:false, plugins:{legend:{display:false}, title:{display:true, text:'Gasto Diário'}} }}); const sL = Object.entries(locs).sort((a,b)=>b[1]-a[1]).slice(0,5); if(c4) c4.destroy(); c4=new Chart(ctx4,{type:'bar',data:{labels:sL.map(i=>i[0]),datasets:[{label:'Total',data:sL.map(i=>i[1]),backgroundColor:'#10b981',borderRadius:4}]},options:{indexAxis:'y', maintainAspectRatio:false, plugins:{legend:{display:false}, title:{display:true, text:'Top 5 Locais'}} }}); }
+        function toggleDrawer(id, originId) { const d = document.getElementById(`drawer-${id}`); if(d) d.style.display = d.style.display === 'block' ? 'none' : 'block'; }
+        function renderInstallGrid(t) { const grid = document.getElementById(`grid-${t.id}`); if(!grid) return; grid.innerHTML = ''; const r = document.createElement('div'); r.className = 'inst-box'; r.innerText = '0'; r.onclick = () => setInstallment(t.id, 0, t.originId); grid.appendChild(r); for(let i=1; i<=t.installments; i++) { const b = document.createElement('div'); b.className = `inst-box ${i <= t.paidInstallments ? 'paid' : ''}`; b.innerText = i; b.onclick = () => setInstallment(t.id, i, t.originId); grid.appendChild(b); } }
+        function setInstallment(id, count, originId) { let targetTrip = active; if(originId && originId !== active.id) targetTrip = db.trips.find(x => x.id === originId); if(!targetTrip) return; const t = targetTrip.transactions.find(x => x.id === id); if(t) { t.paidInstallments = count; t.paid = (count === t.installments); save(); } }
+        function toggleFullPay(id, originId) { let targetTrip = active; if(originId && originId !== active.id) targetTrip = db.trips.find(x => x.id === originId); if(!targetTrip) return; const t = targetTrip.transactions.find(x => x.id === id); if(t) { const isPaid = (t.paidInstallments >= t.installments); t.paidInstallments = isPaid ? 0 : t.installments; t.paid = !isPaid; save(); } }
+        function delT(id, originId) { if(confirm("Apagar?")) { let targetTrip = active; if(originId && originId !== active.id) targetTrip = db.trips.find(x => x.id === originId); targetTrip.transactions = targetTrip.transactions.filter(x => x.id !== id); save(); } }
+        function renderGlobal() { let tot=0; const ms={}; db.trips.forEach(t=>t.transactions.forEach(tr=>{ const v=parseFloat(tr.amount); tot+=v; const m = tr.date ? tr.date.substring(0,7) : '---'; ms[m]=(ms[m]||0)+v; })); document.getElementById('globalTotal').innerText = fmt(tot); const sM = Object.keys(ms).sort(); if(cG) cG.destroy(); cG = new Chart(document.getElementById('cG'),{type:'line',data:{labels:sM,datasets:[{label:'Evolução',data:sM.map(m=>ms[m]),borderColor:'#4f46e5',tension:0.3,fill:true,backgroundColor:'rgba(79, 70, 229, 0.1)'}]},options:{maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}}}); }
+        function renderRoadmap() { const l=document.getElementById('roadmapList'); l.innerHTML=''; db.roadmap.forEach((r,i)=>{ l.innerHTML+=`<li class="roadmap-item ${r.cat===1?'rm-cat-1':r.cat===2?'rm-cat-2':'rm-cat-3'} ${r.done?'checked':''}"><div class="rm-header"><div class="rm-icon"><i class="fa-solid fa-check"></i></div><input type="checkbox" class="rm-check" ${r.done?'checked':''} onchange="togRoad(${i})"></div><div style="font-weight:600; color:#334155;">${r.text}</div></li>`; }); }
+        window.togRoad=(i)=>{ db.roadmap[i].done=!db.roadmap[i].done; save(); }
+
+        document.getElementById('fPay').addEventListener('change', function() { const val = this.value; if(val === 'credit' || val === 'debit') document.getElementById('divCardType').style.display = 'block'; else document.getElementById('divCardType').style.display = 'none'; });
+        document.getElementById('addForm').addEventListener('submit', (e) => { e.preventDefault(); const val = parse(document.getElementById('fVal').value); if(val<=0) return; const newT = { id: editId || Date.now().toString(), date: document.getElementById('fDate').value, desc: document.getElementById('fDesc').value, category: document.getElementById('fCat').value, local: document.getElementById('fLoc').value, transportFrom: document.getElementById('fFrom').value, transportTo: document.getElementById('fTo').value, amount: val, payment: document.getElementById('fPay').value, cardType: document.getElementById('fCardType').value || 'physical', installments: parseInt(document.getElementById('fInst').value), paidInstallments: 0, paid: false, origin: document.getElementById('fFrom').value, destination: document.getElementById('fTo').value, recur: document.getElementById('fRecur').checked }; if(editId) { let targetTrip = active; if(editingOriginId && editingOriginId !== active.id) { targetTrip = db.trips.find(x => x.id === editingOriginId); } const idx = targetTrip.transactions.findIndex(x=>x.id===editId); if(idx >= 0) { newT.paidInstallments = targetTrip.transactions[idx].paidInstallments; newT.paid = targetTrip.transactions[idx].paid; targetTrip.transactions[idx] = newT; } } else { active.transactions.push(newT); } resetForm(); showToast("Lançamento Salvo!"); save(); });
+        document.getElementById('fCat').addEventListener('change', function(){ const v=this.value.toLowerCase(); document.getElementById('transPanel').style.display = (v.includes('transporte')||v.includes('uber')) ? 'flex' : 'none'; });
 
         init();
     </script>
