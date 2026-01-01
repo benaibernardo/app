@@ -142,6 +142,18 @@
 </head>
 <body>
 
+<script>
+    (function() {
+        const PIN_CORRETO = "16359001"; 
+        if (sessionStorage.getItem("benai_access_granted") === "true") return;
+        document.write(`
+            <style>body { visibility: hidden; overflow: hidden; } #gatekeeper { visibility: visible; position: fixed; inset: 0; background: #0f172a; color: white; z-index: 99999; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Outfit', sans-serif; } .pin-box { text-align: center; animation: fadeIn 0.5s ease; width: 90%; max-width: 350px; } .pin-inp { padding: 15px; font-size: 1.5rem; text-align: center; border-radius: 15px; border: 2px solid rgba(56, 189, 248, 0.3); outline: none; margin-top: 25px; background: rgba(255,255,255,0.05); color: white; letter-spacing: 4px; width: 100%; transition: 0.3s; } .pin-inp:focus { border-color: #38bdf8; box-shadow: 0 0 20px rgba(56, 189, 248, 0.2); } .pin-msg { color: #f87171; margin-top: 15px; font-weight: 600; font-size: 0.9rem; height: 20px; } @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }</style>
+            <div id="gatekeeper"><div class="pin-box"><i class="fa-solid fa-shield-halved" style="font-size: 3rem; color: #38bdf8; margin-bottom: 15px;"></i><h2 style="font-size: 1.5rem; letter-spacing: -1px;">Sistema Protegido</h2><p style="opacity: 0.6; font-size: 0.85rem;">Insira o código de 8 dígitos</p><input type="password" class="pin-inp" maxlength="8" placeholder="********" inputmode="numeric" autocomplete="off" onkeyup="verifyPin(this)"><div class="pin-msg" id="pin-error"></div></div></div>
+        `);
+        window.verifyPin = function(el) { if (el.value.length === 8) { if (el.value === PIN_CORRETO) { sessionStorage.setItem("benai_access_granted", "true"); location.reload(); } else { document.getElementById("pin-error").innerText = "Código Incorreto"; el.value = ""; if(navigator.vibrate) navigator.vibrate(200); } } };
+    })();
+</script>
+
 <div class="sidebar col-left">
     <div class="brand-area">
         <div class="brand"><i class="fas fa-bolt"></i> BENAI GENERATOR</div>
@@ -264,7 +276,7 @@
 <input type="file" id="importFile" hidden onchange="importData(this)">
 
 <script>
-    // --- DADOS E CHAVES ---
+    // --- DADOS ---
     const KEY_LIB = 'benai_coach_lib_main';
     const KEY_STU = 'benai_coach_stu_main';
     const KEY_CAT = 'benai_coach_cat_main';
@@ -296,7 +308,7 @@
         localStorage.setItem(KEY_CAT, JSON.stringify(appData.categories));
     }
 
-    // --- NUVEM: SALVAR E ATUALIZAR (LÓGICA CORRIGIDA) ---
+    // --- NUVEM + TINYURL AUTOMATICO (ATUALIZADO) ---
     function saveToken() {
         const t = document.getElementById('ghTokenInp').value;
         if(t) { localStorage.setItem(KEY_TOKEN, t); alert("Token Salvo!"); closeModal('cloud-config'); }
@@ -311,10 +323,8 @@
         const msg = document.getElementById('status-msg');
         btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
         
-        // Garante que salvou localmente antes
         saveCurrent();
 
-        // Prepara o Objeto do Treino
         const l=(currentWorkout.logicList||[]).join('\n');
         const workoutData = {
             name: currentWorkout.name,
@@ -332,11 +342,9 @@
         };
 
         try {
-            // DECISÃO: CRIAR OU ATUALIZAR?
             let url = 'https://api.github.com/gists';
-            let method = 'POST'; // Padrão: Criar Novo
+            let method = 'POST';
 
-            // Se o aluno JÁ TEM um ID de nuvem salvo, usamos PATCH para atualizar
             if (currentWorkout.cloudId) {
                 url += '/' + currentWorkout.cloudId;
                 method = 'PATCH';
@@ -348,38 +356,47 @@
                 body: JSON.stringify({
                     description: `Treino: ${currentWorkout.name}`,
                     public: false,
-                    files: {
-                        "treino.json": { content: JSON.stringify(workoutData) }
-                    }
+                    files: { "treino.json": { content: JSON.stringify(workoutData) } }
                 })
             });
 
             if(!res.ok) {
-                // Se der erro 404 (Gist não existe mais), tenta criar um novo
                 if(res.status === 404 && currentWorkout.cloudId) {
-                    currentWorkout.cloudId = null; // Limpa ID inválido
-                    return saveToCloudAndLink(); // Tenta de novo como POST
+                    currentWorkout.cloudId = null;
+                    return saveToCloudAndLink();
                 }
                 throw new Error("Erro GitHub: " + res.status);
             }
 
             const json = await res.json();
-            
-            // IMPORTANTE: Salva o ID retornado na ficha do aluno
             currentWorkout.cloudId = json.id;
-            saveCurrent(); // Persiste o ID localmente
+            saveCurrent();
 
-            // Gera o Link usando o ID (que agora é fixo)
             let p = window.location.href.split('?')[0];
             p = p.substring(0, p.lastIndexOf('/')+1);
             const finalLink = `${p}aluno.html?id=${currentWorkout.cloudId}`;
 
             navigator.clipboard.writeText(finalLink);
-            msg.innerText = "Link copiado e salvo!";
+            msg.innerText = "Link base salvo!";
             msg.style.color = "#10b981";
             
-            setTimeout(() => { btn.disabled = false; btn.innerHTML = '<i class="fas fa-link"></i> Link Copiado!'; }, 500);
-            setTimeout(() => { btn.innerHTML = '<i class="fas fa-cloud-arrow-up"></i> SALVAR E GERAR LINK'; msg.innerText = ""; }, 3000);
+            setTimeout(() => { btn.disabled = false; btn.innerHTML = '<i class="fas fa-cloud-arrow-up"></i> SALVAR E GERAR LINK'; }, 2000);
+
+            // --- LÓGICA DE NOME LIMPO ---
+            let cleanName = currentWorkout.name.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            cleanName = cleanName.replace(/[^a-zA-Z0-9]/g, "");
+            
+            const prefixo = "Benai-"; 
+            const sugestao = prefixo + cleanName;
+            
+            const apelido = prompt(
+                "✅ Treino Salvo!\n\nConfirme o link personalizado abaixo.\nSe o nome for muito comum, adicione um número no final (ex: JoaoSilva2).", 
+                sugestao
+            );
+
+            if (apelido) {
+                window.open(`https://tinyurl.com/create.php?url=${encodeURIComponent(finalLink)}&alias=${apelido}`, '_blank');
+            }
 
         } catch(e) {
             alert("Erro ao enviar: " + e.message);
@@ -387,21 +404,40 @@
         }
     }
 
-    // --- MANIPULAÇÃO DE TREINO ---
+    // --- MANIPULAÇÃO (Igual Anterior) ---
+    function applyPreset(s, r, t) {
+        if(!activeExerciseId) return alert("Selecione um exercício.");
+        const { blockId, itemIdx, subIdx } = activeExerciseId;
+        const b = getB(blockId);
+        let item = (subIdx !== null && b.items[itemIdx].data) ? b.items[itemIdx].data[subIdx] : b.items[itemIdx];
+        item.sets = s; item.reps = r; item.rest = t;
+        saveCurrent(); renderBuilder();
+    }
+
+    function renderLogic() {
+        const c = document.getElementById('logicContainer'); c.innerHTML = '';
+        if(!currentWorkout.logicList) currentWorkout.logicList = [];
+        currentWorkout.logicList.forEach((txt, idx) => {
+            const row = document.createElement('div'); row.className = 'logic-item';
+            row.innerHTML = `<input class="logic-inp" value="${txt}" onchange="updLogic(${idx}, this.value)"><div class="logic-del" onclick="delLogic(${idx})"><i class="fas fa-trash"></i></div>`;
+            c.appendChild(row);
+        });
+    }
+    function addLogicTopic() { if(!currentWorkout.logicList) currentWorkout.logicList = []; currentWorkout.logicList.push(""); saveCurrent(); renderLogic(); }
+    function updLogic(idx, val) { currentWorkout.logicList[idx] = val; saveCurrent(); }
+    function delLogic(idx) { currentWorkout.logicList.splice(idx, 1); saveCurrent(); renderLogic(); }
+
     function createNewWorkout() {
-        // ID: timestamp, cloudId: null (para criar novo gist na primeira vez)
         currentWorkout = { id: Date.now(), cloudId: null, name: '', focus: '', logicList: [], blocks: [] };
         addBlock('Normal'); document.getElementById('sName').value = ''; document.getElementById('sFocus').value = '';
         activeExerciseId = null; renderBuilder(); renderLogic();
     }
-
     function addBlock(type) {
         if(!currentWorkout) createNewWorkout();
         let name = 'Bloco Principal'; if(type==='BiSet') name = 'Bi-Set'; if(type==='TriSet') name = 'Tri-Set';
         currentWorkout.blocks.push({ id: Date.now(), type: type, name: name, items: [] });
         saveCurrent(); renderBuilder();
     }
-
     function saveCurrent() {
         if(!currentWorkout) return;
         currentWorkout.name = document.getElementById('sName').value;
@@ -412,17 +448,11 @@
             saveData(); renderStudentList();
         }
     }
-
     function loadStudent(id) {
         const s = appData.students.find(x => x.id === id);
         if(s) { currentWorkout = JSON.parse(JSON.stringify(s)); if(!currentWorkout.logicList) currentWorkout.logicList = (currentWorkout.logic||'').split('\n').filter(x=>x); activeExerciseId = null; renderBuilder(); renderLogic(); }
     }
 
-    function filterStudents(v){const l=document.getElementById('studentList');l.innerHTML='';appData.students.filter(s=>s.name.toLowerCase().includes(v.toLowerCase())).forEach(s=>{const d=document.createElement('div');d.className=`student-item ${currentWorkout&&s.id===currentWorkout.id?'active':''}`;d.innerHTML=`<div><span class="st-name">${s.name}</span><span class="st-focus">${s.focus||'Sem objetivo'}</span></div><i class="fas fa-trash st-del" onclick="delStudent(${s.id},event)"></i>`;d.onclick=()=>loadStudent(s.id);l.appendChild(d);});}
-    function delStudent(id,e){ e.stopPropagation(); if(confirm("Apagar aluno permanentemente?")){ appData.students=appData.students.filter(s=>s.id!==id); saveData(); if(currentWorkout&&currentWorkout.id===id) createNewWorkout(); renderStudentList(); } }
-    function renderStudentList(){filterStudents('');}
-
-    // --- BUILDER RENDER ---
     function renderBuilder() {
         document.getElementById('sName').value = currentWorkout.name || '';
         document.getElementById('sFocus').value = currentWorkout.focus || '';
@@ -457,7 +487,6 @@
         return `<div class="ex-row ${isActive?'selected':''}" data-method="${item.method}" onclick="selectExercise(${bId},${idx},null)"><div class="ex-header"><span class="ex-name">${item.name}</span></div>${tabsHtml}<div class="pills-edit">${fieldsHtml}<div class="pill-group pill-int"><span class="pill-lbl">INT FINAL</span><input class="pill-inp" type="text" value="${item.rest}" onchange="updItem(${bId},${idx},'rest',this.value)" onclick="event.stopPropagation()"></div></div><input class="obs-inp" value="${item.obs}" placeholder="Carga / Obs..." onchange="updItem(${bId},${idx},'obs',this.value)" onclick="event.stopPropagation()"><div class="row-actions"><div class="act-btn" onclick="moveItem(${bId},${idx},-1);event.stopPropagation();"><i class="fas fa-arrow-up"></i></div><div class="act-btn" onclick="moveItem(${bId},${idx},1);event.stopPropagation();"><i class="fas fa-arrow-down"></i></div><div class="act-btn" style="color:var(--danger);" onclick="delItem(${bId},${idx});event.stopPropagation();"><i class="fas fa-trash"></i></div></div></div>`;
     }
 
-    // FUNÇÕES DE SUPORTE
     function getB(id) { return currentWorkout.blocks.find(b=>b.id===id); }
     function updBlock(id, val) { getB(id).name = val; saveCurrent(); }
     function selectExercise(bId, idx, sIdx) { activeExerciseId = { blockId: bId, itemIdx: idx, subIdx: sIdx }; renderBuilder(); }
@@ -468,11 +497,9 @@
     function delItem(bId,idx){const b=getB(bId);b.items.splice(idx,1);activeExerciseId=null;saveCurrent();renderBuilder();}
     function moveItem(bId,idx,d){const b=getB(bId);if(idx+d<0||idx+d>=b.items.length)return;const t=b.items[idx];b.items[idx]=b.items[idx+d];b.items[idx+d]=t;if(activeExerciseId&&activeExerciseId.blockId===bId&&activeExerciseId.itemIdx===idx)activeExerciseId.itemIdx+=d;saveCurrent();renderBuilder();}
     function renderLib(){const l=document.getElementById('libList'),t=document.getElementById('searchLib').value.toLowerCase(),c=document.getElementById('catFilter').value;l.innerHTML='';appData.library.filter(x=>x.name.toLowerCase().includes(t)&&(c==='Todas'||x.cat===c)).forEach(x=>{const d=document.createElement('div');d.className='item-card';d.innerHTML=`<div style="font-weight:600;color:var(--text);font-size:0.85rem;"><span class="cat-dot" style="background:${catColors[x.cat]||'#999'}"></span> ${x.name}</div><div style="display:flex;gap:8px;"><i class="fas fa-pen" style="color:#cbd5e1;font-size:0.7rem;" onclick="editEx(${x.id},event)"></i><i class="fas fa-trash" style="color:#cbd5e1;font-size:0.7rem;" onclick="delEx(${x.id},event)"></i></div>`;d.onclick=(e)=>{if(e.target.tagName!=='I')addItem(x)};l.appendChild(d);});}
-    function renderLogic() { const c = document.getElementById('logicContainer'); c.innerHTML = ''; if(!currentWorkout.logicList) currentWorkout.logicList = []; currentWorkout.logicList.forEach((txt, idx) => { const row = document.createElement('div'); row.className = 'logic-item'; row.innerHTML = `<input class="logic-inp" value="${txt}" onchange="updLogic(${idx}, this.value)"><div class="logic-del" onclick="delLogic(${idx})"><i class="fas fa-trash"></i></div>`; c.appendChild(row); }); }
-    function addLogicTopic() { if(!currentWorkout.logicList) currentWorkout.logicList = []; currentWorkout.logicList.push(""); saveCurrent(); renderLogic(); }
-    function updLogic(idx, val) { currentWorkout.logicList[idx] = val; saveCurrent(); }
-    function delLogic(idx) { currentWorkout.logicList.splice(idx, 1); saveCurrent(); renderLogic(); }
-    function applyPreset(s, r, t) { if(!activeExerciseId) return alert("Selecione um exercício."); const { blockId, itemIdx, subIdx } = activeExerciseId; const b = getB(blockId); let item = (subIdx !== null && b.items[itemIdx].data) ? b.items[itemIdx].data[subIdx] : b.items[itemIdx]; item.sets = s; item.reps = r; item.rest = t; saveCurrent(); renderBuilder(); }
+    function filterStudents(v){const l=document.getElementById('studentList');l.innerHTML='';appData.students.filter(s=>s.name.toLowerCase().includes(v.toLowerCase())).forEach(s=>{const d=document.createElement('div');d.className=`student-item ${currentWorkout&&s.id===currentWorkout.id?'active':''}`;d.innerHTML=`<div><span class="st-name">${s.name}</span><span class="st-focus">${s.focus||'Sem objetivo'}</span></div><i class="fas fa-trash st-del" onclick="delStudent(${s.id},event)"></i>`;d.onclick=()=>loadStudent(s.id);l.appendChild(d);});}
+    function delStudent(id,e){ e.stopPropagation(); if(confirm("Apagar aluno permanentemente?")){ appData.students=appData.students.filter(s=>s.id!==id); saveData(); if(currentWorkout&&currentWorkout.id===id) createNewWorkout(); renderStudentList(); } }
+    function renderStudentList(){filterStudents('');}
     function populateCats(){const s=[document.getElementById('catFilter'),document.getElementById('exCat')];s[0].innerHTML='<option value="Todas">Todas</option>';s[1].innerHTML='';appData.categories.forEach(c=>{s[0].add(new Option(c,c));s[1].add(new Option(c,c));});}
     function openExModal(){document.getElementById('exId').value='';document.getElementById('exName').value='';document.getElementById('exLink').value='';openModal('ex');}
     function editEx(id,e){e.stopPropagation();const x=appData.library.find(z=>z.id===id);document.getElementById('exId').value=x.id;document.getElementById('exName').value=x.name;document.getElementById('exCat').value=x.cat;document.getElementById('exLink').value=x.link||'';openModal('ex');}
