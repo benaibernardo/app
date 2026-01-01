@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Benai Tracker | Cloud</title>
+    <title>Benai Tracker | Cloud & Local</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -157,7 +157,7 @@
         <header>
             <div class="brand" onclick="location.href='index.html'"><i class="fa-solid fa-layer-group"></i> Benai Tracker</div>
             <div class="header-actions">
-                <button class="btn-icon" onclick="forceSync()" title="Forçar Sincronização">
+                <button class="btn-icon" onclick="openModal('sync')" title="Menu de Dados">
                     <i class="fa-solid fa-cloud"></i>
                     <div id="cloudIndicator" class="cloud-status" style="position:absolute; top:8px; right:8px;"></div>
                 </button>
@@ -215,6 +215,39 @@
                     <div class="card-body" id="list-shop"></div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div id="modal-sync" class="modal">
+        <div class="modal-box">
+            <i class="fa-solid fa-xmark modal-close" onclick="closeModal('sync')"></i>
+            <div class="modal-head">Central de Dados</div>
+            
+            <div style="margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:20px;">
+                <div class="lbl" style="color:var(--accent)">Nuvem (Benai Personal DB)</div>
+                <button class="sync-btn" onclick="forceSync()">
+                    <i class="fa-solid fa-cloud-arrow-down" style="color:var(--accent)"></i> 
+                    <div>Forçar Download <div style="font-size:0.75rem; color:var(--text-muted); font-weight:400;">Baixar da Nuvem Agora</div></div>
+                </button>
+            </div>
+
+            <div class="lbl">Arquivo Local (Backup)</div>
+            <button class="sync-btn" onclick="exportData()">
+                <i class="fa-solid fa-download" style="color:var(--text-muted)"></i> 
+                <div>Baixar JSON <div style="font-size:0.75rem; color:var(--text-muted); font-weight:400;">Salvar no Dispositivo</div></div>
+            </button>
+            <button class="sync-btn" onclick="shareData()">
+                <i class="fa-brands fa-whatsapp" style="color:#25D366"></i> 
+                <div>Compartilhar <div style="font-size:0.75rem; color:var(--text-muted); font-weight:400;">Enviar por Zap</div></div>
+            </button>
+            <button class="sync-btn" onclick="document.getElementById('importFile').click()">
+                <i class="fa-solid fa-upload" style="color:var(--text-muted)"></i> 
+                <div>Restaurar JSON <div style="font-size:0.75rem; color:var(--text-muted); font-weight:400;">Carregar Arquivo</div></div>
+            </button>
+            
+            <button class="sync-btn" style="border-color:var(--danger); color:var(--danger); margin-top:15px;" onclick="hardReset()">
+                <i class="fa-solid fa-trash"></i> <div>Resetar Tudo</div>
+            </button>
         </div>
     </div>
 
@@ -289,12 +322,13 @@
     </div>
 
     <div id="toast"><i class="fa-solid fa-check-circle"></i> <span>Salvo!</span></div>
+    <input type="file" id="importFile" hidden onchange="importData(this)">
 
     <script>
         // --- CHAVES E BANCO ---
         const DB_KEY = 'benai_tracker_main_db';
         const TOKEN_KEY = 'benai_coach_gh_token';
-        const GIST_DESC = 'BENAI_PERSONAL_DB'; // Descrição única do Gist Pessoal
+        const GIST_DESC = 'BENAI_PERSONAL_DB'; 
         const OLD_KEYS = ['benai_agenda_v46', 'benai_agenda_v45']; 
 
         let db = { appt: [], fixed: [], task: [], shop: [], goals: [{id:1, title:"Consultoria", cur:0, tar:10, unit:"alunos"}] };
@@ -302,17 +336,10 @@
         let gistId = null;
 
         async function init() {
-            // Tenta carregar do LocalStorage primeiro
             let s = localStorage.getItem(DB_KEY);
-            if (!s) { // Migração de legado
-                for(let k of OLD_KEYS) {
-                    s = localStorage.getItem(k);
-                    if(s) { localStorage.setItem(DB_KEY, s); break; }
-                }
-            }
+            if (!s) { for(let k of OLD_KEYS) { s = localStorage.getItem(k); if(s) { localStorage.setItem(DB_KEY, s); break; } } }
             if(s) db = JSON.parse(s);
 
-            // Reset Mensal
             const today = new Date();
             const savedMonth = localStorage.getItem('benai_month_idx');
             if(savedMonth != today.getMonth()) {
@@ -322,12 +349,10 @@
             }
 
             renderTimeline(); renderGoals(); renderAll();
-            
-            // --- SYNC COM A NUVEM ---
             await syncCloud();
         }
 
-        // --- LÓGICA DE NUVEM ---
+        // --- NUVEM ---
         function updateCloudStatus(status) {
             const el = document.getElementById('cloudIndicator');
             el.className = 'cloud-status ' + status;
@@ -335,12 +360,11 @@
 
         async function syncCloud() {
             const token = localStorage.getItem(TOKEN_KEY);
-            if(!token) return updateCloudStatus('error'); // Sem token, fica offline
+            if(!token) return updateCloudStatus('error'); 
 
             updateCloudStatus('syncing');
 
             try {
-                // 1. Procurar Gist ID se não tiver
                 if(!gistId) {
                     const search = await fetch('https://api.github.com/gists', { headers: { 'Authorization': `token ${token}` } });
                     const gists = await search.json();
@@ -348,17 +372,15 @@
                     if(found) gistId = found.id;
                 }
 
-                // 2. Se achou, baixa e mescla (Download)
                 if(gistId) {
                     const res = await fetch(`https://api.github.com/gists/${gistId}`, { headers: { 'Authorization': `token ${token}` } });
                     const json = await res.json();
                     const cloudData = JSON.parse(json.files["tracker.json"].content);
-                    db = cloudData; // Nuvem vence (Single Source of Truth)
+                    db = cloudData; 
                     saveLocal();
                     renderTimeline(); renderGoals(); renderAll();
                     updateCloudStatus('ok');
                 } else {
-                    // 3. Se não achou, cria um novo (Upload inicial)
                     await pushCloud();
                 }
             } catch(e) {
@@ -399,23 +421,36 @@
             }
         }
 
-        function saveLocal() {
-            localStorage.setItem(DB_KEY, JSON.stringify(db));
-        }
-
-        function save() { 
-            saveLocal();
-            renderTimeline(); renderGoals(); renderAll();
-            pushCloud(); // Salva na nuvem a cada alteração
-        }
+        function saveLocal() { localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+        function save() { saveLocal(); renderTimeline(); renderGoals(); renderAll(); pushCloud(); }
 
         function forceSync() {
             if(confirm("Baixar dados da nuvem agora? Isso pode sobrescrever alterações não salvas.")) {
                 syncCloud();
+                closeModal('sync');
             }
         }
 
-        // --- TIME TRAVEL LOGIC ---
+        // --- LOCAL BACKUP ---
+        function exportData() {
+            const d = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
+            const a = document.createElement('a'); a.href = d; a.download = "benai_tracker_backup.json"; a.click();
+        }
+        function importData(i) {
+            const f = i.files[0]; if(!f) return;
+            const r = new FileReader(); r.onload = e => { db = JSON.parse(e.target.result); save(); location.reload(); };
+            r.readAsText(f);
+        }
+        async function shareData() {
+            const blob = new Blob([JSON.stringify(db)], { type: 'application/json' });
+            const file = new File([blob], "benai_tracker.json", { type: 'application/json' });
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                try { await navigator.share({ files: [file], title: 'Backup Tracker' }); } catch (err) {}
+            } else { alert("Use o botão Baixar."); }
+        }
+        function hardReset() { if(confirm("Apagar tudo?")) { localStorage.removeItem(DB_KEY); location.reload(); } }
+
+        // --- RENDER & LOGIC ---
         function jumpDate(val) {
             if(!val) return;
             const parts = val.split('-');
@@ -467,7 +502,6 @@
         }
 
         function renderAll() {
-            // AGENDA
             const lAppt = document.getElementById('list-appt'); lAppt.innerHTML = '';
             const sortedAppts = [...db.appt].sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time));
             if(!sortedAppts.length) lAppt.innerHTML = `<div class="empty-state">Livre.</div>`;
@@ -483,7 +517,6 @@
                 lAppt.innerHTML += createRow('appt', x, `<span class="tag"><i class="fa-regular fa-clock"></i> ${x.time||'--:--'}</span> ${locTag}`);
             });
 
-            // FIXED
             const lFixed = document.getElementById('list-fixed'); lFixed.innerHTML = '';
             const todayD = new Date().getDate();
             db.fixed.sort((a,b)=>a.day-b.day).forEach(x => {
@@ -497,7 +530,6 @@
                 lFixed.innerHTML += createRow('fixed', x, `<span class="tag ${bg}">${txt}</span>`);
             });
 
-            // TASKS
             const lTask = document.getElementById('list-task'); lTask.innerHTML = '';
             db.task.sort((a,b)=> (b.prio?1:0)-(a.prio?1:0) || (a.date||'9999').localeCompare(b.date||'9999')).forEach(x => {
                 const prioTag = x.prio ? `<span class="tag urgent">🔥 Prioridade</span>` : '';
@@ -505,7 +537,6 @@
                 lTask.innerHTML += createRow('task', x, `${prioTag} ${dateTag}`, x.prio ? 'priority' : '');
             });
 
-            // SHOP
             const lShop = document.getElementById('list-shop'); lShop.innerHTML = '';
             db.shop.forEach(x => {
                 const dt = x.date ? `<span class="tag">Até ${x.date.split('-').reverse().slice(0,2).join('/')}</span>` : '';
