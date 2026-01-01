@@ -568,7 +568,7 @@
         </div>
     </div>
 
-<script>
+    <script>
         // --- CONSTANTES & CHAVES ---
         const DB_KEY = 'benai_card_main_db'; 
         const TOKEN_KEY = 'benai_coach_gh_token';
@@ -778,7 +778,7 @@
 
         function getUnifiedTransactions() {
             let allTrans = [];
-            if(!active || !active.transactions) return []; // Proteção
+            if(!active || !active.transactions) return []; 
             
             active.transactions.forEach(t => { allTrans.push({...t, origin: 'local', originId: active.id}); });
             if (active.startDate && active.endDate) {
@@ -976,61 +976,97 @@
 
         function renderList(data) {
             const list = document.getElementById('listContainer'); list.innerHTML = '';
-            const arr = data.sort((a,b) => new Date(b.date) - new Date(a.date));
+            
+            // FILTRO DE SEGURANÇA 1: Se data for inválida, loga erro mas não quebra
+            const arr = data.sort((a,b) => {
+                try { return new Date(b.date) - new Date(a.date); } catch(e) { return 0; }
+            });
+
             const filter = document.getElementById('filTxt').value.toLowerCase();
-            const fCat = document.getElementById('filCat').value;
+            const fCat = document.getElementById('filCat').value || 'all';
             const fDate = document.getElementById('filDate');
-            const currentSel = fDate.value;
+            
+            // FILTRO DE SEGURANÇA 2: Garante que o valor do filtro seja válido
+            const currentSel = fDate.value || 'all';
+            
+            // Limpa e recria opções de data
             fDate.innerHTML = '<option value="all">Todas Datas</option>';
             const dates = [...new Set(arr.map(t=>t.date))].sort();
-            dates.forEach(d => { const opt = new Option(d.split('-').reverse().join('/'), d); fDate.add(opt); });
+            dates.forEach(d => { 
+                if(d) { // Só adiciona se data for válida
+                    const opt = new Option(d.split('-').reverse().join('/'), d); 
+                    fDate.add(opt); 
+                }
+            });
+            
+            // Restaura seleção anterior se ainda existir
             if(dates.includes(currentSel)) fDate.value = currentSel;
+            
+            // Popula categorias se vazio
             if(document.getElementById('filCat').options.length <= 1) db.categories.forEach(c => document.getElementById('filCat').add(new Option(c,c)));
 
             const filteredArr = arr.filter(t => {
-                if(fCat !== 'all' && t.category !== fCat) return false;
-                if(fDate.value !== 'all' && t.date !== fDate.value) return false;
+                if(!t) return false;
+                // FILTRO DE SEGURANÇA 3: Lógica robusta
+                if(fCat !== 'all' && fCat !== '' && t.category !== fCat) return false;
+                if(fDate.value !== 'all' && fDate.value !== '' && t.date !== fDate.value) return false;
+                
                 const txt = (t.desc + ' ' + (t.local||'')).toLowerCase();
                 if(filter && !txt.includes(filter)) return false;
                 return true;
             });
 
+            if(filteredArr.length === 0) {
+                list.innerHTML = '<div style="padding:20px; text-align:center; color:#94a3b8; font-style:italic;">Nenhum item encontrado.</div>';
+                return;
+            }
+
             filteredArr.forEach((t) => {
-                const isPaid = (t.paidInstallments >= t.installments);
-                let visualPaid = isPaid;
-                if(t.isProjection && t.currentInst <= t.paidInstallments) visualPaid = true;
-                const valClass = visualPaid ? 'val-paid' : 'val-pend';
-                const linkBadge = t.isImported ? `<span class="badge-link"><i class="fa-solid fa-link"></i> ${t.origin}</span>` : '';
-                let cardIcon = '';
-                if(t.payment === 'credit' || t.payment === 'debit') {
-                    if(t.cardType === 'virtual') cardIcon = '<i class="fa-solid fa-mobile-screen" title="Cartão Virtual" style="font-size:0.6rem; color:#94a3b8; margin-left:3px;"></i>';
-                    else cardIcon = '<i class="fa-regular fa-credit-card" title="Cartão Físico" style="font-size:0.6rem; color:#94a3b8; margin-left:3px;"></i>';
+                try {
+                    const isPaid = (t.paidInstallments >= t.installments);
+                    let visualPaid = isPaid;
+                    if(t.isProjection && t.currentInst <= t.paidInstallments) visualPaid = true;
+                    const valClass = visualPaid ? 'val-paid' : 'val-pend';
+                    const linkBadge = t.isImported ? `<span class="badge-link"><i class="fa-solid fa-link"></i> ${t.origin}</span>` : '';
+                    let cardIcon = '';
+                    if(t.payment === 'credit' || t.payment === 'debit') {
+                        if(t.cardType === 'virtual') cardIcon = '<i class="fa-solid fa-mobile-screen" title="Cartão Virtual" style="font-size:0.6rem; color:#94a3b8; margin-left:3px;"></i>';
+                        else cardIcon = '<i class="fa-regular fa-credit-card" title="Cartão Físico" style="font-size:0.6rem; color:#94a3b8; margin-left:3px;"></i>';
+                    }
+                    let recurIcon = t.recur ? '<span title="Assinatura" style="font-size:0.8rem; margin-left:5px;">🔁</span>' : '';
+                    const d = document.createElement('div');
+                    d.className = `item-container ${visualPaid ? 'paid' : 'pending'}`;
+                    let checkHTML = t.installments > 1 ? `<div onclick="toggleDrawer('${t.id}', '${t.originId}')" class="btn-drawer-left"><i class="fa-solid fa-layer-group"></i> ${t.paidInstallments}/${t.installments} <i class="fa-solid fa-caret-down"></i></div>` : `<input type="checkbox" class="check" ${visualPaid?'checked':''} onchange="toggleFullPay('${t.id}', '${t.originId}')">`;
+                    let subInfo = '';
+                    if(t.installments > 1) {
+                        const displayTotal = t.isProjection ? (t.amount * t.installments) : t.amount;
+                        const displayPaid = (displayTotal / t.installments) * t.paidInstallments;
+                        const displayRest = displayTotal - displayPaid;
+                        let segs = '';
+                        for(let i=0; i<t.installments; i++) segs += `<div class="seg ${i < t.paidInstallments ? 'paid' : ''}"></div>`;
+                        subInfo = `<div class="i-sub-info"><div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span class="val-paid">Pg: ${fmt(displayPaid)}</span> <span class="val-pend">R: ${fmt(displayRest)}</span></div><div class="seg-bar">${segs}</div></div>`;
+                    }
+                    let routeInfo = '';
+                    if(t.category && t.category.toLowerCase().includes('transporte') && t.transportFrom && t.transportTo) { routeInfo = `<div class="route-info"><i class="fa-solid fa-location-dot"></i> ${t.transportFrom} <i class="fa-solid fa-arrow-right"></i> ${t.transportTo}</div>`; } 
+                    else if (t.local) { routeInfo = `<div class="local-info"><i class="fa-solid fa-location-dot"></i> ${t.local}</div>`; }
+                    
+                    const catIndex = db.categories.indexOf(t.category);
+                    const catColor = DISTINCT_COLORS[catIndex % DISTINCT_COLORS.length] || '#64748b';
+                    const actions = `<div class="i-acts"><button class="btn-act" onclick="editT('${t.id}', '${t.originId}')"><i class="fa-solid fa-pen"></i></button><button class="btn-act del" onclick="delT('${t.id}', '${t.originId}')"><i class="fa-solid fa-trash"></i></button></div>`;
+                    let displayAmount = t.amount;
+                    let installNote = '';
+                    if(t.isProjection) { if(t.recur) installNote = ` <small style="font-size:0.6rem; color:#64748b;">(Assinatura)</small>`; else installNote = ` <small style="font-size:0.6rem; color:#64748b;">(${t.currentInst}/${t.installments})</small>`; }
+                    
+                    // SAFE DATE PARSING
+                    let dateStr = t.date;
+                    try { dateStr = t.date.split('-').reverse().slice(0,2).join('/'); } catch(e) { dateStr = '??/??'; }
+
+                    d.innerHTML = `<div class="item-main">${checkHTML}<div><div class="i-row1"><span class="i-desc">${t.desc}</span>${linkBadge} ${cardIcon} ${recurIcon}</div><div class="i-row2"><span class="i-date">${dateStr}</span><span class="i-cat" style="background:${catColor}">${t.category}</span></div>${routeInfo}</div><div class="i-right"><span class="i-val ${valClass}">${fmt(displayAmount)}${installNote}</span>${subInfo}${actions}</div></div><div id="drawer-${t.id}" class="install-drawer"><div class="inst-info">Marque as parcelas pagas:</div><div class="install-grid" id="grid-${t.id}"></div></div>`;
+                    list.appendChild(d);
+                    if(t.installments > 1) renderInstallGrid(t); 
+                } catch(err) {
+                    console.error("Erro ao renderizar item", t, err);
                 }
-                let recurIcon = t.recur ? '<span title="Assinatura" style="font-size:0.8rem; margin-left:5px;">🔁</span>' : '';
-                const d = document.createElement('div');
-                d.className = `item-container ${visualPaid ? 'paid' : 'pending'}`;
-                let checkHTML = t.installments > 1 ? `<div onclick="toggleDrawer('${t.id}', '${t.originId}')" class="btn-drawer-left"><i class="fa-solid fa-layer-group"></i> ${t.paidInstallments}/${t.installments} <i class="fa-solid fa-caret-down"></i></div>` : `<input type="checkbox" class="check" ${visualPaid?'checked':''} onchange="toggleFullPay('${t.id}', '${t.originId}')">`;
-                let subInfo = '';
-                if(t.installments > 1) {
-                    const displayTotal = t.isProjection ? (t.amount * t.installments) : t.amount;
-                    const displayPaid = (displayTotal / t.installments) * t.paidInstallments;
-                    const displayRest = displayTotal - displayPaid;
-                    let segs = '';
-                    for(let i=0; i<t.installments; i++) segs += `<div class="seg ${i < t.paidInstallments ? 'paid' : ''}"></div>`;
-                    subInfo = `<div class="i-sub-info"><div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span class="val-paid">Pg: ${fmt(displayPaid)}</span> <span class="val-pend">R: ${fmt(displayRest)}</span></div><div class="seg-bar">${segs}</div></div>`;
-                }
-                let routeInfo = '';
-                if(t.category.toLowerCase().includes('transporte') && t.transportFrom && t.transportTo) { routeInfo = `<div class="route-info"><i class="fa-solid fa-location-dot"></i> ${t.transportFrom} <i class="fa-solid fa-arrow-right"></i> ${t.transportTo}</div>`; } 
-                else if (t.local) { routeInfo = `<div class="local-info"><i class="fa-solid fa-location-dot"></i> ${t.local}</div>`; }
-                const catIndex = db.categories.indexOf(t.category);
-                const catColor = DISTINCT_COLORS[catIndex % DISTINCT_COLORS.length] || '#64748b';
-                const actions = `<div class="i-acts"><button class="btn-act" onclick="editT('${t.id}', '${t.originId}')"><i class="fa-solid fa-pen"></i></button><button class="btn-act del" onclick="delT('${t.id}', '${t.originId}')"><i class="fa-solid fa-trash"></i></button></div>`;
-                let displayAmount = t.amount;
-                let installNote = '';
-                if(t.isProjection) { if(t.recur) installNote = ` <small style="font-size:0.6rem; color:#64748b;">(Assinatura)</small>`; else installNote = ` <small style="font-size:0.6rem; color:#64748b;">(${t.currentInst}/${t.installments})</small>`; }
-                d.innerHTML = `<div class="item-main">${checkHTML}<div><div class="i-row1"><span class="i-desc">${t.desc}</span>${linkBadge} ${cardIcon} ${recurIcon}</div><div class="i-row2"><span class="i-date">${t.date.split('-').reverse().slice(0,2).join('/')}</span><span class="i-cat" style="background:${catColor}">${t.category}</span></div>${routeInfo}</div><div class="i-right"><span class="i-val ${valClass}">${fmt(displayAmount)}${installNote}</span>${subInfo}${actions}</div></div><div id="drawer-${t.id}" class="install-drawer"><div class="inst-info">Marque as parcelas pagas:</div><div class="install-grid" id="grid-${t.id}"></div></div>`;
-                list.appendChild(d);
-                if(t.installments > 1) renderInstallGrid(t); 
             });
         }
         
@@ -1053,4 +1089,3 @@
     </script>
 </body>
 </html>
-
