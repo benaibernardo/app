@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Benai Generator | Cloud Sync</title>
+    <title>Benai Generator | Multi-Mode</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -138,6 +138,13 @@
         .modal-h { font-size: 1.2rem; font-weight: 800; color: var(--primary); margin-bottom: 15px; font-family: var(--font-num); }
         .sync-btn { width: 100%; padding: 15px; border: 1px solid #e2e8f0; border-radius: 12px; background: white; display: flex; align-items: center; gap: 15px; margin-bottom: 10px; cursor: pointer; text-align: left; }
         .cat-dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:5px; }
+
+        /* MULTI BUTTONS */
+        .multi-btn-area { display: flex; flex-direction: column; gap: 10px; margin-top: auto; padding-top: 15px; border-top: 1px solid var(--border); }
+        .btn-cloud-new { width: 100%; height: 45px; background: var(--accent); color: white; border-radius: 10px; font-weight: 700; font-size: 0.9rem; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-cloud-upd { width: 100%; height: 45px; background: var(--success); color: white; border-radius: 10px; font-weight: 700; font-size: 0.9rem; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-offline { width: 100%; height: 40px; background: white; color: #64748b; border: 1px dashed #cbd5e1; border-radius: 10px; font-weight: 700; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+        .btn-offline:hover { border-color: var(--accent); color: var(--accent); }
     </style>
 </head>
 <body>
@@ -219,11 +226,16 @@
 
     <div class="list-scroll" id="libList"></div>
 
-    <div style="padding-top:20px; border-top:1px solid var(--border); margin-top:auto;">
-        <button class="btn btn-acc" id="btn-generate" style="width:100%; height:50px; font-size:1rem;" onclick="saveToCloudAndLink()">
-            <i class="fas fa-cloud-arrow-up"></i> SALVAR E GERAR LINK
+    <div class="multi-btn-area">
+        <button class="btn-cloud-new" id="btn-cloud-new" onclick="saveToCloud('new')">
+            <i class="fas fa-cloud-arrow-up"></i> <span>Salvar + Link Novo</span>
         </button>
-        <p id="status-msg" style="text-align:center; font-size:0.75rem; color:#64748b; margin-top:8px; height:15px;"></p>
+        <button class="btn-cloud-upd" id="btn-cloud-upd" onclick="saveToCloud('update')">
+            <i class="fas fa-rotate"></i> <span>Apenas Atualizar</span>
+        </button>
+        <button class="btn-offline" onclick="generateOfflineLink()">
+            <i class="fas fa-box-archive"></i> Gerar Link Offline (Backup)
+        </button>
     </div>
 </div>
 
@@ -263,6 +275,8 @@
     </div>
 </div>
 
+<input type="file" id="importFile" hidden onchange="importData(this)">
+
 <div id="modal-sync" class="modal">
     <div class="modal-box">
         <i class="fa-solid fa-xmark modal-close" onclick="closeModal('sync')"></i>
@@ -272,8 +286,6 @@
         <button class="sync-btn" style="border-color:var(--danger); color:var(--danger); margin-top:10px;" onclick="hardReset()"><i class="fa-solid fa-trash"></i> Resetar Tudo</button>
     </div>
 </div>
-
-<input type="file" id="importFile" hidden onchange="importData(this)">
 
 <script>
     // --- DADOS ---
@@ -308,20 +320,27 @@
         localStorage.setItem(KEY_CAT, JSON.stringify(appData.categories));
     }
 
-    // --- NUVEM + TINYURL AUTOMATICO (ATUALIZADO) ---
+    // --- NUVEM: SISTEMA DE 3 BOTÕES ---
     function saveToken() {
         const t = document.getElementById('ghTokenInp').value;
         if(t) { localStorage.setItem(KEY_TOKEN, t); alert("Token Salvo!"); closeModal('cloud-config'); }
     }
 
-    async function saveToCloudAndLink() {
+    // FUNÇÃO UNIFICADA DE SALVAMENTO NUVEM
+    async function saveToCloud(mode) {
         if(!currentWorkout.name) return alert("Preencha o nome!");
         const token = localStorage.getItem(KEY_TOKEN);
         if(!token) return alert("Configure o Token do GitHub na engrenagem!");
 
-        const btn = document.getElementById('btn-generate');
-        const msg = document.getElementById('status-msg');
-        btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
+        // Se for update mas não tem ID ainda, força virar 'new'
+        if(mode === 'update' && !currentWorkout.cloudId) {
+            if(!confirm("Este treino ainda não foi salvo na nuvem. Deseja criar o link agora?")) return;
+            mode = 'new';
+        }
+
+        const btn = document.getElementById(mode === 'new' ? 'btn-cloud-new' : 'btn-cloud-upd');
+        const originalText = btn.innerHTML;
+        btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ...';
         
         saveCurrent();
 
@@ -345,7 +364,7 @@
             let url = 'https://api.github.com/gists';
             let method = 'POST';
 
-            if (currentWorkout.cloudId) {
+            if (currentWorkout.cloudId && mode === 'update') {
                 url += '/' + currentWorkout.cloudId;
                 method = 'PATCH';
             }
@@ -363,45 +382,61 @@
             if(!res.ok) {
                 if(res.status === 404 && currentWorkout.cloudId) {
                     currentWorkout.cloudId = null;
-                    return saveToCloudAndLink();
+                    alert("O arquivo na nuvem foi apagado. Criando um novo...");
+                    return saveToCloud('new');
                 }
-                throw new Error("Erro GitHub: " + res.status);
+                throw new Error("GitHub: " + res.status);
             }
 
             const json = await res.json();
             currentWorkout.cloudId = json.id;
             saveCurrent();
 
-            let p = window.location.href.split('?')[0];
-            p = p.substring(0, p.lastIndexOf('/')+1);
-            const finalLink = `${p}aluno.html?id=${currentWorkout.cloudId}`;
+            // SUCESSO!
+            btn.innerHTML = '<i class="fas fa-check"></i> Sucesso!';
+            setTimeout(() => { btn.disabled = false; btn.innerHTML = originalText; }, 2000);
 
-            navigator.clipboard.writeText(finalLink);
-            msg.innerText = "Link base salvo!";
-            msg.style.color = "#10b981";
-            
-            setTimeout(() => { btn.disabled = false; btn.innerHTML = '<i class="fas fa-cloud-arrow-up"></i> SALVAR E GERAR LINK'; }, 2000);
+            // Se for modo NOVO, copia link e abre TinyURL
+            if(mode === 'new') {
+                let p = window.location.href.split('?')[0];
+                p = p.substring(0, p.lastIndexOf('/')+1);
+                const finalLink = `${p}aluno.html?id=${currentWorkout.cloudId}`;
 
-            // --- LÓGICA DE NOME LIMPO ---
-            let cleanName = currentWorkout.name.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-            cleanName = cleanName.replace(/[^a-zA-Z0-9]/g, "");
-            
-            const prefixo = "Benai-"; 
-            const sugestao = prefixo + cleanName;
-            
-            const apelido = prompt(
-                "✅ Treino Salvo!\n\nConfirme o link personalizado abaixo.\nSe o nome for muito comum, adicione um número no final (ex: JoaoSilva2).", 
-                sugestao
-            );
+                navigator.clipboard.writeText(finalLink);
+                alert("Link Base COPIADO! Agora vamos criar o TinyURL...");
 
-            if (apelido) {
-                window.open(`https://tinyurl.com/create.php?url=${encodeURIComponent(finalLink)}&alias=${apelido}`, '_blank');
+                // Sugere nome limpo
+                let cleanName = currentWorkout.name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9]/g, "");
+                const prefixo = "Benai-"; 
+                const sugestao = prefixo + cleanName;
+                
+                window.open(`https://tinyurl.com/create.php?url=${encodeURIComponent(finalLink)}&alias=${sugestao}`, '_blank');
+            } else {
+                // Modo Update: Só avisa que atualizou
+                alert("✅ Treino atualizado! O link do aluno continua o mesmo.");
             }
 
         } catch(e) {
-            alert("Erro ao enviar: " + e.message);
-            btn.disabled = false; btn.innerHTML = 'Tentar Novamente';
+            alert("Erro: " + e.message);
+            btn.disabled = false; btn.innerHTML = originalText;
         }
+    }
+
+    // --- FUNÇÃO OFFLINE (BACKUP) ---
+    function generateOfflineLink(){
+        if(!currentWorkout.name) return alert("Preencha o nome!");
+        saveCurrent();
+        const l=(currentWorkout.logicList||[]).join('\n');
+        const m={name:currentWorkout.name,focus:currentWorkout.focus,logic:l,blocks:currentWorkout.blocks.map(b=>({name:b.name,type:b.type==='BiSet'?'biset':(b.type==='TriSet'?'triset':'block'),items:b.items.map(i=>({name:i.name,link:i.link,sets:i.sets,reps:i.reps,rest:i.rest,obs:i.obs,method:i.method,drops:i.drops,isoReps:i.isoReps,rnpRest:i.rnpRest}))}))};
+        
+        const j=JSON.stringify(m);
+        const c=LZString.compressToEncodedURIComponent(j);
+        
+        let p=window.location.href.split('?')[0];
+        p=p.substring(0,p.lastIndexOf('/')+1);
+        const u=`${p}aluno.html?data=${c}`;
+        
+        navigator.clipboard.writeText(u).then(()=>alert("📦 Link OFFLINE copiado! (Este link é grande e fixo)"));
     }
 
     // --- MANIPULAÇÃO (Igual Anterior) ---
