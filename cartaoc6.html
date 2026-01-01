@@ -35,7 +35,7 @@
         })();
     </script>
     <style>
-        /* --- DESIGN SYSTEM ORIGINAL --- */
+        /* --- DESIGN SYSTEM --- */
         :root {
             --primary: #1e293b; --bg: #f8fafc; --white: #ffffff;
             --text: #334155; --accent: #4f46e5;
@@ -78,27 +78,26 @@
         .btn-icon:hover { color:var(--primary); border-color:var(--primary); transform:translateY(-2px); box-shadow:0 4px 10px rgba(0,0,0,0.05); }
         .btn-icon.sync { color:var(--accent); border-color:var(--accent); background:#eef2ff; }
 
-        /* CLOUD STATUS INDICATOR */
+        /* CLOUD STATUS DOT (Adicionado) */
         .cloud-status { width: 10px; height: 10px; border-radius: 50%; background: #cbd5e1; display: inline-block; position:absolute; top:8px; right:8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); transition: 0.3s; }
         .cloud-status.ok { background: var(--safe); box-shadow: 0 0 8px var(--safe); }
         .cloud-status.error { background: var(--danger); }
         .cloud-status.syncing { background: var(--accent); animation: pulse 1s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
-        /* INVOICE PANEL (DYNAMIC) */
+        /* INVOICE PANEL */
         .invoice-panel { background:white; border:1px solid #e2e8f0; border-radius:14px; margin-bottom:25px; overflow:hidden; box-shadow:0 8px 15px -3px rgba(0,0,0,0.03); }
         .inv-header { background:#fffbeb; padding:10px 25px; font-size:0.75rem; color:#b45309; font-weight:700; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #fef3c7; }
         
         .inv-body { padding:18px 25px; display:flex; align-items:center; gap:30px; }
         
-        .credit-info-block { flex: 1.2; } /* Shows Limit/Spent */
+        .credit-info-block { flex: 1.2; } 
         .couple-split { flex: 1; display:flex; gap:15px; justify-content:center; align-items:center; }
         .action-block { margin-left: 10px; display:flex; gap:8px; }
 
-        /* Trip Mode: Hide credit info & actions, Center Split */
         .trip-mode .credit-info-block { display:none; }
         .trip-mode .action-block { display:none; }
-        .trip-mode .inv-header { display:none; } /* Hide yellow header in trip */
+        .trip-mode .inv-header { display:none; }
         .trip-mode .couple-split { flex: 1; width: 100%; justify-content: space-around; }
 
         .limit-row { display:flex; justify-content:space-between; font-size:0.8rem; font-weight:600; color:#64748b; margin-bottom:6px; }
@@ -296,7 +295,7 @@
                 
                 <button class="btn-icon sync" onclick="openModal('sync')" title="Central de Dados">
                     <i class="fa-solid fa-cloud"></i>
-                    <div id="cloudIndicator" class="cloud-status" style="display:none; width: 8px; height: 8px; border-radius: 50%; background: #10b981; position: absolute; top: 8px; right: 8px;"></div>
+                    <div id="cloudIndicator" class="cloud-status" style="display:none;"></div>
                 </button>
             </div>
         </header>
@@ -550,7 +549,7 @@
     </div>
 
     <script>
-        // --- CONSTANTES & CHAVES ---
+        // --- CONSTANTES & CHAVES (NUVEM ADICIONADA) ---
         const KEY = 'benai_card_main_db'; // Chave definitiva
         const OLD_KEYS = ['benai_card_v1', 'controle_fin_v83']; // Chaves antigas
         const TOKEN_KEY = 'benai_coach_gh_token'; // Chave do Token
@@ -999,52 +998,6 @@
         document.getElementById('fPay').addEventListener('change', function() { const val = this.value; if(val === 'credit' || val === 'debit') document.getElementById('divCardType').style.display = 'block'; else document.getElementById('divCardType').style.display = 'none'; });
         document.getElementById('addForm').addEventListener('submit', (e) => { e.preventDefault(); const val = parse(document.getElementById('fVal').value); if(val<=0) return; const newT = { id: editId || Date.now().toString(), date: document.getElementById('fDate').value, desc: document.getElementById('fDesc').value, category: document.getElementById('fCat').value, local: document.getElementById('fLoc').value, transportFrom: document.getElementById('fFrom').value, transportTo: document.getElementById('fTo').value, amount: val, payment: document.getElementById('fPay').value, cardType: document.getElementById('fCardType').value || 'physical', installments: parseInt(document.getElementById('fInst').value), paidInstallments: 0, paid: false, origin: document.getElementById('fFrom').value, destination: document.getElementById('fTo').value, recur: document.getElementById('fRecur').checked }; if(editId) { let targetTrip = active; if(editingOriginId && editingOriginId !== active.id) { targetTrip = db.trips.find(x => x.id === editingOriginId); } const idx = targetTrip.transactions.findIndex(x=>x.id===editId); if(idx >= 0) { newT.paidInstallments = targetTrip.transactions[idx].paidInstallments; newT.paid = targetTrip.transactions[idx].paid; targetTrip.transactions[idx] = newT; } } else { active.transactions.push(newT); } resetForm(); showToast("Lançamento Salvo!"); save(); });
         document.getElementById('fCat').addEventListener('change', function(){ const v=this.value.toLowerCase(); document.getElementById('transPanel').style.display = (v.includes('transporte')||v.includes('uber')) ? 'flex' : 'none'; });
-        function editT(id, originId) { let targetTrip = active; if(originId && originId !== active.id) targetTrip = db.trips.find(x => x.id === originId); const t = targetTrip.transactions.find(x=>x.id===id); if(!t) return; editId = id; editingOriginId = originId; document.getElementById('fDate').value = t.date; document.getElementById('fDesc').value = t.desc; document.getElementById('fCat').value = t.category; document.getElementById('fLoc').value = t.local || ''; document.getElementById('fVal').value = fmt(t.amount); document.getElementById('fPay').value = t.payment; document.getElementById('fInst').value = t.installments; document.getElementById('fFrom').value = t.transportFrom||t.origin||''; document.getElementById('fTo').value = t.transportTo||t.destination||''; document.getElementById('fCardType').value = t.cardType || 'physical'; document.getElementById('fRecur').checked = t.recur || false; document.getElementById('fCat').dispatchEvent(new Event('change')); document.getElementById('fPay').dispatchEvent(new Event('change')); document.getElementById('btnSubmit').innerText = "ATUALIZAR"; document.getElementById('btnCancel').style.display = "block"; document.querySelector('.container').scrollIntoView({behavior:'smooth'}); }
-        function resetForm() { editId = null; editingOriginId = null; document.getElementById('addForm').reset(); document.getElementById('btnSubmit').innerText = "SALVAR"; document.getElementById('btnCancel').style.display = "none"; document.getElementById('transPanel').style.display = "none"; document.getElementById('fDate').value = new Date().toISOString().split('T')[0]; document.getElementById('fPay').dispatchEvent(new Event('change'));}
-        function switchTrip(id) { db.currentId = id; save(); }
-        
-        function createNewTrip(type) { 
-            let name; let start='', end=''; 
-            if(type === 'month') { 
-                const input = prompt("Digite o Mês/Ano (ex: Janeiro/2026):"); 
-                if(!input) return; 
-                let dateObj = null;
-                const ptMonths = { 'janeiro':0, 'fevereiro':1, 'março':2, 'marco':2, 'abril':3, 'maio':4, 'junho':5, 'julho':6, 'agosto':7, 'setembro':8, 'outubro':9, 'novembro':10, 'dezembro':11, 'jan':0, 'fev':1, 'mar':2, 'abr':3, 'mai':4, 'jun':5, 'jul':6, 'ago':7, 'set':8, 'out':9, 'nov':10, 'dez':11 };
-                const parts = input.toLowerCase().split(/[\/\- ]+/);
-                if(parts.length >= 2) {
-                    let m = parts[0]; 
-                    let y = parseInt(parts[1]);
-                    if(isNaN(parseInt(m))) {
-                        if(ptMonths.hasOwnProperty(m)) m = ptMonths[m] + 1;
-                        else { alert('Mês inválido'); return; }
-                    }
-                    name = input.charAt(0).toUpperCase() + input.slice(1);
-                    start = new Date(y, m-1, 1).toISOString().split('T')[0]; 
-                    end = new Date(y, m, 0).toISOString().split('T')[0];
-                } else { alert('Formato inválido'); return; }
-            } else { name = prompt("Nome da Viagem:"); if(!name) return; } 
-            
-            db.trips.push({id:Date.now().toString(), name:name, type:type, budget:0, creditLimit:0, startDate:start, endDate:end, transactions:[]}); 
-            db.currentId = db.trips[db.trips.length-1].id; 
-            save(); 
-        }
-        function toggleSettings() { const s=document.getElementById('settingsPanel'); s.style.display=s.style.display==='block'?'none':'block'; }
-        function saveSettings() { active.name=document.getElementById('cfgName').value; active.creditLimit=parse(document.getElementById('cfgCredit').value); active.startDate=document.getElementById('cfgStart').value; active.endDate=document.getElementById('cfgEnd').value; active.dueDay=parseInt(document.getElementById('cfgDue').value); save(); toggleSettings(); }
-        function triggerImg() { document.getElementById('tripImageInput').click(); }
-        function handleImageUpload(i) { const f=i.files[0]; if(!f)return; const r=new FileReader(); r.onload=e=>{ active.image=e.target.result; save(); }; r.readAsDataURL(f); }
-        function setTab(t) { document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active')); document.querySelectorAll('.t-btn').forEach(e=>e.classList.remove('active')); document.getElementById('tab-'+t).classList.add('active'); event.target.classList.add('active'); }
-        function addCustomCategory() { const n=prompt("Nova Categoria:"); if(n) { if(db.categories.some(c=>c.toLowerCase()===n.toLowerCase())) { alert("Já existe!"); return; } db.categories.push(n); save(); } }
-        function openCatModal() { const l=document.getElementById('catListDisplay'); l.innerHTML=''; db.categories.forEach((c,i)=>{ l.innerHTML+=`<div class="cat-item-row"><span>${c}</span> <i class="fa-solid fa-trash cat-del-btn" onclick="deleteCategory(${i})"></i></div>`; }); document.getElementById('catModal').style.display='flex'; }
-        function closeCatModal() { document.getElementById('catModal').style.display = 'none'; }
-        function deleteCategory(i) { if(confirm("Excluir?")) { db.categories.splice(i, 1); save(); openCatModal(); } }
-        function fillCats() { const s=document.getElementById('fCat'); s.innerHTML=''; if(db.categories) db.categories.forEach(c=>s.add(new Option(c,c))); }
-        function showToast(msg) { const t=document.getElementById('toast'); document.getElementById('toastMsg').innerText=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 2000); }
-        function fmt(n) { return (n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
-        function parse(s) { return parseFloat(s.replace(/[^0-9,]/g,'').replace(',','.'))||0; }
-        function maskMoney(i) { let v=i.value.replace(/\D/g,''); v=(v/100).toFixed(2)+''; v=v.replace(".",","); v=v.replace(/(\d)(?=(\d{3})+(?!\d))/g,'$1.'); i.value='R$ '+v; }
-        document.getElementById('budgetBox').onclick = function(e) { if(e.target.closest('button') || this.querySelector('input')) return; this.innerHTML = `<small><i class="fa-solid fa-sack-dollar"></i> Orçamento</small><div class="budget-edit-wrap"><input id="newBudgetInp" class="budget-inp" value="${fmt(active.budget)}"><button class="b-btn b-ok" onclick="confBudget(event)"><i class="fa-solid fa-check"></i></button><button class="b-btn b-cancel" onclick="cancBudget(event)"><i class="fa-solid fa-xmark"></i></button></div>`; const inp=document.getElementById('newBudgetInp'); inp.focus(); inp.addEventListener('input', function(){ maskMoney(this); }); };
-        function confBudget(e) { e.stopPropagation(); active.budget = parse(document.getElementById('newBudgetInp').value); save(); }
-        function cancBudget(e) { e.stopPropagation(); save(); } 
 
         init();
     </script>
