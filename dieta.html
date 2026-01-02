@@ -6,16 +6,14 @@
     <title>Benai - Nutrição Cloud</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script>
         (function() {
-            // --- CONFIGURAÇÃO DA SENHA (IGUAL FINANCEIRO) ---
+            // --- CONFIGURAÇÃO DA SENHA ---
             const PIN_CORRETO = "16359001"; 
-            // -----------------------------
-
             if (sessionStorage.getItem("benai_access_granted") === "true") return;
 
             document.write(`
@@ -32,7 +30,7 @@
                         padding: 15px; font-size: 1.5rem; text-align: center; 
                         border-radius: 15px; border: 2px solid rgba(56, 189, 248, 0.3); outline: none; margin-top: 25px;
                         background: rgba(255,255,255,0.05); color: white; letter-spacing: 4px; width: 100%;
-                        transition: 0.3s;
+                        transition: 0.3s; 
                     }
                     .pin-inp:focus { border-color: #38bdf8; box-shadow: 0 0 20px rgba(56, 189, 248, 0.2); }
                     .pin-msg { color: #f87171; margin-top: 15px; font-weight: 600; font-size: 0.9rem; height: 20px; }
@@ -223,10 +221,18 @@
             <h3 style="color:var(--primary); margin-bottom:5px; font-weight:800; font-family:var(--font-num);">Central de Dados</h3>
             <p style="font-size:0.85rem; color:#64748b; margin-bottom:20px;">GitHub Cloud + Backup Local</p>
 
-            <button class="sync-btn" onclick="forceSync()">
-                <i class="fa-solid fa-cloud-arrow-down" style="color:var(--accent)"></i> 
-                <div><span class="sb-title">Forçar Download</span><span class="sb-desc">Baixar da Nuvem</span></div>
-            </button>
+            <div style="margin-bottom:15px; border-bottom:1px solid var(--border); padding-bottom:15px;">
+                <label style="font-size:0.75rem; font-weight:700; color:#64748b; margin-bottom:5px; display:block;">TOKEN DE ACESSO</label>
+                <input type="password" id="manualToken" placeholder="ghp_..." style="width:100%; padding:12px; border:1px solid var(--border); border-radius:12px; margin-bottom:10px; background:#f8fafc; color:#334155; outline:none;">
+                <button class="sync-btn" onclick="saveManualToken()" style="justify-content:center; padding:12px; margin-bottom:15px;">
+                    <i class="fa-solid fa-key"></i> Salvar Token
+                </button>
+                
+                <button class="sync-btn" onclick="forceSync()">
+                    <i class="fa-solid fa-cloud-arrow-down" style="color:var(--accent)"></i> 
+                    <div><span class="sb-title">Forçar Download</span><span class="sb-desc">Baixar da Nuvem</span></div>
+                </button>
+            </div>
 
             <button class="sync-btn" onclick="exportFile()">
                 <i class="fa-solid fa-download" style="color:#334155"></i> 
@@ -281,15 +287,18 @@
             if (saved) {
                 try {
                     const parsed = JSON.parse(saved);
-                    // Validação simples para evitar tela branca
                     if (parsed && parsed.days) appData = parsed;
                 } catch(e) { console.error("Dados locais corrompidos", e); }
             }
 
-            // 2. Renderiza o que tiver (mesmo que seja padrão)
+            // 1.1 Tenta preencher o token se já existir
+            const t = localStorage.getItem(TOKEN_KEY);
+            if(t && document.getElementById('manualToken')) document.getElementById('manualToken').value = t;
+
+            // 2. Renderiza o que tiver
             renderAll();
 
-            // 3. Tenta conectar na Nuvem (sem travar)
+            // 3. Tenta conectar na Nuvem
             await syncCloud();
         }
 
@@ -301,12 +310,10 @@
         }
 
         function renderDiet() {
-            // Garante que existam metas
             if (!appData.meta) appData.meta = DEFAULT_DATA.meta;
             document.getElementById('metaKcal').innerText = appData.meta.kcal || 0;
             document.getElementById('dispWeight').innerText = appData.meta.weight || 0;
 
-            // Botões dos Dias
             const btnCont = document.getElementById('dayButtons');
             btnCont.innerHTML = '';
             if (!appData.days) appData.days = DEFAULT_DATA.days;
@@ -316,7 +323,6 @@
                 btnCont.innerHTML += `<div class="toggle-btn ${isActive?'active':''}" onclick="changeDay('${key}')">${appData.days[key].label}</div>`;
             });
 
-            // Lista de Refeições
             const list = document.getElementById('mealList');
             list.innerHTML = '';
             
@@ -367,7 +373,6 @@
             const hList = document.getElementById('historyList');
             hList.innerHTML = '';
             if(appData.history && appData.history.length > 0) {
-                // Copia e inverte para mostrar mais recente primeiro
                 [...appData.history].reverse().slice(0, 10).forEach(h => {
                     hList.innerHTML += `<div style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid #f1f5f9; color:#475569;"><span>${h.date}</span><span><b>${h.weight}</b> kg</span></div>`;
                 });
@@ -377,8 +382,7 @@
         function renderChart() {
             const ctx = document.getElementById('weightChart');
             if(!appData.history) return;
-            
-            const recent = appData.history.slice(-7); // Últimos 7 registros
+            const recent = appData.history.slice(-7); 
             
             if(chartInst) chartInst.destroy();
             chartInst = new Chart(ctx, {
@@ -416,24 +420,15 @@
             if(w) appData.meta.weight = w;
             if(s) appData.meta.steps = s;
             save();
-            renderDiet(); // Atualiza card
+            renderDiet();
         }
 
         function finishDay() {
             if(!confirm("Concluir o dia e salvar histórico?")) return;
-            
             const today = new Date().toLocaleDateString('pt-BR').substring(0,5); // DD/MM
             if(!appData.history) appData.history = [];
-            
-            // Remove entrada de hoje se já existir para substituir
             appData.history = appData.history.filter(h => h.date !== today);
-            
-            appData.history.push({ 
-                date: today, 
-                weight: appData.meta.weight, 
-                steps: appData.meta.steps 
-            });
-            
+            appData.history.push({ date: today, weight: appData.meta.weight, steps: appData.meta.steps });
             save();
             renderChart();
             renderStats();
@@ -454,10 +449,19 @@
             return '🍽️'; 
         }
 
-        // --- SISTEMA DE NUVEM (IDÊNTICO AO TRACKER) ---
+        // --- SISTEMA DE NUVEM ---
         function updateStatus(status) {
             const el = document.getElementById('cloudDot');
             if(el) el.className = 'cloud-dot ' + status;
+        }
+
+        function saveManualToken() {
+            const t = document.getElementById('manualToken').value.trim();
+            if(t) {
+                localStorage.setItem(TOKEN_KEY, t);
+                alert("Token salvo! Tentando conectar...");
+                syncCloud();
+            }
         }
 
         async function syncCloud() {
@@ -466,7 +470,6 @@
             
             updateStatus('sync');
             try {
-                // 1. Busca Gist ID
                 if(!gistId) {
                     const s = await fetch('https://api.github.com/gists', { headers: { 'Authorization': `token ${token}` } });
                     const gists = await s.json();
@@ -474,27 +477,19 @@
                     if(found) gistId = found.id;
                 }
 
-                // 2. Se tiver ID, lê arquivo
                 if(gistId) {
                     const r = await fetch(`https://api.github.com/gists/${gistId}`, { headers: { 'Authorization': `token ${token}` } });
                     const gistData = await r.json();
                     if(gistData.files && gistData.files["diet.json"]) {
                         const cloudContent = JSON.parse(gistData.files["diet.json"].content);
-                        // Verifica se o cloud tem dados válidos antes de substituir
                         if(cloudContent && cloudContent.days) {
                             appData = cloudContent;
                             saveLocal();
                             renderAll();
                         }
-                    } else {
-                        // Se não tem arquivo, cria
-                        await pushCloud();
-                    }
+                    } else { await pushCloud(); }
                     updateStatus('ok');
-                } else {
-                    // Se não tem Gist, cria
-                    await pushCloud();
-                }
+                } else { await pushCloud(); }
             } catch(e) {
                 console.error(e);
                 updateStatus('error');
@@ -509,13 +504,10 @@
             try {
                 const url = gistId ? `https://api.github.com/gists/${gistId}` : 'https://api.github.com/gists';
                 const method = gistId ? 'PATCH' : 'POST';
-                
                 const payload = {
                     description: GIST_DESC,
                     public: false,
-                    files: {
-                        "diet.json": { content: JSON.stringify(appData) }
-                    }
+                    files: { "diet.json": { content: JSON.stringify(appData) } }
                 };
 
                 const res = await fetch(url, {
@@ -527,9 +519,7 @@
                 if(res.ok) {
                     if(!gistId) { const j = await res.json(); gistId = j.id; }
                     updateStatus('ok');
-                } else {
-                    updateStatus('error');
-                }
+                } else { updateStatus('error'); }
             } catch(e) {
                 console.error(e);
                 updateStatus('error');
@@ -543,15 +533,13 @@
             }
         }
 
-        // --- SISTEMA LOCAL E UTILITÁRIOS ---
         function saveLocal() { localStorage.setItem(DB_KEY, JSON.stringify(appData)); }
         function save() { saveLocal(); pushCloud(); }
 
-        // Modais
+        // Modais e Utils
         function openModal(id) { document.getElementById('modal-'+id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById('modal-'+id).style.display = 'none'; }
         
-        // Views
         function setView(vId) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.dock-item').forEach(d => d.classList.remove('active'));
@@ -559,7 +547,6 @@
             document.getElementById('btn-'+vId).classList.add('active');
         }
 
-        // Import/Export
         function exportFile() {
             const blob = new Blob([JSON.stringify(appData)], {type: "application/json"});
             const url = URL.createObjectURL(blob);
@@ -580,9 +567,7 @@
                         save();
                         renderAll();
                         alert("Backup restaurado com sucesso!");
-                    } else {
-                        alert("Arquivo inválido (estrutura incorreta).");
-                    }
+                    } else { alert("Arquivo inválido (estrutura incorreta)."); }
                 } catch(err) { alert("Erro ao ler arquivo JSON."); }
             };
             reader.readAsText(file);
@@ -595,8 +580,7 @@
             }
         }
 
-        // Admin Text Import/Export
-        function exportPlanClipboard() {
+        function exportToClipboard() {
             document.getElementById('jsonInput').value = JSON.stringify(appData, null, 2);
             document.getElementById('jsonInput').select();
             document.execCommand('copy');
@@ -615,7 +599,6 @@
             } catch(e) { alert("Erro de sintaxe no JSON."); }
         }
 
-        // Start
         init();
     </script>
 </body>
