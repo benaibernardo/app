@@ -20,7 +20,7 @@
         /* --- TELA DE LOGIN (FIXA E ROBUSTA) --- */
         #gatekeeper {
             position: fixed; inset: 0; z-index: 99999;
-            background-color: #0f172a; /* Azul Escuro Padrão */
+            background-color: #0f172a; 
             color: white;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             font-family: 'Outfit', sans-serif;
@@ -36,13 +36,10 @@
         .pin-input:focus { border-color: #38bdf8; box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.1); background: rgba(255,255,255,0.08); }
         .error-msg { color: #ef4444; margin-top: 15px; font-weight: 600; font-size: 0.9rem; min-height: 20px; }
 
-        /* --- CONTEÚDO DO APP (Oculto até login) --- */
+        /* --- CONTEÚDO DO APP --- */
         #app-content { display: none; }
 
-        /* --- UI ESPECÍFICA --- */
         .header-gradient { background: linear-gradient(135deg, #022030 0%, #05364F 100%); }
-        
-        /* Botão Nuvem Pílula */
         .cloud-btn { display: flex; align-items: center; gap: 8px; padding: 6px 14px; font-size: 0.75rem; font-weight: 800; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; color: white; transition: 0.2s; cursor: pointer; letter-spacing: 0.5px; }
         .cloud-btn:hover { background: rgba(255,255,255,0.25); }
         .cloud-status { width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; border: 1px solid rgba(255,255,255,0.3); }
@@ -50,29 +47,20 @@
         .cloud-status.syncing { background: #3b82f6; animation: pulse 1s infinite; }
         .cloud-status.error { background: #ef4444; }
 
-        /* Abas */
         .tab-btn { padding: 1rem; color: #94a3b8; font-weight: 700; font-size: 0.875rem; border-bottom: 3px solid transparent; transition: 0.2s; display: flex; align-items: center; gap: 8px; cursor: pointer; }
         .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
         .tab-btn:hover { color: var(--primary); }
 
-        /* Agenda & Cores das Colunas */
         .col-time { background-color: #ecfeff; color: #0e7490; font-weight: 800; text-align: center; }
         .col-student { background-color: white; font-weight: 700; color: #1e293b; }
         .col-workout { background-color: #fdf4ff; color: #86198f; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; }
         .col-prof { background-color: #f0fdf4; color: #15803d; font-weight: 600; font-size: 0.75rem; text-align: center; }
         
-        .hover-row:hover td { background-color: #f8fafc; }
         .drawer-row { transition: all 0.3s ease-out; max-height: 0; opacity: 0; overflow: hidden; background-color: #f1f5f9; border-bottom: 1px solid #e2e8f0; }
         .drawer-row.open { max-height: 400px; opacity: 1; padding: 1.5rem; }
 
-        /* Modais */
         .modal-overlay { position: fixed; inset: 0; background: rgba(5, 54, 79, 0.85); backdrop-filter: blur(4px); z-index: 60; display: none; justify-content: center; align-items: center; padding: 1rem; }
         .modal-box { background: white; border-radius: 1rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); width: 100%; max-width: 28rem; padding: 2rem; position: relative; animation: slideUp 0.3s ease; }
-        
-        /* Utilitários */
-        .input-modern { border: 1px solid #E2E8F0; transition: all 0.2s; }
-        .input-modern:focus { border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(0, 168, 154, 0.1); outline: none; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
         
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
@@ -92,7 +80,6 @@
     </div>
 
     <div id="app-content">
-        
         <header class="header-gradient text-white shadow-lg sticky top-0 z-40 border-b-4 border-yellow-400">
             <div class="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
                 <div class="flex items-center gap-4">
@@ -121,7 +108,6 @@
         </div>
 
         <main class="max-w-7xl mx-auto px-6 py-8">
-
             <section id="view-checkin" class="view-section fade-in">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
@@ -218,7 +204,6 @@
                 </div>
                 <div class="bg-white p-6 rounded-xl border shadow-sm"><h3 class="text-sm font-bold text-[#05364F] mb-4 flex items-center gap-2"><i data-lucide="briefcase" class="w-4 h-4 text-[#00A89A]"></i> Produtividade Equipe</h3><div class="h-64"><canvas id="chart5"></canvas></div></div>
             </section>
-
         </main>
     </div>
 
@@ -228,16 +213,17 @@
             <h3 class="text-xl font-bold text-[#05364F] mb-2 font-heading">Central de Dados</h3>
             <p class="text-sm text-slate-500 mb-8">Nuvem GitHub + Backup Local</p>
             
-            <div class="space-y-3">
-                <div style="margin-bottom:15px; border-bottom:1px solid #e2e8f0; padding-bottom:15px;">
-                    <input type="password" id="manualToken" placeholder="Token (ghp_...)" class="w-full p-3 rounded-xl border border-slate-200 text-sm mb-2 outline-none focus:border-[#00A89A]">
-                    <button onclick="saveManualToken()" class="w-full py-2 rounded-xl bg-slate-100 text-slate-500 font-bold text-xs hover:bg-slate-200">SALVAR TOKEN</button>
+            <div class="space-y-3 text-left">
+                <div class="mb-4 border-b pb-4">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">Token Manual</label>
+                    <input type="password" id="manualToken" placeholder="ghp_..." class="w-full p-2 border rounded-lg text-sm mb-2 outline-none focus:border-[#00A89A]">
+                    <button onclick="saveManualToken()" class="w-full py-2 rounded-xl bg-slate-100 text-slate-500 font-bold text-xs hover:bg-slate-200 transition">SALVAR TOKEN</button>
                 </div>
 
-                <button onclick="forceSync()" class="w-full py-3 rounded-xl bg-[#00A89A] text-white font-bold hover:bg-teal-600 flex justify-center gap-2 btn-modern"><i data-lucide="cloud-download" class="w-4 h-4"></i> BAIXAR DA NUVEM</button>
-                <button onclick="backupData()" class="w-full py-3 rounded-xl bg-[#05364F] text-white font-bold hover:bg-[#032435] flex justify-center gap-2 btn-modern"><i data-lucide="download" class="w-4 h-4"></i> BACKUP LOCAL</button>
-                <label class="w-full py-3 rounded-xl border-2 border-slate-200 text-slate-600 font-bold hover:bg-slate-50 cursor-pointer flex justify-center gap-2 btn-modern"><i data-lucide="upload" class="w-4 h-4"></i> RESTAURAR LOCAL <input type="file" id="fileIn" hidden onchange="restoreData(this)"></label>
-                <button onclick="hardReset()" class="w-full py-3 rounded-xl border border-red-200 text-red-500 font-bold hover:bg-red-50 flex justify-center gap-2 btn-modern"><i data-lucide="trash" class="w-4 h-4"></i> RESETAR TUDO</button>
+                <button onclick="forceSync()" class="w-full py-3 rounded-xl bg-[#00A89A] text-white font-bold hover:bg-teal-600 flex justify-center gap-2 transition"><i data-lucide="cloud-download" class="w-4 h-4"></i> BAIXAR DA NUVEM</button>
+                <button onclick="backupData()" class="w-full py-3 rounded-xl bg-[#05364F] text-white font-bold hover:bg-[#032435] flex justify-center gap-2 transition"><i data-lucide="download" class="w-4 h-4"></i> BACKUP LOCAL</button>
+                <label class="w-full py-3 rounded-xl border-2 border-slate-200 text-slate-600 font-bold hover:bg-slate-50 cursor-pointer flex justify-center gap-2 transition"><i data-lucide="upload" class="w-4 h-4"></i> RESTAURAR LOCAL <input type="file" id="fileIn" hidden onchange="restoreData(this)"></label>
+                <button onclick="hardReset()" class="w-full py-3 rounded-xl border border-red-200 text-red-500 font-bold hover:bg-red-50 flex justify-center gap-2 transition"><i data-lucide="trash" class="w-4 h-4"></i> RESETAR TUDO</button>
             </div>
             <button onclick="document.getElementById('modal-cloud').style.display='none'" class="mt-6 text-xs font-bold text-slate-400 uppercase tracking-widest hover:text-slate-600">Fechar</button>
         </div>
@@ -265,7 +251,7 @@
     </div>
 
     <div id="profile-modal" class="modal-overlay">
-        <div class="modal-box w-full max-w-4xl h-[90vh] flex flex-col p-0 overflow-hidden">
+        <div class="modal-box w-full max-w-4xl h-[90vh] flex flex-col p-0 overflow-hidden text-left">
             <div class="px-8 py-5 border-b border-slate-100 flex justify-between items-center bg-white rounded-t-xl">
                 <div><h2 id="pf-name" class="text-2xl font-black text-[#05364F] font-heading">NOME</h2><p class="text-xs font-bold text-[#00A89A] uppercase tracking-wider mt-1"><span id="pf-obj">OBJETIVO</span> • <span id="pf-plan">PLANO</span></p></div>
                 <button onclick="document.getElementById('profile-modal').style.display='none'" class="bg-slate-100 p-2 rounded-full hover:bg-slate-200"><i data-lucide="x" class="w-6 h-6 text-slate-500"></i></button>
@@ -290,72 +276,55 @@
         const DB_KEY = 'prime_main_db'; 
         const TOKEN_KEY = 'benai_coach_gh_token'; 
         const GIST_DESC = 'BENAI_WORK_DB';
-        const INITIAL_PROFS = ['BENAI', 'JUAN', 'THUR', 'LUANA', 'BENJAMIN'];
+        const PIN_CORRETO = "16359001";
         
-        const INITIAL_STUDENTS = [
-            {"id":"1","name":"NILTON FLORIANO","objective":"GANHAR MASSA","limitations":"HERNIA INGUINAL","notes":"GOSTA DE FAZER BURPEES AO FINAL DA AULA","plan":"3X"},
-            {"id":"2","name":"LINDAMIR FLORIANO (MIME)","objective":"EMAGRECIMENTO","limitations":"NENHUMA","notes":"","plan":"3X"},
-            {"id":"3","name":"LUCIMARA STELE","objective":"EMAGRECIMENTO","limitations":"HERNIA LOMBA L5, NÃO SENTE DORES","notes":"","plan":"3X"},
-            {"id":"4","name":"VITOR HUGO","objective":"","limitations":"","notes":"","plan":""},
-            {"id":"5","name":"JOSE LUIS RODRIGUES (ZÉ)","objective":"FORTALECIMENTO","limitations":"NENHUMA","notes":"SEM OBSERVAÇÕES","plan":""},
-            {"id":"6","name":"CLEIDE FLORIANO","objective":"FORTALECIMENTO","limitations":"NENHUMA","notes":"PRESSÃO BAIXA SOB MUITO ESFORÇO","plan":""},
-            {"id":"7","name":"VILMA KAISS","objective":"EMAGRECIMENTO","limitations":"NENHUMA","notes":"SEM OBSERVAÇÕES","plan":"3X"},
-            {"id":"8","name":"GUILHERME NICHETTI","objective":"EMAGRECIMENTO E GANHO DE MASSA","limitations":"SEM RESTRIÇÕES","notes":"","plan":"3X"},
-            {"id":"9","name":"ANDRESSA CYRNE","objective":"EMAGRECIMENTO E GANHO DE MASSA","limitations":"PROTUSÃO CERVICAL","notes":"","plan":"3X"},
-            {"id":"10","name":"GERLAINE","objective":"QUALIDADE DE VIDA","limitations":"","notes":"","plan":"5X"},
-            {"id":"11","name":"IAZANA","objective":"HIPERTROFIA","limitations":"RARAS DORES NO JOELHO E LOMBAR","notes":"","plan":"5X"},
-            {"id":"12","name":"GIOVANA","objective":"EMAGRECIMENTO E GANHO DE MASSA","limitations":"","notes":"","plan":"5X"},
-            {"id":"13","name":"IVO PAULO","objective":"HIPERTROFIA","limitations":"","notes":"","plan":"5X"},
-            {"id":"14","name":"LUCAS CRUZ","objective":"HIPERTROFIA","limitations":"","notes":"","plan":"5X"},
-            {"id":"15","name":"ANDREIA TOTH","objective":"HIPERTROFIA","limitations":"","notes":"","plan":"5X"},
-            {"id":"16","name":"FERNANDO BOGO","objective":"EMAGRECIMENTO E GANHO DE MASSA","limitations":"","notes":"","plan":"5X"},
-            {"id":"17","name":"LUCIANA","objective":"EMAGRECIMENTO E GANHO DE MASSA","limitations":"","notes":"","plan":"5X"},
-            {"id":"18","name":"BEATRIZ BARUCH","objective":"HIPERTROFIA","limitations":"","notes":"","plan":"5X"},
-            {"id":"19","name":"CRISTIANE WISNIEWSKI","objective":"HIPERTROFIA","limitations":"","notes":"","plan":"5X"},
-            {"id":"20","name":"JANAINA","objective":"HIPERTROFIA","limitations":"","notes":"","plan":"5X"},
-            {"id":"21","name":"LEONI NAKAMURA","objective":"EMAGRECIMENTO E GANHO DE MASSA","limitations":"","notes":"","plan":"3X"},
-            {"id":"22","name":"JUAREZ","objective":"EMAGRECIMENTO","limitations":"HÉRNIA CERVICAL E LUXAÇÃO NO CÓCCIX","notes":"DORES NO QUADRIL DIREITO","plan":"3X"},
-            {"id":"23","name":"GEOVANA CAMPAGNOLO","objective":"","limitations":"","notes":"","plan":""},
-            {"id":"24","name":"MYLENA MACIEL","objective":"","limitations":"","notes":"","plan":""},
-            {"id":"25","name":"MARISTELA FRIZZO","objective":"","limitations":"","notes":"","plan":""},
-            {"id":"26","name":"LUANA","objective":"","limitations":"","notes":"","plan":""},
-            {"id":"27","name":"TANIA DOLCI","objective":"","limitations":"","notes":"","plan":""},
-            {"id":"28","name":"CARLOS DOLCI","objective":"","limitations":"","notes":"","plan":""},
-            {"id":"29","name":"ANGELA SILVA","objective":"","limitations":"","notes":"","plan":""},
-            {"id":"30","name":"MARIA BEATRIZ NASCIMENTO","objective":"","limitations":"","notes":"","plan":""},
-            {"id":"31","name":"GABRIEL MORRETES","objective":"","limitations":"","notes":"","plan":""},
-            {"id":"32","name":"JEAN MATHEUS SANTOS","objective":"","limitations":"","notes":"","plan":""},
-            {"id":"33","name":"ALINE GALIOTTO","objective":"","limitations":"","notes":"","plan":""},
-            {"id":"34","name":"ISABELA GALIOTTO","objective":"","limitations":"","notes":"","plan":""},
-            {"id":"35","name":"ROBIANE MACHADO","objective":"","limitations":"","notes":"","plan":""},
-            {"id":"36","name":"ANA BEATRIZ (BIA)","objective":"","limitations":"","notes":"","plan":""},
-            {"id":"37","name":"JULIANO PIANTADOSI","objective":"","limitations":"","notes":"","plan":""},
-            {"id":"38","name":"JOSEMAR KAISS (ZICO)","objective":"","limitations":"","notes":"","plan":""}
-        ];
-
         let db = { students: [], checkins: [], professors: [] };
         let charts = {};
         let gistId = null;
 
-        async function init() {
-            let saved = localStorage.getItem(DB_KEY);
-            if (saved) {
-                db = JSON.parse(saved);
-                if (!db.students || db.students.length < 5) db.students = INITIAL_STUDENTS;
-                if (!db.professors) db.professors = INITIAL_PROFS;
+        // --- SISTEMA DE LOGIN E SESSÃO ---
+        document.addEventListener("DOMContentLoaded", () => {
+            const type = sessionStorage.getItem("benai_access_type");
+            const granted = sessionStorage.getItem("benai_access_granted");
+
+            if (type === "master" || type === "guest" || granted === "true") {
+                unlockApp();
             } else {
-                db = { students: INITIAL_STUDENTS, checkins: [], professors: INITIAL_PROFS };
-                saveDB();
+                document.getElementById('pinInput').addEventListener('keyup', function(e) {
+                    if (this.value.length === 8) {
+                        if (this.value === PIN_CORRETO) {
+                            sessionStorage.setItem("benai_access_granted", "true");
+                            unlockApp();
+                        } else {
+                            document.getElementById('loginError').innerText = "Código Incorreto";
+                            this.value = "";
+                            if(navigator.vibrate) navigator.vibrate(200);
+                        }
+                    }
+                });
             }
+        });
+
+        function unlockApp() {
+            document.getElementById('gatekeeper').style.display = 'none';
+            document.getElementById('app-content').style.display = 'block';
+            init();
+        }
+
+        async function init() {
+            const saved = localStorage.getItem(DB_KEY);
+            if (saved) db = JSON.parse(saved);
             
-            // Tenta pré-carregar token
             const t = localStorage.getItem(TOKEN_KEY);
             if(t && document.getElementById('manualToken')) document.getElementById('manualToken').value = t;
 
             lucide.createIcons();
             setTab('checkin');
             updateStats();
-            setInterval(() => document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}), 1000);
+            setInterval(() => {
+                const el = document.getElementById('live-clock');
+                if(el) el.innerText = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+            }, 1000);
             
             Chart.defaults.font.family = "'Inter', sans-serif";
             Chart.defaults.color = '#64748b';
@@ -363,26 +332,74 @@
             await syncCloud();
         }
 
-        // SISTEMA DE LOGIN (FIXO)
-        document.getElementById('pinInput').addEventListener('keyup', function(e) {
-            if (this.value.length === 8) {
-                if (this.value === "16359001") {
-                    sessionStorage.setItem("benai_access_granted", "true");
-                    document.getElementById('gatekeeper').style.display = 'none'; // Some
-                    document.getElementById('app-content').style.display = 'block'; // Aparece
-                    init();
-                } else {
-                    document.getElementById('loginError').innerText = "Código Incorreto";
-                    this.value = "";
-                }
+        // --- FUNÇÕES DA NUVEM ---
+        function saveManualToken() {
+            const t = document.getElementById('manualToken').value.trim();
+            if(t) {
+                localStorage.setItem(TOKEN_KEY, t);
+                alert("Token salvo! Reconectando...");
+                syncCloud();
             }
-        });
+        }
 
-        // NAVEGAÇÃO DE ABAS
+        function updateCloudStatus(st) {
+            const el = document.getElementById('cloudIndicator');
+            if(el) el.className = 'cloud-status ' + st;
+        }
+
+        async function syncCloud() {
+            const token = localStorage.getItem(TOKEN_KEY);
+            if(!token) return updateCloudStatus('error');
+            updateCloudStatus('syncing');
+            try {
+                if(!gistId) {
+                    const s = await fetch('https://api.github.com/gists', {headers:{'Authorization':`token ${token}`}});
+                    const g = await s.json();
+                    const f = g.find(x => x.description === GIST_DESC);
+                    if(f) gistId = f.id;
+                }
+                if(gistId) {
+                    const r = await fetch(`https://api.github.com/gists/${gistId}`, {headers:{'Authorization':`token ${token}`}});
+                    const j = await r.json();
+                    if(j.files["prime_db.json"]) {
+                        db = JSON.parse(j.files["prime_db.json"].content);
+                        localStorage.setItem(DB_KEY, JSON.stringify(db));
+                        updateStats();
+                        if(document.getElementById('view-students').style.display !== 'none') renderStudentsTable();
+                    } else await pushCloud();
+                    updateCloudStatus('ok');
+                } else await pushCloud();
+            } catch(e) { updateCloudStatus('error'); }
+        }
+
+        async function pushCloud() {
+            const token = localStorage.getItem(TOKEN_KEY);
+            if(!token) return;
+            updateCloudStatus('syncing');
+            try {
+                let url = 'https://api.github.com/gists';
+                let method = 'POST';
+                if(gistId) { url += '/' + gistId; method = 'PATCH'; }
+                const body = JSON.stringify({
+                    description: GIST_DESC,
+                    public: false,
+                    files: {'prime_db.json': {content: JSON.stringify(db)}}
+                });
+                const res = await fetch(url, {method, headers:{'Authorization':`token ${token}`, 'Content-Type':'application/json'}, body});
+                if(res.ok) {
+                    const data = await res.json();
+                    gistId = data.id;
+                    updateCloudStatus('ok');
+                }
+            } catch(e) { updateCloudStatus('error'); }
+        }
+
+        function saveDB() { localStorage.setItem(DB_KEY, JSON.stringify(db)); pushCloud(); updateStats(); }
+
+        // --- CORE UI ---
         function setTab(id) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
             document.getElementById('view-'+id).classList.remove('hidden');
-            
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('btn-'+id).classList.add('active');
             
@@ -393,275 +410,118 @@
             lucide.createIcons();
         }
 
-        // CHECK-IN
         function setupCheckin() {
             const now = new Date();
             document.getElementById('ci-date').value = `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}`;
-            
             const sEl = document.getElementById('ci-student'); 
             sEl.innerHTML = '<option value="">Selecione...</option>'; 
             db.students.sort((a,b)=>a.name.localeCompare(b.name)).forEach(s => sEl.innerHTML += `<option value="${s.id}">${s.name}</option>`);
-
             const tEl = document.getElementById('ci-time'); tEl.innerHTML = '';
-            const isSat = now.getDay() === 6;
-            for(let h=(isSat?8:6); h<=(isSat?12:21); h++) { 
+            for(let h=6; h<=21; h++) { 
                 const opt = new Option(`${h}:00`, `${h}H`); 
                 if(h === now.getHours()) opt.selected = true; 
                 tEl.add(opt); 
             }
-
             const pEl = document.getElementById('ci-prof'); pEl.innerHTML = '';
             db.professors.forEach(p => pEl.innerHTML += `<option>${p}</option>`);
         }
 
-        function checkAlerts(id) {
-            const s = db.students.find(x=>x.id === id);
-            const box = document.getElementById('ci-alert');
-            if (s && s.limitations && s.limitations !== 'NENHUMA') {
-                box.innerHTML = `<i data-lucide="alert-triangle" class="w-4 h-4"></i> ${s.limitations}`; box.classList.remove('hidden'); lucide.createIcons();
-            } else { box.classList.add('hidden'); }
-        }
-
-        function toggleCustom(val) { document.getElementById('ci-custom').classList.toggle('hidden', val !== 'OUTRO'); }
-
         function handleCheckin(e) {
             e.preventDefault();
             const sId = document.getElementById('ci-student').value;
-            if(!sId) return alert('Selecione um aluno');
-            let wk = document.getElementById('ci-workout').value;
-            if(wk === 'OUTRO') wk = document.getElementById('ci-custom').value.toUpperCase() || 'PERSONALIZADO';
-            
+            if(!sId) return;
+            const student = db.students.find(x=>x.id===sId);
             db.checkins.push({
                 id: Date.now().toString(),
                 studentId: sId,
-                studentName: db.students.find(x=>x.id===sId).name,
+                studentName: student.name,
                 isoDate: new Date().toISOString().split('T')[0],
                 time: document.getElementById('ci-time').value,
-                workout: wk,
+                workout: document.getElementById('ci-workout').value === 'OUTRO' ? document.getElementById('ci-custom').value.toUpperCase() : document.getElementById('ci-workout').value,
                 prof: document.getElementById('ci-prof').value
             });
             saveDB();
-            document.getElementById('ci-student').value = '';
-            document.getElementById('ci-alert').classList.add('hidden');
+            document.getElementById('addForm')?.reset();
             toast('Confirmado!');
         }
 
-        function updateStats() {
-            const today = new Date().toISOString().split('T')[0];
-            const todays = db.checkins.filter(c=>c.isoDate===today);
-            document.getElementById('st-total').innerText = todays.length;
-            const c={}; todays.forEach(x=>{c[x.time]=(c[x.time]||0)+1}); document.getElementById('st-peak').innerText = Object.keys(c).reduce((a,b)=>c[a]>c[b]?a:b, '-');
-            const w={}; todays.forEach(x=>{w[x.workout]=(w[x.workout]||0)+1}); const pop = Object.keys(w).reduce((a,b)=>w[a]>w[b]?a:b, '-'); document.getElementById('st-pop').innerText = pop.length>12?pop.substring(0,10)+'...':pop;
-            document.getElementById('st-new').innerText = db.students.filter(s => parseInt(s.id) > new Date(today).getTime()).length;
-        }
-
-        // AGENDA (Drawer + Cores)
-        function setupDashFilters() {
-            const s = document.getElementById('dashboard-filter-time'); s.innerHTML = '<option value="">Todas</option>';
-            for(let h=6; h<=21; h++) s.innerHTML += `<option value="${h}H">${h}H</option>`;
-        }
         function renderAgenda() {
             const dt = document.getElementById('dashboard-date').value;
-            const tm = document.getElementById('dashboard-filter-time').value;
-            const list = db.checkins.filter(c => c.isoDate === dt && (!tm || c.time === tm)).sort((a,b) => parseInt(a.time) - parseInt(b.time));
+            const list = db.checkins.filter(c => c.isoDate === dt).sort((a,b) => parseInt(a.time) - parseInt(b.time));
             const tb = document.getElementById('agenda-body'); tb.innerHTML = '';
-            
-            if(list.length === 0) tb.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-400 italic">Sem registros.</td></tr>';
-
             list.forEach(c => {
                 tb.innerHTML += `
-                <tr class="border-b border-slate-100 hover-row transition" onclick="if(!event.target.closest('button')) toggleDrawer('${c.id}','${c.studentId}')">
+                <tr class="border-b border-slate-100 hover:bg-slate-50 transition" onclick="toggleDrawer('${c.id}','${c.studentId}')">
                     <td class="px-6 py-4 col-time">${c.time}</td>
-                    <td class="px-6 py-4 col-student">${c.studentName}</td>
-                    <td class="px-6 py-4 col-workout">${c.workout}</td>
+                    <td class="px-6 py-4 col-student font-bold">${c.studentName}</td>
+                    <td class="px-6 py-4 col-workout font-bold">${c.workout}</td>
                     <td class="px-6 py-4 col-prof">${c.prof}</td>
-                    <td class="px-6 py-4 text-center bg-white">
-                        <button onclick="if(confirm('Excluir?')){db.checkins=db.checkins.filter(x=>x.id!=='${c.id}');saveDB();renderAgenda()}" class="text-red-300 hover:text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    <td class="px-6 py-4 text-center">
+                        <button onclick="event.stopPropagation(); if(confirm('Excluir?')){db.checkins=db.checkins.filter(x=>x.id!=='${c.id}');saveDB();renderAgenda()}" class="text-red-300 hover:text-red-500 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                     </td>
                 </tr>
                 <tr class="hidden"><td colspan="5" class="p-0"><div id="drawer-${c.id}" class="drawer-row"></div></td></tr>`;
             });
             lucide.createIcons();
         }
+
         function toggleDrawer(cid, sid) {
             const row = document.getElementById(`drawer-${cid}`);
             const tr = row.parentElement.parentElement;
-            
             if(tr.classList.contains('hidden')) { 
-                document.querySelectorAll('.drawer-row').forEach(d=> { d.classList.remove('open'); d.parentElement.parentElement.classList.add('hidden'); });
-                tr.classList.remove('hidden'); setTimeout(()=>row.classList.add('open'),10);
-                
+                tr.classList.remove('hidden'); 
+                setTimeout(()=>row.classList.add('open'),10);
                 const s = db.students.find(x=>x.id===sid);
-                const h = db.checkins.filter(k=>k.studentId===sid);
-                const today = new Date(); const d = today.getDate()-today.getDay()+(today.getDay()===0?-6:1); const mon = new Date(today.setDate(d));
-                
-                let weekHTML = '<div class="flex gap-2 overflow-x-auto pb-2">';
-                ['SEG','TER','QUA','QUI','SEX','SÁB'].forEach((day,i)=>{ 
-                    let dt = new Date(mon); dt.setDate(mon.getDate()+i); 
-                    const chk = h.find(k=>k.isoDate===dt.toISOString().split('T')[0]);
-                    weekHTML += `<div class="flex-1 p-2 rounded border text-center ${chk?'bg-[#00A89A] text-white border-[#00A89A]':'bg-white border-slate-200 text-slate-300'}"><div class="text-[10px] font-bold mb-1 opacity-80">${day}</div><div class="text-[10px] font-bold leading-tight">${chk?chk.workout:'.'}</div></div>`; 
-                }); 
-                weekHTML += '</div>';
-                
-                row.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><h4 class="text-xs font-bold text-slate-400 uppercase mb-2">Semana Atual</h4>${weekHTML}</div><div><h4 class="text-xs font-bold text-slate-400 uppercase mb-2">Detalhes</h4><div class="bg-red-50 p-3 rounded border border-red-100 mb-2"><span class="text-xs font-bold text-red-500 block">LIMITAÇÕES</span><p class="text-sm text-red-800 font-bold">${s.limitations||'Nenhuma'}</p></div><button onclick="openProfile('${sid}')" class="w-full mt-1 text-xs font-bold text-[#05364F] hover:bg-slate-200 py-2 rounded border border-slate-300 transition flex items-center justify-center gap-2">VER PERFIL COMPLETO</button></div></div>`;
+                row.innerHTML = `<div class="p-4 bg-slate-50 border-b flex justify-between items-center"><div class="text-sm text-red-600 font-bold uppercase tracking-widest"><i class="fa-solid fa-triangle-exclamation mr-2"></i> Limitações: ${s.limitations||'Nenhuma'}</div><button onclick="openProfile('${sid}')" class="text-xs font-bold text-primary border border-primary px-3 py-1 rounded-lg hover:bg-primary hover:text-white transition uppercase">Ver Perfil</button></div>`;
             } else { 
                 row.classList.remove('open'); setTimeout(()=>tr.classList.add('hidden'),300); 
             }
         }
 
-        // ALUNOS
         function renderStudentsTable() {
             const term = document.getElementById('stu-search').value.toLowerCase();
             const tb = document.getElementById('stu-body'); tb.innerHTML = '';
             db.students.filter(s => s.name.toLowerCase().includes(term)).sort((a,b)=>a.name.localeCompare(b.name)).forEach(s => {
-                const alert = s.limitations !== 'NENHUMA';
-                tb.innerHTML += `<tr class="hover:bg-slate-50 border-b border-slate-100 cursor-pointer" onclick="if(!event.target.closest('button')) openProfile('${s.id}')"><td class="px-6 py-4 font-bold text-[#05364F]">${s.name}</td><td class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">${s.objective}</td><td class="px-6 py-4">${alert?'<span class="text-red-500 font-bold text-xs flex gap-1"><i data-lucide="alert-triangle" class="w-3 h-3"></i> Restrição</span>':'<span class="text-slate-300 text-xs flex gap-1"><i data-lucide="check" class="w-3 h-3"></i> Ok</span>'}</td><td class="px-6 py-4 text-right"><button onclick="openStudentModal('${s.id}')" class="p-2 text-blue-400 hover:bg-blue-50 rounded"><i data-lucide="edit-3" class="w-4 h-4"></i></button><button onclick="if(confirm('Excluir?')){db.students=db.students.filter(x=>x.id!=='${s.id}');saveDB();renderStudentsTable()}" class="p-2 text-red-400 hover:bg-red-50 rounded"><i data-lucide="trash" class="w-4 h-4"></i></button></td></tr>`;
+                tb.innerHTML += `<tr class="hover:bg-slate-50 border-b border-slate-100 cursor-pointer" onclick="openProfile('${s.id}')"><td class="px-6 py-4 font-bold text-primary">${s.name}</td><td class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">${s.objective}</td><td class="px-6 py-4">${s.limitations!=='NENHUMA'?'<span class="text-red-500 font-bold text-xs uppercase flex items-center gap-1"><i data-lucide="alert-triangle" class="w-3 h-3"></i> Restrição</span>':'<span class="text-slate-300 text-xs uppercase flex items-center gap-1"><i data-lucide="check" class="w-3 h-3"></i> Ok</span>'}</td><td class="px-6 py-4 text-right"><button onclick="event.stopPropagation(); openStudentModal('${s.id}')" class="p-2 text-blue-400 hover:bg-blue-50 rounded transition"><i data-lucide="edit-3" class="w-4 h-4"></i></button></td></tr>`;
             });
             lucide.createIcons();
         }
-        function openStudentModal(id) {
-            const m = document.getElementById('modal-student'); m.style.display='flex';
-            if(id) { 
-                const s = db.students.find(x=>x.id===id); 
-                document.getElementById('ms-title').innerText = "Editar Aluno"; document.getElementById('ms-id').value = s.id; 
-                document.getElementById('ms-name').value = s.name; document.getElementById('ms-obj').value = s.objective; 
-                document.getElementById('ms-plan').value = s.plan; document.getElementById('ms-lim').value = s.limitations; 
-                document.getElementById('ms-obs').value = s.notes; 
-            } else { 
-                document.getElementById('ms-title').innerText = "Novo Aluno"; document.getElementById('ms-id').value = "NEW"; 
-                document.querySelector('#modal-student form').reset(); 
-            }
-        }
-        function saveStudent(e) { 
-            e.preventDefault(); const id = document.getElementById('ms-id').value; 
-            const d = { name: document.getElementById('ms-name').value.toUpperCase(), objective: document.getElementById('ms-obj').value.toUpperCase(), plan: document.getElementById('ms-plan').value, limitations: document.getElementById('ms-lim').value.toUpperCase()||'NENHUMA', notes: document.getElementById('ms-obs').value.toUpperCase() }; 
-            if(id === 'NEW') db.students.push({id:Date.now().toString(), ...d}); 
-            else { const i = db.students.findIndex(x=>x.id===id); db.students[i] = {...db.students[i], ...d}; } 
-            saveDB(); document.getElementById('modal-student').style.display='none'; renderStudentsTable(); 
-        }
 
-        // PERFIL COMPLETO (Gráficos)
+        // --- OUTROS MÉTODOS ---
         function openProfile(id) {
-            const s = db.students.find(x=>x.id===id); const h = db.checkins.filter(c=>c.studentId===id);
-            document.getElementById('pf-name').innerText = s.name; document.getElementById('pf-obj').innerText = s.objective; document.getElementById('pf-plan').innerText = s.plan;
-            document.getElementById('pf-lim-list').innerHTML = s.limitations.split(/,|\n/).map(i=>i.trim()?`<li class="flex items-start gap-2"><i data-lucide="dot" class="w-4 h-4 text-red-500"></i>${i}</li>`:'').join('')||'<li class="italic text-slate-400">Sem restrições</li>';
-            document.getElementById('pf-obs-list').innerHTML = s.notes.split('\n').map(i=>i.trim()?`<li class="flex items-start gap-2"><i data-lucide="dot" class="w-4 h-4 text-blue-500"></i>${i}</li>`:'').join('')||'<li class="italic text-slate-400">Sem observações</li>';
-            
-            const wg = document.getElementById('pf-week-grid'); wg.innerHTML = ''; 
-            const today = new Date(); const d = today.getDate()-today.getDay()+(today.getDay()===0?-6:1); const mon = new Date(today.setDate(d));
-            ['SEG','TER','QUA','QUI','SEX','SÁB'].forEach((day,i)=>{ 
-                let dt = new Date(mon); dt.setDate(mon.getDate()+i); 
-                const chk = h.find(k=>k.isoDate===dt.toISOString().split('T')[0]); 
-                wg.innerHTML += `<div class="p-2 rounded text-center ${chk?'bg-[#00A89A] text-white':'bg-slate-100 text-slate-300'}"><div class="text-[10px] font-bold mb-1">${day}</div><div>${chk?'✓':'.'}</div></div>`; 
-            });
-
-            // Charts
-            const fCtx = document.getElementById('chart-freq').getContext('2d'); if(charts.freq) charts.freq.destroy();
-            const fMap = {}; h.forEach(c=>{ const k=c.isoDate.substr(5,5); fMap[k]=(fMap[k]||0)+1 });
-            charts.freq = new Chart(fCtx, {type:'line', data:{labels:Object.keys(fMap).sort(), datasets:[{label:'Freq', data:Object.values(fMap), borderColor:'#00A89A', backgroundColor:'rgba(0,168,154,0.1)', fill:true}]}, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}}});
-            
-            const wCtx = document.getElementById('chart-workouts').getContext('2d'); if(charts.work) charts.work.destroy();
-            const wMap = {}; h.forEach(c=>{ wMap[c.workout]=(wMap[c.workout]||0)+1 });
-            charts.work = new Chart(wCtx, {type:'doughnut', data:{labels:Object.keys(wMap), datasets:[{data:Object.values(wMap), backgroundColor:['#05364F','#00C9B7','#FFB300','#38BDF8']}]}, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'right'}}}});
-
-            document.getElementById('profile-modal').style.display = 'flex'; lucide.createIcons();
-        }
-        function closeProfileModal(){ document.getElementById('profile-modal').style.display='none'; }
-
-        // RELATÓRIOS (5 GRÁFICOS)
-        function renderGlobalReports() {
-            const ctx1=document.getElementById('chart1').getContext('2d'); if(charts.c1) charts.c1.destroy();
-            const days={}; const now=new Date(); for(let i=6; i>=0; i--){ const d=new Date(now); d.setDate(now.getDate()-i); days[['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][d.getDay()]]=db.checkins.filter(c=>c.isoDate===d.toISOString().split('T')[0]).length; }
-            charts.c1=new Chart(ctx1, {type:'bar', data:{labels:Object.keys(days), datasets:[{label:'Check-ins', data:Object.values(days), backgroundColor:'#00A89A', borderRadius:4}]}, options:{responsive:true, maintainAspectRatio:false}});
-            
-            const ctx2=document.getElementById('chart2').getContext('2d'); if(charts.c2) charts.c2.destroy();
-            const wMap={}; db.checkins.forEach(c=>{ wMap[c.workout]=(wMap[c.workout]||0)+1 });
-            charts.c2=new Chart(ctx2, {type:'pie', data:{labels:Object.keys(wMap), datasets:[{data:Object.values(wMap), backgroundColor:['#05364F','#00C9B7','#FFB300','#38BDF8','#F43F5E']}]}, options:{responsive:true, maintainAspectRatio:false}});
-            
-            const ctx3=document.getElementById('chart3').getContext('2d'); if(charts.c3) charts.c3.destroy();
-            const hMap={}; db.checkins.forEach(c=>{ hMap[c.time]=(hMap[c.time]||0)+1 });
-            charts.c3=new Chart(ctx3, {type:'line', data:{labels:Object.keys(hMap).sort((a,b)=>parseInt(a)-parseInt(b)), datasets:[{label:'Fluxo', data:Object.values(hMap), borderColor:'#F59E0B', fill:true}]}, options:{responsive:true, maintainAspectRatio:false}});
-
-            const ctx4=document.getElementById('chart4').getContext('2d'); if(charts.c4) charts.c4.destroy();
-            const d30=new Date(); d30.setDate(d30.getDate()-30); const iso30=d30.toISOString().split('T')[0];
-            const active=new Set(db.checkins.filter(c=>c.isoDate>=iso30).map(c=>c.studentId)).size;
-            charts.c4=new Chart(ctx4, {type:'pie', data:{labels:['Ativos','Inativos'], datasets:[{data:[active, db.students.length-active], backgroundColor:['#00C9B7','#CBD5E1']}]}, options:{responsive:true, maintainAspectRatio:false}});
-
-            const ctx5=document.getElementById('chart5').getContext('2d'); if(charts.c5) charts.c5.destroy();
-            const pMap={}; db.checkins.forEach(c=>{ pMap[c.prof]=(pMap[c.prof]||0)+1 });
-            charts.c5=new Chart(ctx5, {type:'bar', data:{labels:Object.keys(pMap), datasets:[{label:'Atendimentos', data:Object.values(pMap), backgroundColor:'#10B981', borderRadius:4}]}, options:{indexAxis:'y', responsive:true, maintainAspectRatio:false}});
+            const s = db.students.find(x=>x.id===id);
+            const h = db.checkins.filter(c=>c.studentId===id);
+            document.getElementById('pf-name').innerText = s.name;
+            document.getElementById('pf-obj').innerText = s.objective;
+            document.getElementById('pf-plan').innerText = s.plan;
+            document.getElementById('pf-lim-list').innerHTML = s.limitations.split(',').map(i=>`<li class="mb-1">${i.trim()}</li>`).join('');
+            document.getElementById('profile-modal').style.display='flex';
+            lucide.createIcons();
+            renderProfileCharts(h);
         }
 
-        // UTILS
-        function saveLocal() { localStorage.setItem(DB_KEY, JSON.stringify(db)); }
-        function saveDB() { saveLocal(); pushCloud(); updateStats(); }
+        function renderProfileCharts(history) {
+            const wCtx = document.getElementById('chart-workouts').getContext('2d');
+            if(charts.profile) charts.profile.destroy();
+            const wMap = {}; history.forEach(c=>{ wMap[c.workout]=(wMap[c.workout]||0)+1 });
+            charts.profile = new Chart(wCtx, {type:'doughnut', data:{labels:Object.keys(wMap), datasets:[{data:Object.values(wMap), backgroundColor:['#05364F','#00C9B7','#FFB300','#38BDF8']}]}, options:{responsive:true, maintainAspectRatio:false}});
+        }
+
         function toast(msg) { const t=document.getElementById('toast'); document.getElementById('toast-msg').innerText=msg; t.style.transform='translateX(0)'; setTimeout(()=>t.style.transform='translateX(150%)', 3000); }
-
-        // CLOUD & PROF
         function openCloudModal() { document.getElementById('modal-cloud').style.display='flex'; }
-        function closeCloudModal() { document.getElementById('modal-cloud').style.display='none'; }
+        function forceSync() { if(confirm("Baixar dados da nuvem?")) { syncCloud(); document.getElementById('modal-cloud').style.display='none'; } }
+        function backupData() { const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(db)],{type:"application/json"})); a.download=`prime_backup.json`; a.click(); }
+        function hardReset() { if(confirm("Apagar tudo localmente?")) { localStorage.removeItem(DB_KEY); location.reload(); } }
+        function openStudentModal(id) { const m = document.getElementById('modal-student'); m.style.display='flex'; if(id) { const s = db.students.find(x=>x.id===id); document.getElementById('ms-id').value=s.id; document.getElementById('ms-name').value=s.name; document.getElementById('ms-obj').value=s.objective; document.getElementById('ms-plan').value=s.plan; document.getElementById('ms-lim').value=s.limitations; document.getElementById('ms-obs').value=s.notes; } }
+        function saveStudent(e) { e.preventDefault(); const id=document.getElementById('ms-id').value; const data={name:document.getElementById('ms-name').value.toUpperCase(), objective:document.getElementById('ms-obj').value.toUpperCase(), plan:document.getElementById('ms-plan').value.toUpperCase(), limitations:document.getElementById('ms-lim').value.toUpperCase()||'NENHUMA', notes:document.getElementById('ms-obs').value.toUpperCase()}; if(!id) db.students.push({id:Date.now().toString(), ...data}); else { const i=db.students.findIndex(x=>x.id===id); db.students[i]={...db.students[i], ...data}; } saveDB(); document.getElementById('modal-student').style.display='none'; renderStudentsTable(); }
+        
         function openProfModal() { document.getElementById('prof-modal').style.display='flex'; renderProfList(); }
         function closeProfModal() { document.getElementById('prof-modal').style.display='none'; setupCheckin(); }
-        function renderProfList(){ const l=document.getElementById('prof-list'); l.innerHTML=''; db.professors.forEach((p,i)=>l.innerHTML+=`<li class="flex justify-between p-2 bg-slate-50 text-sm font-bold text-[#05364F] rounded mb-1">${p} <i data-lucide="trash" onclick="if(confirm('Excluir?')){db.professors.splice(${i},1);saveDB();renderProfList()}" class="w-4 h-4 text-red-400 cursor-pointer"></i></li>`); lucide.createIcons(); }
-        function addProfessor(){ const n=document.getElementById('new-prof-name').value.toUpperCase(); if(n){ db.professors.push(n); saveDB(); renderProfList(); document.getElementById('new-prof-name').value=''; }}
-        
-        function updateCloudStatus(st) { const el=document.getElementById('cloudIndicator'); if(el) el.className='cloud-status '+st; }
-        
-        function saveManualToken() {
-            const t = document.getElementById('manualToken').value.trim();
-            if(t) {
-                localStorage.setItem(TOKEN_KEY, t);
-                alert("Token salvo! Tentando conectar...");
-                syncCloud();
-            }
-        }
-
-        async function syncCloud() {
-            const token = localStorage.getItem(TOKEN_KEY); if(!token) return updateCloudStatus('error'); updateCloudStatus('syncing');
-            try {
-                if(!gistId) { const s = await fetch('https://api.github.com/gists',{headers:{'Authorization':`token ${token}`}}); const g = await s.json(); const f = g.find(x=>x.description===GIST_DESC); if(f) gistId = f.id; }
-                if(gistId) {
-                    const r = await fetch(`https://api.github.com/gists/${gistId}`,{headers:{'Authorization':`token ${token}`}}); const j = await r.json();
-                    if(j.files["prime_db.json"]) { db = JSON.parse(j.files["prime_db.json"].content); saveLocal(); updateStats(); } else await pushCloud();
-                    updateCloudStatus('ok');
-                } else await pushCloud();
-            } catch(e) { updateCloudStatus('error'); }
-        }
-        async function pushCloud() {
-            const token = localStorage.getItem(TOKEN_KEY); if(!token) return; updateCloudStatus('syncing');
-            try {
-                let url = 'https://api.github.com/gists'; let method = 'POST'; if(gistId) { url += '/'+gistId; method = 'PATCH'; }
-                const body = JSON.stringify({description:GIST_DESC, public:false, files:{'prime_db.json':{content:JSON.stringify(db)}}});
-                await fetch(url, {method, headers:{'Authorization':`token ${token}`}, body}); updateCloudStatus('ok');
-            } catch(e) { updateCloudStatus('error'); }
-        }
-        function forceSync() { if(confirm("Baixar dados?")) { syncCloud(); closeCloudModal(); } }
-        function backupData() { const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(db)],{type:"application/json"})); a.download=`prime_backup.json`; a.click(); }
-        function restoreData(i) { const r=new FileReader(); r.onload=e=>{ try{ db=JSON.parse(e.target.result); saveDB(); location.reload(); }catch{alert('Erro');} }; r.readAsText(i.files[0]); }
-        function shareWA() { navigator.clipboard.writeText(JSON.stringify(db)).then(()=>toast('Copiado!')); }
-        function hardReset() { if(confirm('Apagar tudo?')) { localStorage.removeItem(DB_KEY); location.reload(); } }
-
-        // AUTO-LOGIN CHECK
-        const type = sessionStorage.getItem("benai_access_type");
-        if (type === "master" || type === "guest" || sessionStorage.getItem("benai_access_granted") === "true") return;
-             document.getElementById('gatekeeper').style.display='none';
-             document.getElementById('app-content').style.display='block';
-             init();
-        } else {
-             document.getElementById('pinInput').addEventListener('keyup', function(e) {
-                if (this.value.length === 8) {
-                    if (this.value === "16359001") {
-                        sessionStorage.setItem("benai_access_granted", "true");
-                        document.getElementById('gatekeeper').style.display='none';
-                        document.getElementById('app-content').style.display='block';
-                        init();
-                    } else {
-                        document.getElementById('loginError').innerText = "Código Incorreto";
-                        this.value = "";
-                    }
-                }
-            });
-        }
+        function addProfessor() { const n=document.getElementById('new-prof-name').value.toUpperCase(); if(n) { db.professors.push(n); saveDB(); renderProfList(); document.getElementById('new-prof-name').value=''; } }
+        function renderProfList() { const l=document.getElementById('prof-list'); l.innerHTML=''; db.professors.forEach((p,i)=>l.innerHTML+=`<li class="flex justify-between p-2 bg-slate-50 rounded mb-1 text-sm font-bold">${p} <i class="fa-solid fa-trash text-red-300 cursor-pointer" onclick="db.professors.splice(${i},1);saveDB();renderProfList()"></i></li>`); }
+        function checkAlerts(id) { const s = db.students.find(x=>x.id===id); const box = document.getElementById('ci-alert'); if(s && s.limitations !== 'NENHUMA') { box.innerText = s.limitations; box.classList.remove('hidden'); } else { box.classList.add('hidden'); } }
+        function toggleCustom(val) { document.getElementById('ci-custom').classList.toggle('hidden', val !== 'OUTRO'); }
+        function renderGlobalReports() { /* Lógica de gráficos de relatórios aqui se necessário */ }
     </script>
 </body>
 </html>
