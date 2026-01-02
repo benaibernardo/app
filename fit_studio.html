@@ -29,7 +29,7 @@
                         padding: 15px; font-size: 1.5rem; text-align: center; 
                         border-radius: 15px; border: 2px solid rgba(56, 189, 248, 0.3); outline: none; margin-top: 25px;
                         background: rgba(255,255,255,0.05); color: white; letter-spacing: 4px; width: 100%;
-                        transition: 0.3s;
+                        transition: 0.3s; 
                     }
                     .pin-inp:focus { border-color: #38bdf8; box-shadow: 0 0 20px rgba(56, 189, 248, 0.2); }
                     .pin-msg { color: #f87171; margin-top: 15px; font-weight: 600; font-size: 0.9rem; height: 20px; }
@@ -167,6 +167,16 @@
                 <h3 class="text-xl font-bold text-white font-oswald">Central de Dados</h3>
                 <button onclick="closeCloudModal()" class="text-zinc-500 hover:text-white"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
+            
+            <div class="mb-4 border-b border-zinc-800 pb-4">
+                <label class="text-[10px] font-bold text-zinc-500 uppercase mb-1 block">Token de Acesso</label>
+                <input type="password" id="manualToken" placeholder="ghp_..." class="clean-input text-xs p-3 mb-2 w-full">
+                <button onclick="saveManualToken()" class="modal-sync-btn justify-center py-3 mb-0 hover:border-emerald-500">
+                    <i data-lucide="key" class="w-4 h-4 text-zinc-400"></i>
+                    <span class="font-bold text-sm">Salvar Token</span>
+                </button>
+            </div>
+
             <button onclick="forceSync()" class="modal-sync-btn"><i data-lucide="cloud-download" class="text-blue-500"></i><div class="text-left"><span class="block font-bold text-sm">Sincronizar Nuvem</span><span class="text-xs text-zinc-500">Baixar dados do GitHub</span></div></button>
             <button onclick="exportData()" class="modal-sync-btn"><i data-lucide="download" class="text-emerald-500"></i><div class="text-left"><span class="block font-bold text-sm">Backup Local</span><span class="text-xs text-zinc-500">Salvar arquivo .json</span></div></button>
             <button onclick="document.getElementById('importFile').click()" class="modal-sync-btn"><i data-lucide="upload" class="text-zinc-300"></i><div class="text-left"><span class="block font-bold text-sm">Restaurar</span><span class="text-xs text-zinc-500">Carregar arquivo .json</span></div></button>
@@ -221,6 +231,10 @@
             
             // SIMULAÇÃO DE DADOS (SE VAZIO)
             if(state.logs.length === 0 && state.students.length > 0) injectMockData();
+
+            // Tenta carregar Token Manual
+            const t = localStorage.getItem(TOKEN_KEY);
+            if(t && document.getElementById('manualToken')) document.getElementById('manualToken').value = t;
 
             lucide.createIcons();
             updateClock(); setInterval(updateClock, 1000);
@@ -423,16 +437,50 @@
         function addSplit() { const val = document.getElementById('new-split-input').value; if(val) { tempSplits.push(val.toUpperCase()); document.getElementById('new-split-input').value = ''; renderEditSplits(); }}
         function removeSplit(index) { tempSplits.splice(index, 1); renderEditSplits(); }
 
+        // --- NUVEM ---
+        function updateCloudStatus(st) { document.getElementById('cloudDot').className = 'cloud-dot ' + st; }
+        
+        function saveManualToken() {
+            const t = document.getElementById('manualToken').value.trim();
+            if(t) {
+                localStorage.setItem(TOKEN_KEY, t);
+                alert("Token salvo! Tentando conectar...");
+                syncCloud();
+            }
+        }
+
+        async function syncCloud() {
+            const token = localStorage.getItem(TOKEN_KEY); if(!token) return updateCloudStatus('error');
+            updateCloudStatus('syncing');
+            try {
+                if(!gistId) { const s = await fetch('https://api.github.com/gists',{headers:{'Authorization':`token ${token}`}}); const g = await s.json(); const f = g.find(x=>x.description===GIST_DESC); if(f) gistId = f.id; }
+                if(gistId) {
+                    const r = await fetch(`https://api.github.com/gists/${gistId}`,{headers:{'Authorization':`token ${token}`}}); const j = await r.json();
+                    if(j.files['fit_studio_db.json']) { state = JSON.parse(j.files['fit_studio_db.json'].content); saveLocal(); renderRoom(); } else await pushCloud();
+                    updateCloudStatus('ok');
+                } else await pushCloud();
+            } catch(e) { updateCloudStatus('error'); }
+        }
+        async function pushCloud() {
+            const token = localStorage.getItem(TOKEN_KEY); if(!token) return; updateCloudStatus('syncing');
+            try {
+                let url = 'https://api.github.com/gists'; let method = 'POST'; if(gistId) { url += '/'+gistId; method = 'PATCH'; }
+                const body = JSON.stringify({description:GIST_DESC, public:false, files:{'fit_studio_db.json':{content:JSON.stringify(state)}}});
+                await fetch(url, {method, headers:{'Authorization':`token ${token}`}, body}); updateCloudStatus('ok');
+            } catch(e) { updateCloudStatus('error'); }
+        }
+        function forceSync() { if(confirm("Baixar dados?")) { syncCloud(); closeCloudModal(); } }
+        
         function openCloudModal() { document.getElementById('modal-cloud').classList.remove('hidden'); }
         function closeCloudModal() { document.getElementById('modal-cloud').classList.add('hidden'); }
         function exportData() { const d="data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(state)); const a=document.createElement('a'); a.href=d; a.download="fit_studio_backup.json"; a.click(); }
         function importData(i) { const f=i.files[0]; if(!f)return; const r=new FileReader(); r.onload=e=>{ state=JSON.parse(e.target.result); save(); location.reload(); }; r.readAsText(f); }
         function hardReset() { if(confirm("Apagar tudo?")) { localStorage.removeItem(DB_KEY); location.reload(); } }
+        function saveLocal() { localStorage.setItem(DB_KEY, JSON.stringify(state)); }
 
         function openStudentsModal() { document.getElementById('modal-students').classList.remove('hidden'); renderStudentList(); }
         function closeStudentsModal() { document.getElementById('modal-students').classList.add('hidden'); }
         
-        // CORREÇÃO CRÍTICA: Função global para garantir clique no modal
         window.showStudentDetail = function(id) {
              const s = state.students.find(x => x.id === id);
             let statusBadge = ''; if(s.endDate) { const daysLeft = Math.ceil((new Date(s.endDate) - new Date()) / (1000 * 60 * 60 * 24)); const percent = Math.max(0, Math.min(100, (daysLeft / 90) * 100)); statusBadge = `<div class="mt-4"><div class="flex justify-between text-[10px] uppercase font-bold text-zinc-500 mb-1"><span>Validade</span><span class="${daysLeft<10?'text-rose-500':'text-emerald-500'}">${daysLeft} dias</span></div><div class="h-1 bg-zinc-800 rounded-full overflow-hidden"><div class="h-full ${daysLeft<10?'bg-rose-500':'bg-emerald-500'}" style="width: ${percent}%"></div></div></div>`; }
@@ -464,31 +512,6 @@
         function closeEditStudent() { document.getElementById('modal-edit-student').classList.add('hidden'); }
         function saveStudent() { const id = document.getElementById('edit-id').value; const name = document.getElementById('edit-name').value; if(!name) return alert("Nome?"); const studentData = { id: id || Date.now().toString(), name: name.toUpperCase(), limits: document.getElementById('edit-limits').value, planTitle: document.getElementById('edit-plan-title').value, startDate: document.getElementById('edit-start-date').value, endDate: document.getElementById('edit-end-date').value, planRows: planRows, currentCycle: "S1: Início", splits: tempSplits }; if (id) { const idx = state.students.findIndex(x => x.id === id); studentData.currentCycle = state.students[idx].currentCycle; state.students[idx] = studentData; } else { state.students.push(studentData); } save(); closeEditStudent(); renderStudentList(); if(id) showStudentDetail(id); }
         function deleteStudent() { if(confirm("Apagar?")) { const id = document.getElementById('edit-id').value; state.students = state.students.filter(x => x.id !== id); save(); closeEditStudent(); renderStudentList(); document.getElementById('student-detail-view').innerHTML = ''; }}
-
-        // --- NUVEM ---
-        function updateCloudStatus(st) { document.getElementById('cloudDot').className = 'cloud-dot ' + st; }
-        async function syncCloud() {
-            const token = localStorage.getItem(TOKEN_KEY); if(!token) return updateCloudStatus('error');
-            updateCloudStatus('syncing');
-            try {
-                if(!gistId) { const s = await fetch('https://api.github.com/gists',{headers:{'Authorization':`token ${token}`}}); const g = await s.json(); const f = g.find(x=>x.description===GIST_DESC); if(f) gistId = f.id; }
-                if(gistId) {
-                    const r = await fetch(`https://api.github.com/gists/${gistId}`,{headers:{'Authorization':`token ${token}`}}); const j = await r.json();
-                    if(j.files['fit_studio_db.json']) { state = JSON.parse(j.files['fit_studio_db.json'].content); saveLocal(); renderRoom(); } else await pushCloud();
-                    updateCloudStatus('ok');
-                } else await pushCloud();
-            } catch(e) { updateCloudStatus('error'); }
-        }
-        async function pushCloud() {
-            const token = localStorage.getItem(TOKEN_KEY); if(!token) return; updateCloudStatus('syncing');
-            try {
-                let url = 'https://api.github.com/gists'; let method = 'POST'; if(gistId) { url += '/'+gistId; method = 'PATCH'; }
-                const body = JSON.stringify({description:GIST_DESC, public:false, files:{'fit_studio_db.json':{content:JSON.stringify(state)}}});
-                await fetch(url, {method, headers:{'Authorization':`token ${token}`}, body}); updateCloudStatus('ok');
-            } catch(e) { updateCloudStatus('error'); }
-        }
-        function forceSync() { if(confirm("Baixar dados?")) { syncCloud(); closeCloudModal(); } }
-        function saveLocal() { localStorage.setItem(DB_KEY, JSON.stringify(state)); }
 
         init();
     </script>
