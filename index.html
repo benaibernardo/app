@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Benai Hub OS</title>
+    <title>Benai App</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -12,47 +12,58 @@
 
     <script>
         (function() {
-            const PIN_CORRETO = "16359001"; 
-            if (sessionStorage.getItem("benai_access_granted") === "true") return;
+            // --- CONFIGURAÇÃO DE SEGURANÇA ---
+            const PIN_MASTER = "16359001";
+            const PIN_GUEST = "Melissa0107"; // Senha da Namorada
+
+            // Verifica se já está logado
+            const sessionType = sessionStorage.getItem("benai_access_type");
+            if (sessionType === "master" || sessionType === "guest") return;
+
+            // Bloqueio de Tela (Gatekeeper)
             document.write(`
                 <style>
-                    body { visibility: hidden; overflow: hidden; }
+                    body { visibility: hidden; overflow: hidden; background: #0f172a; }
                     #gatekeeper {
                         visibility: visible; position: fixed; inset: 0;
                         background: #0f172a; color: white; z-index: 99999;
                         display: flex; flex-direction: column; align-items: center; justify-content: center;
                         font-family: 'Outfit', sans-serif;
                     }
-                    .pin-box { text-align: center; animation: fadeIn 0.5s ease; width: 90%; max-width: 350px; }
+                    .pin-box { text-align: center; animation: fadeIn 0.5s ease; width: 90%; max-width: 320px; }
                     .pin-inp { 
                         padding: 15px; font-size: 1.5rem; text-align: center; 
-                        border-radius: 15px; border: 2px solid rgba(56, 189, 248, 0.3); outline: none; margin-top: 25px;
-                        background: rgba(255,255,255,0.05); color: white; letter-spacing: 4px; width: 100%;
-                        transition: 0.3s;
+                        border-radius: 12px; border: 1px solid #1e293b; outline: none; margin-top: 25px;
+                        background: rgba(255,255,255,0.05); color: white; letter-spacing: 2px; width: 100%;
+                        transition: 0.3s; 
                     }
-                    .pin-inp:focus { border-color: #38bdf8; box-shadow: 0 0 20px rgba(56, 189, 248, 0.2); }
-                    .pin-msg { color: #f87171; margin-top: 15px; font-weight: 600; font-size: 0.9rem; height: 20px; }
+                    .pin-inp:focus { border-color: #38bdf8; box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.1); }
+                    .pin-msg { color: #ef4444; margin-top: 15px; font-weight: 600; font-size: 0.9rem; height: 20px; }
                     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
                 </style>
                 <div id="gatekeeper">
                     <div class="pin-box">
-                        <i class="fa-solid fa-shield-halved" style="font-size: 3rem; color: #38bdf8; margin-bottom: 15px;"></i>
-                        <h2 style="font-size: 1.5rem; letter-spacing: -1px;">Sistema Protegido</h2>
-                        <p style="opacity: 0.6; font-size: 0.85rem;">Insira o código de 8 dígitos</p>
-                        <input type="password" class="pin-inp" maxlength="8" placeholder="********" inputmode="numeric" autocomplete="off" onkeyup="verifyPin(this)">
+                        <i class="fa-solid fa-shield-halved" style="font-size: 3.5rem; color: #38bdf8; margin-bottom: 20px;"></i>
+                        <h2 style="font-size: 1.5rem; margin-bottom: 5px;">Acesso Restrito</h2>
+                        <p style="opacity: 0.6; font-size: 0.9rem;">Digite seu código pessoal</p>
+                        <input type="password" class="pin-inp" placeholder="Senha" autocomplete="off" onkeyup="verifyPin(this)" autofocus>
                         <div class="pin-msg" id="pin-error"></div>
                     </div>
                 </div>
             `);
+
             window.verifyPin = function(el) {
-                if (el.value.length === 8) {
-                    if (el.value === PIN_CORRETO) {
-                        sessionStorage.setItem("benai_access_granted", "true");
+                if (el.value.length >= 8) {
+                    if (el.value === PIN_MASTER) {
+                        sessionStorage.setItem("benai_access_type", "master");
                         location.reload();
-                    } else {
-                        document.getElementById("pin-error").innerText = "Código Incorreto";
-                        el.value = "";
-                        if(navigator.vibrate) navigator.vibrate(200);
+                    } else if (el.value === PIN_GUEST) {
+                        sessionStorage.setItem("benai_access_type", "guest");
+                        location.reload();
+                    } else if (el.value.length > 12) { 
+                         document.getElementById("pin-error").innerText = "Código Incorreto";
+                         el.value = "";
+                         if(navigator.vibrate) navigator.vibrate(200);
                     }
                 }
             };
@@ -93,7 +104,7 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* SETTINGS BUTTON (NOVA) */
+        /* SETTINGS BUTTON */
         .settings-btn {
             position: absolute; top: 20px; right: 20px;
             background: rgba(255,255,255,0.1);
@@ -117,7 +128,7 @@
             padding-bottom: 80px; 
         }
 
-        .brand-header { text-align: center; margin-bottom: 40px; margin-top: 30px; }
+        .brand-header { text-align: center; margin-bottom: 30px; margin-top: 30px; }
         .brand-icon { 
             font-size: 3.5rem; color: var(--accent); margin-bottom: 15px; 
             filter: drop-shadow(0 0 20px var(--accent-glow));
@@ -170,7 +181,7 @@
 
         /* MODAL */
         .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:999; align-items:center; justify-content:center; backdrop-filter:blur(8px); }
-        .modal-box { background: #1e293b; padding: 35px; border-radius: 26px; width: 90%; max-width: 380px; border: 1px solid var(--border-glass); text-align: center; box-shadow: 0 50px 100px -20px rgba(0,0,0,0.6); }
+        .modal-box { background: #1e293b; padding: 35px; border-radius: 26px; width: 90%; max-width: 380px; border: 1px solid var(--border-glass); text-align: center; box-shadow: 0 50px 100px -20px rgba(0,0,0,0.6); max-height: 85vh; overflow-y: auto; }
         .btn-full { width:100%; padding:15px; margin-bottom:12px; border-radius: 14px; border:none; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; font-size: 1rem; transition: 0.2s; font-family: var(--font-head); }
         .btn-full:hover { transform: scale(1.02); }
         .btn-down { background: var(--accent); color: white; box-shadow: 0 0 20px var(--accent-glow); }
@@ -186,13 +197,18 @@
         }
         .token-input:focus { border-color: var(--accent); }
 
+        /* PERMISSION TOGGLES */
+        .perm-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .perm-item span { color: #f8fafc; font-size: 0.9rem; }
+        .perm-check { width: 18px; height: 18px; accent-color: #38bdf8; cursor: pointer; }
+
         @keyframes fadeInUp { from { opacity:0; transform: translateY(40px); } to { opacity:1; transform: translateY(0); } }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
     </style>
 </head>
 <body>
 
-    <div class="settings-btn" onclick="openConfig()">
+    <div class="settings-btn" id="btnSettings" onclick="openConfig()">
         <i class="fa-solid fa-user-astronaut"></i>
         <div class="token-active-dot" id="tokenDot"></div>
     </div>
@@ -205,7 +221,7 @@
             <p class="brand-subtitle">Sistema Integrado de Gestão</p>
         </div>
 
-        <div class="section-wrapper">
+        <div class="section-wrapper" id="sec-personal">
             <div class="section-header">Pessoal</div>
             <div class="grid-apps" id="gridPersonal">
                 <a href="tracker.html" class="app-card card-tracker" data-id="tracker">
@@ -231,21 +247,9 @@
             </div>
         </div>
 
-        <div class="section-wrapper" style="margin-bottom: 60px;">
-            <div class="section-header">Profissional</div>
-            <div class="grid-apps" id="gridWork">
-                <a href="fit_studio.html" class="app-card card-fit" data-id="fit_studio">
-                    <div class="ac-icon"><i class="fa-solid fa-users-gear"></i></div>
-                    <div class="ac-name">Fit Studio</div>
-                    <div class="ac-desc">Controle de Alunos</div>
-                </a>
-                
-                <a href="PRIME.html" class="app-card card-prime" data-id="prime">
-                    <div class="ac-icon"><i class="fa-solid fa-crown"></i></div>
-                    <div class="ac-name" style="font-size: 0.9rem;">PRIME Acquafit</div>
-                    <div class="ac-desc">Gestão de Alunos</div>
-                </a>
-
+        <div class="section-wrapper" id="sec-consultancy">
+            <div class="section-header">Consultoria Online</div>
+            <div class="grid-apps" id="gridConsult">
                 <a href="gerador.html" class="app-card card-coach" data-id="gerador">
                     <div class="ac-icon"><i class="fa-solid fa-dumbbell"></i></div>
                     <div class="ac-name">Gerador</div>
@@ -259,15 +263,29 @@
             </div>
         </div>
 
+        <div class="section-wrapper" id="sec-work" style="margin-bottom: 60px;">
+            <div class="section-header">Trabalho</div>
+            <div class="grid-apps" id="gridWork">
+                <a href="fit_studio.html" class="app-card card-fit" data-id="fit_studio">
+                    <div class="ac-icon"><i class="fa-solid fa-users-gear"></i></div>
+                    <div class="ac-name">Fit Studio</div>
+                    <div class="ac-desc">Controle de Sala</div>
+                </a>
+                <a href="prime.html" class="app-card card-prime" data-id="prime">
+                    <div class="ac-icon"><i class="fa-solid fa-crown"></i></div>
+                    <div class="ac-name" style="font-size: 0.9rem;">PRIME Acquafit</div>
+                    <div class="ac-desc">Gestão de Alunos</div>
+                </a>
+            </div>
+        </div>
+
     </div>
 
     <div id="modalConfig" class="modal" onclick="if(event.target===this)this.style.display='none'">
         <div class="modal-box">
-            <i class="fa-solid fa-shield-cat" style="font-size: 2.5rem; color: #10b981; margin-bottom: 15px;"></i>
-            <h2 style="color:white; margin-bottom:10px; font-family:'Outfit'; font-size: 1.5rem;">Benai Cloud</h2>
-            <p style="color:#94a3b8; font-size:0.85rem; margin-bottom:20px; line-height: 1.4;">
-                Insira o Token Mestre do GitHub. Isso conectará todos os seus aplicativos (Tracker, Financeiro, Gerador) automaticamente.
-            </p>
+            <h2 style="color:white; margin-bottom:15px; font-family:'Outfit'; font-size: 1.5rem;">Benai Cloud</h2>
+            
+            <p style="color:#94a3b8; font-size:0.75rem; margin-bottom:5px; text-align:left; font-weight:700;">TOKEN MESTRE</p>
             <input type="password" id="tokenInput" class="token-input" placeholder="Cole seu Token (ghp_...)">
             <button class="btn-full btn-green" onclick="saveToken()">
                 <i class="fa-solid fa-link"></i> Salvar e Conectar
@@ -275,12 +293,21 @@
             
             <div style="width:100%; height:1px; background:var(--border-glass); margin:20px 0;"></div>
             
-            <p style="color:#94a3b8; font-size:0.75rem; margin-bottom:15px;">Zona de Segurança</p>
+            <p style="color:#94a3b8; font-size:0.75rem; margin-bottom:10px; text-align:left; font-weight:700;">CONTROLE DE ACESSO (VISITANTE)</p>
+            <div id="permList" style="margin-bottom: 15px; background: rgba(0,0,0,0.2); border-radius: 12px; padding: 10px;">
+                </div>
+            <button class="btn-full btn-up" onclick="savePermissions()">
+                <i class="fa-solid fa-user-lock"></i> Salvar Permissões
+            </button>
+
+            <div style="width:100%; height:1px; background:var(--border-glass); margin:20px 0;"></div>
+            
+            <p style="color:#94a3b8; font-size:0.75rem; margin-bottom:15px; text-align:left; font-weight:700;">BACKUP GLOBAL</p>
             <button class="btn-full btn-up" onclick="backupAll()">
-                <i class="fa-solid fa-download"></i> Backup JSON Global
+                <i class="fa-solid fa-download"></i> Baixar Tudo
             </button>
             <button class="btn-full btn-up" onclick="document.getElementById('fileRestore').click()">
-                <i class="fa-solid fa-upload"></i> Restaurar JSON
+                <i class="fa-solid fa-upload"></i> Restaurar Tudo
             </button>
             <input type="file" id="fileRestore" hidden onchange="restoreAll(this)">
 
@@ -289,18 +316,143 @@
     </div>
 
     <script>
-        // CHAVE MESTRA COMPARTILHADA
         const KEY_TOKEN = 'benai_coach_gh_token';
+        const KEY_PERMS = 'benai_guest_perms';
+        const GIST_PERSONAL = 'BENAI_PERSONAL_DB'; // Onde as permissões serão salvas
 
-        // Verifica Token ao Iniciar
-        (function checkToken() {
-            const t = localStorage.getItem(KEY_TOKEN);
-            if(t) {
-                document.getElementById('tokenDot').style.display = 'block';
-                document.getElementById('tokenInput').value = t;
+        // Configuração Padrão de Permissões (IDs dos cards)
+        const appsList = [
+            {id: 'tracker', name: 'Tracker'},
+            {id: 'financeiro', name: 'Financeiro'},
+            {id: 'cartao', name: 'Cartão C6'},
+            {id: 'dieta', name: 'Dieta'},
+            {id: 'gerador', name: 'Gerador'},
+            {id: 'aluno', name: 'Viewer'},
+            {id: 'fit_studio', name: 'Fit Studio'},
+            {id: 'prime', name: 'PRIME'}
+        ];
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const userType = sessionStorage.getItem("benai_access_type");
+            const token = localStorage.getItem(KEY_TOKEN);
+
+            // Carrega Permissões salvas (Local ou Default)
+            let allowedApps = JSON.parse(localStorage.getItem(KEY_PERMS)) || ['cartao'];
+
+            if (userType === "guest") {
+                // MODO VISITANTE
+                document.getElementById('btnSettings').style.display = 'none'; // Sem config
+                document.getElementById('sec-work').style.display = 'none'; // Sem trabalho
+                document.getElementById('sec-consultancy').style.display = 'none'; // Sem consultoria (exceto se permitido)
+
+                // Filtra Apps
+                document.querySelectorAll('.app-card').forEach(card => {
+                    const id = card.getAttribute('data-id');
+                    if (!allowedApps.includes(id)) {
+                        card.style.display = 'none';
+                    }
+                });
+                
+                // Tenta atualizar permissões da nuvem (se tiver token salvo no navegador)
+                if(token) syncPermissions(token, false);
+
+            } else if (userType === "master") {
+                // MODO MESTRE
+                if(token) {
+                    document.getElementById('tokenDot').style.display = 'block';
+                    document.getElementById('tokenInput').value = token;
+                    // Tenta atualizar da nuvem para garantir que está sincronizado
+                    syncPermissions(token, false);
+                }
+                
+                // Renderiza Lista de Permissões no Modal
+                renderPermList(allowedApps);
+                
+                // Drag and Drop
+                initSortable('gridPersonal', 'benai_order_p');
+                initSortable('gridConsult', 'benai_order_c');
+                initSortable('gridWork', 'benai_order_w');
             }
-        })();
+        });
 
+        // --- LÓGICA DE PERMISSÕES ---
+        function renderPermList(allowed) {
+            const container = document.getElementById('permList');
+            container.innerHTML = '';
+            appsList.forEach(app => {
+                const checked = allowed.includes(app.id) ? 'checked' : '';
+                container.innerHTML += `
+                    <div class="perm-item">
+                        <span>${app.name}</span>
+                        <input type="checkbox" class="perm-check" value="${app.id}" ${checked}>
+                    </div>
+                `;
+            });
+        }
+
+        async function savePermissions() {
+            const checkboxes = document.querySelectorAll('.perm-check');
+            const newPerms = [];
+            checkboxes.forEach(cb => { if(cb.checked) newPerms.push(cb.value); });
+            
+            // Salva Local
+            localStorage.setItem(KEY_PERMS, JSON.stringify(newPerms));
+            
+            // Salva Nuvem (Se tiver token)
+            const token = localStorage.getItem(KEY_TOKEN);
+            if(token) {
+                try {
+                    await syncPermissions(token, true, newPerms);
+                    alert("Permissões salvas na Nuvem!");
+                } catch(e) {
+                    alert("Salvo localmente. Erro na nuvem: " + e.message);
+                }
+            } else {
+                alert("Salvo localmente (Sem Token configurado).");
+            }
+        }
+
+        async function syncPermissions(token, isWrite, data = null) {
+            // Busca Gist Pessoal
+            let gistId = null;
+            const s = await fetch('https://api.github.com/gists', { headers: { 'Authorization': `token ${token}` } });
+            const g = await s.json();
+            const f = g.find(x => x.description === GIST_PERSONAL);
+            if(f) gistId = f.id;
+
+            if(!gistId && isWrite) {
+                // Cria se não existe (apenas ao escrever)
+                const res = await fetch('https://api.github.com/gists', { 
+                    method: 'POST', 
+                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ description: GIST_PERSONAL, public: false, files: { "permissions.json": { content: JSON.stringify(data) } } })
+                });
+                return;
+            }
+
+            if(gistId) {
+                if(isWrite) {
+                    // Atualiza
+                    await fetch(`https://api.github.com/gists/${gistId}`, { 
+                        method: 'PATCH', 
+                        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ files: { "permissions.json": { content: JSON.stringify(data) } } })
+                    });
+                } else {
+                    // Lê
+                    const r = await fetch(`https://api.github.com/gists/${gistId}`, { headers: { 'Authorization': `token ${token}` } });
+                    const j = await r.json();
+                    if(j.files["permissions.json"]) {
+                        const cloudPerms = JSON.parse(j.files["permissions.json"].content);
+                        localStorage.setItem(KEY_PERMS, JSON.stringify(cloudPerms));
+                        // Se estiver no modal, atualiza a vista
+                        if(document.getElementById('modalConfig').style.display === 'flex') renderPermList(cloudPerms);
+                    }
+                }
+            }
+        }
+
+        // --- CONFIG ---
         function openConfig() { document.getElementById('modalConfig').style.display='flex'; }
         
         function saveToken() {
@@ -308,32 +460,33 @@
             if(t) {
                 localStorage.setItem(KEY_TOKEN, t);
                 document.getElementById('tokenDot').style.display = 'block';
-                alert("✅ Token Salvo! Sistema conectado.");
-                document.getElementById('modalConfig').style.display='none';
+                alert("✅ Token Salvo!");
             }
         }
 
+        // --- BACKUP GLOBAL (CORRIGIDO) ---
         function backupAll() {
             let backup = {};
-            const keys = [
-                'benai_tracker_main_db', 
-                'benai_fin_main_db', 
-                'benai_card_main_db', 
-                'benai_diet_main_db', 
-                'benai_coach_lib_main', 
-                'benai_coach_stu_main', 
-                'benai_coach_cat_main', 
-                'fit_studio_v30_gold', 
-                'prime_main_db',
-                'benai_coach_gh_token'
-            ]; 
-            keys.forEach(k => { const d = localStorage.getItem(k); if(d) backup[k] = JSON.parse(d); });
-            if (Object.keys(backup).length === 0) return alert("Nada para salvar.");
+            // Varredura Agressiva: Pega TUDO que parece ser do sistema
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                // Filtros de chaves conhecidas
+                if (key.includes('benai') || key.includes('fit_studio') || key.includes('prime') || key.includes('token') || key.includes('order')) {
+                    try {
+                        const val = localStorage.getItem(key);
+                        // Tenta parsear JSON, se falhar salva como string
+                        try { backup[key] = JSON.parse(val); } catch { backup[key] = val; }
+                    } catch(e) { console.error("Erro ao salvar chave:", key); }
+                }
+            }
+
+            if (Object.keys(backup).length === 0) return alert("Nenhum dado encontrado no navegador.");
+            
             const date = new Date().toISOString().slice(0,10);
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backup));
             const node = document.createElement('a');
             node.setAttribute("href", dataStr);
-            node.setAttribute("download", `BENAI_OS_BACKUP_${date}.json`);
+            node.setAttribute("download", `BENAI_OS_FULL_BACKUP_${date}.json`);
             document.body.appendChild(node);
             node.click();
             node.remove();
@@ -346,11 +499,10 @@
                 try {
                     const data = JSON.parse(e.target.result);
                     Object.keys(data).forEach(key => {
-                        if(key.startsWith('benai_') || key.startsWith('fit_studio_') || key.startsWith('prime_')) { 
-                            localStorage.setItem(key, JSON.stringify(data[key])); 
-                        }
+                        const val = data[key];
+                        // Se for objeto, stringify. Se for string (token), salva direto.
+                        localStorage.setItem(key, typeof val === 'object' ? JSON.stringify(val) : val);
                     });
-                    if(localStorage.getItem(KEY_TOKEN)) document.getElementById('tokenDot').style.display = 'block';
                     alert(`Restauração concluída!`); location.reload();
                 } catch(err) { alert("Arquivo inválido."); }
             };
@@ -359,14 +511,17 @@
 
         function initSortable(gridId, storageKey) {
             const grid = document.getElementById(gridId);
+            if(!grid) return;
             const savedOrder = localStorage.getItem(storageKey);
             if (savedOrder) {
-                const order = JSON.parse(savedOrder);
-                const items = Array.from(grid.children);
-                order.forEach(id => {
-                    const item = items.find(el => el.getAttribute('data-id') === id);
-                    if (item) grid.appendChild(item);
-                });
+                try {
+                    const order = JSON.parse(savedOrder);
+                    const items = Array.from(grid.children);
+                    order.forEach(id => {
+                        const item = items.find(el => el.getAttribute('data-id') === id);
+                        if (item) grid.appendChild(item);
+                    });
+                } catch(e) {}
             }
             Sortable.create(grid, {
                 animation: 250, ghostClass: 'sortable-ghost', delay: 150, delayOnTouchOnly: true,
@@ -376,9 +531,6 @@
                 }
             });
         }
-
-        initSortable('gridPersonal', 'benai_order_personal_final');
-        initSortable('gridWork', 'benai_order_work_final');
     </script>
 </body>
 </html>
