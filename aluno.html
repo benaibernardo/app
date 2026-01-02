@@ -109,6 +109,7 @@
         .mc-content { flex: 1; }
         .mc-title { font-family: var(--font-num); font-weight: 800; font-size: 1rem; margin-bottom: 4px; color: var(--text); }
         .mc-text { font-size: 0.85rem; color: #475569; line-height: 1.5; }
+        
         .mc-danger { background: #fef2f2; border: 1px solid #fee2e2; } .mc-danger .mc-icon { background: var(--danger); }
         .mc-blue { background: #eff6ff; border: 1px solid #dbeafe; } .mc-blue .mc-icon { background: var(--accent); }
         .mc-purple { background: #faf5ff; border: 1px solid #f3e8ff; } .mc-purple .mc-icon { background: #8b5cf6; }
@@ -116,7 +117,7 @@
         .mc-orange { background: #fff7ed; border: 1px solid #ffedd5; } .mc-orange .mc-icon { background: #f97316; }
         .mc-green { background: #f0fdf4; border: 1px solid #dcfce7; } .mc-green .mc-icon { background: #10b981; }
 
-        /* Feedback */
+        /* Feedback (Prova Social) */
         .feedback-box { background: white; border: 1px solid #e2e8f0; border-radius: 24px; padding: 30px 20px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.05); }
         .fb-title { font-family: var(--font-num); font-weight: 800; font-size: 1.4rem; color: var(--primary); margin-bottom: 5px; }
         .fb-sub { color: #64748b; font-size: 0.9rem; margin-bottom: 25px; }
@@ -183,29 +184,59 @@
             <div class="logic-title"><i class="fa-solid fa-bullseye"></i> Lógica do Treino</div>
             <div id="logicTopics"></div>
         </div>
-        <div style="font-weight:900; color:#9ca3af; font-size:0.75rem; margin: 30px 0 15px; letter-spacing:1px; text-align:center; text-transform:uppercase;">Pilares da Alta Performance</div>
+        <div style="font-weight:900; color:#9ca3af; font-size:0.75rem; margin: 30px 0 15px; letter-spacing:1px; text-align:center; text-transform:uppercase;">Pilares do Treinamento</div>
         
         <div class="method-grid">
             <div class="method-card mc-danger">
                 <div class="mc-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
                 <div class="mc-content">
-                    <div class="mc-title">1. Dor = PARE!</div>
-                    <div class="mc-text">Aprenda a diferenciar: queimação muscular é esperada. <b>Dor articular NÃO é normal.</b></div>
+                    <div class="mc-title">1. Dor Articular = PARE!</div>
+                    <div class="mc-text">Aprenda a ouvir seu corpo. Queimação muscular é sinal de esforço, mas pontadas ou <b>dor na articulação não são normais</b>. Ajuste a carga ou a postura imediatamente.</div>
                 </div>
             </div>
-            <div class="method-card mc-blue"><div class="mc-icon"><i class="fa-solid fa-wind"></i></div><div class="mc-content"><div class="mc-title">2. Respiração</div><div class="mc-text"><b>Inspire</b> na descida, <b>Expire</b> na força.</div></div></div>
-            <div class="method-card mc-purple"><div class="mc-icon"><i class="fa-solid fa-shield-halved"></i></div><div class="mc-content"><div class="mc-title">3. Core Ativo</div><div class="mc-text">Abdômen <b>contraído</b> o tempo todo (Bracing).</div></div></div>
-            <div class="method-card mc-cyan"><div class="mc-icon"><i class="fa-solid fa-stopwatch"></i></div><div class="mc-content"><div class="mc-title">4. Cadência 3-0-1</div><div class="mc-text">Desça em <b>3s</b>, suba explosivo.</div></div></div>
-            <div class="method-card mc-orange"><div class="mc-icon"><i class="fa-solid fa-hourglass-half"></i></div><div class="mc-content"><div class="mc-title">5. Descanso Real</div><div class="mc-text">Use o <b>timer</b>. Não esfrie o corpo.</div></div></div>
-            <div class="method-card mc-green"><div class="mc-icon"><i class="fa-solid fa-gauge-high"></i></div><div class="mc-content"><div class="mc-title">6. Intensidade</div><div class="mc-text">Termine a série com apenas <b>1 ou 2 reps</b> no "tanque".</div></div></div>
+            <div class="method-card mc-blue">
+                <div class="mc-icon"><i class="fa-solid fa-wind"></i></div>
+                <div class="mc-content">
+                    <div class="mc-title">2. Respiração Consciente</div>
+                    <div class="mc-text">Não prenda o ar! <b>Inspire</b> profundamente na fase negativa (descida) e <b>solte o ar (expire)</b> ao fazer a força. Isso estabiliza sua pressão e aumenta a força.</div>
+                </div>
+            </div>
+            <div class="method-card mc-purple">
+                <div class="mc-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <div class="mc-content">
+                    <div class="mc-title">3. Core Ativo (Bracing)</div>
+                    <div class="mc-text">Mantenha o abdômen <b>contraído</b> o tempo todo, como se fosse levar um soco. Isso protege sua coluna e transfere mais força para os membros.</div>
+                </div>
+            </div>
+            <div class="method-card mc-cyan">
+                <div class="mc-icon"><i class="fa-solid fa-stopwatch"></i></div>
+                <div class="mc-content">
+                    <div class="mc-title">4. Cadência 3-0-1</div>
+                    <div class="mc-text">Domine o peso, não deixe ele te dominar. Desça controlando em <b>3 segundos</b>, sem pausa embaixo, e suba de forma explosiva (1s).</div>
+                </div>
+            </div>
+            <div class="method-card mc-orange">
+                <div class="mc-icon"><i class="fa-solid fa-hourglass-half"></i></div>
+                <div class="mc-content">
+                    <div class="mc-title">5. Descanso Estratégico</div>
+                    <div class="mc-text">Use o <b>timer</b>. Descansar de menos atrapalha a recuperação da força; descansar demais esfria o corpo. Respeite o tempo estipulado.</div>
+                </div>
+            </div>
+            <div class="method-card mc-green">
+                <div class="mc-icon"><i class="fa-solid fa-gauge-high"></i></div>
+                <div class="mc-content">
+                    <div class="mc-title">6. Intensidade Real</div>
+                    <div class="mc-text">As últimas repetições devem ser difíceis. Se você terminou a série sentindo que faria mais 5 tranquilamente, <b>aumente a carga</b>. Busque a falha técnica.</div>
+                </div>
+            </div>
         </div>
     </div>
 
     <div id="tab-3" class="tab-pane content">
         <div class="feedback-box">
             <i class="fa-solid fa-quote-left" style="font-size:2rem; color:#e2e8f0; margin-bottom:15px;"></i>
-            <div class="fb-title">Como foi o treino?</div>
-            <div class="fb-sub">Seu feedback é fundamental.</div>
+            <div class="fb-title">Avalie a Consultoria</div>
+            <div class="fb-sub">Sua evolução e satisfação são meu foco.</div>
             <div class="stars">
                 <i class="fa-solid fa-star star" onclick="rate(1)"></i>
                 <i class="fa-solid fa-star star" onclick="rate(2)"></i>
@@ -213,8 +244,8 @@
                 <i class="fa-solid fa-star star" onclick="rate(4)"></i>
                 <i class="fa-solid fa-star star" onclick="rate(5)"></i>
             </div>
-            <textarea id="fbComment" class="fb-area" rows="4" placeholder="Alguma dor? Cargas aumentaram? Comente..."></textarea>
-            <button class="btn-send-fb" onclick="generateReportFile()"><i class="fa-brands fa-whatsapp"></i> GERAR RELATÓRIO</button>
+            <textarea id="fbComment" class="fb-area" rows="4" placeholder="Como está se sentindo com o acompanhamento? O que melhorou na sua rotina/corpo?"></textarea>
+            <button class="btn-send-fb" onclick="generateReportFile()"><i class="fa-brands fa-whatsapp"></i> ENVIAR FEEDBACK</button>
             <p style="font-size:0.7rem; color:#94a3b8; margin-top:15px; line-height:1.4;">Ao clicar, envie o arquivo gerado para o WhatsApp do Benai.</p>
         </div>
     </div>
@@ -383,10 +414,10 @@
         });
         const rep={student:n,date:new Date().toISOString(),feedback:{rating:rating,comment:c},data:w};
         const b=new Blob([JSON.stringify(rep,null,2)],{type:'application/json'});
-        const f=new File([b],`Relatorio_${n.replace(/\W/g,'_')}_${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.json`,{type:'application/json'});
+        const f=new File([b],`Feedback_${n.replace(/\W/g,'_')}_${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.json`,{type:'application/json'});
         
         if(navigator.canShare&&navigator.canShare({files:[f]})){
-            try{await navigator.share({files:[f],title:'Relatório Benai',text:`Relatório de ${n}`});}catch(e){downloadFallback(b,f.name);}
+            try{await navigator.share({files:[f],title:'Feedback Consultoria',text:`Feedback de ${n}`});}catch(e){downloadFallback(b,f.name);}
         }else{downloadFallback(b,f.name);}
     }
     
