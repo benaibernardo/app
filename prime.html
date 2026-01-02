@@ -12,36 +12,71 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
+        /* --- ESTILO GERAL --- */
         :root { --primary: #05364F; --secondary: #00A89A; --bg: #F1F5F9; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: #1e293b; overflow-x: hidden; }
         h1, h2, h3, h4, .font-heading { font-family: 'Outfit', sans-serif; }
 
-        #gatekeeper { position: fixed; inset: 0; z-index: 99999; background-color: #0f172a; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'Outfit', sans-serif; }
+        /* --- TELA DE LOGIN (FIXA E ROBUSTA) --- */
+        #gatekeeper {
+            position: fixed; inset: 0; z-index: 99999;
+            background-color: #0f172a; /* Azul Escuro Padrão */
+            color: white;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            font-family: 'Outfit', sans-serif;
+        }
         .pin-box { text-align: center; width: 90%; max-width: 320px; animation: slideUp 0.5s ease; }
         .shield-icon { font-size: 4rem; color: #38bdf8; margin-bottom: 25px; filter: drop-shadow(0 0 15px rgba(56,189,248,0.3)); }
-        .pin-input { width: 100%; padding: 15px; font-size: 1.5rem; text-align: center; border-radius: 12px; border: 1px solid #1e293b; background: rgba(255,255,255,0.05); color: white; letter-spacing: 8px; outline: none; margin-top: 25px; transition: 0.3s; }
+        .pin-input {
+            width: 100%; padding: 15px; font-size: 1.5rem; text-align: center;
+            border-radius: 12px; border: 1px solid #1e293b;
+            background: rgba(255,255,255,0.05); color: white;
+            letter-spacing: 8px; outline: none; margin-top: 25px; transition: 0.3s;
+        }
         .pin-input:focus { border-color: #38bdf8; box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.1); background: rgba(255,255,255,0.08); }
         .error-msg { color: #ef4444; margin-top: 15px; font-weight: 600; font-size: 0.9rem; min-height: 20px; }
 
+        /* --- CONTEÚDO DO APP (Oculto até login) --- */
         #app-content { display: none; }
+
+        /* --- UI ESPECÍFICA --- */
         .header-gradient { background: linear-gradient(135deg, #022030 0%, #05364F 100%); }
-        .cloud-btn { display: flex; align-items: center; gap: 8px; padding: 6px 14px; font-size: 0.75rem; font-weight: 800; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; color: white; cursor: pointer; }
-        .cloud-status { width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; }
+        
+        /* Botão Nuvem Pílula */
+        .cloud-btn { display: flex; align-items: center; gap: 8px; padding: 6px 14px; font-size: 0.75rem; font-weight: 800; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; color: white; transition: 0.2s; cursor: pointer; letter-spacing: 0.5px; }
+        .cloud-btn:hover { background: rgba(255,255,255,0.25); }
+        .cloud-status { width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; border: 1px solid rgba(255,255,255,0.3); }
         .cloud-status.ok { background: #10b981; box-shadow: 0 0 6px #10b981; }
         .cloud-status.syncing { background: #3b82f6; animation: pulse 1s infinite; }
         .cloud-status.error { background: #ef4444; }
 
-        .tab-btn { padding: 1rem; color: #94a3b8; font-weight: 700; font-size: 0.875rem; border-bottom: 3px solid transparent; cursor: pointer; }
+        /* Abas */
+        .tab-btn { padding: 1rem; color: #94a3b8; font-weight: 700; font-size: 0.875rem; border-bottom: 3px solid transparent; transition: 0.2s; display: flex; align-items: center; gap: 8px; cursor: pointer; }
         .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+        .tab-btn:hover { color: var(--primary); }
 
+        /* Agenda & Cores das Colunas */
+        .col-time { background-color: #ecfeff; color: #0e7490; font-weight: 800; text-align: center; }
+        .col-student { background-color: white; font-weight: 700; color: #1e293b; }
+        .col-workout { background-color: #fdf4ff; color: #86198f; font-weight: 700; font-size: 0.75rem; text-transform: uppercase; }
+        .col-prof { background-color: #f0fdf4; color: #15803d; font-weight: 600; font-size: 0.75rem; text-align: center; }
+        
+        .hover-row:hover td { background-color: #f8fafc; }
         .drawer-row { transition: all 0.3s ease-out; max-height: 0; opacity: 0; overflow: hidden; background-color: #f1f5f9; border-bottom: 1px solid #e2e8f0; }
-        .drawer-row.open { max-height: 400px; opacity: 1; padding: 1rem; }
+        .drawer-row.open { max-height: 400px; opacity: 1; padding: 1.5rem; }
 
+        /* Modais */
         .modal-overlay { position: fixed; inset: 0; background: rgba(5, 54, 79, 0.85); backdrop-filter: blur(4px); z-index: 60; display: none; justify-content: center; align-items: center; padding: 1rem; }
-        .modal-box { background: white; border-radius: 1rem; width: 100%; max-width: 28rem; padding: 2rem; position: relative; animation: slideUp 0.3s ease; }
+        .modal-box { background: white; border-radius: 1rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); width: 100%; max-width: 28rem; padding: 2rem; position: relative; animation: slideUp 0.3s ease; }
+        
+        /* Utilitários */
+        .input-modern { border: 1px solid #E2E8F0; transition: all 0.2s; }
+        .input-modern:focus { border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(0, 168, 154, 0.1); outline: none; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
         
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulse { 50% { opacity: 0.5; } }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .fade-in { animation: slideUp 0.4s ease-out; }
     </style>
 </head>
 <body>
@@ -49,17 +84,25 @@
     <div id="gatekeeper">
         <div class="pin-box">
             <i class="fa-solid fa-shield-halved shield-icon"></i>
-            <h2 style="font-size: 1.5rem; font-weight: 700;">Sistema Protegido</h2>
-            <input type="password" id="pinInput" class="pin-input" maxlength="8" placeholder="••••••••" inputmode="numeric">
+            <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 10px;">Sistema Protegido</h2>
+            <p style="opacity: 0.6; margin-bottom: 25px;">Insira o código de acesso</p>
+            <input type="password" id="pinInput" class="pin-input" maxlength="8" placeholder="••••••••" inputmode="numeric" autocomplete="off">
             <div class="error-msg" id="loginError"></div>
         </div>
     </div>
 
     <div id="app-content">
+        
         <header class="header-gradient text-white shadow-lg sticky top-0 z-40 border-b-4 border-yellow-400">
             <div class="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
                 <div class="flex items-center gap-4">
-                    <h1 class="text-xl font-bold tracking-tight font-heading">PRIME <span class="font-light text-[#00A89A]">ACQUAFIT</span></h1>
+                    <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center border border-white/20">
+                        <i data-lucide="dumbbell" class="w-6 h-6 text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold tracking-tight leading-none font-heading">PRIME <span class="font-light text-[#00A89A]">ACQUAFIT</span></h1>
+                        <p class="text-[10px] text-slate-300 tracking-widest uppercase font-bold mt-0.5">Gestão de Alunos</p>
+                    </div>
                 </div>
                 <button onclick="openCloudModal()" class="cloud-btn">
                     <i data-lucide="cloud" class="w-4 h-4"></i> DADOS
@@ -68,290 +111,556 @@
             </div>
         </header>
 
-        <nav class="bg-white shadow-sm border-b sticky top-[72px] z-30">
-            <div class="max-w-7xl mx-auto px-6 flex gap-6 overflow-x-auto no-scrollbar">
-                <div onclick="setTab('checkin')" id="btn-checkin" class="tab-btn active">CHECK-IN</div>
-                <div onclick="setTab('dashboard')" id="btn-dashboard" class="tab-btn">AGENDA</div>
-                <div onclick="setTab('students')" id="btn-students" class="tab-btn">ALUNOS</div>
-            </div>
-        </nav>
+        <div class="bg-white shadow-sm border-b border-slate-200 sticky top-[72px] z-30">
+            <nav class="max-w-7xl mx-auto px-6 flex gap-6 overflow-x-auto no-scrollbar">
+                <div onclick="setTab('checkin')" id="btn-checkin" class="tab-btn active"><i data-lucide="check-circle-2" class="w-4 h-4"></i> CHECK-IN</div>
+                <div onclick="setTab('dashboard')" id="btn-dashboard" class="tab-btn"><i data-lucide="bar-chart-3" class="w-4 h-4"></i> AGENDA</div>
+                <div onclick="setTab('students')" id="btn-students" class="tab-btn"><i data-lucide="users" class="w-4 h-4"></i> ALUNOS</div>
+                <div onclick="setTab('reports')" id="btn-reports" class="tab-btn"><i data-lucide="pie-chart" class="w-4 h-4"></i> RELATÓRIOS</div>
+            </nav>
+        </div>
 
         <main class="max-w-7xl mx-auto px-6 py-8">
-            <section id="view-checkin" class="view-section">
+
+            <section id="view-checkin" class="view-section fade-in">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border p-6">
-                        <h2 class="text-[#05364F] font-bold mb-4 flex justify-between">Novo Registro <span id="live-clock" class="text-[#00A89A]">00:00</span></h2>
-                        <form onsubmit="handleCheckin(event)" class="space-y-4">
+                    <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="bg-[#05364F] px-6 py-4 flex justify-between items-center">
+                            <h2 class="text-white font-bold flex items-center gap-2"><i data-lucide="user-plus" class="w-5 h-5"></i> Novo Registro</h2>
+                            <span id="live-clock" class="text-[#00A89A] font-mono font-bold">00:00</span>
+                        </div>
+                        <form onsubmit="handleCheckin(event)" class="p-6 space-y-5">
                             <div class="grid grid-cols-2 gap-4">
-                                <input id="ci-date" type="text" class="w-full p-2.5 bg-slate-50 border rounded-lg text-sm" readonly>
-                                <select id="ci-time" class="w-full p-2.5 border rounded-lg text-sm font-bold"></select>
+                                <div><label class="text-xs font-bold text-slate-500 uppercase block mb-1">Data</label><input id="ci-date" type="text" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-600 font-bold text-sm" readonly></div>
+                                <div><label class="text-xs font-bold text-slate-500 uppercase block mb-1">Horário</label><select id="ci-time" class="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-[#05364F] font-bold text-sm outline-none focus:border-[#00A89A]"></select></div>
                             </div>
-                            <select id="ci-student" class="w-full p-2.5 border rounded-lg text-sm font-bold" onchange="checkAlerts(this.value)"></select>
-                            <div id="ci-alert" class="hidden p-3 bg-red-50 border-l-4 border-red-500 text-xs text-red-800 font-bold"></div>
-                            <select id="ci-workout" class="w-full p-2.5 border rounded-lg text-sm font-bold">
-                                <option>QUADRICEPS</option><option>POSTERIOR/GLÚTEO</option><option>PEITO/TRÍCEPS/OMBRO</option><option>COSTAS/BÍCEPS/ANTEBRAÇO</option><option>FULL BODY</option><option>OUTRO</option>
-                            </select>
-                            <select id="ci-prof" class="w-full p-2.5 border rounded-lg text-sm font-bold"></select>
-                            <button type="submit" class="w-full py-4 bg-[#00A89A] text-white font-bold rounded-xl shadow-lg">CONFIRMAR PRESENÇA</button>
+                            <div>
+                                <label class="text-xs font-bold text-slate-500 uppercase block mb-1">Aluno</label>
+                                <select id="ci-student" class="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-[#05364F] font-bold text-sm outline-none focus:border-[#00A89A]" onchange="checkAlerts(this.value)"><option value="">Selecione...</option></select>
+                                <div id="ci-alert" class="hidden mt-2 p-3 bg-red-50 border-l-4 border-red-500 rounded text-xs text-red-800 font-bold flex items-center gap-2"></div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase block mb-1">Treino</label>
+                                    <select id="ci-workout" class="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-slate-700 font-bold text-sm outline-none focus:border-[#00A89A]" onchange="toggleCustom(this.value)">
+                                        <option>QUADRICEPS</option><option>POSTERIOR/GLÚTEO</option><option>PEITO/TRÍCEPS/OMBRO</option><option>COSTAS/BÍCEPS/ANTEBRAÇO</option><option>FULL BODY</option><option>MMSS</option><option>MMII</option><option>CORE</option><option>AERÓBICO</option><option>AVALIAÇÃO</option><option value="OUTRO">OUTRO...</option>
+                                    </select>
+                                    <input id="ci-custom" type="text" class="hidden mt-2 w-full p-2.5 border-2 border-[#00A89A] rounded-lg text-sm" placeholder="Digite...">
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-500 uppercase block mb-1 flex justify-between">Responsável <button type="button" onclick="openProfModal()" class="text-[#00A89A] hover:underline text-[10px]">GERENCIAR</button></label>
+                                    <select id="ci-prof" class="w-full p-2.5 bg-white border border-slate-200 rounded-lg text-slate-700 font-bold text-sm outline-none focus:border-[#00A89A]"></select>
+                                </div>
+                            </div>
+                            <button type="submit" class="w-full py-4 bg-[#00A89A] hover:bg-teal-600 text-white font-bold rounded-xl shadow-lg transition active:scale-95 flex justify-center items-center gap-2 text-lg"><i data-lucide="check-circle-2" class="w-6 h-6"></i> CONFIRMAR PRESENÇA</button>
                         </form>
                     </div>
+                    <div class="hidden lg:block bg-[#05364F] rounded-2xl shadow-xl p-6 text-white h-fit">
+                        <h3 class="font-bold text-lg mb-6 text-yellow-400 border-b border-white/10 pb-2">Resumo Hoje</h3>
+                        <div class="space-y-6">
+                            <div><div class="text-slate-400 text-xs font-bold uppercase mb-1">Total Alunos</div><div class="text-3xl font-black" id="st-total">0</div></div>
+                            <div><div class="text-slate-400 text-xs font-bold uppercase mb-1">Pico de Horário</div><div class="text-xl font-bold text-yellow-400" id="st-peak">-</div></div>
+                            <div><div class="text-slate-400 text-xs font-bold uppercase mb-1">Treino + Comum</div><div class="text-lg font-bold text-teal-300 truncate" id="st-pop">-</div></div>
+                            <div><div class="text-slate-400 text-xs font-bold uppercase mb-1">Novos Cadastros</div><div class="text-2xl font-bold text-white" id="st-new">0</div></div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            <section id="view-dashboard" class="view-section hidden">
-                <div class="bg-white rounded-2xl shadow-sm border p-6">
-                    <div class="flex justify-between mb-6">
-                        <h2 class="text-xl font-bold text-[#05364F]">Agenda Diária</h2>
-                        <input type="date" id="dashboard-date" class="p-2 border rounded-lg font-bold" onchange="renderAgenda()">
+            <section id="view-dashboard" class="view-section hidden fade-in">
+                <div class="bg-white rounded-2xl shadow-lg border border-slate-100 p-6">
+                    <div class="flex justify-between items-end mb-6 border-b border-slate-100 pb-4">
+                        <h2 class="text-xl font-bold text-[#05364F] flex items-center gap-2 font-heading"><i data-lucide="calendar-range" class="text-[#00A89A]"></i> Agenda Diária</h2>
+                        <div class="flex gap-2">
+                            <input type="date" id="dashboard-date" class="p-2 border rounded-lg font-bold text-[#05364F] text-sm outline-none focus:border-[#00A89A]" onchange="renderAgenda()">
+                            <select id="dashboard-filter-time" class="p-2 border rounded-lg font-bold text-[#05364F] text-sm outline-none focus:border-[#00A89A]" onchange="renderAgenda()"><option value="">Todas</option></select>
+                        </div>
                     </div>
-                    <table class="w-full text-sm text-left">
-                        <thead class="bg-[#05364F] text-white">
-                            <tr><th class="p-4">Hora</th><th class="p-4">Aluno</th><th class="p-4">Treino</th><th class="p-4">Resp.</th><th class="p-4">Ação</th></tr>
-                        </thead>
-                        <tbody id="agenda-body"></tbody>
-                    </table>
+                    <div class="overflow-hidden rounded-xl border border-slate-200">
+                        <table class="w-full text-sm text-left border-collapse">
+                            <thead class="bg-[#05364F] text-white uppercase text-xs font-bold">
+                                <tr><th class="px-6 py-4 w-24">Hora</th><th class="px-6 py-4">Aluno</th><th class="px-6 py-4">Treino</th><th class="px-6 py-4 text-center">Resp.</th><th class="px-6 py-4 text-center w-20"></th></tr>
+                            </thead>
+                            <tbody id="agenda-body" class="bg-white"></tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
 
-            <section id="view-students" class="view-section hidden">
-                <div class="bg-white rounded-2xl shadow-sm border p-6">
-                    <div class="flex justify-between mb-6">
-                        <h2 class="text-2xl font-bold text-[#05364F]">Base de Alunos</h2>
-                        <input type="text" id="stu-search" placeholder="Buscar..." class="p-2 border rounded-lg" onkeyup="renderStudentsTable()">
+            <section id="view-students" class="view-section hidden fade-in">
+                <div class="bg-white rounded-2xl shadow-xl border border-slate-100 p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-[#05364F] font-heading">Base de Alunos</h2>
+                        <div class="flex gap-2">
+                            <input type="text" id="stu-search" placeholder="Buscar..." class="pl-9 p-2.5 border rounded-lg w-64 text-sm font-bold outline-none focus:border-[#00A89A]" onkeyup="renderStudentsTable()">
+                            <button onclick="openStudentModal()" class="bg-[#00A89A] text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 hover:bg-teal-700 transition"><i data-lucide="plus" class="w-4 h-4"></i> NOVO</button>
+                        </div>
                     </div>
-                    <table class="w-full text-sm text-left">
-                        <thead class="bg-slate-50 border-b">
-                            <tr><th class="p-4">Nome</th><th class="p-4">Objetivo</th><th class="p-4">Status</th><th class="p-4 text-right">Ações</th></tr>
-                        </thead>
-                        <tbody id="stu-body"></tbody>
-                    </table>
+                    <div class="overflow-x-auto rounded-xl border border-slate-200 max-h-[600px]">
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-slate-50 text-slate-500 uppercase text-xs font-bold border-b border-slate-200 sticky top-0">
+                                <tr><th class="px-6 py-4">Nome</th><th class="px-6 py-4">Objetivo</th><th class="px-6 py-4">Status</th><th class="px-6 py-4 text-right">Ações</th></tr>
+                            </thead>
+                            <tbody id="stu-body" class="divide-y divide-slate-100 bg-white"></tbody>
+                        </table>
+                    </div>
                 </div>
             </section>
+
+            <section id="view-reports" class="view-section hidden fade-in space-y-6">
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-xl border shadow-sm"><h3 class="text-sm font-bold text-[#05364F] mb-4 flex items-center gap-2"><i data-lucide="bar-chart-2" class="w-4 h-4 text-[#00A89A]"></i> Volume Semanal</h3><div class="h-64"><canvas id="chart1"></canvas></div></div>
+                    <div class="bg-white p-6 rounded-xl border shadow-sm"><h3 class="text-sm font-bold text-[#05364F] mb-4 flex items-center gap-2"><i data-lucide="pie-chart" class="w-4 h-4 text-[#00A89A]"></i> Treinos Realizados</h3><div class="h-64 relative"><canvas id="chart2"></canvas></div></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                     <div class="bg-white p-6 rounded-xl border shadow-sm col-span-1 md:col-span-2"><h3 class="text-sm font-bold text-[#05364F] mb-4 flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4 text-[#00A89A]"></i> Horários de Pico</h3><div class="h-64"><canvas id="chart3"></canvas></div></div>
+                     <div class="bg-white p-6 rounded-xl border shadow-sm"><h3 class="text-sm font-bold text-[#05364F] mb-4 flex items-center gap-2"><i data-lucide="users" class="w-4 h-4 text-[#00A89A]"></i> Retenção (30d)</h3><div class="h-64 relative flex justify-center"><canvas id="chart4"></canvas></div></div>
+                </div>
+                <div class="bg-white p-6 rounded-xl border shadow-sm"><h3 class="text-sm font-bold text-[#05364F] mb-4 flex items-center gap-2"><i data-lucide="briefcase" class="w-4 h-4 text-[#00A89A]"></i> Produtividade Equipe</h3><div class="h-64"><canvas id="chart5"></canvas></div></div>
+            </section>
+
         </main>
     </div>
 
     <div id="modal-cloud" class="modal-overlay">
         <div class="modal-box text-center">
-            <h3 class="text-xl font-bold text-[#05364F] mb-4">Gerenciar Dados</h3>
-            <input type="password" id="manualToken" placeholder="Token Manual (ghp_...)" class="w-full p-2 border rounded-lg mb-4 text-sm">
-            <button onclick="saveManualToken()" class="w-full py-2 bg-slate-100 text-slate-600 font-bold rounded-lg mb-4">SALVAR TOKEN</button>
-            <div class="grid gap-2">
-                <button onclick="forceSync()" class="py-3 bg-[#00A89A] text-white font-bold rounded-lg">BAIXAR DA NUVEM</button>
-                <button onclick="backupData()" class="py-3 bg-slate-700 text-white font-bold rounded-lg">BACKUP LOCAL</button>
-                <button onclick="hardReset()" class="py-3 text-red-500 font-bold border rounded-lg">RESETAR TUDO</button>
+            <i data-lucide="database" class="w-12 h-12 text-[#00A89A] mx-auto mb-4"></i>
+            <h3 class="text-xl font-bold text-[#05364F] mb-2 font-heading">Central de Dados</h3>
+            <p class="text-sm text-slate-500 mb-8">Nuvem GitHub + Backup Local</p>
+            
+            <div class="space-y-3">
+                <div style="margin-bottom:15px; border-bottom:1px solid #e2e8f0; padding-bottom:15px;">
+                    <input type="password" id="manualToken" placeholder="Token (ghp_...)" class="w-full p-3 rounded-xl border border-slate-200 text-sm mb-2 outline-none focus:border-[#00A89A]">
+                    <button onclick="saveManualToken()" class="w-full py-2 rounded-xl bg-slate-100 text-slate-500 font-bold text-xs hover:bg-slate-200">SALVAR TOKEN</button>
+                </div>
+
+                <button onclick="forceSync()" class="w-full py-3 rounded-xl bg-[#00A89A] text-white font-bold hover:bg-teal-600 flex justify-center gap-2 btn-modern"><i data-lucide="cloud-download" class="w-4 h-4"></i> BAIXAR DA NUVEM</button>
+                <button onclick="backupData()" class="w-full py-3 rounded-xl bg-[#05364F] text-white font-bold hover:bg-[#032435] flex justify-center gap-2 btn-modern"><i data-lucide="download" class="w-4 h-4"></i> BACKUP LOCAL</button>
+                <label class="w-full py-3 rounded-xl border-2 border-slate-200 text-slate-600 font-bold hover:bg-slate-50 cursor-pointer flex justify-center gap-2 btn-modern"><i data-lucide="upload" class="w-4 h-4"></i> RESTAURAR LOCAL <input type="file" id="fileIn" hidden onchange="restoreData(this)"></label>
+                <button onclick="hardReset()" class="w-full py-3 rounded-xl border border-red-200 text-red-500 font-bold hover:bg-red-50 flex justify-center gap-2 btn-modern"><i data-lucide="trash" class="w-4 h-4"></i> RESETAR TUDO</button>
             </div>
-            <button onclick="closeModal('modal-cloud')" class="mt-4 text-slate-400 font-bold">FECHAR</button>
+            <button onclick="document.getElementById('modal-cloud').style.display='none'" class="mt-6 text-xs font-bold text-slate-400 uppercase tracking-widest hover:text-slate-600">Fechar</button>
         </div>
     </div>
 
-    <div id="toast" class="fixed bottom-6 right-6 bg-[#05364F] text-white px-5 py-3 rounded-lg shadow-xl flex items-center gap-3 z-[100] translate-x-[150%] transition-transform border-l-4 border-[#00A89A]">
-        <span id="toast-msg" class="text-sm font-bold"></span>
+    <div id="prof-modal" class="modal-overlay">
+        <div class="modal-box w-full max-w-xs p-0">
+            <div class="bg-slate-50 px-4 py-3 border-b border-slate-200 flex justify-between items-center rounded-t-xl"><h3 class="text-sm font-bold text-[#05364F]">Gerenciar Equipe</h3><button onclick="closeProfModal()"><i data-lucide="x" class="w-4 h-4 text-slate-400"></i></button></div>
+            <div class="p-4"><div class="flex gap-2 mb-3"><input type="text" id="new-prof-name" placeholder="Nome..." class="flex-grow p-2 border rounded-lg text-sm outline-none focus:border-[#00A89A]"><button onclick="addProfessor()" class="bg-[#00A89A] text-white px-3 rounded-lg"><i data-lucide="plus" class="w-4 h-4"></i></button></div><ul id="prof-list" class="space-y-1 max-h-48 overflow-y-auto"></ul></div>
+        </div>
     </div>
 
-    <script>
-        const DB_KEY = 'prime_main_db';
-        const TOKEN_KEY = 'benai_coach_gh_token';
-        const GIST_DESC = 'BENAI_WORK_DB';
-        const PIN_CORRETO = "16359001";
+    <div id="modal-student" class="modal-overlay">
+        <div class="modal-box w-full max-w-lg p-0">
+            <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center rounded-t-xl"><h3 class="text-lg font-bold text-[#05364F]" id="ms-title">Aluno</h3><button onclick="document.getElementById('modal-student').style.display='none'"><i data-lucide="x" class="w-5 h-5 text-slate-400"></i></button></div>
+            <form onsubmit="saveStudent(event)" class="p-6 space-y-4">
+                <input type="hidden" id="ms-id">
+                <div><label class="text-[10px] font-bold text-slate-400 uppercase">Nome</label><input type="text" id="ms-name" class="w-full p-2 border rounded-lg font-bold text-[#05364F]" required></div>
+                <div class="grid grid-cols-2 gap-4"><div><label class="text-[10px] font-bold text-slate-400 uppercase">Objetivo</label><input type="text" id="ms-obj" class="w-full p-2 border rounded-lg"></div><div><label class="text-[10px] font-bold text-slate-400 uppercase">Plano</label><input type="text" id="ms-plan" class="w-full p-2 border rounded-lg"></div></div>
+                <div><label class="text-[10px] font-bold text-red-400 uppercase">Limitações</label><textarea id="ms-lim" rows="2" class="w-full p-2 border border-red-200 bg-red-50 rounded-lg text-red-800 font-medium"></textarea></div>
+                <div><label class="text-[10px] font-bold text-blue-400 uppercase">Observações</label><textarea id="ms-obs" rows="2" class="w-full p-2 border border-blue-200 bg-blue-50 rounded-lg text-slate-700"></textarea></div>
+                <button type="submit" class="w-full py-3 bg-[#05364F] text-white font-bold rounded-xl hover:bg-[#032435] transition">SALVAR</button>
+            </form>
+        </div>
+    </div>
 
+    <div id="profile-modal" class="modal-overlay">
+        <div class="modal-box w-full max-w-4xl h-[90vh] flex flex-col p-0 overflow-hidden">
+            <div class="px-8 py-5 border-b border-slate-100 flex justify-between items-center bg-white rounded-t-xl">
+                <div><h2 id="pf-name" class="text-2xl font-black text-[#05364F] font-heading">NOME</h2><p class="text-xs font-bold text-[#00A89A] uppercase tracking-wider mt-1"><span id="pf-obj">OBJETIVO</span> • <span id="pf-plan">PLANO</span></p></div>
+                <button onclick="document.getElementById('profile-modal').style.display='none'" class="bg-slate-100 p-2 rounded-full hover:bg-slate-200"><i data-lucide="x" class="w-6 h-6 text-slate-500"></i></button>
+            </div>
+            <div class="p-8 overflow-y-auto space-y-8 bg-slate-50 flex-grow">
+                 <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm"><h3 class="text-xs font-bold text-slate-400 uppercase mb-4 flex items-center gap-2"><i data-lucide="calendar-days" class="w-4 h-4"></i> Frequência Semana Atual</h3><div id="pf-week-grid" class="grid grid-cols-6 gap-2"></div></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="p-6 rounded-xl bg-red-50 border border-red-100"><h4 class="font-bold text-red-700 mb-3 flex items-center gap-2 text-sm uppercase"><i data-lucide="alert-triangle" class="w-4 h-4"></i> Limitações</h4><ul id="pf-lim-list" class="space-y-2 text-sm text-red-800 font-medium"></ul></div>
+                    <div class="p-6 rounded-xl bg-blue-50 border border-blue-100"><h4 class="font-bold text-blue-700 mb-3 flex items-center gap-2 text-sm uppercase"><i data-lucide="clipboard-list" class="w-4 h-4"></i> Observações</h4><ul id="pf-obs-list" class="space-y-2 text-sm text-blue-800 font-medium"></ul></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-slate-200">
+                    <div class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm"><h4 class="text-xs font-bold text-slate-500 uppercase mb-4 text-center">Histórico de Presença</h4><div class="h-60"><canvas id="chart-freq"></canvas></div></div>
+                    <div class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm"><h4 class="text-xs font-bold text-slate-500 uppercase mb-4 text-center">Músculos Trabalhados</h4><div class="h-60 relative flex justify-center"><canvas id="chart-workouts"></canvas></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-6 right-6 bg-[#05364F] text-white px-5 py-3 rounded-lg shadow-xl flex items-center gap-3 z-[100] translate-x-[150%] transition-transform duration-300 border-l-4 border-[#00A89A]"><i data-lucide="check-circle" class="w-5 h-5 text-[#00A89A]"></i> <span id="toast-msg" class="text-sm font-bold"></span></div>
+
+    <script>
+        const DB_KEY = 'prime_main_db'; 
+        const TOKEN_KEY = 'benai_coach_gh_token'; 
+        const GIST_DESC = 'BENAI_WORK_DB';
+        const INITIAL_PROFS = ['BENAI', 'JUAN', 'THUR', 'LUANA', 'BENJAMIN'];
+        
         const INITIAL_STUDENTS = [
             {"id":"1","name":"NILTON FLORIANO","objective":"GANHAR MASSA","limitations":"HERNIA INGUINAL","notes":"GOSTA DE FAZER BURPEES AO FINAL DA AULA","plan":"3X"},
             {"id":"2","name":"LINDAMIR FLORIANO (MIME)","objective":"EMAGRECIMENTO","limitations":"NENHUMA","notes":"","plan":"3X"},
-            {"id":"3","name":"LUCIMARA STELE","objective":"EMAGRECIMENTO","limitations":"HERNIA LOMBA L5","notes":"","plan":"3X"},
-            {"id":"4","name":"VITOR HUGO","objective":"Geral","limitations":"","notes":"","plan":""},
-            {"id":"5","name":"JOSE LUIS RODRIGUES (ZÉ)","objective":"FORTALECIMENTO","limitations":"NENHUMA","notes":"","plan":""}
-            // ... (Os outros 33 alunos serão carregados do backup na nuvem)
+            {"id":"3","name":"LUCIMARA STELE","objective":"EMAGRECIMENTO","limitations":"HERNIA LOMBA L5, NÃO SENTE DORES","notes":"","plan":"3X"},
+            {"id":"4","name":"VITOR HUGO","objective":"","limitations":"","notes":"","plan":""},
+            {"id":"5","name":"JOSE LUIS RODRIGUES (ZÉ)","objective":"FORTALECIMENTO","limitations":"NENHUMA","notes":"SEM OBSERVAÇÕES","plan":""},
+            {"id":"6","name":"CLEIDE FLORIANO","objective":"FORTALECIMENTO","limitations":"NENHUMA","notes":"PRESSÃO BAIXA SOB MUITO ESFORÇO","plan":""},
+            {"id":"7","name":"VILMA KAISS","objective":"EMAGRECIMENTO","limitations":"NENHUMA","notes":"SEM OBSERVAÇÕES","plan":"3X"},
+            {"id":"8","name":"GUILHERME NICHETTI","objective":"EMAGRECIMENTO E GANHO DE MASSA","limitations":"SEM RESTRIÇÕES","notes":"","plan":"3X"},
+            {"id":"9","name":"ANDRESSA CYRNE","objective":"EMAGRECIMENTO E GANHO DE MASSA","limitations":"PROTUSÃO CERVICAL","notes":"","plan":"3X"},
+            {"id":"10","name":"GERLAINE","objective":"QUALIDADE DE VIDA","limitations":"","notes":"","plan":"5X"},
+            {"id":"11","name":"IAZANA","objective":"HIPERTROFIA","limitations":"RARAS DORES NO JOELHO E LOMBAR","notes":"","plan":"5X"},
+            {"id":"12","name":"GIOVANA","objective":"EMAGRECIMENTO E GANHO DE MASSA","limitations":"","notes":"","plan":"5X"},
+            {"id":"13","name":"IVO PAULO","objective":"HIPERTROFIA","limitations":"","notes":"","plan":"5X"},
+            {"id":"14","name":"LUCAS CRUZ","objective":"HIPERTROFIA","limitations":"","notes":"","plan":"5X"},
+            {"id":"15","name":"ANDREIA TOTH","objective":"HIPERTROFIA","limitations":"","notes":"","plan":"5X"},
+            {"id":"16","name":"FERNANDO BOGO","objective":"EMAGRECIMENTO E GANHO DE MASSA","limitations":"","notes":"","plan":"5X"},
+            {"id":"17","name":"LUCIANA","objective":"EMAGRECIMENTO E GANHO DE MASSA","limitations":"","notes":"","plan":"5X"},
+            {"id":"18","name":"BEATRIZ BARUCH","objective":"HIPERTROFIA","limitations":"","notes":"","plan":"5X"},
+            {"id":"19","name":"CRISTIANE WISNIEWSKI","objective":"HIPERTROFIA","limitations":"","notes":"","plan":"5X"},
+            {"id":"20","name":"JANAINA","objective":"HIPERTROFIA","limitations":"","notes":"","plan":"5X"},
+            {"id":"21","name":"LEONI NAKAMURA","objective":"EMAGRECIMENTO E GANHO DE MASSA","limitations":"","notes":"","plan":"3X"},
+            {"id":"22","name":"JUAREZ","objective":"EMAGRECIMENTO","limitations":"HÉRNIA CERVICAL E LUXAÇÃO NO CÓCCIX","notes":"DORES NO QUADRIL DIREITO","plan":"3X"},
+            {"id":"23","name":"GEOVANA CAMPAGNOLO","objective":"","limitations":"","notes":"","plan":""},
+            {"id":"24","name":"MYLENA MACIEL","objective":"","limitations":"","notes":"","plan":""},
+            {"id":"25","name":"MARISTELA FRIZZO","objective":"","limitations":"","notes":"","plan":""},
+            {"id":"26","name":"LUANA","objective":"","limitations":"","notes":"","plan":""},
+            {"id":"27","name":"TANIA DOLCI","objective":"","limitations":"","notes":"","plan":""},
+            {"id":"28","name":"CARLOS DOLCI","objective":"","limitations":"","notes":"","plan":""},
+            {"id":"29","name":"ANGELA SILVA","objective":"","limitations":"","notes":"","plan":""},
+            {"id":"30","name":"MARIA BEATRIZ NASCIMENTO","objective":"","limitations":"","notes":"","plan":""},
+            {"id":"31","name":"GABRIEL MORRETES","objective":"","limitations":"","notes":"","plan":""},
+            {"id":"32","name":"JEAN MATHEUS SANTOS","objective":"","limitations":"","notes":"","plan":""},
+            {"id":"33","name":"ALINE GALIOTTO","objective":"","limitations":"","notes":"","plan":""},
+            {"id":"34","name":"ISABELA GALIOTTO","objective":"","limitations":"","notes":"","plan":""},
+            {"id":"35","name":"ROBIANE MACHADO","objective":"","limitations":"","notes":"","plan":""},
+            {"id":"36","name":"ANA BEATRIZ (BIA)","objective":"","limitations":"","notes":"","plan":""},
+            {"id":"37","name":"JULIANO PIANTADOSI","objective":"","limitations":"","notes":"","plan":""},
+            {"id":"38","name":"JOSEMAR KAISS (ZICO)","objective":"","limitations":"","notes":"","plan":""}
         ];
 
-        let db = { students: INITIAL_STUDENTS, checkins: [], professors: ["BENAI", "JUAN", "THUR", "LUANA"] };
+        let db = { students: [], checkins: [], professors: [] };
+        let charts = {};
         let gistId = null;
 
-        // AUTH & START
-        document.addEventListener("DOMContentLoaded", () => {
-            const auth = sessionStorage.getItem("benai_access_granted") === "true" || 
-                         sessionStorage.getItem("benai_access_type") === "master" || 
-                         sessionStorage.getItem("benai_access_type") === "guest";
-
-            if (auth) { unlockApp(); }
-            else {
-                document.getElementById('pinInput').addEventListener('keyup', function(e) {
-                    if (this.value.length === 8) {
-                        if (this.value === PIN_CORRETO) {
-                            sessionStorage.setItem("benai_access_granted", "true");
-                            unlockApp();
-                        } else {
-                            document.getElementById('loginError').innerText = "Incorreto";
-                            this.value = "";
-                        }
-                    }
-                });
-            }
-        });
-
-        function unlockApp() {
-            document.getElementById('gatekeeper').style.display = 'none';
-            document.getElementById('app-content').style.display = 'block';
-            init();
-        }
-
         async function init() {
-            const saved = localStorage.getItem(DB_KEY);
+            let saved = localStorage.getItem(DB_KEY);
             if (saved) {
-                try {
-                    const parsed = JSON.parse(saved);
-                    if (parsed && parsed.students) db = parsed;
-                } catch(e) { console.error("Falha ao ler cache"); }
+                db = JSON.parse(saved);
+                if (!db.students || db.students.length < 5) db.students = INITIAL_STUDENTS;
+                if (!db.professors) db.professors = INITIAL_PROFS;
+            } else {
+                db = { students: INITIAL_STUDENTS, checkins: [], professors: INITIAL_PROFS };
+                saveDB();
             }
             
+            // Tenta pré-carregar token
             const t = localStorage.getItem(TOKEN_KEY);
             if(t && document.getElementById('manualToken')) document.getElementById('manualToken').value = t;
 
             lucide.createIcons();
             setTab('checkin');
-            setInterval(() => {
-                const el = document.getElementById('live-clock');
-                if(el) el.innerText = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-            }, 1000);
+            updateStats();
+            setInterval(() => document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}), 1000);
             
+            Chart.defaults.font.family = "'Inter', sans-serif";
+            Chart.defaults.color = '#64748b';
+
             await syncCloud();
         }
 
-        // CLOUD LOGIC
-        function updateStatus(st) {
-            const el = document.getElementById('cloudIndicator');
-            if(el) el.className = 'cloud-status ' + st;
-        }
-
-        async function syncCloud() {
-            const token = localStorage.getItem(TOKEN_KEY);
-            if(!token) return updateStatus('error');
-            updateStatus('syncing');
-            try {
-                if(!gistId) {
-                    const s = await fetch('https://api.github.com/gists', {headers:{'Authorization':`token ${token}`}});
-                    const g = await s.json();
-                    const f = g.find(x => x.description === GIST_DESC);
-                    if(f) gistId = f.id;
+        // SISTEMA DE LOGIN (FIXO)
+        document.getElementById('pinInput').addEventListener('keyup', function(e) {
+            if (this.value.length === 8) {
+                if (this.value === "16359001") {
+                    sessionStorage.setItem("benai_access_granted", "true");
+                    document.getElementById('gatekeeper').style.display = 'none'; // Some
+                    document.getElementById('app-content').style.display = 'block'; // Aparece
+                    init();
+                } else {
+                    document.getElementById('loginError').innerText = "Código Incorreto";
+                    this.value = "";
                 }
-                if(gistId) {
-                    const r = await fetch(`https://api.github.com/gists/${gistId}`, {headers:{'Authorization':`token ${token}`}});
-                    const j = await r.json();
-                    if(j.files["prime_db.json"]) {
-                        db = JSON.parse(j.files["prime_db.json"].content);
-                        localStorage.setItem(DB_KEY, JSON.stringify(db));
-                        updateStatus('ok');
-                        renderAgenda();
-                        renderStudentsTable();
-                    }
-                }
-            } catch(e) { updateStatus('error'); }
-        }
+            }
+        });
 
-        async function pushCloud() {
-            const token = localStorage.getItem(TOKEN_KEY);
-            if(!token || !gistId) return;
-            try {
-                const body = JSON.stringify({ files: {'prime_db.json': {content: JSON.stringify(db)}} });
-                await fetch(`https://api.github.com/gists/${gistId}`, {method:'PATCH', headers:{'Authorization':`token ${token}`, 'Content-Type':'application/json'}, body});
-                updateStatus('ok');
-            } catch(e) { updateStatus('error'); }
-        }
-
-        function saveDB() { localStorage.setItem(DB_KEY, JSON.stringify(db)); pushCloud(); }
-
-        // UI ACTIONS
+        // NAVEGAÇÃO DE ABAS
         function setTab(id) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
             document.getElementById('view-'+id).classList.remove('hidden');
+            
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('btn-'+id).classList.add('active');
+            
             if(id === 'checkin') setupCheckin();
             if(id === 'dashboard') { document.getElementById('dashboard-date').value = new Date().toISOString().split('T')[0]; renderAgenda(); }
             if(id === 'students') renderStudentsTable();
+            if(id === 'reports') renderGlobalReports();
+            lucide.createIcons();
         }
 
+        // CHECK-IN
         function setupCheckin() {
-            document.getElementById('ci-date').value = new Date().toLocaleDateString('pt-BR').substring(0,5);
-            const sEl = document.getElementById('ci-student'); 
-            sEl.innerHTML = '<option value="">Selecionar Aluno...</option>'; 
-            db.students.sort((a,b)=>a.name.localeCompare(b.name)).forEach(s => sEl.innerHTML += `<option value="${s.id}">${s.name}</option>`);
+            const now = new Date();
+            document.getElementById('ci-date').value = `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}`;
             
+            const sEl = document.getElementById('ci-student'); 
+            sEl.innerHTML = '<option value="">Selecione...</option>'; 
+            db.students.sort((a,b)=>a.name.localeCompare(b.name)).forEach(s => sEl.innerHTML += `<option value="${s.id}">${s.name}</option>`);
+
             const tEl = document.getElementById('ci-time'); tEl.innerHTML = '';
-            for(let h=6; h<=21; h++) { 
+            const isSat = now.getDay() === 6;
+            for(let h=(isSat?8:6); h<=(isSat?12:21); h++) { 
                 const opt = new Option(`${h}:00`, `${h}H`); 
-                if(h === new Date().getHours()) opt.selected = true; 
+                if(h === now.getHours()) opt.selected = true; 
                 tEl.add(opt); 
             }
+
             const pEl = document.getElementById('ci-prof'); pEl.innerHTML = '';
             db.professors.forEach(p => pEl.innerHTML += `<option>${p}</option>`);
         }
 
+        function checkAlerts(id) {
+            const s = db.students.find(x=>x.id === id);
+            const box = document.getElementById('ci-alert');
+            if (s && s.limitations && s.limitations !== 'NENHUMA') {
+                box.innerHTML = `<i data-lucide="alert-triangle" class="w-4 h-4"></i> ${s.limitations}`; box.classList.remove('hidden'); lucide.createIcons();
+            } else { box.classList.add('hidden'); }
+        }
+
+        function toggleCustom(val) { document.getElementById('ci-custom').classList.toggle('hidden', val !== 'OUTRO'); }
+
         function handleCheckin(e) {
             e.preventDefault();
             const sId = document.getElementById('ci-student').value;
-            if(!sId) return;
-            const student = db.students.find(x=>x.id===sId);
+            if(!sId) return alert('Selecione um aluno');
+            let wk = document.getElementById('ci-workout').value;
+            if(wk === 'OUTRO') wk = document.getElementById('ci-custom').value.toUpperCase() || 'PERSONALIZADO';
+            
             db.checkins.push({
                 id: Date.now().toString(),
                 studentId: sId,
-                studentName: student.name,
+                studentName: db.students.find(x=>x.id===sId).name,
                 isoDate: new Date().toISOString().split('T')[0],
                 time: document.getElementById('ci-time').value,
-                workout: document.getElementById('ci-workout').value,
+                workout: wk,
                 prof: document.getElementById('ci-prof').value
             });
             saveDB();
-            toast('Lançado!');
+            document.getElementById('ci-student').value = '';
+            document.getElementById('ci-alert').classList.add('hidden');
+            toast('Confirmado!');
         }
 
+        function updateStats() {
+            const today = new Date().toISOString().split('T')[0];
+            const todays = db.checkins.filter(c=>c.isoDate===today);
+            document.getElementById('st-total').innerText = todays.length;
+            const c={}; todays.forEach(x=>{c[x.time]=(c[x.time]||0)+1}); document.getElementById('st-peak').innerText = Object.keys(c).reduce((a,b)=>c[a]>c[b]?a:b, '-');
+            const w={}; todays.forEach(x=>{w[x.workout]=(w[x.workout]||0)+1}); const pop = Object.keys(w).reduce((a,b)=>w[a]>w[b]?a:b, '-'); document.getElementById('st-pop').innerText = pop.length>12?pop.substring(0,10)+'...':pop;
+            document.getElementById('st-new').innerText = db.students.filter(s => parseInt(s.id) > new Date(today).getTime()).length;
+        }
+
+        // AGENDA (Drawer + Cores)
+        function setupDashFilters() {
+            const s = document.getElementById('dashboard-filter-time'); s.innerHTML = '<option value="">Todas</option>';
+            for(let h=6; h<=21; h++) s.innerHTML += `<option value="${h}H">${h}H</option>`;
+        }
         function renderAgenda() {
             const dt = document.getElementById('dashboard-date').value;
+            const tm = document.getElementById('dashboard-filter-time').value;
+            const list = db.checkins.filter(c => c.isoDate === dt && (!tm || c.time === tm)).sort((a,b) => parseInt(a.time) - parseInt(b.time));
             const tb = document.getElementById('agenda-body'); tb.innerHTML = '';
-            const list = db.checkins.filter(c => c.isoDate === dt);
+            
+            if(list.length === 0) tb.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-400 italic">Sem registros.</td></tr>';
+
             list.forEach(c => {
-                tb.innerHTML += `<tr class="border-b" onclick="toggleDrawer('${c.id}')">
-                    <td class="p-4 font-bold text-cyan-700">${c.time}</td>
-                    <td class="p-4 font-bold">${c.studentName}</td>
-                    <td class="p-4 text-purple-700">${c.workout}</td>
-                    <td class="p-4 text-green-700">${c.prof}</td>
-                    <td class="p-4"><button onclick="event.stopPropagation(); deleteCheckin('${c.id}')" class="text-red-400">X</button></td>
-                </tr><tr class="hidden"><td colspan="5"><div id="drawer-${c.id}" class="drawer-row text-xs font-bold text-red-500"></div></td></tr>`;
+                tb.innerHTML += `
+                <tr class="border-b border-slate-100 hover-row transition" onclick="if(!event.target.closest('button')) toggleDrawer('${c.id}','${c.studentId}')">
+                    <td class="px-6 py-4 col-time">${c.time}</td>
+                    <td class="px-6 py-4 col-student">${c.studentName}</td>
+                    <td class="px-6 py-4 col-workout">${c.workout}</td>
+                    <td class="px-6 py-4 col-prof">${c.prof}</td>
+                    <td class="px-6 py-4 text-center bg-white">
+                        <button onclick="if(confirm('Excluir?')){db.checkins=db.checkins.filter(x=>x.id!=='${c.id}');saveDB();renderAgenda()}" class="text-red-300 hover:text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </td>
+                </tr>
+                <tr class="hidden"><td colspan="5" class="p-0"><div id="drawer-${c.id}" class="drawer-row"></div></td></tr>`;
             });
             lucide.createIcons();
         }
-
-        function toggleDrawer(id) {
-            const el = document.getElementById('drawer-'+id);
-            const tr = el.parentElement.parentElement;
-            tr.classList.toggle('hidden');
-            el.classList.toggle('open');
-            const check = db.checkins.find(x=>x.id===id);
-            const student = db.students.find(x=>x.id===check.studentId);
-            el.innerText = "RESTRIÇÃO: " + (student.limitations || "Nenhuma");
+        function toggleDrawer(cid, sid) {
+            const row = document.getElementById(`drawer-${cid}`);
+            const tr = row.parentElement.parentElement;
+            
+            if(tr.classList.contains('hidden')) { 
+                document.querySelectorAll('.drawer-row').forEach(d=> { d.classList.remove('open'); d.parentElement.parentElement.classList.add('hidden'); });
+                tr.classList.remove('hidden'); setTimeout(()=>row.classList.add('open'),10);
+                
+                const s = db.students.find(x=>x.id===sid);
+                const h = db.checkins.filter(k=>k.studentId===sid);
+                const today = new Date(); const d = today.getDate()-today.getDay()+(today.getDay()===0?-6:1); const mon = new Date(today.setDate(d));
+                
+                let weekHTML = '<div class="flex gap-2 overflow-x-auto pb-2">';
+                ['SEG','TER','QUA','QUI','SEX','SÁB'].forEach((day,i)=>{ 
+                    let dt = new Date(mon); dt.setDate(mon.getDate()+i); 
+                    const chk = h.find(k=>k.isoDate===dt.toISOString().split('T')[0]);
+                    weekHTML += `<div class="flex-1 p-2 rounded border text-center ${chk?'bg-[#00A89A] text-white border-[#00A89A]':'bg-white border-slate-200 text-slate-300'}"><div class="text-[10px] font-bold mb-1 opacity-80">${day}</div><div class="text-[10px] font-bold leading-tight">${chk?chk.workout:'.'}</div></div>`; 
+                }); 
+                weekHTML += '</div>';
+                
+                row.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><h4 class="text-xs font-bold text-slate-400 uppercase mb-2">Semana Atual</h4>${weekHTML}</div><div><h4 class="text-xs font-bold text-slate-400 uppercase mb-2">Detalhes</h4><div class="bg-red-50 p-3 rounded border border-red-100 mb-2"><span class="text-xs font-bold text-red-500 block">LIMITAÇÕES</span><p class="text-sm text-red-800 font-bold">${s.limitations||'Nenhuma'}</p></div><button onclick="openProfile('${sid}')" class="w-full mt-1 text-xs font-bold text-[#05364F] hover:bg-slate-200 py-2 rounded border border-slate-300 transition flex items-center justify-center gap-2">VER PERFIL COMPLETO</button></div></div>`;
+            } else { 
+                row.classList.remove('open'); setTimeout(()=>tr.classList.add('hidden'),300); 
+            }
         }
 
+        // ALUNOS
         function renderStudentsTable() {
             const term = document.getElementById('stu-search').value.toLowerCase();
             const tb = document.getElementById('stu-body'); tb.innerHTML = '';
-            db.students.filter(s => s.name.toLowerCase().includes(term)).forEach(s => {
-                tb.innerHTML += `<tr class="border-b">
-                    <td class="p-4 font-bold">${s.name}</td>
-                    <td class="p-4 text-xs text-slate-500 uppercase font-bold">${s.objective}</td>
-                    <td class="p-4">${s.limitations!=='NENHUMA'?'⚠️':'✅'}</td>
-                    <td class="p-4 text-right"><button onclick="deleteStudent('${s.id}')" class="text-slate-300 hover:text-red-500">🗑️</button></td>
-                </tr>`;
+            db.students.filter(s => s.name.toLowerCase().includes(term)).sort((a,b)=>a.name.localeCompare(b.name)).forEach(s => {
+                const alert = s.limitations !== 'NENHUMA';
+                tb.innerHTML += `<tr class="hover:bg-slate-50 border-b border-slate-100 cursor-pointer" onclick="if(!event.target.closest('button')) openProfile('${s.id}')"><td class="px-6 py-4 font-bold text-[#05364F]">${s.name}</td><td class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">${s.objective}</td><td class="px-6 py-4">${alert?'<span class="text-red-500 font-bold text-xs flex gap-1"><i data-lucide="alert-triangle" class="w-3 h-3"></i> Restrição</span>':'<span class="text-slate-300 text-xs flex gap-1"><i data-lucide="check" class="w-3 h-3"></i> Ok</span>'}</td><td class="px-6 py-4 text-right"><button onclick="openStudentModal('${s.id}')" class="p-2 text-blue-400 hover:bg-blue-50 rounded"><i data-lucide="edit-3" class="w-4 h-4"></i></button><button onclick="if(confirm('Excluir?')){db.students=db.students.filter(x=>x.id!=='${s.id}');saveDB();renderStudentsTable()}" class="p-2 text-red-400 hover:bg-red-50 rounded"><i data-lucide="trash" class="w-4 h-4"></i></button></td></tr>`;
             });
+            lucide.createIcons();
+        }
+        function openStudentModal(id) {
+            const m = document.getElementById('modal-student'); m.style.display='flex';
+            if(id) { 
+                const s = db.students.find(x=>x.id===id); 
+                document.getElementById('ms-title').innerText = "Editar Aluno"; document.getElementById('ms-id').value = s.id; 
+                document.getElementById('ms-name').value = s.name; document.getElementById('ms-obj').value = s.objective; 
+                document.getElementById('ms-plan').value = s.plan; document.getElementById('ms-lim').value = s.limitations; 
+                document.getElementById('ms-obs').value = s.notes; 
+            } else { 
+                document.getElementById('ms-title').innerText = "Novo Aluno"; document.getElementById('ms-id').value = "NEW"; 
+                document.querySelector('#modal-student form').reset(); 
+            }
+        }
+        function saveStudent(e) { 
+            e.preventDefault(); const id = document.getElementById('ms-id').value; 
+            const d = { name: document.getElementById('ms-name').value.toUpperCase(), objective: document.getElementById('ms-obj').value.toUpperCase(), plan: document.getElementById('ms-plan').value, limitations: document.getElementById('ms-lim').value.toUpperCase()||'NENHUMA', notes: document.getElementById('ms-obs').value.toUpperCase() }; 
+            if(id === 'NEW') db.students.push({id:Date.now().toString(), ...d}); 
+            else { const i = db.students.findIndex(x=>x.id===id); db.students[i] = {...db.students[i], ...d}; } 
+            saveDB(); document.getElementById('modal-student').style.display='none'; renderStudentsTable(); 
         }
 
-        function saveManualToken() { const t = document.getElementById('manualToken').value.trim(); if(t) { localStorage.setItem(TOKEN_KEY, t); syncCloud(); } }
+        // PERFIL COMPLETO (Gráficos)
+        function openProfile(id) {
+            const s = db.students.find(x=>x.id===id); const h = db.checkins.filter(c=>c.studentId===id);
+            document.getElementById('pf-name').innerText = s.name; document.getElementById('pf-obj').innerText = s.objective; document.getElementById('pf-plan').innerText = s.plan;
+            document.getElementById('pf-lim-list').innerHTML = s.limitations.split(/,|\n/).map(i=>i.trim()?`<li class="flex items-start gap-2"><i data-lucide="dot" class="w-4 h-4 text-red-500"></i>${i}</li>`:'').join('')||'<li class="italic text-slate-400">Sem restrições</li>';
+            document.getElementById('pf-obs-list').innerHTML = s.notes.split('\n').map(i=>i.trim()?`<li class="flex items-start gap-2"><i data-lucide="dot" class="w-4 h-4 text-blue-500"></i>${i}</li>`:'').join('')||'<li class="italic text-slate-400">Sem observações</li>';
+            
+            const wg = document.getElementById('pf-week-grid'); wg.innerHTML = ''; 
+            const today = new Date(); const d = today.getDate()-today.getDay()+(today.getDay()===0?-6:1); const mon = new Date(today.setDate(d));
+            ['SEG','TER','QUA','QUI','SEX','SÁB'].forEach((day,i)=>{ 
+                let dt = new Date(mon); dt.setDate(mon.getDate()+i); 
+                const chk = h.find(k=>k.isoDate===dt.toISOString().split('T')[0]); 
+                wg.innerHTML += `<div class="p-2 rounded text-center ${chk?'bg-[#00A89A] text-white':'bg-slate-100 text-slate-300'}"><div class="text-[10px] font-bold mb-1">${day}</div><div>${chk?'✓':'.'}</div></div>`; 
+            });
+
+            // Charts
+            const fCtx = document.getElementById('chart-freq').getContext('2d'); if(charts.freq) charts.freq.destroy();
+            const fMap = {}; h.forEach(c=>{ const k=c.isoDate.substr(5,5); fMap[k]=(fMap[k]||0)+1 });
+            charts.freq = new Chart(fCtx, {type:'line', data:{labels:Object.keys(fMap).sort(), datasets:[{label:'Freq', data:Object.values(fMap), borderColor:'#00A89A', backgroundColor:'rgba(0,168,154,0.1)', fill:true}]}, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}}});
+            
+            const wCtx = document.getElementById('chart-workouts').getContext('2d'); if(charts.work) charts.work.destroy();
+            const wMap = {}; h.forEach(c=>{ wMap[c.workout]=(wMap[c.workout]||0)+1 });
+            charts.work = new Chart(wCtx, {type:'doughnut', data:{labels:Object.keys(wMap), datasets:[{data:Object.values(wMap), backgroundColor:['#05364F','#00C9B7','#FFB300','#38BDF8']}]}, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'right'}}}});
+
+            document.getElementById('profile-modal').style.display = 'flex'; lucide.createIcons();
+        }
+        function closeProfileModal(){ document.getElementById('profile-modal').style.display='none'; }
+
+        // RELATÓRIOS (5 GRÁFICOS)
+        function renderGlobalReports() {
+            const ctx1=document.getElementById('chart1').getContext('2d'); if(charts.c1) charts.c1.destroy();
+            const days={}; const now=new Date(); for(let i=6; i>=0; i--){ const d=new Date(now); d.setDate(now.getDate()-i); days[['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][d.getDay()]]=db.checkins.filter(c=>c.isoDate===d.toISOString().split('T')[0]).length; }
+            charts.c1=new Chart(ctx1, {type:'bar', data:{labels:Object.keys(days), datasets:[{label:'Check-ins', data:Object.values(days), backgroundColor:'#00A89A', borderRadius:4}]}, options:{responsive:true, maintainAspectRatio:false}});
+            
+            const ctx2=document.getElementById('chart2').getContext('2d'); if(charts.c2) charts.c2.destroy();
+            const wMap={}; db.checkins.forEach(c=>{ wMap[c.workout]=(wMap[c.workout]||0)+1 });
+            charts.c2=new Chart(ctx2, {type:'pie', data:{labels:Object.keys(wMap), datasets:[{data:Object.values(wMap), backgroundColor:['#05364F','#00C9B7','#FFB300','#38BDF8','#F43F5E']}]}, options:{responsive:true, maintainAspectRatio:false}});
+            
+            const ctx3=document.getElementById('chart3').getContext('2d'); if(charts.c3) charts.c3.destroy();
+            const hMap={}; db.checkins.forEach(c=>{ hMap[c.time]=(hMap[c.time]||0)+1 });
+            charts.c3=new Chart(ctx3, {type:'line', data:{labels:Object.keys(hMap).sort((a,b)=>parseInt(a)-parseInt(b)), datasets:[{label:'Fluxo', data:Object.values(hMap), borderColor:'#F59E0B', fill:true}]}, options:{responsive:true, maintainAspectRatio:false}});
+
+            const ctx4=document.getElementById('chart4').getContext('2d'); if(charts.c4) charts.c4.destroy();
+            const d30=new Date(); d30.setDate(d30.getDate()-30); const iso30=d30.toISOString().split('T')[0];
+            const active=new Set(db.checkins.filter(c=>c.isoDate>=iso30).map(c=>c.studentId)).size;
+            charts.c4=new Chart(ctx4, {type:'pie', data:{labels:['Ativos','Inativos'], datasets:[{data:[active, db.students.length-active], backgroundColor:['#00C9B7','#CBD5E1']}]}, options:{responsive:true, maintainAspectRatio:false}});
+
+            const ctx5=document.getElementById('chart5').getContext('2d'); if(charts.c5) charts.c5.destroy();
+            const pMap={}; db.checkins.forEach(c=>{ pMap[c.prof]=(pMap[c.prof]||0)+1 });
+            charts.c5=new Chart(ctx5, {type:'bar', data:{labels:Object.keys(pMap), datasets:[{label:'Atendimentos', data:Object.values(pMap), backgroundColor:'#10B981', borderRadius:4}]}, options:{indexAxis:'y', responsive:true, maintainAspectRatio:false}});
+        }
+
+        // UTILS
+        function saveLocal() { localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+        function saveDB() { saveLocal(); pushCloud(); updateStats(); }
+        function toast(msg) { const t=document.getElementById('toast'); document.getElementById('toast-msg').innerText=msg; t.style.transform='translateX(0)'; setTimeout(()=>t.style.transform='translateX(150%)', 3000); }
+
+        // CLOUD & PROF
         function openCloudModal() { document.getElementById('modal-cloud').style.display='flex'; }
-        function closeModal(id) { document.getElementById(id).style.display='none'; }
-        function toast(m) { const t=document.getElementById('toast'); document.getElementById('toast-msg').innerText=m; t.style.transform='translateX(0)'; setTimeout(()=>t.style.transform='translateX(150%)', 2000); }
-        function forceSync() { if(confirm("Baixar dados?")) syncCloud(); }
-        function backupData() { const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(db)],{type:"application/json"})); a.download="prime_backup.json"; a.click(); }
-        function hardReset() { if(confirm("Resetar TUDO?")) { localStorage.clear(); location.reload(); } }
-        function deleteCheckin(id) { db.checkins = db.checkins.filter(x=>x.id!==id); saveDB(); renderAgenda(); }
-        function checkAlerts(id) { const s = db.students.find(x=>x.id===id); const b=document.getElementById('ci-alert'); if(s && s.limitations!=='NENHUMA') { b.innerText = s.limitations; b.classList.remove('hidden'); } else b.classList.add('hidden'); }
+        function closeCloudModal() { document.getElementById('modal-cloud').style.display='none'; }
+        function openProfModal() { document.getElementById('prof-modal').style.display='flex'; renderProfList(); }
+        function closeProfModal() { document.getElementById('prof-modal').style.display='none'; setupCheckin(); }
+        function renderProfList(){ const l=document.getElementById('prof-list'); l.innerHTML=''; db.professors.forEach((p,i)=>l.innerHTML+=`<li class="flex justify-between p-2 bg-slate-50 text-sm font-bold text-[#05364F] rounded mb-1">${p} <i data-lucide="trash" onclick="if(confirm('Excluir?')){db.professors.splice(${i},1);saveDB();renderProfList()}" class="w-4 h-4 text-red-400 cursor-pointer"></i></li>`); lucide.createIcons(); }
+        function addProfessor(){ const n=document.getElementById('new-prof-name').value.toUpperCase(); if(n){ db.professors.push(n); saveDB(); renderProfList(); document.getElementById('new-prof-name').value=''; }}
+        
+        function updateCloudStatus(st) { const el=document.getElementById('cloudIndicator'); if(el) el.className='cloud-status '+st; }
+        
+        function saveManualToken() {
+            const t = document.getElementById('manualToken').value.trim();
+            if(t) {
+                localStorage.setItem(TOKEN_KEY, t);
+                alert("Token salvo! Tentando conectar...");
+                syncCloud();
+            }
+        }
+
+        async function syncCloud() {
+            const token = localStorage.getItem(TOKEN_KEY); if(!token) return updateCloudStatus('error'); updateCloudStatus('syncing');
+            try {
+                if(!gistId) { const s = await fetch('https://api.github.com/gists',{headers:{'Authorization':`token ${token}`}}); const g = await s.json(); const f = g.find(x=>x.description===GIST_DESC); if(f) gistId = f.id; }
+                if(gistId) {
+                    const r = await fetch(`https://api.github.com/gists/${gistId}`,{headers:{'Authorization':`token ${token}`}}); const j = await r.json();
+                    if(j.files["prime_db.json"]) { db = JSON.parse(j.files["prime_db.json"].content); saveLocal(); updateStats(); } else await pushCloud();
+                    updateCloudStatus('ok');
+                } else await pushCloud();
+            } catch(e) { updateCloudStatus('error'); }
+        }
+        async function pushCloud() {
+            const token = localStorage.getItem(TOKEN_KEY); if(!token) return; updateCloudStatus('syncing');
+            try {
+                let url = 'https://api.github.com/gists'; let method = 'POST'; if(gistId) { url += '/'+gistId; method = 'PATCH'; }
+                const body = JSON.stringify({description:GIST_DESC, public:false, files:{'prime_db.json':{content:JSON.stringify(db)}}});
+                await fetch(url, {method, headers:{'Authorization':`token ${token}`}, body}); updateCloudStatus('ok');
+            } catch(e) { updateCloudStatus('error'); }
+        }
+        function forceSync() { if(confirm("Baixar dados?")) { syncCloud(); closeCloudModal(); } }
+        function backupData() { const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(db)],{type:"application/json"})); a.download=`prime_backup.json`; a.click(); }
+        function restoreData(i) { const r=new FileReader(); r.onload=e=>{ try{ db=JSON.parse(e.target.result); saveDB(); location.reload(); }catch{alert('Erro');} }; r.readAsText(i.files[0]); }
+        function shareWA() { navigator.clipboard.writeText(JSON.stringify(db)).then(()=>toast('Copiado!')); }
+        function hardReset() { if(confirm('Apagar tudo?')) { localStorage.removeItem(DB_KEY); location.reload(); } }
+
+        // AUTO-LOGIN CHECK
+        if (sessionStorage.getItem("benai_access_granted") === "true") {
+             document.getElementById('gatekeeper').style.display='none';
+             document.getElementById('app-content').style.display='block';
+             init();
+        } else {
+             document.getElementById('pinInput').addEventListener('keyup', function(e) {
+                if (this.value.length === 8) {
+                    if (this.value === "16359001") {
+                        sessionStorage.setItem("benai_access_granted", "true");
+                        document.getElementById('gatekeeper').style.display='none';
+                        document.getElementById('app-content').style.display='block';
+                        init();
+                    } else {
+                        document.getElementById('loginError').innerText = "Código Incorreto";
+                        this.value = "";
+                    }
+                }
+            });
+        }
     </script>
 </body>
 </html>
