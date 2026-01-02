@@ -12,38 +12,48 @@
 
     <script>
         (function() {
+            // VERIFICAÇÃO DE LOGIN (Integração com Index.html)
+            const sessionType = sessionStorage.getItem("benai_access_type");
+            const sessionGranted = sessionStorage.getItem("benai_access_granted");
+
+            // Se veio do Index (Master ou Guest) ou já logou antes -> Entra direto
+            if (sessionType === "master" || sessionType === "guest" || sessionGranted === "true") return;
+
+            // Se não, mostra o PIN
             const PIN_CORRETO = "16359001"; 
-            if (sessionStorage.getItem("benai_access_granted") === "true") return;
+            
             document.write(`
                 <style>
-                    body { visibility: hidden; overflow: hidden; }
+                    body { visibility: hidden; overflow: hidden; background: #0f172a; }
                     #gatekeeper {
                         visibility: visible; position: fixed; inset: 0;
                         background: #0f172a; color: white; z-index: 99999;
                         display: flex; flex-direction: column; align-items: center; justify-content: center;
                         font-family: 'Outfit', sans-serif;
                     }
-                    .pin-box { text-align: center; animation: fadeIn 0.5s ease; width: 90%; max-width: 350px; }
+                    .pin-box { text-align: center; animation: fadeIn 0.5s ease; width: 90%; max-width: 320px; }
+                    .shield-icon { font-size: 3.5rem; color: #38bdf8; margin-bottom: 20px; filter: drop-shadow(0 0 15px rgba(56,189,248,0.3)); }
                     .pin-inp { 
-                        padding: 15px; font-size: 1.5rem; text-align: center; 
-                        border-radius: 15px; border: 2px solid rgba(56, 189, 248, 0.3); outline: none; margin-top: 25px;
-                        background: rgba(255,255,255,0.05); color: white; letter-spacing: 4px; width: 100%;
-                        transition: 0.3s;
+                        width: 100%; padding: 15px; font-size: 1.5rem; text-align: center; 
+                        border-radius: 12px; border: 1px solid #1e293b; outline: none; margin-top: 25px;
+                        background: rgba(255,255,255,0.05); color: white; letter-spacing: 4px; 
+                        transition: 0.3s; 
                     }
-                    .pin-inp:focus { border-color: #38bdf8; box-shadow: 0 0 20px rgba(56, 189, 248, 0.2); }
-                    .pin-msg { color: #f87171; margin-top: 15px; font-weight: 600; font-size: 0.9rem; height: 20px; }
+                    .pin-inp:focus { border-color: #38bdf8; box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.1); background: rgba(255,255,255,0.08); }
+                    .pin-msg { color: #ef4444; margin-top: 15px; font-weight: 600; font-size: 0.9rem; height: 20px; }
                     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
                 </style>
                 <div id="gatekeeper">
                     <div class="pin-box">
-                        <i class="fa-solid fa-shield-halved" style="font-size: 3rem; color: #38bdf8; margin-bottom: 15px;"></i>
-                        <h2 style="font-size: 1.5rem; letter-spacing: -1px;">Sistema Protegido</h2>
-                        <p style="opacity: 0.6; font-size: 0.85rem;">Insira o código de 8 dígitos</p>
-                        <input type="password" class="pin-inp" maxlength="8" placeholder="********" inputmode="numeric" autocomplete="off" onkeyup="verifyPin(this)">
+                        <i class="fa-solid fa-shield-halved shield-icon"></i>
+                        <h2 style="font-size: 1.5rem; margin-bottom: 5px;">Acesso Restrito</h2>
+                        <p style="opacity: 0.6; font-size: 0.9rem;">Insira o código de acesso</p>
+                        <input type="password" class="pin-inp" maxlength="8" placeholder="••••••••" inputmode="numeric" autocomplete="off" onkeyup="verifyPin(this)" autofocus>
                         <div class="pin-msg" id="pin-error"></div>
                     </div>
                 </div>
             `);
+            
             window.verifyPin = function(el) {
                 if (el.value.length === 8) {
                     if (el.value === PIN_CORRETO) {
@@ -938,10 +948,9 @@
         function maskMoney(i) { let v=i.value.replace(/\D/g,''); v=(v/100).toFixed(2)+''; v=v.replace(".",","); v=v.replace(/(\d)(?=(\d{3})+(?!\d))/g,'$1.'); i.value='R$ '+v; }
         document.getElementById('budgetBox').onclick = function(e) { if(e.target.closest('button') || this.querySelector('input')) return; this.innerHTML = `<small><i class="fa-solid fa-sack-dollar"></i> Orçamento</small><div class="budget-edit-wrap"><input id="newBudgetInp" class="budget-inp" value="${fmt(active.budget)}"><button class="b-btn b-ok" onclick="confBudget(event)"><i class="fa-solid fa-check"></i></button><button class="b-btn b-cancel" onclick="cancBudget(event)"><i class="fa-solid fa-xmark"></i></button></div>`; const inp=document.getElementById('newBudgetInp'); inp.focus(); inp.addEventListener('input', function(){ maskMoney(this); }); };
         function confBudget(e) { e.stopPropagation(); active.budget = parse(document.getElementById('newBudgetInp').value); save(); }
-        function cancBudget(e) { e.stopPropagation(); save(); } 
+        function cancBudget(e) { e.stopPropagation(); save(); } 
 
         init();
     </script>
 </body>
-
 </html>
