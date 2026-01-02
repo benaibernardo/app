@@ -16,7 +16,8 @@
     <script>
         (function() {
             const PIN_CORRETO = "16359001"; 
-            if (sessionStorage.getItem("benai_access_granted") === "true") return;
+            const type = sessionStorage.getItem("benai_access_type");
+            if (type === "master" || type === "guest" || sessionStorage.getItem("benai_access_granted") === "true") return;
             document.write('<style>body{visibility:hidden;overflow:hidden}#gatekeeper{visibility:visible;position:fixed;inset:0;background:#0f172a;color:white;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:Outfit,sans-serif}.pin-box{text-align:center;width:90%;max-width:350px}.pin-inp{padding:15px;font-size:1.5rem;text-align:center;border-radius:15px;border:2px solid rgba(56,189,248,.3);outline:0;margin-top:25px;background:rgba(255,255,255,.05);color:white;letter-spacing:4px;width:100%;transition:.3s}.pin-inp:focus{border-color:#38bdf8}.pin-msg{color:#f87171;margin-top:15px;font-weight:600;height:20px}</style><div id="gatekeeper"><div class="pin-box"><i class="fa-solid fa-shield-halved" style="font-size:3rem;color:#38bdf8;margin-bottom:15px"></i><h2 style="font-size:1.5rem;letter-spacing:-1px">Sistema Protegido</h2><p style="opacity:.6;font-size:.85rem">Insira o código</p><input type="password" class="pin-inp" maxlength="8" onkeyup="verifyPin(this)"><div class="pin-msg" id="pin-error"></div></div></div>');
             window.verifyPin = function(el) {
                 if (el.value.length === 8) {
@@ -604,3 +605,4 @@
     </script>
 </body>
 </html>
+
