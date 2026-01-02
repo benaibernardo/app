@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Benai Finance V3.8 | Cloud</title>
+    <title>Benai Finance V3.9 | Pro</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -18,7 +17,7 @@
             const PIN_CORRETO = "16359001"; 
             const type = sessionStorage.getItem("benai_access_type");
             if (type === "master" || type === "guest" || sessionStorage.getItem("benai_access_granted") === "true") return;
-            document.write('<style>body{visibility:hidden;overflow:hidden}#gatekeeper{visibility:visible;position:fixed;inset:0;background:#0f172a;color:white;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:Outfit,sans-serif}.pin-box{text-align:center;width:90%;max-width:350px}.pin-inp{padding:15px;font-size:1.5rem;text-align:center;border-radius:15px;border:2px solid rgba(56,189,248,.3);outline:0;margin-top:25px;background:rgba(255,255,255,.05);color:white;letter-spacing:4px;width:100%;transition:.3s}.pin-inp:focus{border-color:#38bdf8}.pin-msg{color:#f87171;margin-top:15px;font-weight:600;height:20px}</style><div id="gatekeeper"><div class="pin-box"><i class="fa-solid fa-shield-halved" style="font-size:3rem;color:#38bdf8;margin-bottom:15px"></i><h2 style="font-size:1.5rem;letter-spacing:-1px">Sistema Protegido</h2><p style="opacity:.6;font-size:.85rem">Insira o código</p><input type="password" class="pin-inp" maxlength="8" onkeyup="verifyPin(this)"><div class="pin-msg" id="pin-error"></div></div></div>');
+            document.write('<style>body{visibility:hidden;overflow:hidden}#gatekeeper{visibility:visible;position:fixed;inset:0;background:#0f172a;color:white;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:Outfit,sans-serif}.pin-box{text-align:center;width:90%;max-width:350px}.pin-inp{padding:15px;font-size:1.5rem;text-align:center;border-radius:12px;border:2px solid rgba(56,189,248,.3);outline:0;margin-top:25px;background:rgba(255,255,255,.05);color:white;letter-spacing:4px;width:100%;transition:.3s}.pin-inp:focus{border-color:#38bdf8}.pin-msg{color:#f87171;margin-top:15px;font-weight:600;height:20px}</style><div id="gatekeeper"><div class="pin-box"><i class="fa-solid fa-shield-halved" style="font-size:3rem;color:#38bdf8;margin-bottom:15px"></i><h2 style="font-size:1.5rem;letter-spacing:-1px">Sistema Protegido</h2><p style="opacity:.6;font-size:.85rem">Insira o código</p><input type="password" class="pin-inp" maxlength="8" onkeyup="verifyPin(this)"><div class="pin-msg" id="pin-error"></div></div></div>');
             window.verifyPin = function(el) {
                 if (el.value.length === 8) {
                     if (el.value === PIN_CORRETO) { sessionStorage.setItem("benai_access_granted", "true"); location.reload(); } 
@@ -33,308 +32,195 @@
             --accent: #00A8E8; --accent-hover: #0284c7;
             --bg: #fdfbf7; --surface: #ffffff; --border: #e2e8f0;
             --text: #334155; --text-muted: #64748b;
-            --success: #10b981; --danger: #ef4444; --warn: #f59e0b;
+            --success: #10b981; --danger: #ef4444;
             --c-essen: #3b82f6; --c-debt: #ef4444; --c-shield: #10b981; --c-sanity: #f59e0b;
             --shadow: 0 10px 30px -5px rgba(0, 31, 91, 0.06);
-            --shadow-hover: 0 20px 40px -5px rgba(0, 168, 232, 0.15);
             --radius: 16px;
             --font-ui: 'Plus Jakarta Sans', sans-serif;
             --font-num: 'Outfit', sans-serif;
         }
 
         [data-theme="dark"] {
-            --primary: #818cf8; --primary-light: #6366f1; 
-            --accent: #38bdf8; --accent-hover: #0ea5e9;
-            --bg: #0f172a; --surface: #1e293b; --border: #334155;
+            --primary: #818cf8; --bg: #0f172a; --surface: #1e293b; --border: #334155;
             --text: #f1f5f9; --text-muted: #94a3b8;
-            --shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
-            --shadow-hover: 0 20px 40px -5px rgba(0, 0, 0, 0.7);
-            --c-essen: #60a5fa; --c-debt: #f87171; --c-shield: #4ade80; --c-sanity: #fbbf24;
         }
 
         * { margin:0; padding:0; box-sizing:border-box; font-family:var(--font-ui); outline:none; -webkit-tap-highlight-color:transparent; }
-        body { background:var(--bg); color:var(--text); padding-bottom:100px; font-size:14px; transition: background 0.3s, color 0.3s; overflow-x:hidden; }
-        body.privacy-mode .blur-sensitive { filter: blur(6px); transition: filter 0.2s; user-select: none; }
+        body { background:var(--bg); color:var(--text); padding-bottom:100px; font-size:14px; transition: background 0.3s; overflow-x:hidden; }
+        .blur-sensitive { transition: filter 0.2s; }
+        body.privacy-mode .blur-sensitive { filter: blur(6px); user-select: none; }
         body.privacy-mode .blur-sensitive:hover { filter: blur(0); }
 
-        .app-grid { display: grid; grid-template-columns: 1fr 340px; gap: 25px; max-width: 1250px; margin: 0 auto; padding: 25px; }
+        .app-grid { display: grid; grid-template-columns: 1fr 340px; gap: 25px; max-width: 1300px; margin: 0 auto; padding: 20px; }
         
-        .top-nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 25px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50; box-shadow: 0 4px 20px rgba(0,0,0,0.02); transition: 0.3s; }
-        .brand { font-family: var(--font-num); font-size: 1.3rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; letter-spacing: -0.5px; }
-        .nav-actions { display: flex; gap: 10px; }
-        .nav-icon-btn { width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .nav-icon-btn:hover { background: var(--bg); color: var(--primary); transform:translateY(-2px); box-shadow: var(--shadow); }
-        .sync-btn-head { padding: 0 16px; border-radius: 12px; background: var(--primary); color: #fff; font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.85rem; box-shadow: 0 4px 15px rgba(0, 31, 91, 0.2); transition: 0.2s; position: relative; }
-        .sync-btn-head:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 31, 91, 0.3); }
-
-        .cloud-status { width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1; display: inline-block; box-shadow: 0 0 5px rgba(0,0,0,0.1); transition: 0.3s; margin-left: 5px; }
-        .cloud-status.ok { background: var(--success); box-shadow: 0 0 8px var(--success); }
-        .cloud-status.error { background: var(--danger); }
-        .cloud-status.syncing { background: var(--accent); animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-
+        .top-nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 25px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50; }
+        .brand { font-family: var(--font-num); font-size: 1.3rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+        
         .launch-bar {
             grid-column: 1 / -1; background: var(--surface); padding: 20px; border-radius: var(--radius); 
             border: 1px solid var(--border); box-shadow: var(--shadow);
-            display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
-            border-left: 6px solid var(--accent); position: relative;
-            animation: slideDown 0.4s ease;
+            display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+            border-left: 6px solid var(--accent);
         }
-        .lb-title { font-family: var(--font-num); font-weight: 900; color: var(--primary); margin-right: 5px; text-transform: uppercase; font-size: 0.85rem; display:flex; align-items:center; gap:6px; letter-spacing: 0.5px; }
-        .lb-inp { padding: 14px; border: 1px solid var(--border); background: var(--bg); color: var(--text); border-radius: 12px; flex: 1; min-width: 100px; font-size: 0.95rem; transition:0.2s; font-weight: 500; }
-        .lb-inp:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,168,232,0.1); background: var(--surface); }
-        .lb-btn { background: var(--accent); color: white; border: none; padding: 0 28px; height: 48px; border-radius: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; font-size:0.95rem; white-space:nowrap; letter-spacing: 0.5px; }
-        .lb-btn:hover { background: var(--accent-hover); transform:translateY(-2px); box-shadow: 0 8px 20px rgba(0,168,232,0.25); }
-        .lb-btn:active { transform:scale(0.97); }
-        .cat-group-btn { background:var(--bg); border:1px solid var(--border); width:48px; height:48px; display:flex; align-items:center; justify-content:center; border-radius:12px; cursor:pointer; color:var(--text-muted); transition:0.2s; }
+        .lb-title { font-family: var(--font-num); font-weight: 900; color: var(--primary); text-transform: uppercase; font-size: 0.8rem; width: 100%; margin-bottom: 5px; display: flex; align-items: center; gap: 5px; }
+        .lb-inp { padding: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); border-radius: 10px; font-size: 0.9rem; font-weight: 600; }
+        .lb-btn { background: var(--accent); color: white; border: none; padding: 12px 25px; border-radius: 10px; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .lb-btn:hover { background: var(--accent-hover); transform: translateY(-2px); }
 
-        @media (max-width: 900px) {
-            .app-grid { grid-template-columns: 1fr; padding: 15px; gap: 15px; }
-            .launch-bar { position: sticky; top: 70px; z-index: 40; box-shadow: 0 10px 20px rgba(0,0,0,0.1); padding: 15px; gap: 10px; }
-            .lb-title { width: 100%; margin-bottom: 5px; }
-            #qType { flex: 1; }
-            #qDate { flex: 1; }
-            #qMethod { flex: 1; }
-            #qDesc { flex: 100%; order: 2; }
-            #qLocal { flex: 100%; order: 3; }
-            #qVal { flex: 1; order: 4; }
-            .cat-container { flex: 1.5; order: 4; display: flex; gap: 8px; }
-            .lb-btn { width: 100%; justify-content: center; order: 5; margin-top: 5px; }
-        }
+        .filter-bar { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; background: rgba(0,0,0,0.02); padding: 10px; border-radius: 12px; }
+        .f-inp { padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.8rem; font-weight: 600; background: white; }
 
-        .card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 25px; box-shadow: var(--shadow); transition:0.3s; }
-        .card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
-        .c-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px dashed var(--border); }
-        .c-title { font-family: var(--font-num); font-weight: 800; color: var(--primary); font-size: 0.95rem; text-transform: uppercase; display: flex; align-items: center; gap: 10px; letter-spacing: 0.5px; }
+        .card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 20px; box-shadow: var(--shadow); }
+        .c-title { font-family: var(--font-num); font-weight: 800; color: var(--primary); font-size: 0.9rem; text-transform: uppercase; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
 
         .pote-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .pote-item { background: var(--bg); border-radius: 14px; padding: 18px; border: 1px solid var(--border); position: relative; overflow: hidden; transition: 0.2s; }
-        .pi-head { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .pi-val { font-family: var(--font-num); font-size: 1.4rem; font-weight: 800; color: var(--text); z-index: 2; position: relative; letter-spacing: -1px; }
-        .pi-bar-bg { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; margin-top: 12px; }
-        .pi-fill { height: 100%; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); animation: fillBar 1s ease; border-radius: 4px; }
+        .pote-item { background: var(--bg); border-radius: 14px; padding: 15px; border: 1px solid var(--border); }
+        .pi-head { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); margin-bottom: 5px; }
+        .pi-val { font-family: var(--font-num); font-size: 1.2rem; font-weight: 800; }
+        .pi-bar-bg { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-top: 10px; }
+        .pi-fill { height: 100%; transition: width 0.8s ease; }
 
-        .debt-panel { border-left: 5px solid var(--danger); }
-        .debt-row, .t-row { background: var(--bg); padding: 15px; border-radius: 12px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; margin-bottom:10px; }
-        .t-row { background: var(--surface); margin-bottom: 10px; }
-        .t-left { display: flex; align-items: center; gap: 15px; }
-        .t-icon { width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; color:white; font-size:1rem; flex-shrink: 0; }
-        .t-desc { font-weight: 700; color: var(--text); font-size: 0.95rem; }
-        .t-meta { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
-        .t-val { font-family: var(--font-num); font-weight: 700; font-size: 1.1rem; letter-spacing: -0.5px; }
-        .t-actions, .debt-actions { display:flex; gap:10px; opacity:0; transition:0.2s; }
-        .t-row:hover .t-actions, .debt-row:hover .debt-actions { opacity:1; }
-        .act-btn { cursor:pointer; color: var(--text-muted); font-size:0.9rem; transition:0.2s; padding:5px; }
-        .act-btn:hover { color:var(--accent); transform:scale(1.1); } 
-        .act-btn.del:hover { color:var(--danger); }
+        .t-row { background: var(--surface); padding: 12px 18px; border-radius: 12px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; transition: 0.2s; }
+        .t-row:hover { border-color: var(--accent); background: var(--bg); }
+        .t-left { display: flex; align-items: center; gap: 12px; }
+        .t-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+        .t-val { font-family: var(--font-num); font-weight: 800; font-size: 1rem; }
+        .text-in { color: var(--success); }
+        .text-out { color: var(--danger); }
 
-        .smart-cfg { background: linear-gradient(145deg, var(--primary), var(--primary-light)); color: white; border:none; }
-        .cfg-inp { width: 100%; padding: 12px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 10px; font-weight: 600; font-family:var(--font-num); transition:0.2s; backdrop-filter: blur(5px); }
-        .cfg-inp:focus { background: rgba(255,255,255,0.25); border-color: white; }
-        .cfg-inp::placeholder { color: rgba(255,255,255,0.6); }
-        #toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(100px); background:var(--primary); color:white; padding:12px 30px; border-radius:30px; font-weight:600; box-shadow:0 10px 30px rgba(0,0,0,0.3); transition:0.3s; opacity:0; z-index:9999; display:flex; align-items:center; gap:10px; font-family: var(--font-num); }
-        #toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
-
-        .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center; backdrop-filter:blur(5px); }
-        .modal-box { background:var(--surface); width:90%; max-width:420px; padding:30px; border-radius:24px; animation:slideDown 0.3s; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); position:relative; color: var(--text); border: 1px solid var(--border); }
-        .modal-close { position:absolute; top:20px; right:20px; color:var(--text-muted); cursor:pointer; font-size:1.4rem; transition: 0.2s; }
-        .modal-close:hover { color: var(--danger); transform: rotate(90deg); }
-        .sync-btn { padding:16px; border:1px solid var(--border); border-radius:14px; background:var(--bg); color:var(--text); font-weight:700; cursor:pointer; display:flex; align-items:center; gap:15px; transition:0.2s; font-size:0.95rem; width:100%; margin-bottom:12px; }
-        .sync-btn:hover { background:var(--surface); border-color:var(--accent); transform:translateY(-2px); box-shadow: var(--shadow); }
-        .sync-btn i { font-size: 1.2rem; }
-
+        .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center; backdrop-filter:blur(5px); }
+        .modal-box { background:var(--surface); width:90%; max-width:400px; padding:25px; border-radius:20px; animation:slideDown 0.3s; }
+        
         @keyframes slideDown { from{transform:translateY(-20px);opacity:0} to{transform:translateY(0);opacity:1} }
     </style>
 </head>
 <body data-theme="light">
 
     <div class="top-nav">
-        <div class="brand">
-            <i class="fa-solid fa-rocket" style="color:var(--accent);"></i> Benai Finance <span style="font-size:0.6rem; background:var(--accent); color:white; padding:2px 8px; border-radius:6px; margin-left:8px; font-weight:700;">V3.8</span>
-        </div>
-        <div class="nav-actions">
-            <button class="nav-icon-btn" onclick="togglePrivacy()" title="Modo Privacidade"><i class="fa-solid fa-eye" id="eyeIcon"></i></button>
-            <button class="nav-icon-btn" onclick="toggleTheme()" title="Modo Escuro/Claro"><i class="fa-solid fa-moon" id="themeIcon"></i></button>
+        <div class="brand"><i class="fa-solid fa-rocket"></i> Benai Finance <span class="text-xs bg-cyan-500 text-white px-2 py-0.5 rounded ml-2">V3.9</span></div>
+        <div class="flex gap-2">
+            <button class="nav-icon-btn" onclick="togglePrivacy()"><i class="fa-solid fa-eye" id="eyeIcon"></i></button>
             <button class="sync-btn-head" onclick="openModal('modalSync')"><i class="fa-solid fa-cloud"></i> DADOS <div id="cloudIndicator" class="cloud-status"></div></button>
         </div>
     </div>
 
     <div class="app-grid">
-        
         <div class="launch-bar">
-            <div class="lb-title"><i class="fa-solid fa-bolt"></i> NOVO:</div>
-            
-            <select id="qType" class="lb-inp" style="flex:0.5; min-width:90px;" onchange="updateCatSelect()">
+            <div class="lb-title"><i class="fa-solid fa-bolt"></i> Novo Lançamento Rápido</div>
+            <select id="qType" class="lb-inp" style="width: 100px;" onchange="updateCatSelect()">
                 <option value="out">🔴 Saída</option>
                 <option value="in">🟢 Entrada</option>
             </select>
-
-            <input id="qDate" type="date" class="lb-inp" style="flex:0.6;">
-            
-            <input id="qDesc" class="lb-inp lb-desc" placeholder="Descrição (Ex: Aluno Pedro)" style="flex:1.2;">
-            
-            <input id="qLocal" class="lb-inp lb-desc" placeholder="Local" style="flex:0.8;">
-            
-            <select id="qMethod" class="lb-inp" style="flex:0.6; min-width:110px;">
-                <option value="credit">💳 Crédito</option>
+            <input id="qDate" type="date" class="lb-inp">
+            <input id="qDesc" class="lb-inp" placeholder="Descrição" style="flex: 2;">
+            <input id="qLocal" class="lb-inp" placeholder="Local" style="flex: 1;">
+            <select id="qMethod" class="lb-inp" style="width: 110px;">
                 <option value="pix">💠 Pix</option>
+                <option value="credit">💳 Crédito</option>
                 <option value="debit">💳 Débito</option>
                 <option value="cash">💵 Dinheiro</option>
             </select>
-
-            <input id="qVal" class="lb-inp blur-sensitive" placeholder="R$ 0,00" oninput="maskMoney(this)" style="flex:0.5; min-width:100px;">
-            
-            <div class="cat-container" style="display:flex; flex:1; gap:8px; min-width:150px;">
-                <select id="qCat" class="lb-inp" style="width:100%"></select>
-                <button class="cat-group-btn" onclick="openCatManager()" title="Categorias"><i class="fa-solid fa-gear"></i></button>
+            <input id="qVal" class="lb-inp blur-sensitive" placeholder="R$ 0,00" oninput="maskMoney(this)" style="width: 120px;">
+            <div style="display:flex; gap:5px; flex: 1.5;">
+                <select id="qCat" class="lb-inp" style="width: 100%"></select>
+                <button class="cat-group-btn" onclick="openCatManager()"><i class="fa-solid fa-gear"></i></button>
             </div>
-
-            <button class="lb-btn" onclick="addTrans()"><i class="fa-solid fa-check"></i> LANÇAR</button>
+            <button class="lb-btn" onclick="addTrans()">LANÇAR</button>
         </div>
 
-        <div style="display:flex; flex-direction:column; gap:25px;">
+        <div class="space-y-6">
             <div class="card">
                 <div class="c-head">
                     <div class="c-title"><i class="fa-solid fa-chart-pie"></i> Orçamento (Status Real)</div>
-                    <select id="monthNav" class="lb-inp" style="padding:6px 12px; font-size:0.85rem; width:auto; border-color:var(--border);" onchange="changeMonth(this.value)"></select>
+                    <select id="monthNav" class="f-inp" onchange="changeMonth(this.value)"></select>
                 </div>
                 <div class="pote-grid" id="poteContainer"></div>
-                <div style="margin-top:20px; font-size:0.9rem; text-align:right; font-weight:700; color:var(--success); font-family:var(--font-num);" id="saldoDisplay"></div>
-            </div>
-
-            <div class="card debt-panel">
-                <div class="c-head" style="border-color:rgba(239,68,68,0.3);">
-                    <div class="c-title" style="color:var(--danger);"><i class="fa-solid fa-crosshairs"></i> Sniper de Dívidas</div>
-                    <button onclick="openModal('modalDebt')" style="background:var(--bg); color:var(--danger); border:1px solid var(--danger); font-weight:700; padding:6px 14px; border-radius:8px; cursor:pointer; font-size:0.8rem;">+ Nova</button>
-                </div>
-                <div id="debtList"></div>
+                <div class="mt-4 text-right font-bold text-emerald-500 blur-sensitive" id="saldoDisplay"></div>
             </div>
 
             <div class="card">
                 <div class="c-head">
-                    <div class="c-title">Extrato do Mês</div>
+                    <div class="c-title"><i class="fa-solid fa-list-ul"></i> Extrato Detalhado</div>
                 </div>
-                <div class="trans-list" id="transList"></div>
+                <div class="filter-bar">
+                    <input type="text" id="fSearch" class="f-inp" placeholder="Buscar local ou desc..." onkeyup="renderTrans()" style="flex:1;">
+                    <select id="fCatFilter" class="f-inp" onchange="renderTrans()"><option value="all">Todas Categorias</option></select>
+                    <input type="date" id="fDateStart" class="f-inp" onchange="renderTrans()">
+                </div>
+                <div id="transList"></div>
+            </div>
+        </div>
+
+        <div class="space-y-6">
+            <div class="card border-l-4 border-red-500">
+                <div class="c-head">
+                    <div class="c-title text-red-500"><i class="fa-solid fa-crosshairs"></i> Sniper de Dívidas</div>
+                    <button onclick="openModal('modalDebt')" class="text-xs font-bold border border-red-500 text-red-500 px-3 py-1 rounded-lg">+ Nova</button>
+                </div>
+                <div id="debtList" class="space-y-3"></div>
+            </div>
+
+            <div class="card smart-cfg">
+                <div class="c-title text-white"><i class="fa-solid fa-brain"></i> Config. Inteligente</div>
+                <label class="text-[10px] font-bold opacity-80">RENDA MENSAL</label>
+                <input id="cfgIncome" class="cfg-inp blur-sensitive mb-4" oninput="maskMoney(this)">
+                <div id="fixedList" class="mb-4 space-y-1"></div>
+                <button onclick="addFixed()" class="w-full py-2 bg-white/10 rounded-lg text-xs font-bold mb-4">+ Fixo</button>
+                <div class="flex items-center gap-2 mb-4 bg-black/10 p-3 rounded-xl">
+                    <input type="checkbox" id="warMode" checked>
+                    <span class="text-xs font-bold">Modo Guerra Ativo</span>
+                </div>
+                <button onclick="smartCalc()" class="w-full py-3 bg-white text-blue-900 font-black rounded-xl text-sm">RECALCULAR TUDO</button>
             </div>
             
-             <div class="card">
-                <div class="c-head"><div class="c-title">Análise Visual</div></div>
-                <div style="height:300px;"><canvas id="mainChart"></canvas></div>
-            </div>
-        </div>
-
-        <div style="display:flex; flex-direction:column; gap:25px;">
-            <div class="card smart-cfg">
-                <div class="c-head" style="border-color:rgba(255,255,255,0.2);">
-                    <div class="c-title" style="color:white;"><i class="fa-solid fa-brain"></i> Config. Inteligente</div>
-                </div>
-                <div style="margin-bottom:18px;">
-                    <label style="font-size:0.75rem; opacity:0.9; font-weight:700; display:block; margin-bottom:8px; letter-spacing:0.5px;">RENDA MENSAL</label>
-                    <input id="cfgIncome" class="cfg-inp blur-sensitive" placeholder="R$ 0,00" oninput="maskMoney(this)">
-                </div>
-                <div style="margin-bottom:18px;">
-                    <label style="font-size:0.75rem; opacity:0.9; font-weight:700; display:block; margin-bottom:8px; letter-spacing:0.5px;">
-                        GASTOS FIXOS <span id="fixedTotal" style="float:right; font-family:var(--font-num);" class="blur-sensitive">R$ 0,00</span>
-                    </label>
-                    <div id="fixedList" style="background:rgba(0,0,0,0.1); border-radius:12px; max-height:180px; overflow-y:auto; padding:8px; margin-bottom:8px; border:1px solid rgba(255,255,255,0.1);"></div>
-                    <button onclick="addFixed()" style="width:100%; padding:10px; background:rgba(255,255,255,0.15); border:1px dashed rgba(255,255,255,0.4); color:white; border-radius:10px; cursor:pointer; font-size:0.85rem; font-weight:600; transition:0.2s;">+ Adicionar Fixo</button>
-                </div>
-                <div style="background:rgba(0,0,0,0.15); padding:15px; border-radius:12px; margin-bottom:20px; display:flex; align-items:center; gap:12px; border:1px solid rgba(255,255,255,0.1);">
-                    <input type="checkbox" id="warMode" checked style="accent-color:var(--accent); width:20px; height:20px;">
-                    <div style="line-height:1.3;">
-                        <div style="font-weight:700; font-size:0.9rem;">Modo Guerra</div>
-                        <div style="font-size:0.75rem; opacity:0.8;">Prioridade total em dívidas</div>
-                    </div>
-                </div>
-                <button onclick="smartCalc()" style="width:100%; padding:14px; background:white; color:var(--primary); font-weight:800; border:none; border-radius:12px; cursor:pointer; box-shadow:0 5px 15px rgba(0,0,0,0.2); transition:0.2s; font-size:0.9rem; display:flex; align-items:center; justify-content:center; gap:8px;">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i> RECALCULAR METAS
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modalSync" class="modal">
-        <div class="modal-box">
-            <i class="fa-solid fa-xmark modal-close" onclick="closeModal('modalSync')"></i>
-            <h3 style="color:var(--primary); margin-bottom:5px; font-family:var(--font-num); font-weight:800;">Central de Dados</h3>
-            <div style="margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:20px;">
-                <div style="color:var(--accent); font-weight:700; margin-bottom:5px; font-size:0.8rem;">NUVEM (Personal DB)</div>
-                <input type="password" id="manualToken" class="lb-inp" placeholder="Token Manual" style="font-size:0.8rem; padding:10px; margin-bottom:10px; width:100%;">
-                <button class="sync-btn" onclick="saveManualToken()" style="padding:10px; justify-content:center;">
-                    <i class="fa-solid fa-link"></i> Salvar Token
-                </button>
-                <button class="sync-btn" onclick="forceSync()">
-                    <i class="fa-solid fa-cloud-arrow-down" style="color:var(--accent)"></i> 
-                    <div>Forçar Download <div style="font-size:0.75rem; color:var(--text-muted); font-weight:400;">Baixar da Nuvem</div></div>
-                </button>
-            </div>
-            <div style="color:var(--text); font-weight:700; margin-bottom:5px; font-size:0.8rem;">LOCAL</div>
-            <button class="sync-btn" onclick="exportData()"><i class="fa-solid fa-download"></i> Baixar JSON</button>
-            <button class="sync-btn" onclick="document.getElementById('importFile').click()"><i class="fa-solid fa-upload"></i> Restaurar Backup</button>
-            <button class="sync-btn" style="border-color:var(--danger); color:var(--danger); margin-top:20px;" onclick="hardReset()"><i class="fa-solid fa-trash"></i> Resetar Tudo</button>
+            <div class="card h-64"><canvas id="mainChart"></canvas></div>
         </div>
     </div>
 
     <div id="modalDebt" class="modal">
         <div class="modal-box">
-            <i class="fa-solid fa-xmark modal-close" onclick="closeModal('modalDebt')"></i>
-            <h3 style="color:var(--danger); margin-bottom:20px; font-family:var(--font-num); font-weight:800;" id="debtModalTitle">Nova Dívida</h3>
+            <i class="fa-solid fa-xmark float-right cursor-pointer" onclick="closeModal('modalDebt')"></i>
+            <h3 class="font-bold text-red-500 mb-4" id="debtTitle">Gerenciar Dívida</h3>
             <input type="hidden" id="debtId">
-            <input id="dName" class="lb-inp" placeholder="Nome da Dívida" style="width:100%; margin-bottom:15px;">
-            <input id="dTotal" class="lb-inp" placeholder="Valor Total" oninput="maskMoney(this)" style="width:100%; margin-bottom:20px;">
-            <button class="lb-btn" style="width:100%; justify-content:center; background:var(--danger);" onclick="saveDebt()">SALVAR</button>
-        </div>
-    </div>
-
-    <div id="modalCat" class="modal">
-        <div class="modal-box">
-            <i class="fa-solid fa-xmark modal-close" onclick="closeModal('modalCat')"></i>
-            <h3 style="color:var(--primary); margin-bottom:20px; font-family:var(--font-num); font-weight:800;">Categorias</h3>
-            <div style="display:flex; gap:8px; margin-bottom:20px;">
-                <input id="newCatName" class="lb-inp" placeholder="Nova Categoria">
-                <select id="newCatPote" class="lb-inp" style="flex:0.7">
-                    <option value="essential">Essencial</option>
-                    <option value="debt">Dívida</option>
-                    <option value="shield">Blindagem</option>
-                    <option value="sanity">Sanidade</option>
-                </select>
-                <button onclick="addCatCustom()" class="cat-group-btn" style="background:var(--accent); color:white; border:none;"><i class="fa-solid fa-plus"></i></button>
-            </div>
-            <div id="catListDisplay" style="max-height:300px; overflow-y:auto;"></div>
+            <input id="dName" class="inp" placeholder="Nome">
+            <input id="dTotal" class="inp" placeholder="Valor Total" oninput="maskMoney(this)">
+            <button class="btn-main bg-red-500" onclick="saveDebt()">SALVAR</button>
         </div>
     </div>
 
     <div id="modalEdit" class="modal">
         <div class="modal-box">
-            <i class="fa-solid fa-xmark modal-close" onclick="closeModal('modalEdit')"></i>
-            <h3 style="color:var(--primary); margin-bottom:20px; font-family:var(--font-num); font-weight:800;">Editar Lançamento</h3>
+            <i class="fa-solid fa-xmark float-right cursor-pointer" onclick="closeModal('modalEdit')"></i>
+            <h3 class="font-bold mb-4">Editar Registro</h3>
             <input type="hidden" id="editId">
-            <div style="margin:10px 0; display:flex; flex-direction:column; gap:12px;">
-                <label style="font-size: 0.7rem; font-weight: 800; color: var(--text-muted);">DATA</label>
-                <input id="editDate" type="date" class="lb-inp" style="width:100%;">
-                <input id="editDesc" class="lb-inp" placeholder="Descrição">
-                <input id="editLocal" class="lb-inp" placeholder="Local">
-                <input id="editVal" class="lb-inp" oninput="maskMoney(this)">
-                <select id="editMethod" class="lb-inp">
-                    <option value="credit">💳 Crédito</option>
-                    <option value="pix">💠 Pix</option>
-                    <option value="debit">💳 Débito</option>
-                    <option value="cash">💵 Dinheiro</option>
-                </select>
-                <select id="editCat" class="lb-inp"></select>
-            </div>
-            <button class="lb-btn" style="width:100%; justify-content:center; margin-top:10px;" onclick="confirmEdit()">ATUALIZAR</button>
+            <input id="editDate" type="date" class="inp">
+            <input id="editDesc" class="inp">
+            <input id="editLocal" class="inp" placeholder="Local">
+            <input id="editVal" class="inp" oninput="maskMoney(this)">
+            <select id="editCat" class="inp"></select>
+            <button class="btn-main" onclick="confirmEdit()">ATUALIZAR</button>
         </div>
     </div>
 
-    <div id="toast"><i class="fa-solid fa-check-circle"></i> <span>Salvo!</span></div>
+    <div id="modalSync" class="modal">
+        <div class="modal-box">
+            <h3 class="font-bold mb-4">Sincronização</h3>
+            <input type="password" id="manualToken" class="inp" placeholder="Token GitHub">
+            <button class="btn-main bg-blue-500 mb-4" onclick="saveManualToken()">Salvar Token</button>
+            <button class="w-full py-2 border rounded-lg mb-2 text-sm font-bold" onclick="forceSync()">Baixar Nuvem</button>
+            <button class="w-full py-2 border rounded-lg mb-2 text-sm font-bold" onclick="exportData()">Backup Local</button>
+            <button class="w-full py-2 border rounded-lg text-red-500 border-red-200 text-sm font-bold" onclick="hardReset()">Resetar Tudo</button>
+            <button class="w-full mt-4 text-xs font-bold text-slate-400" onclick="closeModal('modalSync')">Fechar</button>
+        </div>
+    </div>
+
+    <div id="toast"></div>
     <input type="file" id="importFile" hidden onchange="importData(this)">
 
     <script>
-        const KEY = 'benai_fin_main_db'; 
-        const TOKEN_KEY = 'benai_coach_gh_token'; 
+        const KEY = 'benai_fin_main_db';
+        const TOKEN_KEY = 'benai_coach_gh_token';
         const GIST_DESC = 'BENAI_PERSONAL_DB';
-        const OLD_KEYS = ['benai_fin_v35']; 
 
         const POTES = {
             'essential': { label: '🏠 Essencial', color: 'var(--c-essen)' },
@@ -343,21 +229,16 @@
             'sanity':    { label: '🍹 Sanidade',  color: 'var(--c-sanity)' }
         };
 
-        let db = { income: 0, fixed: [], categories: [ {n:'Mercado', p:'essential'}, {n:'Aluguel/Moradia', p:'essential'}, {n:'Transporte', p:'essential'}, {n:'Amortização', p:'debt'}, {n:'Reserva', p:'shield'}, {n:'Investimento', p:'shield'}, {n:'Lazer', p:'sanity'}, {n:'Ifood', p:'sanity'}, {n:'Assinaturas', p:'sanity'} ], limits: {}, debts: [], transactions: [] };
-
+        let db = { income: 0, fixed: [], categories: [ {n:'Mercado', p:'essential'}, {n:'Moradia', p:'essential'}, {n:'Amortização', p:'debt'}, {n:'Reserva', p:'shield'}, {n:'Lazer', p:'sanity'} ], limits: {}, debts: [], transactions: [] };
         let curMonth = new Date().toISOString().slice(0,7);
         let chartInst = null;
         let isPrivacy = false;
         let gistId = null;
 
         async function init() {
-            let saved = localStorage.getItem(KEY);
-            if(!saved) { for(let k of OLD_KEYS) { saved = localStorage.getItem(k); if(saved) { localStorage.setItem(KEY, saved); break; } } }
+            const saved = localStorage.getItem(KEY);
             if(saved) db = JSON.parse(saved);
 
-            const th = localStorage.getItem('benai_theme');
-            if(th) document.body.setAttribute('data-theme', th);
-            
             document.getElementById('cfgIncome').value = fmt(db.income);
             document.getElementById('qDate').value = new Date().toISOString().slice(0,10);
             
@@ -368,198 +249,264 @@
             await syncCloud();
         }
 
-        function refresh() { renderPotes(); renderDebts(); renderTrans(); renderChart(); }
+        function refresh() { renderPotes(); renderDebts(); renderTrans(); renderChart(); populateCatFilter(); }
 
         // --- NUVEM ---
-        function updateCloudStatus(status) {
+        function updateCloudStatus(st) {
             const el = document.getElementById('cloudIndicator');
-            if(el) { el.style.display='block'; el.style.background = status==='ok'?'#10b981':status==='syncing'?'#00A8E8':'#ef4444'; }
+            if(el) el.style.background = st==='ok'?'#10b981':st==='syncing'?'#3b82f6':'#ef4444';
         }
-        
-        function saveManualToken() {
-            const t = document.getElementById('manualToken').value.trim();
-            if(t) { localStorage.setItem(TOKEN_KEY, t); alert("Token salvo!"); syncCloud(); }
-        }
-
         async function syncCloud() {
             const token = localStorage.getItem(TOKEN_KEY);
             if(!token) return updateCloudStatus('error');
             updateCloudStatus('syncing');
             try {
-                if(!gistId) { const s = await fetch('https://api.github.com/gists', { headers: { 'Authorization': `token ${token}` } }); const g = await s.json(); const f = g.find(x => x.description === GIST_DESC); if(f) gistId = f.id; }
+                if(!gistId) { const s = await fetch('https://api.github.com/gists',{headers:{Authorization:`token ${token}`}}); const g=await s.json(); const f=g.find(x=>x.description===GIST_DESC); if(f) gistId=f.id; }
                 if(gistId) {
-                    const r = await fetch(`https://api.github.com/gists/${gistId}`, { headers: { 'Authorization': `token ${token}` } }); const j = await r.json();
-                    if(j.files && j.files["finance.json"]) {
-                        db = JSON.parse(j.files["finance.json"].content); saveLocal(); refresh();
-                        updateCloudStatus('ok');
-                    } else { await pushCloud(); }
-                } else { await pushCloud(); }
+                    const r = await fetch(`https://api.github.com/gists/${gistId}`,{headers:{Authorization:`token ${token}`}}); const j=await r.json();
+                    if(j.files["finance.json"]) { db = JSON.parse(j.files["finance.json"].content); saveLocal(); refresh(); }
+                    updateCloudStatus('ok');
+                }
             } catch(e) { updateCloudStatus('error'); }
         }
         async function pushCloud() {
-            const token = localStorage.getItem(TOKEN_KEY); if(!token) return;
-            updateCloudStatus('syncing');
+            const token = localStorage.getItem(TOKEN_KEY); if(!token || !gistId) return;
             try {
-                let url = 'https://api.github.com/gists'; let method = 'POST'; if(gistId) { url += '/' + gistId; method = 'PATCH'; }
-                const payload = { description: GIST_DESC, public: false, files: { "finance.json": { content: JSON.stringify(db) } } };
-                const res = await fetch(url, { method: method, headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                if(res.ok) { const j = await res.json(); gistId = j.id; updateCloudStatus('ok'); }
-            } catch(e) { updateCloudStatus('error'); }
+                const body = JSON.stringify({ files: {"finance.json": {content: JSON.stringify(db)}} });
+                await fetch(`https://api.github.com/gists/${gistId}`, {method:'PATCH', headers:{Authorization:`token ${token}`}, body});
+                updateStatus('ok');
+            } catch(e) {}
         }
 
-        function saveLocal() { localStorage.setItem(KEY, JSON.stringify(db)); }
-        function save() { saveLocal(); refresh(); pushCloud(); }
-
-        // --- UX ---
-        function toggleTheme() {
-            const b = document.body;
-            const next = b.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-            b.setAttribute('data-theme', next);
-            localStorage.setItem('benai_theme', next);
-            refresh(); 
-        }
-        function togglePrivacy() {
-            isPrivacy = !isPrivacy;
-            document.body.classList.toggle('privacy-mode', isPrivacy);
-            document.getElementById('eyeIcon').className = isPrivacy ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
-        }
-        function fireConfetti() { confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, colors: ['#001F5B', '#00A8E8', '#10b981'] }); }
-
-        // --- SMART CALC ---
-        function addFixed() {
-            const n = prompt("Nome do Gasto Fixo:"); const v = prompt("Valor:");
-            if(n && v) { db.fixed.push({id:Date.now(), name:n, val:parse(v)}); save(); renderFixed(); }
-        }
-        function renderFixed() {
-            const l = document.getElementById('fixedList'); l.innerHTML=''; let t = 0;
-            db.fixed.forEach((f,i) => { t+=f.val; l.innerHTML += `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid rgba(255,255,255,0.1); color:white; font-size:0.9rem;"><span>${f.name}</span> <span class="blur-sensitive">${fmt(f.val)} <i class="fa-solid fa-trash" style="cursor:pointer; margin-left:8px; opacity:0.7;" onclick="delFixed(${i})"></i></span></div>`; });
-            document.getElementById('fixedTotal').innerText = fmt(t);
-        }
-        function delFixed(i) { db.fixed.splice(i,1); save(); renderFixed(); }
-        function smartCalc() {
-            const inc = parse(document.getElementById('cfgIncome').value); db.income = inc;
-            const fix = db.fixed.reduce((a,b)=>a+b.val,0); let free = inc - fix; if(free < 0) free = 0;
-            const war = document.getElementById('warMode').checked;
-            db.limits['essential'] = fix * 1.05; 
-            if(war) { db.limits['sanity'] = Math.min(free * 0.15, 400); db.limits['shield'] = free * 0.15; db.limits['debt'] = free - db.limits['sanity'] - db.limits['shield']; } 
-            else { db.limits['sanity'] = free * 0.30; db.limits['shield'] = free * 0.30; db.limits['debt'] = free * 0.40; }
-            save(); showToast("Metas Recalculadas!");
-        }
-
-        // --- TRANSACTIONS ---
-        function updateCatSelect(targetId = 'qCat') {
-            const realType = targetId==='qCat' ? document.getElementById('qType').value : 'out';
-            const sel = document.getElementById(targetId); sel.innerHTML = '';
-            if(realType === 'in') { sel.add(new Option('Salário','Salário')); sel.add(new Option('Consultoria','Consultoria')); sel.add(new Option('Extra','Extra')); } 
-            else { Object.keys(POTES).forEach(key => { const grp = document.createElement('optgroup'); grp.label = POTES[key].label; const cats = db.categories.filter(c => c.p === key); cats.forEach(c => { const opt = new Option(c.n, c.n); opt.setAttribute('data-bucket', key); grp.appendChild(opt); }); sel.appendChild(grp); }); }
-        }
+        // --- CORE ---
         function addTrans() {
             const date = document.getElementById('qDate').value;
-            const desc = document.getElementById('qDesc').value; const local = document.getElementById('qLocal').value; 
-            const val = parse(document.getElementById('qVal').value); const type = document.getElementById('qType').value;
-            const method = document.getElementById('qMethod').value; const catSel = document.getElementById('qCat'); const cat = catSel.value;
-            if(!desc || !val || !date) return alert("Preencha data, descrição e valor");
-            let bucket = 'income'; if(type === 'out') bucket = catSel.options[catSel.selectedIndex].getAttribute('data-bucket');
+            const desc = document.getElementById('qDesc').value;
+            const local = document.getElementById('qLocal').value;
+            const val = parse(document.getElementById('qVal').value);
+            const type = document.getElementById('qType').value;
+            const catSel = document.getElementById('qCat');
+            const cat = catSel.value;
+            
+            if(!desc || !val || !date) return alert("Erro nos campos");
+
+            let bucket = 'income';
+            if(type === 'out') {
+                const opt = catSel.options[catSel.selectedIndex];
+                bucket = opt.getAttribute('data-bucket');
+            }
+
             if(bucket === 'debt') {
-                const active = db.debts.filter(d => { const p = (d.payments||[]).reduce((a,b)=>a+b.val,0); return p < d.total; });
+                const active = db.debts.filter(d => (d.payments||[]).reduce((a,b)=>a+b.val,0) < d.total);
                 if(active.length) {
-                    let msg = "Abater qual dívida?\n"; active.forEach((d,i)=> msg+= `${i}: ${d.name}\n`);
+                    let msg = "Vincular a qual dívida?\n" + active.map((d,i)=>`${i}: ${d.name}`).join('\n');
                     const idx = prompt(msg);
-                    if(idx!==null && active[idx]) {
-                        active[idx].payments.push({date:curMonth, val:val});
-                        if((active[idx].payments.reduce((a,b)=>a+b.val,0)) >= active[idx].total - 1) fireConfetti();
+                    if(idx !== null && active[idx]) {
+                        if(!active[idx].payments) active[idx].payments = [];
+                        active[idx].payments.push({date, val});
                     }
                 }
             }
-            db.transactions.push({ id: Date.now(), date, desc, local, val, type, cat, bucket, method });
-            document.getElementById('qDesc').value = ''; document.getElementById('qLocal').value = ''; document.getElementById('qVal').value = '';
-            showToast("Lançamento Salvo!"); save();
+
+            db.transactions.push({id:Date.now(), date, desc, local, val, type, cat, bucket, method: document.getElementById('qMethod').value});
+            save(); document.getElementById('qDesc').value=''; document.getElementById('qLocal').value=''; document.getElementById('qVal').value='';
+            fireConfetti();
         }
 
-        function delTrans(id) { if(confirm("Apagar?")) { db.transactions = db.transactions.filter(t=>t.id!==id); save(); } }
-        function openEdit(id) {
-            const t = db.transactions.find(x=>x.id===id); if(!t) return;
-            document.getElementById('editId').value = id;
-            document.getElementById('editDate').value = t.date;
-            document.getElementById('editDesc').value = t.desc;
-            document.getElementById('editLocal').value = t.local || ''; 
-            document.getElementById('editVal').value = fmt(t.val);
-            document.getElementById('editMethod').value = t.method || 'credit';
-            const sel = document.getElementById('editCat'); sel.innerHTML = ''; 
-            Object.keys(POTES).forEach(key => { const grp = document.createElement('optgroup'); grp.label = POTES[key].label; db.categories.filter(c=>c.p===key).forEach(c => { grp.appendChild(new Option(c.n, c.n)); }); sel.appendChild(grp); });
-            sel.value = t.cat; openModal('modalEdit');
-        }
-        function confirmEdit() {
-            const id = parseInt(document.getElementById('editId').value); const t = db.transactions.find(x=>x.id===id);
-            if(t) {
-                t.date = document.getElementById('editDate').value;
-                t.desc = document.getElementById('editDesc').value; t.local = document.getElementById('editLocal').value; 
-                t.val = parse(document.getElementById('editVal').value); t.cat = document.getElementById('editCat').value;
-                t.method = document.getElementById('editMethod').value;
-                const catObj = db.categories.find(c=>c.n===t.cat); if(catObj) t.bucket = catObj.p;
-                save(); closeModal('modalEdit');
-            }
+        function renderTrans() {
+            const list = document.getElementById('transList'); list.innerHTML = '';
+            const search = document.getElementById('fSearch').value.toLowerCase();
+            const catF = document.getElementById('fCatFilter').value;
+            const dateF = document.getElementById('fDateStart').value;
+
+            const txs = db.transactions.filter(t => {
+                const mMatch = t.date.startsWith(curMonth);
+                const sMatch = t.desc.toLowerCase().includes(search) || (t.local||'').toLowerCase().includes(search);
+                const cMatch = catF === 'all' || t.cat === catF;
+                const dMatch = !dateF || t.date >= dateF;
+                return mMatch && sMatch && cMatch && dMatch;
+            }).sort((a,b) => b.id - a.id);
+
+            txs.forEach(t => {
+                const isIn = t.type === 'in';
+                const color = isIn ? 'var(--success)' : 'var(--danger)';
+                list.innerHTML += `
+                    <div class="t-row">
+                        <div class="t-left">
+                            <div class="t-icon" style="background:${isIn?'#f0fdf4':'#fff1f2'}; color:${color}">
+                                <i class="fa-solid fa-arrow-${isIn?'up':'down'}"></i>
+                            </div>
+                            <div>
+                                <div class="t-desc">${t.desc}</div>
+                                <div class="t-meta">${t.cat} ${t.local?`• 📍 ${t.local}`:''} • ${t.date.split('-').reverse().join('/')}</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="t-val blur-sensitive ${isIn?'text-in':'text-out'}">${isIn?'+':'-'} ${fmt(t.val)}</div>
+                            <div class="t-actions">
+                                <i class="fa-solid fa-pen act-btn" onclick="openEdit(${t.id})"></i>
+                                <i class="fa-solid fa-trash act-btn" onclick="delTrans(${t.id})"></i>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
         }
 
-        // --- RENDER ---
         function renderPotes() {
             const txs = db.transactions.filter(t => t.date.startsWith(curMonth) && t.type==='out');
-            const spent = {'essential':0, 'debt':0, 'shield':0, 'sanity':0};
-            txs.forEach(t => { if(spent[t.bucket]!==undefined) spent[t.bucket]+=t.val; });
-            const div = document.getElementById('poteContainer'); div.innerHTML = ''; let totalOut = 0;
+            const container = document.getElementById('poteContainer'); container.innerHTML = '';
+            let totalSpent = 0;
+
             Object.keys(POTES).forEach(k => {
-                const lim = db.limits[k]||0; const sp = spent[k]||0; totalOut += sp;
-                const pct = lim>0?(sp/lim)*100:0;
-                div.innerHTML += `<div class="pote-item"><div class="pi-head"><span>${POTES[k].label}</span> <span>${fmt(sp)} / ${fmt(lim)}</span></div><div class="pi-val blur-sensitive" style="color:${sp>lim?'var(--danger)':'var(--text)'}">${pct.toFixed(0)}%</div><div class="pi-bar-bg"><div class="pi-fill" style="width:${Math.min(pct,100)}%; background:${POTES[k].color}"></div></div></div>`;
+                const lim = db.limits[k] || 1;
+                const spent = txs.filter(t => t.bucket === k).reduce((a,b)=>a+b.val, 0);
+                totalSpent += spent;
+                const pct = Math.min((spent / lim) * 100, 100);
+                container.innerHTML += `
+                    <div class="pote-item">
+                        <div class="pi-head"><span>${POTES[k].label}</span><span class="blur-sensitive">${fmt(spent)} / ${fmt(lim)}</span></div>
+                        <div class="pi-val blur-sensitive" style="color:${spent>lim?'var(--danger)':'var(--primary)'}">${Math.round((spent/lim)*100)}%</div>
+                        <div class="pi-bar-bg"><div class="pi-fill" style="width:${pct}%; background:${POTES[k].color}"></div></div>
+                    </div>
+                `;
             });
-            const incomeM = db.transactions.filter(t => t.date.startsWith(curMonth) && t.type==='in').reduce((a,b)=>a+b.val,0);
-            document.getElementById('saldoDisplay').innerText = `Saldo Mês: ${fmt(incomeM - totalOut)}`;
-        }
-        function renderTrans() {
-            const l = document.getElementById('transList'); l.innerHTML = '';
-            const txs = db.transactions.filter(t => t.date.startsWith(curMonth)).sort((a,b)=>new Date(b.date)-new Date(a.date) || b.id-a.id);
-            const methIcons = { 'credit':'💳', 'debit':'💳', 'pix':'💠', 'cash':'💵' };
-            txs.forEach(t => {
-                const isIn = t.type==='in';
-                const color = isIn ? 'var(--success)' : (POTES[t.bucket]?.color || 'var(--text-muted)');
-                const icon = isIn ? 'fa-arrow-up' : 'fa-arrow-down';
-                const mi = methIcons[t.method] || '';
-                l.innerHTML += `<div class="t-row"><div class="t-left"><div class="t-icon" style="background:${isIn ? 'rgba(16,185,129,0.1)' : 'rgba(200,200,200,0.2)'}; color:${color}"><i class="fa-solid ${icon}"></i></div><div><div class="t-desc">${t.desc} <span style="font-size:0.75rem; opacity:0.7; font-weight:400;">${mi}</span></div><div class="t-meta">${t.cat} ${t.local?`• 📍 ${t.local}`:''} • ${t.date.split('-').reverse().join('/')}</div></div></div><div style="display:flex; gap:15px; align-items:center;"><div class="t-val blur-sensitive" style="color:${isIn? 'var(--success)' : 'var(--text)'}">${isIn?'+':'-'} ${fmt(t.val)}</div><div class="t-actions"><i class="fa-solid fa-pen act-btn" onclick="openEdit(${t.id})"></i><i class="fa-solid fa-trash act-btn del" onclick="delTrans(${t.id})"></i></div></div></div>`;
-            });
+            const inc = db.transactions.filter(t=>t.date.startsWith(curMonth) && t.type==='in').reduce((a,b)=>a+b.val,0);
+            document.getElementById('saldoDisplay').innerText = "Saldo: " + fmt(inc - totalSpent);
         }
 
-        // Restante das funções de suporte (renderDebts, renderChart, etc.) permanecem funcionais...
+        // --- DIVIDAS ---
         function renderDebts() {
             const l = document.getElementById('debtList'); l.innerHTML = '';
             db.debts.forEach(d => {
                 const paid = (d.payments||[]).reduce((a,b)=>a+b.val,0);
-                if(paid >= d.total) return; 
-                l.innerHTML += `<div class="debt-row"><div style="flex:1"><div class="debt-name">${d.name}</div><div style="font-size:0.8rem; color:var(--text-muted);">Pago: <span class="blur-sensitive">${fmt(paid)}</span> / <span class="blur-sensitive">${fmt(d.total)}</span></div></div><div style="display:flex; align-items:center; gap:15px;"><div style="font-weight:800; color:var(--danger); font-size:1rem;" class="blur-sensitive">Resta: ${fmt(d.total-paid)}</div><div class="debt-actions"><i class="fa-solid fa-pen act-btn" onclick="openEditDebt(${d.id})"></i><i class="fa-solid fa-trash act-btn del" onclick="delDebt(${d.id})"></i></div></div></div>`;
+                if(paid >= d.total) return;
+                l.innerHTML += `
+                    <div class="debt-row">
+                        <div style="flex:1">
+                            <div class="font-bold text-sm">${d.name}</div>
+                            <div class="text-[10px] text-slate-400">Pago: ${fmt(paid)} de ${fmt(d.total)}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-red-500 font-black blur-sensitive">${fmt(d.total - paid)}</div>
+                            <div class="debt-actions">
+                                <i class="fa-solid fa-pen act-btn" onclick="openEditDebt(${d.id})"></i>
+                                <i class="fa-solid fa-trash act-btn" onclick="delDebt(${d.id})"></i>
+                            </div>
+                        </div>
+                    </div>
+                `;
             });
         }
+
+        function saveDebt() {
+            const id = document.getElementById('debtId').value;
+            const n = document.getElementById('dName').value;
+            const t = parse(document.getElementById('dTotal').value);
+            if(!n || !t) return;
+            if(id) {
+                const d = db.debts.find(x=>x.id==id);
+                d.name = n; d.total = t;
+            } else {
+                db.debts.push({id:Date.now(), name:n, total:t, payments:[]});
+            }
+            save(); closeModal('modalDebt');
+        }
+
+        function openEditDebt(id) {
+            const d = db.debts.find(x=>x.id===id);
+            document.getElementById('debtId').value = id;
+            document.getElementById('dName').value = d.name;
+            document.getElementById('dTotal').value = fmt(d.total);
+            openModal('modalDebt');
+        }
+
+        // --- CONFIG & UTILS ---
+        function smartCalc() {
+            const inc = parse(document.getElementById('cfgIncome').value); db.income = inc;
+            const fix = db.fixed.reduce((a,b)=>a+b.val,0);
+            let free = inc - fix; if(free < 0) free = 0;
+            const war = document.getElementById('warMode').checked;
+            db.limits['essential'] = fix * 1.1; 
+            if(war) {
+                db.limits['sanity'] = 400;
+                db.limits['shield'] = free * 0.1;
+                db.limits['debt'] = free - 400 - (free * 0.1);
+            } else {
+                db.limits['sanity'] = free * 0.3;
+                db.limits['shield'] = free * 0.3;
+                db.limits['debt'] = free * 0.4;
+            }
+            save(); showToast("Metas Atualizadas!");
+        }
+
+        function openEdit(id) {
+            const t = db.transactions.find(x=>x.id===id);
+            document.getElementById('editId').value = id;
+            document.getElementById('editDate').value = t.date;
+            document.getElementById('editDesc').value = t.desc;
+            document.getElementById('editLocal').value = t.local || '';
+            document.getElementById('editVal').value = fmt(t.val);
+            const sel = document.getElementById('editCat'); sel.innerHTML = '';
+            db.categories.forEach(c => sel.add(new Option(c.n, c.n)));
+            sel.value = t.cat;
+            openModal('modalEdit');
+        }
+        
+        function confirmEdit() {
+            const t = db.transactions.find(x=>x.id==document.getElementById('editId').value);
+            t.date = document.getElementById('editDate').value;
+            t.desc = document.getElementById('editDesc').value;
+            t.local = document.getElementById('editLocal').value;
+            t.val = parse(document.getElementById('editVal').value);
+            t.cat = document.getElementById('editCat').value;
+            save(); closeModal('modalEdit');
+        }
+
+        function populateCatFilter() {
+            const f = document.getElementById('fCatFilter'); f.innerHTML = '<option value="all">Todas Categorias</option>';
+            db.categories.forEach(c => f.add(new Option(c.n, c.n)));
+        }
+
+        function saveLocal() { localStorage.setItem(KEY, JSON.stringify(db)); }
+        function save() { saveLocal(); refresh(); pushCloud(); }
+        function openModal(id) { document.getElementById(id).style.display='flex'; }
+        function closeModal(id) { document.getElementById(id).style.display='none'; }
+        function parse(s) { return parseFloat(s.replace(/[^0-9,]/g,'').replace(',','.'))||0; }
+        function fmt(n) { return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
+        function maskMoney(i) { let v=i.value.replace(/\D/g,''); v=(v/100).toFixed(2)+''; v=v.replace(".",","); v=v.replace(/(\d)(?=(\d{3})+(?!\d))/g,'$1.'); i.value='R$ '+v; }
+        function updateCatSelect() {
+            const type = document.getElementById('qType').value;
+            const sel = document.getElementById('qCat'); sel.innerHTML = '';
+            if(type === 'in') { ['Salário','Consultoria','Extra'].forEach(n => sel.add(new Option(n,n))); }
+            else { Object.keys(POTES).forEach(k => { db.categories.filter(c=>c.p===k).forEach(c=>{ const o = new Option(c.n, c.n); o.setAttribute('data-bucket', k); sel.add(o); })}); }
+        }
+        function renderMonthNav() {
+            const s = document.getElementById('monthNav'); s.innerHTML='';
+            const months = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+            for(let i=-6; i<=6; i++) {
+                const d = new Date(); d.setMonth(d.getMonth()+i);
+                const iso = d.toISOString().slice(0,7);
+                const opt = new Option(`${months[d.getMonth()]} ${d.getFullYear()}`, iso);
+                if(iso === curMonth) opt.selected = true;
+                s.add(opt);
+            }
+        }
+        function changeMonth(v) { curMonth = v; refresh(); }
+        function showToast(m) { const t=document.getElementById('toast'); t.innerText=m; t.className='show'; setTimeout(()=>t.className='', 2000); }
+        function saveManualToken() { localStorage.setItem(TOKEN_KEY, document.getElementById('manualToken').value); syncCloud(); }
+        function hardReset() { if(confirm("Apagar tudo?")) { localStorage.clear(); location.reload(); } }
+        function togglePrivacy() { isPrivacy = !isPrivacy; document.body.classList.toggle('privacy-mode'); }
+        function delTrans(id) { if(confirm("Apagar?")) { db.transactions = db.transactions.filter(x=>x.id!==id); save(); } }
+        function delDebt(id) { if(confirm("Apagar dívida?")) { db.debts = db.debts.filter(x=>x.id!==id); save(); } }
+
         function renderChart() {
             const ctx = document.getElementById('mainChart');
             const txs = db.transactions.filter(t => t.date.startsWith(curMonth) && t.type==='out');
             const dataMap = {}; txs.forEach(t => { dataMap[t.cat] = (dataMap[t.cat]||0)+t.val; });
-            const isDark = document.body.getAttribute('data-theme') === 'dark';
-            const txtColor = isDark ? '#94a3b8' : '#334155';
             if(chartInst) chartInst.destroy();
-            chartInst = new Chart(ctx, { type: 'doughnut', data: { labels: Object.keys(dataMap), datasets: [{ data:Object.values(dataMap), backgroundColor:['#3b82f6','#ef4444','#10b981','#f59e0b','#6366f1'], borderWidth:0 }] }, options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{position:'right', labels:{color:txtColor}} } } });
+            chartInst = new Chart(ctx, { type: 'doughnut', data: { labels: Object.keys(dataMap), datasets: [{ data:Object.values(dataMap), backgroundColor:['#3b82f6','#ef4444','#10b981','#f59e0b','#6366f1'], borderWidth:0 }] }, options: { maintainAspectRatio:false, plugins:{ legend:{position:'bottom'} } } });
         }
-        function openCatManager() { const l = document.getElementById('catListDisplay'); l.innerHTML = ''; db.categories.forEach((c,i) => { l.innerHTML += `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid var(--border); align-items:center;"><span style="font-weight:600;">${c.n} <small style="color:var(--text-muted);">(${POTES[c.p].label})</small></span><i class="fa-solid fa-trash act-btn del" onclick="delCat(${i})"></i></div>`; }); openModal('modalCat'); }
-        function addCatCustom() { const n = document.getElementById('newCatName').value; const p = document.getElementById('newCatPote').value; if(n) { db.categories.push({n,p}); save(); openCatManager(); updateCatSelect(); } }
-        function delCat(i) { if(confirm("Apagar?")) { db.categories.splice(i,1); save(); openCatManager(); updateCatSelect(); } }
-        function exportData() { const d="data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(db)); const a=document.createElement('a'); a.href=d; a.download="benai_fin_backup.json"; a.click(); }
-        function importData(i) { const f=i.files[0]; if(!f)return; const r=new FileReader(); r.onload=e=>{db=JSON.parse(e.target.result); save(); location.reload();}; r.readAsText(f); }
-        function hardReset() { if(confirm("Tem certeza?")) { localStorage.removeItem(KEY); location.reload(); } }
-        function renderMonthNav() { const s = document.getElementById('monthNav'); s.innerHTML=''; const ms = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"]; for(let i=-5; i<=5; i++) { const d = new Date(); d.setMonth(d.getMonth()+i); const iso = d.toISOString().slice(0,7); const opt = new Option(`${ms[d.getMonth()]} ${d.getFullYear()}`, iso); if(iso===curMonth) opt.selected=true; s.add(opt); } }
-        function changeMonth(v) { curMonth=v; refresh(); }
-        function parse(s) { return parseFloat(s.replace(/[^0-9,]/g,'').replace(',','.'))||0; }
-        function fmt(n) { return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
-        function maskMoney(i) { let v=i.value.replace(/\D/g,''); v=(v/100).toFixed(2)+''; v=v.replace(".",","); v=v.replace(/(\d)(?=(\d{3})+(?!\d))/g,'$1.'); i.value='R$ '+v; }
-        function showToast(msg) { const t=document.getElementById('toast'); t.innerHTML=`<i class="fa-solid fa-check-circle"></i> ${msg}`; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
-        function closeModal(id) { document.getElementById(id).style.display='none'; }
-        function openModal(id) { document.getElementById(id).style.display='flex'; }
 
         init();
     </script>
