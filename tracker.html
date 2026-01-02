@@ -15,7 +15,8 @@
             // VERIFICA SESSÃO DO HUB
             const sessionType = sessionStorage.getItem("benai_access_type");
             const sessionGranted = sessionStorage.getItem("benai_access_granted");
-            if (sessionType === "master" || sessionType === "guest" || sessionGranted === "true") return;
+            const type = sessionStorage.getItem("benai_access_type");
+            if (type === "master" || type === "guest" || sessionStorage.getItem("benai_access_granted") === "true") return;
 
             const PIN_CORRETO = "16359001";
             document.write(`
@@ -681,3 +682,4 @@
     </script>
 </body>
 </html>
+
