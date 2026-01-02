@@ -13,7 +13,8 @@
     <script>
         (function() {
             const PIN_CORRETO = "16359001"; 
-            if (sessionStorage.getItem("benai_access_granted") === "true") return;
+            const type = sessionStorage.getItem("benai_access_type");
+            if (type === "master" || type === "guest" || sessionStorage.getItem("benai_access_granted") === "true") return;
 
             document.write(`
                 <style>
