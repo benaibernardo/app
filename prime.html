@@ -227,7 +227,13 @@
             <i data-lucide="database" class="w-12 h-12 text-[#00A89A] mx-auto mb-4"></i>
             <h3 class="text-xl font-bold text-[#05364F] mb-2 font-heading">Central de Dados</h3>
             <p class="text-sm text-slate-500 mb-8">Nuvem GitHub + Backup Local</p>
+            
             <div class="space-y-3">
+                <div style="margin-bottom:15px; border-bottom:1px solid #e2e8f0; padding-bottom:15px;">
+                    <input type="password" id="manualToken" placeholder="Token (ghp_...)" class="w-full p-3 rounded-xl border border-slate-200 text-sm mb-2 outline-none focus:border-[#00A89A]">
+                    <button onclick="saveManualToken()" class="w-full py-2 rounded-xl bg-slate-100 text-slate-500 font-bold text-xs hover:bg-slate-200">SALVAR TOKEN</button>
+                </div>
+
                 <button onclick="forceSync()" class="w-full py-3 rounded-xl bg-[#00A89A] text-white font-bold hover:bg-teal-600 flex justify-center gap-2 btn-modern"><i data-lucide="cloud-download" class="w-4 h-4"></i> BAIXAR DA NUVEM</button>
                 <button onclick="backupData()" class="w-full py-3 rounded-xl bg-[#05364F] text-white font-bold hover:bg-[#032435] flex justify-center gap-2 btn-modern"><i data-lucide="download" class="w-4 h-4"></i> BACKUP LOCAL</button>
                 <label class="w-full py-3 rounded-xl border-2 border-slate-200 text-slate-600 font-bold hover:bg-slate-50 cursor-pointer flex justify-center gap-2 btn-modern"><i data-lucide="upload" class="w-4 h-4"></i> RESTAURAR LOCAL <input type="file" id="fileIn" hidden onchange="restoreData(this)"></label>
@@ -281,13 +287,11 @@
     <div id="toast" class="fixed bottom-6 right-6 bg-[#05364F] text-white px-5 py-3 rounded-lg shadow-xl flex items-center gap-3 z-[100] translate-x-[150%] transition-transform duration-300 border-l-4 border-[#00A89A]"><i data-lucide="check-circle" class="w-5 h-5 text-[#00A89A]"></i> <span id="toast-msg" class="text-sm font-bold"></span></div>
 
     <script>
-        // CONFIGURAÇÕES GERAIS
         const DB_KEY = 'prime_main_db'; 
         const TOKEN_KEY = 'benai_coach_gh_token'; 
         const GIST_DESC = 'BENAI_WORK_DB';
         const INITIAL_PROFS = ['BENAI', 'JUAN', 'THUR', 'LUANA', 'BENJAMIN'];
         
-        // 38 ALUNOS (EXTRAÍDOS MANUALMENTE E INJETADOS)
         const INITIAL_STUDENTS = [
             {"id":"1","name":"NILTON FLORIANO","objective":"GANHAR MASSA","limitations":"HERNIA INGUINAL","notes":"GOSTA DE FAZER BURPEES AO FINAL DA AULA","plan":"3X"},
             {"id":"2","name":"LINDAMIR FLORIANO (MIME)","objective":"EMAGRECIMENTO","limitations":"NENHUMA","notes":"","plan":"3X"},
@@ -333,12 +337,10 @@
         let charts = {};
         let gistId = null;
 
-        // INICIALIZAÇÃO
         async function init() {
             let saved = localStorage.getItem(DB_KEY);
             if (saved) {
                 db = JSON.parse(saved);
-                // Garante que a lista de alunos esteja populada se estiver vazia
                 if (!db.students || db.students.length < 5) db.students = INITIAL_STUDENTS;
                 if (!db.professors) db.professors = INITIAL_PROFS;
             } else {
@@ -346,17 +348,18 @@
                 saveDB();
             }
             
-            // UI
+            // Tenta pré-carregar token
+            const t = localStorage.getItem(TOKEN_KEY);
+            if(t && document.getElementById('manualToken')) document.getElementById('manualToken').value = t;
+
             lucide.createIcons();
             setTab('checkin');
             updateStats();
             setInterval(() => document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}), 1000);
             
-            // Gráficos Globais
             Chart.defaults.font.family = "'Inter', sans-serif";
             Chart.defaults.color = '#64748b';
 
-            // Sync Nuvem
             await syncCloud();
         }
 
@@ -603,6 +606,16 @@
         function addProfessor(){ const n=document.getElementById('new-prof-name').value.toUpperCase(); if(n){ db.professors.push(n); saveDB(); renderProfList(); document.getElementById('new-prof-name').value=''; }}
         
         function updateCloudStatus(st) { const el=document.getElementById('cloudIndicator'); if(el) el.className='cloud-status '+st; }
+        
+        function saveManualToken() {
+            const t = document.getElementById('manualToken').value.trim();
+            if(t) {
+                localStorage.setItem(TOKEN_KEY, t);
+                alert("Token salvo! Tentando conectar...");
+                syncCloud();
+            }
+        }
+
         async function syncCloud() {
             const token = localStorage.getItem(TOKEN_KEY); if(!token) return updateCloudStatus('error'); updateCloudStatus('syncing');
             try {
