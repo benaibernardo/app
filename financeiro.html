@@ -265,10 +265,13 @@
         <div class="modal-box">
             <i class="fa-solid fa-xmark modal-close" onclick="closeModal('modalSync')"></i>
             <h3 style="color:var(--primary); margin-bottom:5px; font-family:var(--font-num); font-weight:800;">Central de Dados</h3>
-            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:20px;">Sincronize entre PC e Celular via arquivo.</p>
             
             <div style="margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:20px;">
                 <div style="color:var(--accent); font-weight:700; margin-bottom:5px; font-size:0.8rem;">NUVEM (Personal DB)</div>
+                <input type="password" id="manualToken" class="lb-inp" placeholder="Token Manual (Se precisar)" style="font-size:0.8rem; padding:10px; margin-bottom:10px; width:100%;">
+                <button class="sync-btn" onclick="saveManualToken()" style="padding:10px; justify-content:center;">
+                    <i class="fa-solid fa-link"></i> Salvar Token
+                </button>
                 <button class="sync-btn" onclick="forceSync()">
                     <i class="fa-solid fa-cloud-arrow-down" style="color:var(--accent)"></i> 
                     <div>Forçar Download <div style="font-size:0.75rem; color:var(--text-muted); font-weight:400;">Baixar da Nuvem</div></div>
@@ -384,6 +387,11 @@
             if(th) document.body.setAttribute('data-theme', th);
             
             document.getElementById('cfgIncome').value = fmt(db.income);
+            
+            // Tenta carregar Token Manual
+            const t = localStorage.getItem(TOKEN_KEY);
+            if(t) document.getElementById('manualToken').value = t;
+
             renderMonthNav(); renderFixed(); updateCatSelect(); refresh();
             await syncCloud();
         }
@@ -398,6 +406,16 @@
                 el.style.background = status==='ok'?'#10b981':status==='syncing'?'#00A8E8':'#ef4444';
             }
         }
+        
+        function saveManualToken() {
+            const t = document.getElementById('manualToken').value.trim();
+            if(t) {
+                localStorage.setItem(TOKEN_KEY, t);
+                alert("Token salvo! Conectando...");
+                syncCloud();
+            }
+        }
+
         async function syncCloud() {
             const token = localStorage.getItem(TOKEN_KEY);
             if(!token) return updateCloudStatus('error');
@@ -406,11 +424,11 @@
                 if(!gistId) { const s = await fetch('https://api.github.com/gists', { headers: { 'Authorization': `token ${token}` } }); const g = await s.json(); const f = g.find(x => x.description === GIST_DESC); if(f) gistId = f.id; }
                 if(gistId) {
                     const r = await fetch(`https://api.github.com/gists/${gistId}`, { headers: { 'Authorization': `token ${token}` } }); const j = await r.json();
-                    if(j.files["finance.json"]) {
+                    if(j.files && j.files["finance.json"]) {
                         const cloudDB = JSON.parse(j.files["finance.json"].content);
                         db = cloudDB; saveLocal(); refresh();
+                        updateCloudStatus('ok');
                     } else { await pushCloud(); }
-                    updateCloudStatus('ok');
                 } else { await pushCloud(); }
             } catch(e) { console.error(e); updateCloudStatus('error'); }
         }
@@ -419,8 +437,10 @@
             try {
                 let url = 'https://api.github.com/gists'; let method = 'POST'; if(gistId) { url += '/' + gistId; method = 'PATCH'; }
                 const payload = { description: GIST_DESC, public: false, files: { "finance.json": { content: JSON.stringify(db) } } };
-                await fetch(url, { method: method, headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                updateCloudStatus('ok');
+                const res = await fetch(url, { method: method, headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if(res.ok) { 
+                    const j = await res.json(); gistId = j.id; updateCloudStatus('ok'); 
+                } else { throw new Error('Falha no upload'); }
             } catch(e) { console.error(e); updateCloudStatus('error'); }
         }
         function forceSync() { if(confirm("Baixar dados da nuvem?")) { syncCloud(); closeModal('modalSync'); } }
@@ -472,7 +492,7 @@
             else { Object.keys(POTES).forEach(key => { const grp = document.createElement('optgroup'); grp.label = POTES[key].label; const cats = db.categories.filter(c => c.p === key); cats.forEach(c => { const opt = new Option(c.n, c.n); opt.setAttribute('data-bucket', key); grp.appendChild(opt); }); sel.appendChild(grp); }); }
         }
         function addTrans() {
-            const desc = document.getElementById('qDesc').value; const local = document.getElementById('qLocal').value; // LOCAL CAPTURADO
+            const desc = document.getElementById('qDesc').value; const local = document.getElementById('qLocal').value; 
             const val = parse(document.getElementById('qVal').value); const type = document.getElementById('qType').value;
             const method = document.getElementById('qMethod').value; const catSel = document.getElementById('qCat'); const cat = catSel.value;
             if(!desc || !val) return alert("Preencha descrição e valor");
@@ -489,7 +509,7 @@
                     }
                 }
             }
-            db.transactions.push({ id: Date.now(), date: new Date().toISOString().slice(0,10), desc, local, val, type, cat, bucket, method }); // LOCAL SALVO
+            db.transactions.push({ id: Date.now(), date: new Date().toISOString().slice(0,10), desc, local, val, type, cat, bucket, method });
             document.getElementById('qDesc').value = ''; document.getElementById('qLocal').value = ''; document.getElementById('qVal').value = '';
             showToast("Lançamento Salvo!"); save();
         }
@@ -501,7 +521,7 @@
         function delDebt(id) { if(confirm("Apagar Dívida?")) { db.debts = db.debts.filter(d=>d.id!==id); save(); showToast("Dívida Apagada!"); } }
         function openEdit(id) {
             const t = db.transactions.find(x=>x.id===id); if(!t) return;
-            document.getElementById('editId').value = id; document.getElementById('editDesc').value = t.desc; document.getElementById('editLocal').value = t.local || ''; // LOCAL NO EDIT
+            document.getElementById('editId').value = id; document.getElementById('editDesc').value = t.desc; document.getElementById('editLocal').value = t.local || ''; 
             document.getElementById('editVal').value = fmt(t.val); document.getElementById('editMethod').value = t.method || 'credit';
             const sel = document.getElementById('editCat'); sel.innerHTML = ''; 
             Object.keys(POTES).forEach(key => { const grp = document.createElement('optgroup'); grp.label = POTES[key].label; db.categories.filter(c=>c.p===key).forEach(c => { grp.appendChild(new Option(c.n, c.n)); }); sel.appendChild(grp); });
@@ -510,7 +530,7 @@
         function confirmEdit() {
             const id = parseInt(document.getElementById('editId').value); const t = db.transactions.find(x=>x.id===id);
             if(t) {
-                t.desc = document.getElementById('editDesc').value; t.local = document.getElementById('editLocal').value; // LOCAL SALVO EDIT
+                t.desc = document.getElementById('editDesc').value; t.local = document.getElementById('editLocal').value; 
                 t.val = parse(document.getElementById('editVal').value); t.cat = document.getElementById('editCat').value;
                 t.method = document.getElementById('editMethod').value;
                 const catObj = db.categories.find(c=>c.n===t.cat); if(catObj) t.bucket = catObj.p;
@@ -541,7 +561,7 @@
                 const color = isIn ? 'var(--success)' : (POTES[t.bucket]?.color || 'var(--text-muted)');
                 const icon = isIn ? 'fa-arrow-up' : 'fa-arrow-down';
                 const mi = methIcons[t.method] || '';
-                const loc = t.local ? `• 📍 ${t.local}` : ''; // LOCAL EXIBIDO
+                const loc = t.local ? `• 📍 ${t.local}` : '';
                 l.innerHTML += `<div class="t-row"><div class="t-left"><div class="t-icon" style="background:${isIn ? 'rgba(16,185,129,0.1)' : 'rgba(200,200,200,0.2)'}; color:${color}"><i class="fa-solid ${icon}"></i></div><div><div class="t-desc">${t.desc} <span style="font-size:0.75rem; opacity:0.7; font-weight:400; margin-left:5px;">${mi}</span></div><div class="t-meta">${t.cat} ${loc} • ${t.date.split('-')[2]}/${t.date.split('-')[1]}</div></div></div><div style="display:flex; gap:15px; align-items:center;"><div class="t-val blur-sensitive" style="color:${isIn? 'var(--success)' : 'var(--text)'}">${isIn?'+':'-'} ${fmt(t.val)}</div><div class="t-actions"><i class="fa-solid fa-pen act-btn" onclick="openEdit(${t.id})"></i><i class="fa-solid fa-trash act-btn del" onclick="delTrans(${t.id})"></i></div></div></div>`;
             });
         }
