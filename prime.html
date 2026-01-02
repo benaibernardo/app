@@ -642,7 +642,8 @@
         function hardReset() { if(confirm('Apagar tudo?')) { localStorage.removeItem(DB_KEY); location.reload(); } }
 
         // AUTO-LOGIN CHECK
-        if (sessionStorage.getItem("benai_access_granted") === "true") {
+        const type = sessionStorage.getItem("benai_access_type");
+        if (type === "master" || type === "guest" || sessionStorage.getItem("benai_access_granted") === "true") return;
              document.getElementById('gatekeeper').style.display='none';
              document.getElementById('app-content').style.display='block';
              init();
