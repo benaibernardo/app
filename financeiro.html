@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Benai Finance V3.9.6 | Debt Killer</title>
+    <title>Benai Finance V3.9.7 | Clarity</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -73,12 +73,19 @@
         .c-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px dashed var(--border); }
         .c-title { font-family: var(--font-num); font-weight: 800; color: var(--primary); font-size: 1rem; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
 
+        /* POTES NOVO VISUAL */
         .pote-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .pote-item { background: var(--bg); border-radius: 12px; padding: 15px; border: 1px solid var(--border); }
-        .pi-label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; display: flex; justify-content: space-between; }
-        .pi-val { font-family: var(--font-num); font-size: 1.3rem; font-weight: 800; margin: 5px 0; color: var(--text); }
-        .pi-track { height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; }
-        .pi-fill { height: 100%; transition: width 1s ease; border-radius: 3px; }
+        .pote-item { background: var(--bg); border-radius: 16px; padding: 15px; border: 1px solid var(--border); position: relative; overflow: hidden; }
+        .pi-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .pi-title { font-weight: 800; color: var(--text); font-size: 0.9rem; text-transform: uppercase; }
+        .pi-desc { font-size: 0.75rem; color: var(--text-muted); font-style: italic; margin-top: 2px; }
+        .pi-meta { font-family: var(--font-num); font-size: 0.8rem; color: var(--text-muted); text-align: right; }
+        
+        .pi-restam-label { font-size: 0.7rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); margin-bottom: 2px; }
+        .pi-restam-val { font-family: var(--font-num); font-weight: 800; font-size: 1.4rem; color: var(--text); }
+        
+        .pi-track { height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; margin-top: 10px; }
+        .pi-fill { height: 100%; transition: width 1s ease; border-radius: 4px; }
 
         .filter-bar { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; background: #f8fafc; padding: 10px; border-radius: 12px; border: 1px solid var(--border); }
         .t-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #f1f5f9; transition: 0.2s; }
@@ -140,14 +147,17 @@
                 <option value="cash">💵 Dinheiro</option>
             </select>
             <input id="qVal" class="lb-inp f-val" placeholder="R$ 0,00" oninput="maskMoney(this)">
+            
             <div style="display:flex; gap:5px;" class="f-cat">
                 <select id="qCat" class="lb-inp" style="width:100%"></select>
-                <button onclick="openModal('modalCat')" class="lb-inp" style="width:40px; padding:0; display:flex; align-items:center; justify-content:center; cursor:pointer;" title="Criar nova Categoria"><i class="fa-solid fa-gear"></i></button>
+                <button onclick="openCatManager()" class="lb-inp" style="width:40px; padding:0; display:flex; align-items:center; justify-content:center; cursor:pointer;" title="Editar Categorias"><i class="fa-solid fa-gear"></i></button>
             </div>
+
             <button class="f-btn" onclick="addTrans()">LANÇAR</button>
         </div>
 
         <div style="display:flex; flex-direction:column; gap:25px;">
+            
             <div class="card">
                 <div class="c-head">
                     <div class="c-title"><i class="fa-solid fa-chart-pie"></i> Orçamento (Potes)</div>
@@ -229,18 +239,19 @@
 
     <div id="modalCat" class="modal">
         <div class="modal-box">
-            <div class="modal-h">Gerenciar Categorias</div>
+            <div class="modal-h">Categorias & Potes</div>
+            <input type="hidden" id="editCatIdx" value="-1">
             <div style="display:flex; gap:10px; margin-bottom:15px;">
-                <input id="newCatName" class="m-inp" placeholder="Nova" style="margin:0;">
-                <select id="newCatPote" class="m-inp" style="width:100px; margin:0;">
+                <input id="newCatName" class="m-inp" placeholder="Nome (Ex: Ifood)" style="margin:0;">
+                <select id="newCatPote" class="m-inp" style="width:140px; margin:0;">
                     <option value="essential">Essencial</option>
                     <option value="debt">Dívida</option>
                     <option value="shield">Blindagem</option>
                     <option value="sanity">Sanidade</option>
                 </select>
-                <button onclick="addCatCustom()" class="m-btn btn-pri" style="margin:0; width:50px;">+</button>
+                <button onclick="saveCat()" id="btnSaveCat" class="m-btn btn-pri" style="margin:0; width:60px;"><i class="fa-solid fa-plus"></i></button>
             </div>
-            <div id="catListDisplay" style="max-height:200px; overflow-y:auto; border-top:1px solid #eee; pt:10px;"></div>
+            <div id="catListDisplay" style="max-height:250px; overflow-y:auto; border-top:1px solid #eee; padding-top:10px;"></div>
             <button class="m-btn" style="background:#f1f5f9; color:#64748b;" onclick="closeModal('modalCat')">Fechar</button>
         </div>
     </div>
@@ -269,16 +280,12 @@
             <input type="password" id="manualToken" class="m-inp" placeholder="Token Github">
             <button class="m-btn" style="background:#e2e8f0; color:#334155;" onclick="saveManualToken()">Salvar Token</button>
             <hr style="margin:15px 0; border:0; border-top:1px solid #eee;">
-            
             <button class="m-btn btn-pri" onclick="forceSave()"><i class="fa-solid fa-cloud-arrow-up"></i> Salvar na Nuvem (Upload)</button>
             <button class="m-btn" style="background:#f1f5f9; color:#334155; border:1px solid #e2e8f0; margin-top:5px;" onclick="forceSync()">Baixar da Nuvem</button>
-            
             <hr style="margin:15px 0; border:0; border-top:1px solid #eee;">
-            
             <button class="m-btn" style="background:#f1f5f9; color:#334155; border:1px solid #e2e8f0;" onclick="exportData()">Backup Local</button>
             <input type="file" id="importFile" hidden onchange="importData(this)">
             <button class="m-btn" style="background:#f1f5f9; color:#334155; border:1px solid #e2e8f0;" onclick="document.getElementById('importFile').click()">Restaurar Backup</button>
-            
             <button class="m-btn" style="background:#fee2e2; color:#ef4444; margin-top:5px;" onclick="hardReset()">ZERAR BANCO DE DADOS</button>
             <button class="m-btn" style="background:#f1f5f9; color:#334155; border:1px solid #e2e8f0; margin-top:5px;" onclick="closeModal('modalSync')">Fechar</button>
         </div>
@@ -292,10 +299,10 @@
         const GIST_DESC = 'BENAI_PERSONAL_DB';
 
         const POTES = {
-            'essential': { label: '🏠 Essencial', color: 'var(--c-essen)' },
-            'debt':      { label: '⚔️ Guerra/Dívida', color: 'var(--c-debt)' },
-            'shield':    { label: '🛡️ Blindagem', color: 'var(--c-shield)' },
-            'sanity':    { label: '🍹 Sanidade',  color: 'var(--c-sanity)' }
+            'essential': { label: '🏠 Essencial', color: 'var(--c-essen)', desc: 'Sobrevivência: Teto, comida, saúde e transporte.' },
+            'debt':      { label: '⚔️ Guerra/Dívida', color: 'var(--c-debt)', desc: 'O Passado: Pagar dívidas e limpar o nome.' },
+            'shield':    { label: '🛡️ Blindagem', color: 'var(--c-shield)', desc: 'O Futuro: Reserva de emergência e investimentos.' },
+            'sanity':    { label: '🍹 Sanidade',  color: 'var(--c-sanity)', desc: 'O Presente: Lazer, Ifood e Hobbies (sem culpa).' }
         };
 
         let db = { income: 0, fixed: [], categories: [ 
@@ -428,6 +435,74 @@
                     </div>
                 `;
             });
+        }
+
+        // --- CATEGORIAS MANAGER ---
+        function openCatManager() {
+            renderCatList();
+            document.getElementById('editCatIdx').value = -1;
+            document.getElementById('newCatName').value = '';
+            document.getElementById('btnSaveCat').innerHTML = '<i class="fa-solid fa-plus"></i>';
+            openModal('modalCat');
+        }
+
+        function renderCatList() {
+            const l = document.getElementById('catListDisplay'); 
+            l.innerHTML = ''; 
+            db.categories.forEach((c, i) => { 
+                l.innerHTML += `
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #eee; font-size:0.9rem;">
+                        <div>
+                            <span style="font-weight:700;">${c.n}</span>
+                            <br><small style="color:${POTES[c.p].color}">(${POTES[c.p].label})</small>
+                        </div>
+                        <div style="display:flex; gap:10px;">
+                            <i class="fa-solid fa-pen" style="color:#94a3b8; cursor:pointer;" onclick="editCat(${i})"></i>
+                            <i class="fa-solid fa-trash" style="color:#ef4444; cursor:pointer;" onclick="deleteCat(${i})"></i>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function saveCat() {
+            const name = document.getElementById('newCatName').value;
+            const pote = document.getElementById('newCatPote').value;
+            const idx = parseInt(document.getElementById('editCatIdx').value);
+
+            if(!name) return alert("Nome obrigatório");
+
+            if(idx >= 0) {
+                // Editar
+                db.categories[idx] = { n: name, p: pote };
+                document.getElementById('btnSaveCat').innerHTML = '<i class="fa-solid fa-plus"></i>';
+                document.getElementById('editCatIdx').value = -1;
+            } else {
+                // Criar
+                db.categories.push({ n: name, p: pote });
+            }
+            
+            document.getElementById('newCatName').value = '';
+            save(); 
+            renderCatList(); 
+            updateCatSelect();
+        }
+
+        function editCat(i) {
+            const c = db.categories[i];
+            document.getElementById('newCatName').value = c.n;
+            document.getElementById('newCatPote').value = c.p;
+            document.getElementById('editCatIdx').value = i;
+            document.getElementById('btnSaveCat').innerHTML = '<i class="fa-solid fa-check"></i>';
+        }
+
+        function deleteCat(i) {
+            if(confirm("Excluir categoria?")) {
+                db.categories.splice(i, 1);
+                save();
+                renderCatList();
+                updateCatSelect();
+            }
         }
 
         // --- EDITAR ---
@@ -570,13 +645,29 @@
                 const spent = txs.filter(t => t.bucket === k).reduce((a,b)=>a+b.val, 0);
                 totalSpent += spent;
                 const pct = Math.min((spent / lim) * 100, 100);
-                container.innerHTML += `<div class="pote-item"><div class="pi-label"><span>${POTES[k].label}</span><span>${fmt(spent)}/${fmt(lim)}</span></div><div class="pi-val" style="color:${spent>lim?'var(--danger)':'var(--text)'}">${Math.round((spent/lim)*100)}%</div><div class="pi-track"><div class="pi-fill" style="width:${pct}%; background:${POTES[k].color}"></div></div></div>`;
+                const rest = Math.max(0, lim - spent);
+                
+                // Visual Melhorado
+                container.innerHTML += `
+                    <div class="pote-item">
+                        <div class="pi-head">
+                            <div>
+                                <div class="pi-title" style="color:${POTES[k].color}">${POTES[k].label}</div>
+                                <div class="pi-desc">${POTES[k].desc}</div>
+                            </div>
+                            <div style="text-align:right">
+                                <div class="pi-restam-label">Restam:</div>
+                                <div class="pi-restam-val" style="color:${rest < 0 ? 'var(--danger)' : 'var(--text)'}">${fmt(rest)}</div>
+                            </div>
+                        </div>
+                        <div class="pi-meta">Gasto: ${fmt(spent)} / Meta: ${fmt(lim)}</div>
+                        <div class="pi-track"><div class="pi-fill" style="width:${pct}%; background:${POTES[k].color}"></div></div>
+                    </div>`;
             });
             const inc = db.transactions.filter(t=>t.date.startsWith(curMonth) && t.type==='in').reduce((a,b)=>a+b.val,0);
             document.getElementById('saldoDisplay').innerText = "Saldo Mês: " + fmt(inc - totalSpent);
         }
 
-        function openCatManager() { const l=document.getElementById('catListDisplay'); l.innerHTML=''; db.categories.forEach((c,i)=>{ l.innerHTML+=`<div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #eee; font-size:0.9rem;"><span>${c.n} <small style="color:#999">(${POTES[c.p].label})</small></span><i class="fa-solid fa-trash" style="color:#ef4444; cursor:pointer;" onclick="if(confirm('Apagar?')){db.categories.splice(${i},1);save();openCatManager();updateCatSelect();}"></i></div>`}); openModal('modalCat'); }
         function addCatCustom() { const n=document.getElementById('newCatName').value; const p=document.getElementById('newCatPote').value; if(n){ db.categories.push({n,p}); save(); openCatManager(); updateCatSelect(); } }
         function updateCatSelect() {
             const type = document.getElementById('qType').value;
