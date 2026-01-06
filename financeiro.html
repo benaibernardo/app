@@ -3,16 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Benai Finance V3.9.3 | Import</title>
+    <title>Benai Finance V3.9.4 | Auto-PDF</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script>
+        // Configuração do Worker do PDF.js
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
         (function() {
             const PIN_CORRETO = "16359001"; 
             const auth = localStorage.getItem("benai_finance_auth");
@@ -101,6 +105,9 @@
         .m-btn { width:100%; padding:14px; border-radius:12px; font-weight:700; cursor:pointer; border:none; margin-top:10px; }
         .btn-pri { background: var(--primary); color: white; }
         .btn-dan { background: var(--danger); color: white; }
+        
+        #toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(100px); background:var(--primary); color:white; padding:12px 30px; border-radius:30px; font-weight:600; box-shadow:0 10px 30px rgba(0,0,0,0.3); transition:0.3s; opacity:0; z-index:9999; display:flex; align-items:center; gap:10px; font-family: var(--font-num); }
+        #toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
 
         @keyframes slideIn { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
     </style>
@@ -127,30 +134,23 @@
             </select>
 
             <input type="date" id="qDate" class="lb-inp f-date">
-            
             <input id="qDesc" class="lb-inp f-desc" placeholder="Descrição (Ex: Aluno Pedro)">
-            
             <input id="qLocal" class="lb-inp f-local" placeholder="Local">
-            
             <select id="qMethod" class="lb-inp f-method">
                 <option value="pix">💠 Pix</option>
                 <option value="credit">💳 Crédito</option>
                 <option value="debit">💳 Débito</option>
                 <option value="cash">💵 Dinheiro</option>
             </select>
-
             <input id="qVal" class="lb-inp f-val" placeholder="R$ 0,00" oninput="maskMoney(this)">
-            
             <div style="display:flex; gap:5px;" class="f-cat">
                 <select id="qCat" class="lb-inp" style="width:100%"></select>
                 <button onclick="openModal('modalCat')" class="lb-inp" style="width:40px; padding:0; display:flex; align-items:center; justify-content:center; cursor:pointer;" title="Criar nova Categoria"><i class="fa-solid fa-gear"></i></button>
             </div>
-
             <button class="f-btn" onclick="addTrans()">LANÇAR</button>
         </div>
 
         <div style="display:flex; flex-direction:column; gap:25px;">
-            
             <div class="card">
                 <div class="c-head">
                     <div class="c-title"><i class="fa-solid fa-chart-pie"></i> Orçamento (Potes)</div>
@@ -188,19 +188,15 @@
         <div style="display:flex; flex-direction:column; gap:25px;">
             <div class="card" style="background: linear-gradient(135deg, var(--primary), #1e3a8a); color:white; border:none;">
                 <div class="c-title" style="color:white; margin-bottom:20px;"><i class="fa-solid fa-brain"></i> Config. Inteligente</div>
-                
                 <label style="font-size:0.75rem; font-weight:700; opacity:0.8;">RENDA MENSAL (BASE)</label>
                 <input id="cfgIncome" class="lb-inp" style="background:rgba(255,255,255,0.2); color:white; border:none; margin-bottom:15px;" oninput="maskMoney(this)">
-                
                 <label style="font-size:0.75rem; font-weight:700; opacity:0.8;">GASTOS FIXOS</label>
                 <div id="fixedList" style="margin-bottom:10px;"></div>
                 <button onclick="addFixed()" style="width:100%; padding:8px; background:rgba(255,255,255,0.1); border:1px dashed rgba(255,255,255,0.3); color:white; border-radius:8px; font-size:0.8rem; cursor:pointer; margin-bottom:20px;">+ Adicionar Fixo</button>
-
                 <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px; background:rgba(0,0,0,0.2); padding:10px; border-radius:10px;">
                     <input type="checkbox" id="warMode" checked style="width:18px; height:18px;">
                     <div style="font-size:0.85rem; font-weight:700;">Modo Guerra <br><span style="font-size:0.7rem; font-weight:400; opacity:0.8;">Foco total em dívidas</span></div>
                 </div>
-
                 <button onclick="smartCalc()" style="width:100%; padding:12px; background:white; color:var(--primary); font-weight:800; border-radius:10px; cursor:pointer; border:none;">RECALCULAR METAS</button>
             </div>
         </div>
@@ -258,19 +254,16 @@
             <div class="modal-h">Dados</div>
             <input type="password" id="manualToken" class="m-inp" placeholder="Token Github">
             <button class="m-btn" style="background:#e2e8f0; color:#334155;" onclick="saveManualToken()">Salvar Token</button>
-            
             <hr style="margin:15px 0; border:0; border-top:1px solid #eee;">
-            <div style="font-size:0.8rem; font-weight:700; color:#64748b; margin-bottom:5px;">FERRAMENTAS DE IMPORTAÇÃO:</div>
             
-            <button class="m-btn" style="background:#00A8E8; color:white; margin-bottom:10px;" onclick="loadNubankHistory()">
-                <i class="fa-solid fa-file-import"></i> IMPORTAR EXTRATO NUBANK (DEZ/JAN)
+            <input type="file" id="pdfInput" accept=".pdf" hidden onchange="parseNubankPDF(this)">
+            <button class="m-btn" style="background:#00A8E8; color:white; margin-bottom:10px;" onclick="document.getElementById('pdfInput').click()">
+                <i class="fa-solid fa-file-pdf"></i> IMPORTAR PDF NUBANK
             </button>
 
             <button class="m-btn btn-pri" onclick="forceSave()"><i class="fa-solid fa-cloud-arrow-up"></i> Salvar na Nuvem (Upload)</button>
             <button class="m-btn" style="background:#f1f5f9; color:#334155; border:1px solid #e2e8f0; margin-top:5px;" onclick="forceSync()">Baixar da Nuvem</button>
-            
             <hr style="margin:15px 0; border:0; border-top:1px solid #eee;">
-            
             <button class="m-btn" style="background:#f1f5f9; color:#334155; border:1px solid #e2e8f0;" onclick="exportData()">Backup Local</button>
             <input type="file" id="importFile" hidden onchange="importData(this)">
             <button class="m-btn" style="background:#f1f5f9; color:#334155; border:1px solid #e2e8f0;" onclick="document.getElementById('importFile').click()">Restaurar Backup</button>
@@ -319,101 +312,6 @@
             renderPotes(); renderDebts(); renderTrans(); renderChart(); populateCatFilter(); 
         }
 
-        // --- FUNÇÃO MÁGICA DE IMPORTAÇÃO ---
-        function loadNubankHistory() {
-            if(!confirm("Tem certeza que deseja importar o histórico do Nubank? (Isso adicionará lançamentos de Dez e Jan)")) return;
-
-            // Garante categorias
-            const catsNecessarias = [
-                {n:'Saúde', p:'essential'}, {n:'Educação', p:'essential'}, {n:'Saque', p:'sanity'},
-                {n:'Mercado', p:'essential'}, {n:'Consultoria', p:'income'}, {n:'Salário', p:'income'}
-            ];
-            catsNecessarias.forEach(nc => {
-                if (!db.categories.find(c => c.n === nc.n)) db.categories.push(nc);
-            });
-
-            // Dados Extraídos
-            const lancamentos = [
-                { d: "2026-01-02", t: "Pagamento Fatura", l: "Nubank", v: 3.21, io: "out", c: "Amortização", b: "debt", m: "debit" },
-                { d: "2026-01-03", t: "Mercado", l: "Festval Linha Verde", v: 10.69, io: "out", c: "Mercado", b: "essential", m: "debit" },
-                { d: "2025-12-01", t: "Transferência Recebida", l: "Magnaldo Jefferson", v: 180.00, io: "in", c: "Extra", b: "income", m: "pix" },
-                { d: "2025-12-03", t: "Salário / Fit Studio", l: "Fit Studio Portao", v: 785.87, io: "in", c: "Salário", b: "income", m: "pix" },
-                { d: "2025-12-04", t: "Salário / Fit Studio", l: "Fit Studio Portao", v: 544.00, io: "in", c: "Salário", b: "income", m: "pix" },
-                { d: "2025-12-08", t: "Entrada Extra", l: "Talita Keyko", v: 782.54, io: "in", c: "Extra", b: "income", m: "pix" },
-                { d: "2025-12-08", t: "Resgate RDB", l: "Aplicação Nubank", v: 60.00, io: "in", c: "Extra", b: "income", m: "credit" },
-                { d: "2025-12-11", t: "Transf. Própria", l: "Bradesco", v: 1050.00, io: "in", c: "Extra", b: "income", m: "pix" },
-                { d: "2025-12-13", t: "Estorno/Devolução", l: "Tim SA", v: 3.00, io: "in", c: "Extra", b: "income", m: "pix" },
-                { d: "2025-12-17", t: "Salário / Fit Studio", l: "Fit Studio Portao", v: 264.00, io: "in", c: "Salário", b: "income", m: "pix" },
-                { d: "2025-12-22", t: "Entrada Extra", l: "Talita Keyko", v: 200.00, io: "in", c: "Extra", b: "income", m: "pix" },
-                { d: "2025-12-29", t: "Crédito Caixa", l: "Caixa FGTS", v: 18.28, io: "in", c: "Extra", b: "income", m: "pix" },
-                { d: "2025-12-30", t: "Salário / Fit Studio", l: "Fit Studio Portao", v: 240.00, io: "in", c: "Salário", b: "income", m: "pix" },
-                { d: "2025-12-17", t: "Consultoria: Carolina", l: "Carolina Simionato", v: 80.00, io: "in", c: "Consultoria", b: "income", m: "pix" },
-                { d: "2025-12-26", t: "Consultoria: Raphaela", l: "Raphaela Mahara", v: 100.00, io: "in", c: "Consultoria", b: "income", m: "pix" },
-                { d: "2025-12-29", t: "Consultoria: Janaina", l: "Janaina Kudlaviec", v: 150.00, io: "in", c: "Consultoria", b: "income", m: "pix" },
-                { d: "2025-12-31", t: "Consultoria: Jean", l: "Jean Luis Fernandes", v: 150.00, io: "in", c: "Consultoria", b: "income", m: "pix" },
-                { d: "2025-12-01", t: "Padaria", l: "Panif. Hobold", v: 4.25, io: "out", c: "Mercado", b: "essential", m: "debit" },
-                { d: "2025-12-02", t: "Hortifruti", l: "Caju", v: 69.66, io: "out", c: "Mercado", b: "essential", m: "debit" },
-                { d: "2025-12-02", t: "Padaria", l: "Panif. Hobold", v: 5.41, io: "out", c: "Mercado", b: "essential", m: "debit" },
-                { d: "2025-12-02", t: "Padaria", l: "Panif. Bon Pan", v: 19.80, io: "out", c: "Mercado", b: "essential", m: "debit" },
-                { d: "2025-12-03", t: "Padaria", l: "Panif. Hobold", v: 19.80, io: "out", c: "Mercado", b: "essential", m: "debit" },
-                { d: "2025-12-03", t: "Mercado", l: "Super Pacelli", v: 15.98, io: "out", c: "Mercado", b: "essential", m: "debit" },
-                { d: "2025-12-04", t: "Doces", l: "Comercio Aida", v: 11.20, io: "out", c: "Mercado", b: "essential", m: "debit" },
-                { d: "2025-12-04", t: "Lanche", l: "Saboritiba", v: 34.90, io: "out", c: "Lazer", b: "sanity", m: "debit" },
-                { d: "2025-12-04", t: "Padaria", l: "Panif. Hobold", v: 14.15, io: "out", c: "Mercado", b: "essential", m: "debit" },
-                { d: "2025-12-04", t: "Faculdade/Curso", l: "Opet Ensino", v: 267.92, io: "out", c: "Educação", b: "essential", m: "pix" },
-                { d: "2025-12-05", t: "Diversos", l: "Cleusa B Correa", v: 25.00, io: "out", c: "Lazer", b: "sanity", m: "debit" },
-                { d: "2025-12-05", t: "Padaria", l: "Panif. Hobold", v: 24.05, io: "out", c: "Mercado", b: "essential", m: "debit" },
-                { d: "2025-12-06", t: "Pix Enviado", l: "Vilma Palivoda", v: 110.00, io: "out", c: "Extra", b: "sanity", m: "pix" },
-                { d: "2025-12-08", t: "Transf. para C6", l: "Benai (C6 Bank)", v: 1578.89, io: "out", c: "Amortização", b: "debt", m: "pix" },
-                { d: "2025-12-09", t: "Suplementos/Saúde", l: "Natufit Portao", v: 330.37, io: "out", c: "Saúde", b: "essential", m: "debit" },
-                { d: "2025-12-09", t: "Gastos Gerais", l: "Portao", v: 70.70, io: "out", c: "Lazer", b: "sanity", m: "debit" },
-                { d: "2025-12-09", t: "Faculdade/Curso", l: "Opet Ensino", v: 228.96, io: "out", c: "Educação", b: "essential", m: "pix" },
-                { d: "2025-12-11", t: "Bicicleta", l: "JB12 Bikes", v: 40.00, io: "out", c: "Lazer", b: "sanity", m: "debit" },
-                { d: "2025-12-13", t: "Fatura Nubank", l: "Nubank", v: 30.00, io: "out", c: "Amortização", b: "debt", m: "debit" },
-                { d: "2025-12-13", t: "Compras", l: "Jim.com Isabel", v: 53.00, io: "out", c: "Lazer", b: "sanity", m: "debit" },
-                { d: "2025-12-13", t: "Uber", l: "Uber", v: 22.96, io: "out", c: "Transporte", b: "essential", m: "debit" },
-                { d: "2025-12-16", t: "Hortifruti", l: "Caju", v: 18.06, io: "out", c: "Mercado", b: "essential", m: "debit" },
-                { d: "2025-12-18", t: "Lanche", l: "Liberatore", v: 19.80, io: "out", c: "Lazer", b: "sanity", m: "debit" },
-                { d: "2025-12-18", t: "Shopee", l: "Shopee / SHPP", v: 49.90, io: "out", c: "Lazer", b: "sanity", m: "pix" },
-                { d: "2025-12-18", t: "Uber", l: "Uber", v: 11.96, io: "out", c: "Transporte", b: "essential", m: "debit" },
-                { d: "2025-12-19", t: "Recarga/Pix", l: "LH da Silva", v: 25.00, io: "out", c: "Lazer", b: "sanity", m: "pix" },
-                { d: "2025-12-20", t: "Saque", l: "Caixa 24h", v: 111.49, io: "out", c: "Saque", b: "sanity", m: "cash" },
-                { d: "2025-12-21", t: "Confeitaria", l: "Confeitaria Jauense", v: 32.40, io: "out", c: "Lazer", b: "sanity", m: "debit" },
-                { d: "2025-12-22", t: "Saque", l: "Caixa 24h", v: 311.49, io: "out", c: "Saque", b: "sanity", m: "cash" },
-                { d: "2025-12-23", t: "Mercado", l: "Armazem Curitiba", v: 32.26, io: "out", c: "Mercado", b: "essential", m: "debit" },
-                { d: "2025-12-23", t: "Uber", l: "Uber", v: 9.93, io: "out", c: "Transporte", b: "essential", m: "debit" },
-                { d: "2025-12-24", t: "Gastos Gerais", l: "Portao", v: 34.90, io: "out", c: "Lazer", b: "sanity", m: "debit" },
-                { d: "2025-12-26", t: "Compras", l: "Silvano", v: 60.00, io: "out", c: "Lazer", b: "sanity", m: "debit" },
-                { d: "2025-12-27", t: "Recarga Celular", l: "Recarga", v: 30.00, io: "out", c: "Lazer", b: "sanity", m: "debit" },
-                { d: "2025-12-28", t: "Padaria", l: "Panif. Sao Paulo", v: 9.90, io: "out", c: "Mercado", b: "essential", m: "debit" },
-                { d: "2025-12-29", t: "Pix Enviado", l: "Fernanda Gisele", v: 80.00, io: "out", c: "Extra", b: "sanity", m: "pix" },
-                { d: "2025-12-30", t: "Gastos Gerais", l: "Portao", v: 46.85, io: "out", c: "Lazer", b: "sanity", m: "debit" },
-                { d: "2025-12-30", t: "Farmácia", l: "Farmacia Preco Popular", v: 12.50, io: "out", c: "Saúde", b: "essential", m: "debit" },
-                { d: "2025-12-30", t: "Farmácia", l: "Farmacia Fenix", v: 23.40, io: "out", c: "Saúde", b: "essential", m: "debit" },
-                { d: "2025-12-30", t: "Padaria", l: "Panif. Bon Pan", v: 13.42, io: "out", c: "Mercado", b: "essential", m: "debit" },
-                { d: "2025-12-30", t: "Mercado", l: "Super Pacelli", v: 28.97, io: "out", c: "Mercado", b: "essential", m: "debit" },
-                { d: "2025-12-31", t: "Hortifruti", l: "Sacolao Popular", v: 21.63, io: "out", c: "Mercado", b: "essential", m: "debit" },
-                { d: "2025-12-31", t: "Mercado", l: "Armazem Curitiba", v: 17.99, io: "out", c: "Mercado", b: "essential", m: "debit" }
-            ];
-
-            let count = 0;
-            lancamentos.forEach((l, i) => {
-                const existe = db.transactions.some(t => t.date === l.d && t.val === l.v && t.desc === l.t);
-                if (!existe) {
-                    db.transactions.push({
-                        id: Date.now() + i, 
-                        date: l.d, desc: l.t, local: l.l, val: l.v, 
-                        type: l.io, cat: l.c, bucket: l.b, method: l.m
-                    });
-                    count++;
-                }
-            });
-
-            saveLocal();
-            alert(`✅ SUCESSO!\n${count} novos lançamentos importados.`);
-            location.reload();
-        }
-
         // --- NUVEM ---
         async function syncCloud() {
             const token = localStorage.getItem(TOKEN_KEY);
@@ -443,6 +341,158 @@
         function saveManualToken() {
             const t = document.getElementById('manualToken').value;
             if(t) { localStorage.setItem(TOKEN_KEY, t); alert("Token Salvo! Tentando conectar..."); syncCloud(); }
+        }
+
+        // --- PARSER NUBANK (AUTO-IMPORT) ---
+        async function parseNubankPDF(input) {
+            const file = input.files[0];
+            if(!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async function() {
+                const typedarray = new Uint8Array(this.result);
+                const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                let fullText = "";
+
+                // Extrai texto de todas as páginas
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const textContent = await page.getTextContent();
+                    fullText += textContent.items.map(s => s.str).join(" ") + "\n";
+                }
+
+                processNubankText(fullText);
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function processNubankText(text) {
+            // Regex para capturar transações: DATA (DD MMM YYYY) ... VALOR
+            // Exemplo de linha do PDF Nubank processado (pode variar, então usamos lógica de fluxo)
+            // A lógica simplificada: Encontrar blocos de data e iterar sobre o que vem depois.
+            
+            // Garantir Categorias
+            const cats = [
+                {n:'Saúde', p:'essential'}, {n:'Educação', p:'essential'}, {n:'Saque', p:'sanity'},
+                {n:'Mercado', p:'essential'}, {n:'Consultoria', p:'income'}, {n:'Salário', p:'income'}
+            ];
+            cats.forEach(nc => { if(!db.categories.find(c => c.n === nc.n)) db.categories.push(nc); });
+
+            // Palavras-chave para categorização
+            const mapCat = {
+                'uber': {c:'Transporte', b:'essential'},
+                '99': {c:'Transporte', b:'essential'},
+                'posto': {c:'Transporte', b:'essential'},
+                'panificadora': {c:'Mercado', b:'essential'},
+                'mercado': {c:'Mercado', b:'essential'},
+                'super': {c:'Mercado', b:'essential'},
+                'sacolao': {c:'Mercado', b:'essential'},
+                'hortifruti': {c:'Mercado', b:'essential'},
+                'farmacia': {c:'Saúde', b:'essential'},
+                'droga': {c:'Saúde', b:'essential'},
+                'natufit': {c:'Saúde', b:'essential'},
+                'fit studio': {c:'Salário', b:'income'},
+                'opet': {c:'Educação', b:'essential'},
+                'saboritiba': {c:'Lazer', b:'sanity'},
+                'confeitaria': {c:'Lazer', b:'sanity'},
+                'saque': {c:'Saque', b:'sanity'},
+                'pix': {c:'Extra', b:'sanity'} // Padrão se não achar outro
+            };
+
+            // Alunos (Consultoria)
+            const alunos = ['janaina', 'raphaela', 'jean', 'carolina'];
+
+            // Lógica de Parsing (Simplificada para robustez)
+            // Divide o texto em "tokens" e procura padrões de data
+            const lines = text.split(/\s{2,}|\n/); // Divide por múltiplos espaços ou quebra de linha
+            let currentDate = null;
+            let count = 0;
+
+            // Regex Data: 01 DEZ 2025
+            const dateRegex = /^(\d{2}) (JAN|FEV|MAR|ABR|MAI|JUN|JUL|AGO|SET|OUT|NOV|DEZ) (\d{4})/;
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                
+                // Detecta Data
+                const dateMatch = line.match(dateRegex);
+                if (dateMatch) {
+                    const months = {JAN:'01',FEV:'02',MAR:'03',ABR:'04',MAI:'05',JUN:'06',JUL:'07',AGO:'08',SET:'09',OUT:'10',NOV:'11',DEZ:'12'};
+                    currentDate = `${dateMatch[3]}-${months[dateMatch[2]]}-${dateMatch[1]}`;
+                    continue;
+                }
+
+                if (!currentDate) continue;
+
+                // Detecta Transação (Ex: Compra no débito ... Valor)
+                // Nubank PDF geralmente tem: "Compra no débito", "Transferência enviada", etc.
+                if (line.match(/Compra no débito|Transferência enviada|Pagamento de fatura|Saque/i)) {
+                    // Tenta pegar descrição e valor nas linhas seguintes
+                    // Isso é tentativo, pois o PDF.js pode embaralhar a ordem visual vs lógica
+                    // Vamos procurar um valor numérico próximo
+                    
+                    let desc = "Desconhecido";
+                    let val = 0;
+                    
+                    // Procura nas próximas 3 linhas
+                    for(let j=1; j<=3; j++) {
+                        if(lines[i+j]) {
+                            const valMatch = lines[i+j].match(/^-?(\d{1,3}(?:\.\d{3})*,\d{2})$/); // Formato 1.000,00 ou 10,00
+                            if(valMatch) {
+                                val = parseFloat(valMatch[1].replace('.','').replace(',','.'));
+                                desc = lines[i+1]; // Assume que a linha logo após o tipo é a descrição
+                                if (desc === valMatch[0]) desc = lines[i+2] || "Transação"; // Ajuste se a descrição foi pulada
+                                break;
+                            }
+                        }
+                    }
+
+                    if (val > 0) {
+                        // Categorizar
+                        let cat = "Lazer"; let bucket = "sanity"; let type = "out";
+                        const descLower = desc.toLowerCase();
+
+                        // Verifica Alunos
+                        if(alunos.some(a => descLower.includes(a))) {
+                            cat = "Consultoria"; bucket = "income"; type = "in";
+                        } else {
+                            // Verifica Mapa
+                            for (const k in mapCat) {
+                                if (descLower.includes(k)) {
+                                    cat = mapCat[k].c; bucket = mapCat[k].b;
+                                    if(cat === 'Salário') type = 'in';
+                                    break;
+                                }
+                            }
+                        }
+
+                        // Adiciona
+                        const uniqueCheck = `${currentDate}-${val}-${desc}`;
+                        if (!db.transactions.some(t => `${t.date}-${t.val}-${t.desc}` === uniqueCheck)) {
+                            db.transactions.push({
+                                id: Date.now() + Math.random(),
+                                date: currentDate,
+                                desc: desc,
+                                local: "Nubank Auto",
+                                val: val,
+                                type: type,
+                                cat: cat,
+                                bucket: bucket,
+                                method: line.includes("Pix") ? "pix" : "debit"
+                            });
+                            count++;
+                        }
+                    }
+                }
+            }
+
+            if(count > 0) {
+                saveLocal();
+                alert(`✅ ${count} transações importadas com sucesso!`);
+                location.reload();
+            } else {
+                alert("Não consegui ler transações neste PDF. Verifique se é um extrato do Nubank padrão.");
+            }
         }
 
         // --- CORE ---
