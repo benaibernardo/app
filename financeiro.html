@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Benai Finance V3.9.1 | Restore</title>
+    <title>Benai Finance V3.9.2 | Secure</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -16,12 +16,13 @@
         (function() {
             // LOGIN DE SEGURANÇA
             const PIN_CORRETO = "16359001"; 
-            const type = sessionStorage.getItem("benai_access_type");
-            if (type === "master" || type === "guest" || sessionStorage.getItem("benai_access_granted") === "true") return;
+            // Usa localStorage para o PIN também, para não pedir toda hora no mesmo PC
+            const auth = localStorage.getItem("benai_finance_auth");
+            if (auth === "true") return;
             
             document.write(`
                 <style>body{visibility:hidden;overflow:hidden;background:#0f172a}#gatekeeper{visibility:visible;position:fixed;inset:0;background:#0f172a;color:white;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Outfit',sans-serif}.pin-box{text-align:center;width:90%;max-width:320px}.pin-inp{padding:15px;font-size:1.5rem;text-align:center;border-radius:12px;border:1px solid #334155;background:rgba(255,255,255,0.05);color:white;letter-spacing:4px;width:100%;margin-top:20px;outline:none;transition:0.3s}.pin-inp:focus{border-color:#38bdf8;box-shadow:0 0 0 4px rgba(56,189,248,0.1)}</style>
-                <div id="gatekeeper"><div class="pin-box"><i class="fa-solid fa-shield-halved" style="font-size:3rem;color:#38bdf8;margin-bottom:15px"></i><h2 style="font-size:1.5rem">Acesso Restrito</h2><input type="password" class="pin-inp" maxlength="8" placeholder="••••••••" onkeyup="if(this.value==='${PIN_CORRETO}'){sessionStorage.setItem('benai_access_granted','true');location.reload()}"></div></div>
+                <div id="gatekeeper"><div class="pin-box"><i class="fa-solid fa-shield-halved" style="font-size:3rem;color:#38bdf8;margin-bottom:15px"></i><h2 style="font-size:1.5rem">Acesso Restrito</h2><input type="password" class="pin-inp" maxlength="8" placeholder="••••••••" onkeyup="if(this.value==='${PIN_CORRETO}'){localStorage.setItem('benai_finance_auth','true');location.reload()}"></div></div>
             `);
         })();
     </script>
@@ -50,7 +51,7 @@
         .nav-btn { width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); color: var(--text-muted); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
         .nav-btn:hover { background: var(--bg); color: var(--accent); }
 
-        /* LAUNCH BAR (REVISADO) */
+        /* LAUNCH BAR */
         .launch-bar { grid-column: 1 / -1; background: var(--surface); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; border-left: 5px solid var(--accent); }
         .lb-head { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
         .lb-title { font-family: var(--font-num); font-weight: 800; color: var(--primary); text-transform: uppercase; font-size: 0.9rem; }
@@ -58,7 +59,6 @@
         .lb-inp { padding: 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); font-weight: 600; font-size: 0.9rem; transition: 0.2s; }
         .lb-inp:focus { border-color: var(--accent); background: white; box-shadow: 0 0 0 3px rgba(0,168,232,0.1); }
         
-        /* Layout flexível para os inputs */
         .f-type { width: 110px; }
         .f-date { width: 140px; }
         .f-desc { flex: 2; min-width: 150px; }
@@ -110,6 +110,9 @@
         .m-btn { width:100%; padding:14px; border-radius:12px; font-weight:700; cursor:pointer; border:none; margin-top:10px; }
         .btn-pri { background: var(--primary); color: white; }
         .btn-dan { background: var(--danger); color: white; }
+        
+        #toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(100px); background:var(--primary); color:white; padding:12px 30px; border-radius:30px; font-weight:600; box-shadow:0 10px 30px rgba(0,0,0,0.3); transition:0.3s; opacity:0; z-index:9999; display:flex; align-items:center; gap:10px; font-family: var(--font-num); }
+        #toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
 
         @keyframes slideIn { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
     </style>
@@ -152,7 +155,7 @@
             
             <div style="display:flex; gap:5px;" class="f-cat">
                 <select id="qCat" class="lb-inp" style="width:100%"></select>
-                <button onclick="openModal('modalCat')" class="lb-inp" style="width:40px; padding:0; display:flex; align-items:center; justify-content:center; cursor:pointer;"><i class="fa-solid fa-gear"></i></button>
+                <button onclick="openModal('modalCat')" class="lb-inp" style="width:40px; padding:0; display:flex; align-items:center; justify-content:center; cursor:pointer;" title="Criar nova Categoria"><i class="fa-solid fa-gear"></i></button>
             </div>
 
             <button class="f-btn" onclick="addTrans()">LANÇAR</button>
@@ -198,7 +201,7 @@
             <div class="card" style="background: linear-gradient(135deg, var(--primary), #1e3a8a); color:white; border:none;">
                 <div class="c-title" style="color:white; margin-bottom:20px;"><i class="fa-solid fa-brain"></i> Config. Inteligente</div>
                 
-                <label style="font-size:0.75rem; font-weight:700; opacity:0.8;">RENDA MENSAL</label>
+                <label style="font-size:0.75rem; font-weight:700; opacity:0.8;">RENDA MENSAL (BASE)</label>
                 <input id="cfgIncome" class="lb-inp" style="background:rgba(255,255,255,0.2); color:white; border:none; margin-bottom:15px;" oninput="maskMoney(this)">
                 
                 <label style="font-size:0.75rem; font-weight:700; opacity:0.8;">GASTOS FIXOS</label>
@@ -268,13 +271,20 @@
             <input type="password" id="manualToken" class="m-inp" placeholder="Token Github">
             <button class="m-btn" style="background:#e2e8f0; color:#334155;" onclick="saveManualToken()">Salvar Token</button>
             <hr style="margin:15px 0; border:0; border-top:1px solid #eee;">
-            <button class="m-btn btn-pri" onclick="forceSync()">Baixar da Nuvem</button>
+            
+            <button class="m-btn btn-pri" onclick="forceSave()"><i class="fa-solid fa-cloud-arrow-up"></i> Salvar na Nuvem (Upload)</button>
+            <button class="m-btn" style="background:#f1f5f9; color:#334155; border:1px solid #e2e8f0; margin-top:5px;" onclick="forceSync()">Baixar da Nuvem</button>
+            
+            <hr style="margin:15px 0; border:0; border-top:1px solid #eee;">
+            
             <button class="m-btn" style="background:#f1f5f9; color:#334155; border:1px solid #e2e8f0;" onclick="exportData()">Backup Local</button>
             <input type="file" id="importFile" hidden onchange="importData(this)">
             <button class="m-btn" style="background:#f1f5f9; color:#334155; border:1px solid #e2e8f0;" onclick="document.getElementById('importFile').click()">Restaurar Backup</button>
             <button class="m-btn" style="background:#fee2e2; color:#ef4444;" onclick="closeModal('modalSync')">Fechar</button>
         </div>
     </div>
+
+    <div id="toast"><i class="fa-solid fa-check-circle"></i> <span>Salvo!</span></div>
 
     <script>
         const KEY = 'benai_fin_main_db'; 
@@ -302,14 +312,17 @@
             const saved = localStorage.getItem(KEY);
             if(saved) db = JSON.parse(saved);
             
-            // Set defaults
             document.getElementById('qDate').value = new Date().toISOString().slice(0,10);
             document.getElementById('cfgIncome').value = fmt(db.income);
+            
+            // Tenta pegar o token do localStorage
             const t = localStorage.getItem(TOKEN_KEY);
-            if(t && document.getElementById('manualToken')) document.getElementById('manualToken').value = t;
+            if(t) {
+                if(document.getElementById('manualToken')) document.getElementById('manualToken').value = t;
+                await syncCloud(); // Tenta baixar automático
+            }
 
             renderMonthNav(); renderFixed(); updateCatSelect(); refresh();
-            await syncCloud();
         }
 
         function refresh() { 
@@ -321,19 +334,54 @@
             const token = localStorage.getItem(TOKEN_KEY);
             if(!token) return;
             try {
-                if(!gistId) { const s = await fetch('https://api.github.com/gists',{headers:{Authorization:`token ${token}`}}); const g=await s.json(); const f=g.find(x=>x.description===GIST_DESC); if(f) gistId=f.id; }
-                if(gistId) {
-                    const r = await fetch(`https://api.github.com/gists/${gistId}`,{headers:{Authorization:`token ${token}`}}); const j=await r.json();
-                    if(j.files["finance.json"]) { db = JSON.parse(j.files["finance.json"].content); saveLocal(); refresh(); }
+                // Find Gist
+                if(!gistId) { 
+                    const s = await fetch('https://api.github.com/gists',{headers:{Authorization:`token ${token}`}}); 
+                    const g = await s.json(); 
+                    const f = g.find(x=>x.description===GIST_DESC); 
+                    if(f) gistId = f.id; 
                 }
-            } catch(e) {}
+                
+                if(gistId) {
+                    const r = await fetch(`https://api.github.com/gists/${gistId}`,{headers:{Authorization:`token ${token}`}}); 
+                    const j = await r.json();
+                    if(j.files["finance.json"]) { 
+                        db = JSON.parse(j.files["finance.json"].content); 
+                        saveLocal(); 
+                        refresh();
+                        showToast("Sincronizado com a Nuvem!"); 
+                    }
+                }
+            } catch(e) { console.error(e); }
         }
+
         async function pushCloud() {
-            const token = localStorage.getItem(TOKEN_KEY); if(!token || !gistId) return;
+            const token = localStorage.getItem(TOKEN_KEY); 
+            if(!token || !gistId) return;
             try {
                 const body = JSON.stringify({ files: {"finance.json": {content: JSON.stringify(db)}} });
                 await fetch(`https://api.github.com/gists/${gistId}`, {method:'PATCH', headers:{Authorization:`token ${token}`}, body});
-            } catch(e) {}
+                console.log("Salvo na nuvem auto");
+            } catch(e) { console.error(e); }
+        }
+
+        async function forceSave() {
+            const token = localStorage.getItem(TOKEN_KEY);
+            if(!token) return alert("Salve o token primeiro!");
+            if(!gistId) { alert("Conectando..."); await syncCloud(); }
+            if(gistId) {
+                await pushCloud();
+                alert("Dados enviados para a nuvem com sucesso!");
+            }
+        }
+
+        function saveManualToken() {
+            const t = document.getElementById('manualToken').value;
+            if(t) {
+                localStorage.setItem(TOKEN_KEY, t);
+                alert("Token Salvo! Tentando conectar...");
+                syncCloud();
+            }
         }
 
         // --- CORE ---
@@ -354,7 +402,6 @@
                 bucket = opt ? opt.getAttribute('data-bucket') : 'sanity';
             }
 
-            // Lógica de Abatimento Automático
             if(bucket === 'debt') {
                 const active = db.debts.filter(d => (d.payments||[]).reduce((a,b)=>a+b.val,0) < d.total);
                 if(active.length) {
@@ -387,7 +434,7 @@
                 return mMatch && sMatch && cMatch && dMatch;
             }).sort((a,b) => b.id - a.id);
 
-            if(txs.length === 0) list.innerHTML = '<div style="text-align:center; padding:20px; color:#ccc;">Nenhum lançamento.</div>';
+            if(txs.length === 0) list.innerHTML = '<div style="text-align:center; padding:20px; color:#ccc;">Nenhum lançamento neste mês/filtro.</div>';
 
             txs.forEach(t => {
                 const isIn = t.type === 'in';
@@ -428,7 +475,6 @@
             document.getElementById('editMethod').value = t.method || 'credit';
             
             const sel = document.getElementById('editCat'); sel.innerHTML = '';
-            // Recria lista no select
             if(t.type === 'in') { ['Salário','Consultoria','Extra'].forEach(n => sel.add(new Option(n,n))); }
             else { 
                 Object.keys(POTES).forEach(key => { 
@@ -451,32 +497,23 @@
                 t.val = parse(document.getElementById('editVal').value);
                 t.cat = document.getElementById('editCat').value;
                 t.method = document.getElementById('editMethod').value;
-                
-                // Re-vincular bucket
                 const catObj = db.categories.find(c=>c.n===t.cat);
                 if(catObj) t.bucket = catObj.p;
-                
                 save(); closeModal('modalEdit');
             }
         }
 
-        // --- DÍVIDAS CORRIGIDO ---
+        // --- DÍVIDAS ---
         function saveDebt() {
             const id = document.getElementById('debtId').value;
             const n = document.getElementById('dName').value;
             const t = parse(document.getElementById('dTotal').value);
             if(!n || !t) return alert("Preencha nome e valor");
-            
-            if(id) {
-                const d = db.debts.find(x=>x.id==id);
-                if(d) { d.name = n; d.total = t; }
-            } else {
-                db.debts.push({id:Date.now(), name:n, total:t, payments:[]});
-            }
+            if(id) { const d = db.debts.find(x=>x.id==id); if(d) { d.name = n; d.total = t; } } 
+            else { db.debts.push({id:Date.now(), name:n, total:t, payments:[]}); }
             save(); closeModal('modalDebt');
             document.getElementById('dName').value=''; document.getElementById('dTotal').value='';
         }
-
         function openEditDebt(id) {
             const d = db.debts.find(x=>x.id==id);
             document.getElementById('debtId').value = id;
@@ -484,42 +521,16 @@
             document.getElementById('dTotal').value = fmt(d.total);
             openModal('modalDebt');
         }
-
-        function delDebt(id) {
-            if(confirm("Apagar Dívida?")) {
-                db.debts = db.debts.filter(d=>d.id!=id);
-                save();
-            }
-        }
-
+        function delDebt(id) { if(confirm("Apagar Dívida?")) { db.debts = db.debts.filter(d=>d.id!=id); save(); } }
         function renderDebts() {
             const l = document.getElementById('debtList'); l.innerHTML = '';
             if(db.debts.length === 0) l.innerHTML = '<div style="padding:10px; font-size:0.8rem; color:#aaa; font-style:italic;">Nenhuma dívida cadastrada.</div>';
-            
             db.debts.forEach(d => {
                 const paid = (d.payments||[]).reduce((a,b)=>a+b.val,0);
                 if(paid >= d.total) return;
                 const rest = d.total - paid;
                 const pct = (paid/d.total)*100;
-                
-                l.innerHTML += `
-                    <div style="background:#fff; padding:12px; border-radius:10px; border:1px solid #e2e8f0; margin-bottom:10px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
-                            <span style="font-weight:700; color:#334155;">${d.name}</span>
-                            <div style="display:flex; gap:10px;">
-                                <i class="fa-solid fa-pen" style="color:#94a3b8; cursor:pointer;" onclick="openEditDebt(${d.id})"></i>
-                                <i class="fa-solid fa-trash" style="color:#ef4444; cursor:pointer;" onclick="delDebt(${d.id})"></i>
-                            </div>
-                        </div>
-                        <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#64748b; margin-bottom:5px;">
-                            <span>Pago: ${fmt(paid)}</span>
-                            <span style="color:#ef4444; font-weight:700;">Resta: ${fmt(rest)}</span>
-                        </div>
-                        <div style="height:6px; background:#f1f5f9; border-radius:3px; overflow:hidden;">
-                            <div style="height:100%; width:${pct}%; background:#ef4444;"></div>
-                        </div>
-                    </div>
-                `;
+                l.innerHTML += `<div style="background:#fff; padding:12px; border-radius:10px; border:1px solid #e2e8f0; margin-bottom:10px;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;"><span style="font-weight:700; color:#334155;">${d.name}</span><div style="display:flex; gap:10px;"><i class="fa-solid fa-pen" style="color:#94a3b8; cursor:pointer;" onclick="openEditDebt(${d.id})"></i><i class="fa-solid fa-trash" style="color:#ef4444; cursor:pointer;" onclick="delDebt(${d.id})"></i></div></div><div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#64748b; margin-bottom:5px;"><span>Pago: ${fmt(paid)}</span><span style="color:#ef4444; font-weight:700;">Resta: ${fmt(rest)}</span></div><div style="height:6px; background:#f1f5f9; border-radius:3px; overflow:hidden;"><div style="height:100%; width:${pct}%; background:#ef4444;"></div></div></div>`;
             });
         }
 
@@ -576,13 +587,13 @@
         function parse(s) { return parseFloat(s.replace(/[^0-9,]/g,'').replace(',','.'))||0; }
         function fmt(n) { return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
         function maskMoney(i) { let v=i.value.replace(/\D/g,''); v=(v/100).toFixed(2)+''; v=v.replace(".",","); v=v.replace(/(\d)(?=(\d{3})+(?!\d))/g,'$1.'); i.value='R$ '+v; }
-        function saveManualToken() { localStorage.setItem(TOKEN_KEY, document.getElementById('manualToken').value); syncCloud(); }
         function exportData() { const a=document.createElement('a'); a.href="data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(db)); a.download="benai_fin_backup.json"; a.click(); }
         function importData(i) { const r=new FileReader(); r.onload=e=>{db=JSON.parse(e.target.result); save(); location.reload();}; r.readAsText(i.files[0]); }
         function forceSync() { if(confirm("Baixar dados?")) { syncCloud(); closeModal('modalSync'); } }
         function delTrans(id) { if(confirm("Apagar?")) { db.transactions = db.transactions.filter(x=>x.id!==id); save(); } }
         function renderMonthNav() { const s=document.getElementById('monthNav'); s.innerHTML=''; const m=["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"]; for(let i=-6; i<=6; i++){ const d=new Date(); d.setMonth(d.getMonth()+i); const iso=d.toISOString().slice(0,7); const opt=new Option(`${m[d.getMonth()]} ${d.getFullYear()}`, iso); if(iso===curMonth) opt.selected=true; s.add(opt); } }
         function changeMonth(v) { curMonth=v; refresh(); }
+        function showToast(m) { const t=document.getElementById('toast'); t.innerHTML=`<i class="fa-solid fa-check-circle"></i> ${m}`; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
 
         init();
     </script>
