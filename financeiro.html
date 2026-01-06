@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Benai Finance V3.9.2 | Secure</title>
+    <title>Benai Finance V3.9.3 | Import</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -14,12 +14,9 @@
     
     <script>
         (function() {
-            // LOGIN DE SEGURANÇA
             const PIN_CORRETO = "16359001"; 
-            // Usa localStorage para o PIN também, para não pedir toda hora no mesmo PC
             const auth = localStorage.getItem("benai_finance_auth");
             if (auth === "true") return;
-            
             document.write(`
                 <style>body{visibility:hidden;overflow:hidden;background:#0f172a}#gatekeeper{visibility:visible;position:fixed;inset:0;background:#0f172a;color:white;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Outfit',sans-serif}.pin-box{text-align:center;width:90%;max-width:320px}.pin-inp{padding:15px;font-size:1.5rem;text-align:center;border-radius:12px;border:1px solid #334155;background:rgba(255,255,255,0.05);color:white;letter-spacing:4px;width:100%;margin-top:20px;outline:none;transition:0.3s}.pin-inp:focus{border-color:#38bdf8;box-shadow:0 0 0 4px rgba(56,189,248,0.1)}</style>
                 <div id="gatekeeper"><div class="pin-box"><i class="fa-solid fa-shield-halved" style="font-size:3rem;color:#38bdf8;margin-bottom:15px"></i><h2 style="font-size:1.5rem">Acesso Restrito</h2><input type="password" class="pin-inp" maxlength="8" placeholder="••••••••" onkeyup="if(this.value==='${PIN_CORRETO}'){localStorage.setItem('benai_finance_auth','true');location.reload()}"></div></div>
@@ -33,7 +30,7 @@
             --accent: #00A8E8; --accent-hover: #0284c7;
             --bg: #fdfbf7; --surface: #ffffff; --border: #e2e8f0;
             --text: #334155; --text-muted: #64748b;
-            --success: #10b981; --danger: #ef4444; --warn: #f59e0b;
+            --success: #10b981; --danger: #ef4444;
             --c-essen: #3b82f6; --c-debt: #ef4444; --c-shield: #10b981; --c-sanity: #f59e0b;
             --shadow: 0 10px 30px -5px rgba(0, 31, 91, 0.06);
             --radius: 16px;
@@ -45,13 +42,11 @@
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; display: grid; grid-template-columns: 1fr 340px; gap: 25px; }
         @media(max-width:900px) { .container { grid-template-columns: 1fr; padding: 15px; } }
 
-        /* HEADER */
         .top-nav { background: var(--surface); padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50; }
         .brand { font-family: var(--font-num); font-size: 1.4rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; }
         .nav-btn { width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); color: var(--text-muted); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
         .nav-btn:hover { background: var(--bg); color: var(--accent); }
 
-        /* LAUNCH BAR */
         .launch-bar { grid-column: 1 / -1; background: var(--surface); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; border-left: 5px solid var(--accent); }
         .lb-head { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
         .lb-title { font-family: var(--font-num); font-weight: 800; color: var(--primary); text-transform: uppercase; font-size: 0.9rem; }
@@ -74,12 +69,10 @@
             .f-btn { width: 100%; margin-top: 10px; }
         }
 
-        /* CARDS */
         .card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 25px; box-shadow: var(--shadow); margin-bottom: 25px; }
         .c-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px dashed var(--border); }
         .c-title { font-family: var(--font-num); font-weight: 800; color: var(--primary); font-size: 1rem; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
 
-        /* POTES */
         .pote-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .pote-item { background: var(--bg); border-radius: 12px; padding: 15px; border: 1px solid var(--border); }
         .pi-label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; display: flex; justify-content: space-between; }
@@ -87,7 +80,6 @@
         .pi-track { height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; }
         .pi-fill { height: 100%; transition: width 1s ease; border-radius: 3px; }
 
-        /* EXTRATO */
         .filter-bar { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; background: #f8fafc; padding: 10px; border-radius: 12px; border: 1px solid var(--border); }
         .t-row { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #f1f5f9; transition: 0.2s; }
         .t-row:hover { background: #f8fafc; }
@@ -102,7 +94,6 @@
         .btn-act { cursor: pointer; color: var(--text-muted); transition: 0.2s; }
         .btn-act:hover { color: var(--accent); transform: scale(1.1); }
 
-        /* MODALS */
         .modal { display:none; position:fixed; inset:0; background:rgba(0,31,91,0.5); z-index:1000; align-items:center; justify-content:center; backdrop-filter:blur(3px); }
         .modal-box { background:var(--surface); width:90%; max-width:400px; padding:25px; border-radius:24px; animation:slideIn 0.3s; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
         .modal-h { font-family:var(--font-num); font-weight:800; font-size:1.2rem; color:var(--primary); margin-bottom:20px; }
@@ -110,9 +101,6 @@
         .m-btn { width:100%; padding:14px; border-radius:12px; font-weight:700; cursor:pointer; border:none; margin-top:10px; }
         .btn-pri { background: var(--primary); color: white; }
         .btn-dan { background: var(--danger); color: white; }
-        
-        #toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(100px); background:var(--primary); color:white; padding:12px 30px; border-radius:30px; font-weight:600; box-shadow:0 10px 30px rgba(0,0,0,0.3); transition:0.3s; opacity:0; z-index:9999; display:flex; align-items:center; gap:10px; font-family: var(--font-num); }
-        #toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
 
         @keyframes slideIn { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
     </style>
@@ -270,8 +258,14 @@
             <div class="modal-h">Dados</div>
             <input type="password" id="manualToken" class="m-inp" placeholder="Token Github">
             <button class="m-btn" style="background:#e2e8f0; color:#334155;" onclick="saveManualToken()">Salvar Token</button>
-            <hr style="margin:15px 0; border:0; border-top:1px solid #eee;">
             
+            <hr style="margin:15px 0; border:0; border-top:1px solid #eee;">
+            <div style="font-size:0.8rem; font-weight:700; color:#64748b; margin-bottom:5px;">FERRAMENTAS DE IMPORTAÇÃO:</div>
+            
+            <button class="m-btn" style="background:#00A8E8; color:white; margin-bottom:10px;" onclick="loadNubankHistory()">
+                <i class="fa-solid fa-file-import"></i> IMPORTAR EXTRATO NUBANK (DEZ/JAN)
+            </button>
+
             <button class="m-btn btn-pri" onclick="forceSave()"><i class="fa-solid fa-cloud-arrow-up"></i> Salvar na Nuvem (Upload)</button>
             <button class="m-btn" style="background:#f1f5f9; color:#334155; border:1px solid #e2e8f0; margin-top:5px;" onclick="forceSync()">Baixar da Nuvem</button>
             
@@ -314,19 +308,110 @@
             
             document.getElementById('qDate').value = new Date().toISOString().slice(0,10);
             document.getElementById('cfgIncome').value = fmt(db.income);
-            
-            // Tenta pegar o token do localStorage
             const t = localStorage.getItem(TOKEN_KEY);
-            if(t) {
-                if(document.getElementById('manualToken')) document.getElementById('manualToken').value = t;
-                await syncCloud(); // Tenta baixar automático
-            }
+            if(t && document.getElementById('manualToken')) document.getElementById('manualToken').value = t;
 
             renderMonthNav(); renderFixed(); updateCatSelect(); refresh();
+            await syncCloud();
         }
 
         function refresh() { 
             renderPotes(); renderDebts(); renderTrans(); renderChart(); populateCatFilter(); 
+        }
+
+        // --- FUNÇÃO MÁGICA DE IMPORTAÇÃO ---
+        function loadNubankHistory() {
+            if(!confirm("Tem certeza que deseja importar o histórico do Nubank? (Isso adicionará lançamentos de Dez e Jan)")) return;
+
+            // Garante categorias
+            const catsNecessarias = [
+                {n:'Saúde', p:'essential'}, {n:'Educação', p:'essential'}, {n:'Saque', p:'sanity'},
+                {n:'Mercado', p:'essential'}, {n:'Consultoria', p:'income'}, {n:'Salário', p:'income'}
+            ];
+            catsNecessarias.forEach(nc => {
+                if (!db.categories.find(c => c.n === nc.n)) db.categories.push(nc);
+            });
+
+            // Dados Extraídos
+            const lancamentos = [
+                { d: "2026-01-02", t: "Pagamento Fatura", l: "Nubank", v: 3.21, io: "out", c: "Amortização", b: "debt", m: "debit" },
+                { d: "2026-01-03", t: "Mercado", l: "Festval Linha Verde", v: 10.69, io: "out", c: "Mercado", b: "essential", m: "debit" },
+                { d: "2025-12-01", t: "Transferência Recebida", l: "Magnaldo Jefferson", v: 180.00, io: "in", c: "Extra", b: "income", m: "pix" },
+                { d: "2025-12-03", t: "Salário / Fit Studio", l: "Fit Studio Portao", v: 785.87, io: "in", c: "Salário", b: "income", m: "pix" },
+                { d: "2025-12-04", t: "Salário / Fit Studio", l: "Fit Studio Portao", v: 544.00, io: "in", c: "Salário", b: "income", m: "pix" },
+                { d: "2025-12-08", t: "Entrada Extra", l: "Talita Keyko", v: 782.54, io: "in", c: "Extra", b: "income", m: "pix" },
+                { d: "2025-12-08", t: "Resgate RDB", l: "Aplicação Nubank", v: 60.00, io: "in", c: "Extra", b: "income", m: "credit" },
+                { d: "2025-12-11", t: "Transf. Própria", l: "Bradesco", v: 1050.00, io: "in", c: "Extra", b: "income", m: "pix" },
+                { d: "2025-12-13", t: "Estorno/Devolução", l: "Tim SA", v: 3.00, io: "in", c: "Extra", b: "income", m: "pix" },
+                { d: "2025-12-17", t: "Salário / Fit Studio", l: "Fit Studio Portao", v: 264.00, io: "in", c: "Salário", b: "income", m: "pix" },
+                { d: "2025-12-22", t: "Entrada Extra", l: "Talita Keyko", v: 200.00, io: "in", c: "Extra", b: "income", m: "pix" },
+                { d: "2025-12-29", t: "Crédito Caixa", l: "Caixa FGTS", v: 18.28, io: "in", c: "Extra", b: "income", m: "pix" },
+                { d: "2025-12-30", t: "Salário / Fit Studio", l: "Fit Studio Portao", v: 240.00, io: "in", c: "Salário", b: "income", m: "pix" },
+                { d: "2025-12-17", t: "Consultoria: Carolina", l: "Carolina Simionato", v: 80.00, io: "in", c: "Consultoria", b: "income", m: "pix" },
+                { d: "2025-12-26", t: "Consultoria: Raphaela", l: "Raphaela Mahara", v: 100.00, io: "in", c: "Consultoria", b: "income", m: "pix" },
+                { d: "2025-12-29", t: "Consultoria: Janaina", l: "Janaina Kudlaviec", v: 150.00, io: "in", c: "Consultoria", b: "income", m: "pix" },
+                { d: "2025-12-31", t: "Consultoria: Jean", l: "Jean Luis Fernandes", v: 150.00, io: "in", c: "Consultoria", b: "income", m: "pix" },
+                { d: "2025-12-01", t: "Padaria", l: "Panif. Hobold", v: 4.25, io: "out", c: "Mercado", b: "essential", m: "debit" },
+                { d: "2025-12-02", t: "Hortifruti", l: "Caju", v: 69.66, io: "out", c: "Mercado", b: "essential", m: "debit" },
+                { d: "2025-12-02", t: "Padaria", l: "Panif. Hobold", v: 5.41, io: "out", c: "Mercado", b: "essential", m: "debit" },
+                { d: "2025-12-02", t: "Padaria", l: "Panif. Bon Pan", v: 19.80, io: "out", c: "Mercado", b: "essential", m: "debit" },
+                { d: "2025-12-03", t: "Padaria", l: "Panif. Hobold", v: 19.80, io: "out", c: "Mercado", b: "essential", m: "debit" },
+                { d: "2025-12-03", t: "Mercado", l: "Super Pacelli", v: 15.98, io: "out", c: "Mercado", b: "essential", m: "debit" },
+                { d: "2025-12-04", t: "Doces", l: "Comercio Aida", v: 11.20, io: "out", c: "Mercado", b: "essential", m: "debit" },
+                { d: "2025-12-04", t: "Lanche", l: "Saboritiba", v: 34.90, io: "out", c: "Lazer", b: "sanity", m: "debit" },
+                { d: "2025-12-04", t: "Padaria", l: "Panif. Hobold", v: 14.15, io: "out", c: "Mercado", b: "essential", m: "debit" },
+                { d: "2025-12-04", t: "Faculdade/Curso", l: "Opet Ensino", v: 267.92, io: "out", c: "Educação", b: "essential", m: "pix" },
+                { d: "2025-12-05", t: "Diversos", l: "Cleusa B Correa", v: 25.00, io: "out", c: "Lazer", b: "sanity", m: "debit" },
+                { d: "2025-12-05", t: "Padaria", l: "Panif. Hobold", v: 24.05, io: "out", c: "Mercado", b: "essential", m: "debit" },
+                { d: "2025-12-06", t: "Pix Enviado", l: "Vilma Palivoda", v: 110.00, io: "out", c: "Extra", b: "sanity", m: "pix" },
+                { d: "2025-12-08", t: "Transf. para C6", l: "Benai (C6 Bank)", v: 1578.89, io: "out", c: "Amortização", b: "debt", m: "pix" },
+                { d: "2025-12-09", t: "Suplementos/Saúde", l: "Natufit Portao", v: 330.37, io: "out", c: "Saúde", b: "essential", m: "debit" },
+                { d: "2025-12-09", t: "Gastos Gerais", l: "Portao", v: 70.70, io: "out", c: "Lazer", b: "sanity", m: "debit" },
+                { d: "2025-12-09", t: "Faculdade/Curso", l: "Opet Ensino", v: 228.96, io: "out", c: "Educação", b: "essential", m: "pix" },
+                { d: "2025-12-11", t: "Bicicleta", l: "JB12 Bikes", v: 40.00, io: "out", c: "Lazer", b: "sanity", m: "debit" },
+                { d: "2025-12-13", t: "Fatura Nubank", l: "Nubank", v: 30.00, io: "out", c: "Amortização", b: "debt", m: "debit" },
+                { d: "2025-12-13", t: "Compras", l: "Jim.com Isabel", v: 53.00, io: "out", c: "Lazer", b: "sanity", m: "debit" },
+                { d: "2025-12-13", t: "Uber", l: "Uber", v: 22.96, io: "out", c: "Transporte", b: "essential", m: "debit" },
+                { d: "2025-12-16", t: "Hortifruti", l: "Caju", v: 18.06, io: "out", c: "Mercado", b: "essential", m: "debit" },
+                { d: "2025-12-18", t: "Lanche", l: "Liberatore", v: 19.80, io: "out", c: "Lazer", b: "sanity", m: "debit" },
+                { d: "2025-12-18", t: "Shopee", l: "Shopee / SHPP", v: 49.90, io: "out", c: "Lazer", b: "sanity", m: "pix" },
+                { d: "2025-12-18", t: "Uber", l: "Uber", v: 11.96, io: "out", c: "Transporte", b: "essential", m: "debit" },
+                { d: "2025-12-19", t: "Recarga/Pix", l: "LH da Silva", v: 25.00, io: "out", c: "Lazer", b: "sanity", m: "pix" },
+                { d: "2025-12-20", t: "Saque", l: "Caixa 24h", v: 111.49, io: "out", c: "Saque", b: "sanity", m: "cash" },
+                { d: "2025-12-21", t: "Confeitaria", l: "Confeitaria Jauense", v: 32.40, io: "out", c: "Lazer", b: "sanity", m: "debit" },
+                { d: "2025-12-22", t: "Saque", l: "Caixa 24h", v: 311.49, io: "out", c: "Saque", b: "sanity", m: "cash" },
+                { d: "2025-12-23", t: "Mercado", l: "Armazem Curitiba", v: 32.26, io: "out", c: "Mercado", b: "essential", m: "debit" },
+                { d: "2025-12-23", t: "Uber", l: "Uber", v: 9.93, io: "out", c: "Transporte", b: "essential", m: "debit" },
+                { d: "2025-12-24", t: "Gastos Gerais", l: "Portao", v: 34.90, io: "out", c: "Lazer", b: "sanity", m: "debit" },
+                { d: "2025-12-26", t: "Compras", l: "Silvano", v: 60.00, io: "out", c: "Lazer", b: "sanity", m: "debit" },
+                { d: "2025-12-27", t: "Recarga Celular", l: "Recarga", v: 30.00, io: "out", c: "Lazer", b: "sanity", m: "debit" },
+                { d: "2025-12-28", t: "Padaria", l: "Panif. Sao Paulo", v: 9.90, io: "out", c: "Mercado", b: "essential", m: "debit" },
+                { d: "2025-12-29", t: "Pix Enviado", l: "Fernanda Gisele", v: 80.00, io: "out", c: "Extra", b: "sanity", m: "pix" },
+                { d: "2025-12-30", t: "Gastos Gerais", l: "Portao", v: 46.85, io: "out", c: "Lazer", b: "sanity", m: "debit" },
+                { d: "2025-12-30", t: "Farmácia", l: "Farmacia Preco Popular", v: 12.50, io: "out", c: "Saúde", b: "essential", m: "debit" },
+                { d: "2025-12-30", t: "Farmácia", l: "Farmacia Fenix", v: 23.40, io: "out", c: "Saúde", b: "essential", m: "debit" },
+                { d: "2025-12-30", t: "Padaria", l: "Panif. Bon Pan", v: 13.42, io: "out", c: "Mercado", b: "essential", m: "debit" },
+                { d: "2025-12-30", t: "Mercado", l: "Super Pacelli", v: 28.97, io: "out", c: "Mercado", b: "essential", m: "debit" },
+                { d: "2025-12-31", t: "Hortifruti", l: "Sacolao Popular", v: 21.63, io: "out", c: "Mercado", b: "essential", m: "debit" },
+                { d: "2025-12-31", t: "Mercado", l: "Armazem Curitiba", v: 17.99, io: "out", c: "Mercado", b: "essential", m: "debit" }
+            ];
+
+            let count = 0;
+            lancamentos.forEach((l, i) => {
+                const existe = db.transactions.some(t => t.date === l.d && t.val === l.v && t.desc === l.t);
+                if (!existe) {
+                    db.transactions.push({
+                        id: Date.now() + i, 
+                        date: l.d, desc: l.t, local: l.l, val: l.v, 
+                        type: l.io, cat: l.c, bucket: l.b, method: l.m
+                    });
+                    count++;
+                }
+            });
+
+            saveLocal();
+            alert(`✅ SUCESSO!\n${count} novos lançamentos importados.`);
+            location.reload();
         }
 
         // --- NUVEM ---
@@ -334,54 +419,30 @@
             const token = localStorage.getItem(TOKEN_KEY);
             if(!token) return;
             try {
-                // Find Gist
-                if(!gistId) { 
-                    const s = await fetch('https://api.github.com/gists',{headers:{Authorization:`token ${token}`}}); 
-                    const g = await s.json(); 
-                    const f = g.find(x=>x.description===GIST_DESC); 
-                    if(f) gistId = f.id; 
-                }
-                
+                if(!gistId) { const s = await fetch('https://api.github.com/gists',{headers:{Authorization:`token ${token}`}}); const g=await s.json(); const f=g.find(x=>x.description===GIST_DESC); if(f) gistId=f.id; }
                 if(gistId) {
-                    const r = await fetch(`https://api.github.com/gists/${gistId}`,{headers:{Authorization:`token ${token}`}}); 
-                    const j = await r.json();
-                    if(j.files["finance.json"]) { 
-                        db = JSON.parse(j.files["finance.json"].content); 
-                        saveLocal(); 
-                        refresh();
-                        showToast("Sincronizado com a Nuvem!"); 
-                    }
+                    const r = await fetch(`https://api.github.com/gists/${gistId}`,{headers:{Authorization:`token ${token}`}}); const j=await r.json();
+                    if(j.files["finance.json"]) { db = JSON.parse(j.files["finance.json"].content); saveLocal(); refresh(); showToast("Sincronizado!"); }
                 }
-            } catch(e) { console.error(e); }
+            } catch(e) {}
         }
-
         async function pushCloud() {
-            const token = localStorage.getItem(TOKEN_KEY); 
-            if(!token || !gistId) return;
+            const token = localStorage.getItem(TOKEN_KEY); if(!token || !gistId) return;
             try {
                 const body = JSON.stringify({ files: {"finance.json": {content: JSON.stringify(db)}} });
                 await fetch(`https://api.github.com/gists/${gistId}`, {method:'PATCH', headers:{Authorization:`token ${token}`}, body});
                 console.log("Salvo na nuvem auto");
-            } catch(e) { console.error(e); }
+            } catch(e) {}
         }
-
         async function forceSave() {
             const token = localStorage.getItem(TOKEN_KEY);
             if(!token) return alert("Salve o token primeiro!");
             if(!gistId) { alert("Conectando..."); await syncCloud(); }
-            if(gistId) {
-                await pushCloud();
-                alert("Dados enviados para a nuvem com sucesso!");
-            }
+            if(gistId) { await pushCloud(); alert("Dados enviados para a nuvem com sucesso!"); }
         }
-
         function saveManualToken() {
             const t = document.getElementById('manualToken').value;
-            if(t) {
-                localStorage.setItem(TOKEN_KEY, t);
-                alert("Token Salvo! Tentando conectar...");
-                syncCloud();
-            }
+            if(t) { localStorage.setItem(TOKEN_KEY, t); alert("Token Salvo! Tentando conectar..."); syncCloud(); }
         }
 
         // --- CORE ---
@@ -577,7 +638,7 @@
             const txs = db.transactions.filter(t => t.date.startsWith(curMonth) && t.type==='out');
             const dataMap = {}; txs.forEach(t => { dataMap[t.cat] = (dataMap[t.cat]||0)+t.val; });
             if(chartInst) chartInst.destroy();
-            chartInst = new Chart(ctx, { type: 'doughnut', data: { labels: Object.keys(dataMap), datasets: [{ data:Object.values(dataMap), backgroundColor:['#3b82f6','#ef4444','#10b981','#f59e0b','#6366f1'], borderWidth:0 }] }, options: { maintainAspectRatio:false, plugins:{ legend:{position:'right'} } } });
+            chartInst = new Chart(ctx, { type: 'doughnut', data: { labels: Object.keys(dataMap), datasets: [{ data:Object.values(dataMap), backgroundColor:['#3b82f6','#ef4444','#10b981','#f59e0b','#6366f1'], borderWidth:0 }] }, options: { maintainAspectRatio:false, plugins:{ legend:{position:'bottom'} } } });
         }
 
         function saveLocal() { localStorage.setItem(KEY, JSON.stringify(db)); }
