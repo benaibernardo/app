@@ -3,20 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Benai Finance V3.9.4 | Auto-PDF</title>
+    <title>Benai Finance V3.9.5 | Manual</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script>
-        // Configuração do Worker do PDF.js
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
-
         (function() {
             const PIN_CORRETO = "16359001"; 
             const auth = localStorage.getItem("benai_finance_auth");
@@ -256,18 +252,13 @@
             <button class="m-btn" style="background:#e2e8f0; color:#334155;" onclick="saveManualToken()">Salvar Token</button>
             <hr style="margin:15px 0; border:0; border-top:1px solid #eee;">
             
-            <input type="file" id="pdfInput" accept=".pdf" hidden onchange="parseNubankPDF(this)">
-            <button class="m-btn" style="background:#00A8E8; color:white; margin-bottom:10px;" onclick="document.getElementById('pdfInput').click()">
-                <i class="fa-solid fa-file-pdf"></i> IMPORTAR PDF NUBANK
-            </button>
-
             <button class="m-btn btn-pri" onclick="forceSave()"><i class="fa-solid fa-cloud-arrow-up"></i> Salvar na Nuvem (Upload)</button>
             <button class="m-btn" style="background:#f1f5f9; color:#334155; border:1px solid #e2e8f0; margin-top:5px;" onclick="forceSync()">Baixar da Nuvem</button>
+            
             <hr style="margin:15px 0; border:0; border-top:1px solid #eee;">
-            <button class="m-btn" style="background:#f1f5f9; color:#334155; border:1px solid #e2e8f0;" onclick="exportData()">Backup Local</button>
-            <input type="file" id="importFile" hidden onchange="importData(this)">
-            <button class="m-btn" style="background:#f1f5f9; color:#334155; border:1px solid #e2e8f0;" onclick="document.getElementById('importFile').click()">Restaurar Backup</button>
-            <button class="m-btn" style="background:#fee2e2; color:#ef4444;" onclick="closeModal('modalSync')">Fechar</button>
+            
+            <button class="m-btn" style="background:#fee2e2; color:#ef4444;" onclick="hardReset()">ZERAR BANCO DE DADOS</button>
+            <button class="m-btn" style="background:#f1f5f9; color:#334155; border:1px solid #e2e8f0; margin-top:5px;" onclick="closeModal('modalSync')">Fechar</button>
         </div>
     </div>
 
@@ -342,156 +333,10 @@
             const t = document.getElementById('manualToken').value;
             if(t) { localStorage.setItem(TOKEN_KEY, t); alert("Token Salvo! Tentando conectar..."); syncCloud(); }
         }
-
-        // --- PARSER NUBANK (AUTO-IMPORT) ---
-        async function parseNubankPDF(input) {
-            const file = input.files[0];
-            if(!file) return;
-
-            const reader = new FileReader();
-            reader.onload = async function() {
-                const typedarray = new Uint8Array(this.result);
-                const pdf = await pdfjsLib.getDocument(typedarray).promise;
-                let fullText = "";
-
-                // Extrai texto de todas as páginas
-                for (let i = 1; i <= pdf.numPages; i++) {
-                    const page = await pdf.getPage(i);
-                    const textContent = await page.getTextContent();
-                    fullText += textContent.items.map(s => s.str).join(" ") + "\n";
-                }
-
-                processNubankText(fullText);
-            };
-            reader.readAsArrayBuffer(file);
-        }
-
-        function processNubankText(text) {
-            // Regex para capturar transações: DATA (DD MMM YYYY) ... VALOR
-            // Exemplo de linha do PDF Nubank processado (pode variar, então usamos lógica de fluxo)
-            // A lógica simplificada: Encontrar blocos de data e iterar sobre o que vem depois.
-            
-            // Garantir Categorias
-            const cats = [
-                {n:'Saúde', p:'essential'}, {n:'Educação', p:'essential'}, {n:'Saque', p:'sanity'},
-                {n:'Mercado', p:'essential'}, {n:'Consultoria', p:'income'}, {n:'Salário', p:'income'}
-            ];
-            cats.forEach(nc => { if(!db.categories.find(c => c.n === nc.n)) db.categories.push(nc); });
-
-            // Palavras-chave para categorização
-            const mapCat = {
-                'uber': {c:'Transporte', b:'essential'},
-                '99': {c:'Transporte', b:'essential'},
-                'posto': {c:'Transporte', b:'essential'},
-                'panificadora': {c:'Mercado', b:'essential'},
-                'mercado': {c:'Mercado', b:'essential'},
-                'super': {c:'Mercado', b:'essential'},
-                'sacolao': {c:'Mercado', b:'essential'},
-                'hortifruti': {c:'Mercado', b:'essential'},
-                'farmacia': {c:'Saúde', b:'essential'},
-                'droga': {c:'Saúde', b:'essential'},
-                'natufit': {c:'Saúde', b:'essential'},
-                'fit studio': {c:'Salário', b:'income'},
-                'opet': {c:'Educação', b:'essential'},
-                'saboritiba': {c:'Lazer', b:'sanity'},
-                'confeitaria': {c:'Lazer', b:'sanity'},
-                'saque': {c:'Saque', b:'sanity'},
-                'pix': {c:'Extra', b:'sanity'} // Padrão se não achar outro
-            };
-
-            // Alunos (Consultoria)
-            const alunos = ['janaina', 'raphaela', 'jean', 'carolina'];
-
-            // Lógica de Parsing (Simplificada para robustez)
-            // Divide o texto em "tokens" e procura padrões de data
-            const lines = text.split(/\s{2,}|\n/); // Divide por múltiplos espaços ou quebra de linha
-            let currentDate = null;
-            let count = 0;
-
-            // Regex Data: 01 DEZ 2025
-            const dateRegex = /^(\d{2}) (JAN|FEV|MAR|ABR|MAI|JUN|JUL|AGO|SET|OUT|NOV|DEZ) (\d{4})/;
-            
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i].trim();
-                
-                // Detecta Data
-                const dateMatch = line.match(dateRegex);
-                if (dateMatch) {
-                    const months = {JAN:'01',FEV:'02',MAR:'03',ABR:'04',MAI:'05',JUN:'06',JUL:'07',AGO:'08',SET:'09',OUT:'10',NOV:'11',DEZ:'12'};
-                    currentDate = `${dateMatch[3]}-${months[dateMatch[2]]}-${dateMatch[1]}`;
-                    continue;
-                }
-
-                if (!currentDate) continue;
-
-                // Detecta Transação (Ex: Compra no débito ... Valor)
-                // Nubank PDF geralmente tem: "Compra no débito", "Transferência enviada", etc.
-                if (line.match(/Compra no débito|Transferência enviada|Pagamento de fatura|Saque/i)) {
-                    // Tenta pegar descrição e valor nas linhas seguintes
-                    // Isso é tentativo, pois o PDF.js pode embaralhar a ordem visual vs lógica
-                    // Vamos procurar um valor numérico próximo
-                    
-                    let desc = "Desconhecido";
-                    let val = 0;
-                    
-                    // Procura nas próximas 3 linhas
-                    for(let j=1; j<=3; j++) {
-                        if(lines[i+j]) {
-                            const valMatch = lines[i+j].match(/^-?(\d{1,3}(?:\.\d{3})*,\d{2})$/); // Formato 1.000,00 ou 10,00
-                            if(valMatch) {
-                                val = parseFloat(valMatch[1].replace('.','').replace(',','.'));
-                                desc = lines[i+1]; // Assume que a linha logo após o tipo é a descrição
-                                if (desc === valMatch[0]) desc = lines[i+2] || "Transação"; // Ajuste se a descrição foi pulada
-                                break;
-                            }
-                        }
-                    }
-
-                    if (val > 0) {
-                        // Categorizar
-                        let cat = "Lazer"; let bucket = "sanity"; let type = "out";
-                        const descLower = desc.toLowerCase();
-
-                        // Verifica Alunos
-                        if(alunos.some(a => descLower.includes(a))) {
-                            cat = "Consultoria"; bucket = "income"; type = "in";
-                        } else {
-                            // Verifica Mapa
-                            for (const k in mapCat) {
-                                if (descLower.includes(k)) {
-                                    cat = mapCat[k].c; bucket = mapCat[k].b;
-                                    if(cat === 'Salário') type = 'in';
-                                    break;
-                                }
-                            }
-                        }
-
-                        // Adiciona
-                        const uniqueCheck = `${currentDate}-${val}-${desc}`;
-                        if (!db.transactions.some(t => `${t.date}-${t.val}-${t.desc}` === uniqueCheck)) {
-                            db.transactions.push({
-                                id: Date.now() + Math.random(),
-                                date: currentDate,
-                                desc: desc,
-                                local: "Nubank Auto",
-                                val: val,
-                                type: type,
-                                cat: cat,
-                                bucket: bucket,
-                                method: line.includes("Pix") ? "pix" : "debit"
-                            });
-                            count++;
-                        }
-                    }
-                }
-            }
-
-            if(count > 0) {
-                saveLocal();
-                alert(`✅ ${count} transações importadas com sucesso!`);
+        function hardReset() {
+            if(confirm("Tem certeza? Isso apagará TUDO para sempre.")) {
+                localStorage.removeItem(KEY);
                 location.reload();
-            } else {
-                alert("Não consegui ler transações neste PDF. Verifique se é um extrato do Nubank padrão.");
             }
         }
 
