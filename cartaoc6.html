@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Benai App | V30 Final</title>
+    <title>Benai App | Financeiro V32</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -12,10 +12,10 @@
     <script src="https://unpkg.com/lucide@latest"></script> 
     
     <script>
-        // LOGIN V30
         (function() {
             const PIN = "16359001"; 
-            if (localStorage.getItem("benai_auth_v30") === "true") return;
+            // Mudança de chave V32 para resetar cache do navegador obrigatoriamente
+            if (localStorage.getItem("benai_auth_v32") === "true") return;
             document.write(`
                 <style>
                     body { background-color: #0f172a; margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; font-family: 'Poppins', sans-serif; color: white; flex-direction: column; }
@@ -27,7 +27,7 @@
                 <div class="login-box">
                     <h2 style="font-size:1.8rem; margin:0">BENAI APP</h2>
                     <p style="opacity:0.6; font-size:0.9rem; font-family:'Inter'">Acesso Restrito</p>
-                    <input type="password" inputmode="numeric" maxlength="8" placeholder="••••" autofocus onkeyup="if(this.value==='${PIN}'){localStorage.setItem('benai_auth_v30','true');location.reload()}">
+                    <input type="password" inputmode="numeric" maxlength="8" placeholder="••••" autofocus onkeyup="if(this.value==='${PIN}'){localStorage.setItem('benai_auth_v32','true');location.reload()}">
                 </div>
             `);
             window.stop();
@@ -75,11 +75,11 @@
         .meta-vals { display:flex; justify-content:space-between; font-size:0.8rem; color:var(--muted); font-weight:600; font-family:'Poppins'; }
 
         /* MAIN */
-        main { flex:1; padding:30px; overflow-y:auto; display:flex; flex-direction:column; gap:25px; }
+        main { flex:1; padding:30px; overflow-y:auto; display:flex; flex-direction:column; gap:25px; position:relative; }
 
         .top-bar { display:flex; justify-content:center; position:relative; height:50px; align-items:center; }
         .month-sel { display:flex; align-items:center; gap:15px; background:white; padding:8px 25px; border-radius:50px; border:1px solid var(--border); box-shadow:0 2px 10px rgba(0,0,0,0.02); }
-        .ms-btn { background:none; border:none; cursor:pointer; color:var(--muted); display:flex; }
+        .ms-btn { background:none; border:none; cursor:pointer; color:var(--muted); display:flex; width: 40px; height: 40px; align-items: center; justify-content: center; z-index: 100; } /* Z-INDEX FIX */
         .ms-lbl { font-family:'Poppins'; font-weight:700; font-size:1.1rem; color:var(--primary); min-width:150px; text-align:center; text-transform:uppercase; }
         
         .top-actions { position:absolute; right:0; display:flex; gap:10px; }
@@ -106,7 +106,7 @@
 
         .btn-pay { width:100%; background:white; color:var(--primary); font-weight:700; border:none; padding:16px; border-radius:50px; cursor:pointer; font-family:'Poppins'; font-size:1rem; box-shadow:0 10px 20px rgba(0,0,0,0.2); transition:0.2s; }
         .btn-pay:hover { transform:scale(1.02); }
-        .c-card.paid .btn-pay { color:#059669; }
+        .c-card.paid .btn-pay { color:#065f46; }
 
         /* LIST */
         .panel { background:white; border:1px solid var(--border); border-radius:24px; padding:25px; min-height:500px; display:flex; flex-direction:column; }
@@ -144,9 +144,9 @@
         .ch-area { flex:1; position:relative; width:100%; }
 
         /* MODALS */
-        .modal { display:none; position:fixed; inset:0; background:rgba(15,23,42,0.7); z-index:999; align-items:center; justify-content:center; backdrop-filter:blur(3px); }
+        .modal { display:none; position:fixed; inset:0; background:rgba(15,23,42,0.7); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(3px); }
         .box { background:white; width:95%; max-width:500px; padding:30px; border-radius:24px; box-shadow:0 20px 60px rgba(0,0,0,0.2); max-height:90vh; overflow-y:auto; position:relative; animation:pop 0.3s; }
-        .close-btn { position:absolute; top:25px; right:25px; cursor:pointer; color:var(--muted); z-index: 1000; }
+        .close-btn { position:absolute; top:25px; right:25px; cursor:pointer; color:var(--muted); z-index: 10000; padding:10px; }
         
         .f-title { font-family:'Poppins'; font-weight:700; font-size:1.4rem; color:var(--primary); margin-bottom:25px; }
         .f-grp { margin-bottom:15px; }
@@ -348,8 +348,10 @@
     </div>
 
     <script>
-        const DB_KEY = 'benai_card_v30'; // Nova Chave - Novo Banco Limpo
-        const GIST_DESC = 'BENAI_CARD_V30_FINAL';
+        // MUDANÇA V32: NOVA CHAVE DE BANCO PARA LIMPAR O ERRO ANTIGO
+        const DB_KEY = 'benai_card_v32_stable';
+        const GIST_DESC = 'BENAI_CARD_V32_FINAL';
+        
         let db = { config: { limits: {}, closeDay: 1, dueDay: 10 }, categories: ['Alimentação','Mercado','Transporte','Lazer','Compras','Assinatura','Viagem','Saúde','Casa','Outros','Presentes'], transactions: [], paidInvoices: [] };
         let curDate = new Date();
         let chartInstances = {};
@@ -359,7 +361,7 @@
         const VIVID_COLORS = ['#f97316', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#06b6d4', '#ef4444', '#84cc16'];
 
         document.addEventListener("DOMContentLoaded", () => {
-            if(localStorage.getItem("benai_auth_v30")==="true") {
+            if(localStorage.getItem("benai_auth_v32")==="true") {
                 lucide.createIcons(); loadLocal();
                 if(!db.config.closeDay) db.config.closeDay=1;
                 const t=localStorage.getItem('benai_coach_gh_token');
@@ -372,9 +374,18 @@
         function switchView(id, el) {
             document.querySelectorAll('.view-section').forEach(v=>v.classList.remove('active'));
             document.querySelector('.charts-container').classList.remove('active');
-            if(id==='charts') { document.querySelector('.charts-container').classList.add('active'); setTimeout(renderCharts, 200); }
-            else document.getElementById('view-'+id).classList.add('active');
-            if(el) { document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); document.querySelectorAll('.mn-item').forEach(n=>n.classList.remove('active')); el.classList.add('active'); }
+            
+            if(id==='charts') {
+                document.querySelector('.charts-container').classList.add('active');
+                setTimeout(renderCharts, 200);
+            } else {
+                document.getElementById('view-'+id).classList.add('active');
+            }
+            if(el) {
+                document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+                document.querySelectorAll('.mn-item').forEach(n=>n.classList.remove('active'));
+                el.classList.add('active');
+            }
         }
 
         // RENDER SAFE MODE
@@ -401,7 +412,9 @@
                 const dfv = df.value;
 
                 data.forEach(t => {
-                    if(!t.date) return; // SKIP INVALID DATA
+                    // CRITICAL FIX: SKIP BAD DATA
+                    if(!t.date || !t.val) return; 
+                    
                     if(term && !t.desc.toLowerCase().includes(term)) return;
                     if(tf!=='all' && (tf==='credit'?t.type!=='credit':t.type==='credit')) return;
                     if(cf!=='all' && t.cat!==cf) return;
@@ -549,24 +562,25 @@
         function exportData() { const a = document.createElement('a'); a.href = "data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(db)); a.download = "benai_card_backup.json"; a.click(); }
         async function syncCloud() {
             const token = localStorage.getItem('benai_coach_gh_token'); if(!token) return;
-            try { const res = await fetch('https://api.github.com/gists', { headers: { Authorization: `token ${token}` } }); const gists = await res.json(); const found = gists.find(g => g.description === GIST_DESC); if (found) { const content = await fetch(found.files['card_v30.json'].raw_url).then(r=>r.json()); if(content.transactions.length >= db.transactions.length) { db=content; saveData(); render(); } else { await fetch(`https://api.github.com/gists/${found.id}`, { method:'PATCH', headers:{Authorization:`token ${token}`}, body:JSON.stringify({files:{'card_v30.json':{content:JSON.stringify(db)}}}) }); } } else { await fetch('https://api.github.com/gists', { method:'POST', headers:{Authorization:`token ${token}`}, body:JSON.stringify({description:GIST_DESC, public:false, files:{'card_v30.json':{content:JSON.stringify(db)}}}) }); } } catch(e) {}
+            try { const res = await fetch('https://api.github.com/gists', { headers: { Authorization: `token ${token}` } }); const gists = await res.json(); const found = gists.find(g => g.description === GIST_DESC); if (found) { const content = await fetch(found.files['card_v32.json'].raw_url).then(r=>r.json()); if(content.transactions.length >= db.transactions.length) { db=content; saveData(); render(); } else { await fetch(`https://api.github.com/gists/${found.id}`, { method:'PATCH', headers:{Authorization:`token ${token}`}, body:JSON.stringify({files:{'card_v32.json':{content:JSON.stringify(db)}}}) }); } } else { await fetch('https://api.github.com/gists', { method:'POST', headers:{Authorization:`token ${token}`}, body:JSON.stringify({description:GIST_DESC, public:false, files:{'card_v32.json':{content:JSON.stringify(db)}}}) }); } } catch(e) {}
         }
         function importData(input) {
             const file = input.files[0]; const reader = new FileReader();
             reader.onload = e => { 
                 try { 
                     const data = JSON.parse(e.target.result); 
-                    // CRITICAL FIX: SANITIZE DATA
+                    // AUTO-CORREÇÃO DE DADOS (IMPEDE O CRASH)
                     if(data.transactions) {
                         data.transactions = data.transactions.map(t => ({
                             ...t,
-                            date: t.date || new Date().toISOString().split('T')[0], // Default today if missing
-                            val: Number(t.val) || 0, // Ensure number
-                            cat: t.cat || 'Outros'
+                            date: t.date || new Date().toISOString().split('T')[0], // Põe data de hoje se faltar
+                            val: Number(t.val) || 0, // Garante que é número
+                            cat: t.cat || 'Outros', // Garante categoria
+                            type: t.type || 'credit'
                         }));
-                        db = data; saveData(); alert("Importado com sucesso! (Dados corrigidos)"); 
+                        db = data; saveData(); alert("Backup Restaurado com Sucesso!"); 
                     } else if(data.trips) {
-                        // Legacy Import
+                        // Importação Legado (Antiga)
                         data.trips.forEach(trip => { if(trip.transactions) { trip.transactions.forEach(t => { let type = (t.payment === 'credit') ? 'credit' : 'debit'; if(!db.categories.includes(t.category||'Outros')) db.categories.push(t.category||'Outros'); db.transactions.push({ id: Date.now()+Math.random(), type: type, desc: t.desc, val: t.amount, date: t.date, cat: t.category||'Outros', inst: type==='credit'?(t.installments||1):1, card: t.cardType||'physical', loc: t.local||'', origem: t.transportFrom||'', destino: t.transportTo||'', recur: false }); });}});
                         saveData(); alert("Importado!");
                     }
