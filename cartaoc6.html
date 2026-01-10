@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Benai App | Financeiro</title>
+    <title>Benai App | Financeiro V28</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -15,7 +15,9 @@
         // LOGIN GATEKEEPER
         (function() {
             const PIN = "16359001"; 
-            if (localStorage.getItem("benai_auth_v27") === "true") return;
+            // Mudamos a chave de auth para forçar login novo se necessário
+            if (localStorage.getItem("benai_auth_v28") === "true") return;
+            
             document.write(`
                 <style>
                     body { background-color: #0f172a; margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; font-family: 'Poppins', sans-serif; color: white; flex-direction: column; }
@@ -27,7 +29,7 @@
                 <div class="login-box">
                     <h2 style="font-size:1.8rem; margin:0">BENAI APP</h2>
                     <p style="opacity:0.6; font-size:0.9rem; font-family:'Inter'">Acesso Restrito</p>
-                    <input type="password" inputmode="numeric" maxlength="8" placeholder="••••" autofocus onkeyup="if(this.value==='${PIN}'){localStorage.setItem('benai_auth_v27','true');location.reload()}">
+                    <input type="password" inputmode="numeric" maxlength="8" placeholder="••••" autofocus onkeyup="if(this.value==='${PIN}'){localStorage.setItem('benai_auth_v28','true');location.reload()}">
                 </div>
             `);
             window.stop();
@@ -79,7 +81,7 @@
 
         .top-bar { display:flex; justify-content:center; position:relative; height:50px; align-items:center; }
         .month-sel { display:flex; align-items:center; gap:15px; background:white; padding:8px 25px; border-radius:50px; border:1px solid var(--border); box-shadow:0 2px 10px rgba(0,0,0,0.02); }
-        .ms-btn { background:none; border:none; cursor:pointer; color:var(--muted); display:flex; width: 30px; height: 30px; align-items: center; justify-content: center; } /* Fixed size for hits */
+        .ms-btn { background:none; border:none; cursor:pointer; color:var(--muted); display:flex; }
         .ms-lbl { font-family:'Poppins'; font-weight:700; font-size:1.1rem; color:var(--primary); min-width:150px; text-align:center; text-transform:uppercase; }
         
         .top-actions { position:absolute; right:0; display:flex; gap:10px; }
@@ -136,17 +138,17 @@
         .i-prog { width:100%; height:4px; background:rgba(0,0,0,0.05); border-radius:2px; margin-top:5px; overflow:hidden; }
         .i-fill { height:100%; border-radius:2px; }
 
-        /* CHARTS (2x2 Grid Fixed) - REVERTED TO V25 STYLE */
+        /* CHARTS (2x2 Grid Fixed) */
         .charts-container { display:none; height:100%; grid-template-columns:1fr 1fr; gap:25px; align-content:start; }
         .charts-container.active { display:grid; }
         .chart-box { background:white; border:1px solid var(--border); border-radius:24px; padding:25px; height:350px; display:flex; flex-direction:column; box-shadow:0 4px 10px rgba(0,0,0,0.02); }
         .ch-title { font-weight:700; color:var(--primary); margin-bottom:15px; font-size:1rem; font-family:'Poppins'; }
         .ch-area { flex:1; position:relative; width:100%; }
 
-        /* MODALS (Z-Index Fix) */
-        .modal { display:none; position:fixed; inset:0; background:rgba(15,23,42,0.7); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(3px); }
+        /* MODALS */
+        .modal { display:none; position:fixed; inset:0; background:rgba(15,23,42,0.7); z-index:100; align-items:center; justify-content:center; backdrop-filter:blur(3px); }
         .box { background:white; width:95%; max-width:500px; padding:30px; border-radius:24px; box-shadow:0 20px 60px rgba(0,0,0,0.2); max-height:90vh; overflow-y:auto; position:relative; animation:pop 0.3s; }
-        .close-btn { position:absolute; top:25px; right:25px; cursor:pointer; color:var(--muted); z-index: 10; }
+        .close-btn { position:absolute; top:25px; right:25px; cursor:pointer; color:var(--muted); z-index: 10; } /* Z-Index Fix */
         
         .f-title { font-family:'Poppins'; font-weight:700; font-size:1.4rem; color:var(--primary); margin-bottom:25px; }
         .f-grp { margin-bottom:15px; }
@@ -223,6 +225,7 @@
             <div class="meta-bar"><div class="meta-fill" id="limitBar"></div></div>
             <div class="meta-status" id="limitStatus">Confortável</div>
             <div class="meta-vals"><span id="spentVal">R$ 0</span> <span id="budgetVal">R$ 4k</span></div>
+            <div style="font-size:0.6rem; color:#ccc; text-align:center; margin-top:5px;">v28.0</div>
         </div>
     </aside>
 
@@ -271,10 +274,10 @@
         </div>
 
         <div id="view-charts" class="view-section charts-container">
-            <div class="chart-box"><div class="ch-title">Formas de Pagamento</div><div class="ch-area"><canvas id="chartType"></canvas></div></div>
-            <div class="chart-box"><div class="ch-title">Top 5 Locais</div><div class="ch-area"><canvas id="chartLoc"></canvas></div></div>
-            <div class="chart-box"><div class="ch-title">Categorias (Crédito)</div><div class="ch-area"><canvas id="chartCat"></canvas></div></div>
+            <div class="chart-box"><div class="ch-title">Por Categoria (Crédito)</div><div class="ch-area"><canvas id="chartCat"></canvas></div></div>
             <div class="chart-box"><div class="ch-title">Evolução Diária</div><div class="ch-area"><canvas id="chartDay"></canvas></div></div>
+            <div class="chart-box"><div class="ch-title">Top 5 Locais</div><div class="ch-area"><canvas id="chartLoc"></canvas></div></div>
+            <div class="chart-box"><div class="ch-title">Formas de Pagamento</div><div class="ch-area"><canvas id="chartType"></canvas></div></div>
         </div>
     </main>
 
@@ -348,8 +351,10 @@
     </div>
 
     <script>
-        const DB_KEY = 'benai_card_v27';
-        const GIST_DESC = 'BENAI_CARD_V27_FIX';
+        // *** MUDANÇA CRITICA: Nova chave DB para limpar cache corrompido do online ***
+        const DB_KEY = 'benai_card_v28_clean';
+        const GIST_DESC = 'BENAI_CARD_V28_CLEAN';
+        
         let db = { config: { limits: {}, closeDay: 1, dueDay: 10 }, categories: ['Alimentação','Mercado','Transporte','Lazer','Compras','Assinatura','Viagem','Saúde','Casa','Outros','Presentes'], transactions: [], paidInvoices: [] };
         let curDate = new Date();
         let chartInstances = {};
@@ -359,7 +364,7 @@
         const VIVID_COLORS = ['#f97316', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#06b6d4', '#ef4444', '#84cc16'];
 
         document.addEventListener("DOMContentLoaded", () => {
-            if(localStorage.getItem("benai_auth_v27")==="true") {
+            if(localStorage.getItem("benai_auth_v28")==="true") {
                 lucide.createIcons(); loadLocal();
                 if(!db.config.closeDay) db.config.closeDay=1;
                 const t=localStorage.getItem('benai_coach_gh_token');
@@ -549,7 +554,7 @@
         function exportData() { const a = document.createElement('a'); a.href = "data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(db)); a.download = "benai_card_backup.json"; a.click(); }
         async function syncCloud() {
             const token = localStorage.getItem('benai_coach_gh_token'); if(!token) return;
-            try { const res = await fetch('https://api.github.com/gists', { headers: { Authorization: `token ${token}` } }); const gists = await res.json(); const found = gists.find(g => g.description === GIST_DESC); if (found) { const content = await fetch(found.files['card_v27.json'].raw_url).then(r=>r.json()); if(content.transactions.length >= db.transactions.length) { db=content; saveData(); render(); } else { await fetch(`https://api.github.com/gists/${found.id}`, { method:'PATCH', headers:{Authorization:`token ${token}`}, body:JSON.stringify({files:{'card_v27.json':{content:JSON.stringify(db)}}}) }); } } else { await fetch('https://api.github.com/gists', { method:'POST', headers:{Authorization:`token ${token}`}, body:JSON.stringify({description:GIST_DESC, public:false, files:{'card_v27.json':{content:JSON.stringify(db)}}}) }); } } catch(e) {}
+            try { const res = await fetch('https://api.github.com/gists', { headers: { Authorization: `token ${token}` } }); const gists = await res.json(); const found = gists.find(g => g.description === GIST_DESC); if (found) { const content = await fetch(found.files['card_v28.json'].raw_url).then(r=>r.json()); if(content.transactions.length >= db.transactions.length) { db=content; saveData(); render(); } else { await fetch(`https://api.github.com/gists/${found.id}`, { method:'PATCH', headers:{Authorization:`token ${token}`}, body:JSON.stringify({files:{'card_v28.json':{content:JSON.stringify(db)}}}) }); } } else { await fetch('https://api.github.com/gists', { method:'POST', headers:{Authorization:`token ${token}`}, body:JSON.stringify({description:GIST_DESC, public:false, files:{'card_v28.json':{content:JSON.stringify(db)}}}) }); } } catch(e) {}
         }
         function importData(input) {
             const file = input.files[0]; const reader = new FileReader();
@@ -559,7 +564,6 @@
         function renderCharts() {
             const data = getMonthData(curDate);
             const pType={}, cats={}, locs={}, days={};
-            // Clear prev
             if(chartInstances['chartType']) chartInstances['chartType'].destroy();
             if(chartInstances['chartLoc']) chartInstances['chartLoc'].destroy();
             if(chartInstances['chartCat']) chartInstances['chartCat'].destroy();
@@ -570,12 +574,12 @@
                 if(t.type === 'credit') { cats[t.cat] = (cats[t.cat]||0)+t.instVal; const l = t.loc || 'Outros'; locs[l] = (locs[l]||0)+t.instVal; const d = t.date.split('-')[2]; days[d] = (days[d]||0)+t.instVal; }
             });
 
-            chartInstances['chartType'] = new Chart(document.getElementById('chartType'), { type:'pie', data:{labels:Object.keys(pType), datasets:[{data:Object.values(pType), backgroundColor:['#ef4444','#10b981']}]}, options:{maintainAspectRatio:false} });
-            const sLocs = Object.entries(locs).sort((a,b)=>b[1]-a[1]).slice(0,5);
-            chartInstances['chartLoc'] = new Chart(document.getElementById('chartLoc'), { type:'bar', data:{labels:sLocs.map(x=>x[0]), datasets:[{label:'R$', data:sLocs.map(x=>x[1]), backgroundColor:'#0ea5e9', borderRadius:4}]}, options:{indexAxis:'y', maintainAspectRatio:false} });
             chartInstances['chartCat'] = new Chart(document.getElementById('chartCat'), { type:'doughnut', data:{labels:Object.keys(cats), datasets:[{data:Object.values(cats), backgroundColor:VIVID_COLORS, borderWidth:0}]}, options:{maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}} });
             const sDays = Object.keys(days).sort();
             chartInstances['chartDay'] = new Chart(document.getElementById('chartDay'), { type:'bar', data:{labels:sDays, datasets:[{label:'Gasto', data:sDays.map(d=>days[d]), backgroundColor:'#001F5B', borderRadius:6}]}, options:{maintainAspectRatio:false, scales:{x:{grid:{display:false}}}} });
+            const sLocs = Object.entries(locs).sort((a,b)=>b[1]-a[1]).slice(0,5);
+            chartInstances['chartLoc'] = new Chart(document.getElementById('chartLoc'), { type:'bar', data:{labels:sLocs.map(x=>x[0]), datasets:[{label:'R$', data:sLocs.map(x=>x[1]), backgroundColor:'#0ea5e9', borderRadius:4}]}, options:{indexAxis:'y', maintainAspectRatio:false} });
+            chartInstances['chartType'] = new Chart(document.getElementById('chartType'), { type:'pie', data:{labels:Object.keys(pType), datasets:[{data:Object.values(pType), backgroundColor:['#ef4444','#10b981']}]}, options:{maintainAspectRatio:false} });
         }
     </script>
 </body>
