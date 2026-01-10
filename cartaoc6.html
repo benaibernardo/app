@@ -15,7 +15,7 @@
         // LOGIN GATEKEEPER
         (function() {
             const PIN = "16359001"; 
-            if (localStorage.getItem("benai_auth_v25") === "true") return;
+            if (localStorage.getItem("benai_auth_v27") === "true") return;
             document.write(`
                 <style>
                     body { background-color: #0f172a; margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; font-family: 'Poppins', sans-serif; color: white; flex-direction: column; }
@@ -27,7 +27,7 @@
                 <div class="login-box">
                     <h2 style="font-size:1.8rem; margin:0">BENAI APP</h2>
                     <p style="opacity:0.6; font-size:0.9rem; font-family:'Inter'">Acesso Restrito</p>
-                    <input type="password" inputmode="numeric" maxlength="8" placeholder="••••" autofocus onkeyup="if(this.value==='${PIN}'){localStorage.setItem('benai_auth_v25','true');location.reload()}">
+                    <input type="password" inputmode="numeric" maxlength="8" placeholder="••••" autofocus onkeyup="if(this.value==='${PIN}'){localStorage.setItem('benai_auth_v27','true');location.reload()}">
                 </div>
             `);
             window.stop();
@@ -79,7 +79,7 @@
 
         .top-bar { display:flex; justify-content:center; position:relative; height:50px; align-items:center; }
         .month-sel { display:flex; align-items:center; gap:15px; background:white; padding:8px 25px; border-radius:50px; border:1px solid var(--border); box-shadow:0 2px 10px rgba(0,0,0,0.02); }
-        .ms-btn { background:none; border:none; cursor:pointer; color:var(--muted); display:flex; }
+        .ms-btn { background:none; border:none; cursor:pointer; color:var(--muted); display:flex; width: 30px; height: 30px; align-items: center; justify-content: center; } /* Fixed size for hits */
         .ms-lbl { font-family:'Poppins'; font-weight:700; font-size:1.1rem; color:var(--primary); min-width:150px; text-align:center; text-transform:uppercase; }
         
         .top-actions { position:absolute; right:0; display:flex; gap:10px; }
@@ -118,7 +118,7 @@
 
         .list { display:flex; flex-direction:column; gap:10px; }
         .item { background:white; border:1px solid var(--border); border-radius:18px; padding:15px 20px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; transition:0.2s; position:relative; overflow:hidden; }
-        .item:hover { transform:translateX(5px); border-color:var(--accent); }
+        .item:hover { transform:translateX(5px); }
         
         .item.pending { border-left:5px solid var(--credit); background:#fff1f2; }
         .item.paid { border-left:5px solid var(--debit); background:#f0fdf4; }
@@ -136,17 +136,17 @@
         .i-prog { width:100%; height:4px; background:rgba(0,0,0,0.05); border-radius:2px; margin-top:5px; overflow:hidden; }
         .i-fill { height:100%; border-radius:2px; }
 
-        /* CHARTS (2x2 Grid Fixed) */
+        /* CHARTS (2x2 Grid Fixed) - REVERTED TO V25 STYLE */
         .charts-container { display:none; height:100%; grid-template-columns:1fr 1fr; gap:25px; align-content:start; }
         .charts-container.active { display:grid; }
         .chart-box { background:white; border:1px solid var(--border); border-radius:24px; padding:25px; height:350px; display:flex; flex-direction:column; box-shadow:0 4px 10px rgba(0,0,0,0.02); }
         .ch-title { font-weight:700; color:var(--primary); margin-bottom:15px; font-size:1rem; font-family:'Poppins'; }
         .ch-area { flex:1; position:relative; width:100%; }
 
-        /* MODALS */
-        .modal { display:none; position:fixed; inset:0; background:rgba(15,23,42,0.7); z-index:100; align-items:center; justify-content:center; backdrop-filter:blur(3px); }
+        /* MODALS (Z-Index Fix) */
+        .modal { display:none; position:fixed; inset:0; background:rgba(15,23,42,0.7); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(3px); }
         .box { background:white; width:95%; max-width:500px; padding:30px; border-radius:24px; box-shadow:0 20px 60px rgba(0,0,0,0.2); max-height:90vh; overflow-y:auto; position:relative; animation:pop 0.3s; }
-        .close-btn { position:absolute; top:25px; right:25px; cursor:pointer; color:var(--muted); }
+        .close-btn { position:absolute; top:25px; right:25px; cursor:pointer; color:var(--muted); z-index: 10; }
         
         .f-title { font-family:'Poppins'; font-weight:700; font-size:1.4rem; color:var(--primary); margin-bottom:25px; }
         .f-grp { margin-bottom:15px; }
@@ -233,7 +233,7 @@
                 <div class="ms-lbl" id="monthDisplay">JANEIRO 2026</div>
                 <button class="ms-btn" onclick="changeMonth(1)"><i data-lucide="chevron-right"></i></button>
             </div>
-            <div class="top-actions">
+            <div style="display:flex; gap:10px">
                 <div class="icon-btn" onclick="openModal('modalConfig')"><i data-lucide="settings"></i></div>
                 <div class="icon-btn" onclick="openModal('modalCloud')"><i data-lucide="cloud"></i></div>
             </div>
@@ -348,8 +348,8 @@
     </div>
 
     <script>
-        const DB_KEY = 'benai_card_v25';
-        const GIST_DESC = 'BENAI_CARD_V25_FINAL';
+        const DB_KEY = 'benai_card_v27';
+        const GIST_DESC = 'BENAI_CARD_V27_FIX';
         let db = { config: { limits: {}, closeDay: 1, dueDay: 10 }, categories: ['Alimentação','Mercado','Transporte','Lazer','Compras','Assinatura','Viagem','Saúde','Casa','Outros','Presentes'], transactions: [], paidInvoices: [] };
         let curDate = new Date();
         let chartInstances = {};
@@ -359,7 +359,7 @@
         const VIVID_COLORS = ['#f97316', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#06b6d4', '#ef4444', '#84cc16'];
 
         document.addEventListener("DOMContentLoaded", () => {
-            if(localStorage.getItem("benai_auth_v25")==="true") {
+            if(localStorage.getItem("benai_auth_v27")==="true") {
                 lucide.createIcons(); loadLocal();
                 if(!db.config.closeDay) db.config.closeDay=1;
                 const t=localStorage.getItem('benai_coach_gh_token');
@@ -372,100 +372,95 @@
         function switchView(id, el) {
             document.querySelectorAll('.view-section').forEach(v=>v.classList.remove('active'));
             document.querySelector('.charts-container').classList.remove('active');
-            
-            if(id==='charts') {
-                document.querySelector('.charts-container').classList.add('active');
-                setTimeout(renderCharts, 200);
-            } else {
-                document.getElementById('view-'+id).classList.add('active');
-            }
-            if(el) {
-                document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-                document.querySelectorAll('.mn-item').forEach(n=>n.classList.remove('active'));
-                el.classList.add('active');
-            }
+            if(id==='charts') { document.querySelector('.charts-container').classList.add('active'); setTimeout(renderCharts, 200); }
+            else document.getElementById('view-'+id).classList.add('active');
+            if(el) { document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); document.querySelectorAll('.mn-item').forEach(n=>n.classList.remove('active')); el.classList.add('active'); }
         }
 
-        // RENDER
+        // RENDER SAFE MODE
         function render() {
-            updateHeader();
-            const data = getMonthData(curDate);
-            
-            const df = document.getElementById('dateFilter'); const sel = df.value;
-            df.innerHTML='<option value="all">Todas as Datas</option>';
-            const dc={}; data.forEach(t=>{const d=t.date.split('-')[2]; dc[d]=(dc[d]||0)+1;});
-            Object.keys(dc).sort().forEach(d=>{ const o=document.createElement('option'); o.value=d; o.text=`Dia ${d} (${dc[d]})`; df.add(o); });
-            df.value = sel;
+            try {
+                updateHeader();
+                const data = getMonthData(curDate);
+                
+                const df = document.getElementById('dateFilter'); const sel = df.value;
+                df.innerHTML='<option value="all">Todas as Datas</option>';
+                const dc={}; data.forEach(t=>{ if(t.date) { const d=t.date.split('-')[2]; dc[d]=(dc[d]||0)+1; } });
+                Object.keys(dc).sort().forEach(d=>{ const o=document.createElement('option'); o.value=d; o.text=`Dia ${d} (${dc[d]})`; df.add(o); });
+                df.value = sel;
 
-            let tc=0, td=0;
-            const mk = `${curDate.getFullYear()}-${curDate.getMonth()}`;
-            const isPaid = db.paidInvoices.includes(mk);
-            const budget = db.config.limits[mk] || 4000;
+                let tc=0, td=0;
+                const mk = `${curDate.getFullYear()}-${curDate.getMonth()}`;
+                const isPaid = db.paidInvoices.includes(mk);
+                const budget = db.config.limits[mk] || 4000;
 
-            const list = document.getElementById('transList'); list.innerHTML='';
-            const term = document.getElementById('searchInp').value.toLowerCase();
-            const cf = document.getElementById('catFilter').value;
-            const tf = document.getElementById('typeFilter').value;
-            const dfv = df.value;
+                const list = document.getElementById('transList'); list.innerHTML='';
+                const term = document.getElementById('searchInp').value.toLowerCase();
+                const cf = document.getElementById('catFilter').value;
+                const tf = document.getElementById('typeFilter').value;
+                const dfv = df.value;
 
-            data.forEach(t => {
-                if(term && !t.desc.toLowerCase().includes(term)) return;
-                if(tf!=='all' && (tf==='credit'?t.type!=='credit':t.type==='credit')) return;
-                if(cf!=='all' && t.cat!==cf) return;
-                if(dfv!=='all' && t.date.split('-')[2]!==dfv) return;
+                data.forEach(t => {
+                    if(!t.date) return; // SKIP INVALID DATA
+                    if(term && !t.desc.toLowerCase().includes(term)) return;
+                    if(tf!=='all' && (tf==='credit'?t.type!=='credit':t.type==='credit')) return;
+                    if(cf!=='all' && t.cat!==cf) return;
+                    if(dfv!=='all' && t.date.split('-')[2]!==dfv) return;
 
-                if(t.type==='credit') tc+=t.instVal; else td+=t.instVal;
+                    if(t.type==='credit') tc+=t.instVal; else td+=t.instVal;
 
-                const st = COLORS[t.cat]||COLORS.default;
-                const ic = ICONS[t.cat]||'circle-dollar-sign';
-                const isC = t.type==='credit';
-                let cls = isC ? (isPaid?'item done':'item pending') : 'item paid';
-                let det = t.loc||''; if(t.cat==='Transporte' && (t.origem||t.destino)) det=`${t.origem} > ${t.destino}`;
+                    const st = COLORS[t.cat]||COLORS.default;
+                    const ic = ICONS[t.cat]||'circle-dollar-sign';
+                    const isC = t.type==='credit';
+                    let cls = isC ? (isPaid?'item done':'item pending') : 'item paid';
+                    let det = t.loc||''; if(t.cat==='Transporte' && (t.origem||t.destino)) det=`${t.origem} > ${t.destino}`;
 
-                const div = document.createElement('div');
-                div.className = cls;
-                div.innerHTML = `
-                    <div class="i-left">
-                        <div class="i-icon" style="background:${st.bg}; color:${st.t}"><i data-lucide="${ic}"></i></div>
-                        <div class="i-info">
-                            <h4>${t.desc} ${t.recur?'<i data-lucide="repeat" size="10"></i>':''}</h4>
-                            <p><span class="i-tag" style="background:${st.bg}; color:${st.t}">${t.cat}</span> ${fmtDate(t.date)} • <b>${det}</b></p>
+                    const div = document.createElement('div');
+                    div.className = cls;
+                    div.innerHTML = `
+                        <div class="i-left">
+                            <div class="i-icon" style="background:${st.bg}; color:${st.t}"><i data-lucide="${ic}"></i></div>
+                            <div class="i-info">
+                                <h4>${t.desc} ${t.recur?'<i data-lucide="repeat" size="10"></i>':''}</h4>
+                                <p><span class="i-tag" style="background:${st.bg}; color:${st.t}">${t.cat}</span> ${fmtDate(t.date)} • <b>${det}</b></p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="i-right">
-                        <div class="i-val" style="color:${isC?(isPaid?'#64748b':'#ef4444'):'#10b981'}">R$ ${fmt(t.instVal)}</div>
-                        ${t.inst>1 ? `<div class="i-sub">Pago: ${fmt(t.instVal*t.curInst)} / Resta: ${fmt(t.instVal*(t.inst-t.curInst))}<br>${t.curInst}/${t.inst}</div><div class="inst-bar"><div class="inst-fill" style="width:${(t.curInst/t.inst)*100}%; background:${st.t}"></div></div>` : ''}
-                    </div>
-                `;
-                div.onclick = () => editTrans(t.id);
-                list.appendChild(div);
-            });
-            lucide.createIcons();
+                        <div class="i-right">
+                            <div class="i-val" style="color:${isC?(isPaid?'#64748b':'#ef4444'):'#10b981'}">R$ ${fmt(t.instVal)}</div>
+                            ${t.inst>1 ? `<div class="i-sub">Pago: ${fmt(t.instVal*t.curInst)} / Resta: ${fmt(t.instVal*(t.inst-t.curInst))}<br>${t.curInst}/${t.inst}</div><div class="inst-bar"><div class="inst-fill" style="width:${(t.curInst/t.inst)*100}%; background:${st.t}"></div></div>` : ''}
+                        </div>
+                    `;
+                    div.onclick = () => editTrans(t.id);
+                    list.appendChild(div);
+                });
+                lucide.createIcons();
 
-            document.getElementById('invTotal').innerText=`R$ ${fmt(tc)}`;
-            document.getElementById('valBenai').innerText=`R$ ${fmt(tc/2)}`;
-            document.getElementById('valTalita').innerText=`R$ ${fmt(tc/2)}`;
-            document.getElementById('spentVal').innerText=`R$ ${fmt(tc)}`;
-            document.getElementById('budgetVal').innerText=`R$ ${fmt(budget)}`;
+                document.getElementById('invTotal').innerText=`R$ ${fmt(tc)}`;
+                document.getElementById('valBenai').innerText=`R$ ${fmt(tc/2)}`;
+                document.getElementById('valTalita').innerText=`R$ ${fmt(tc/2)}`;
+                document.getElementById('spentVal').innerText=`R$ ${fmt(tc)}`;
+                document.getElementById('budgetVal').innerText=`R$ ${fmt(budget)}`;
 
-            const pct = Math.min((tc/budget)*100, 100);
-            const bar = document.getElementById('limitBar'); const stat = document.getElementById('limitStatus');
-            bar.style.width=pct+'%';
-            if(pct<50) { bar.style.background='#0ea5e9'; stat.innerText="Confortável"; stat.style.color='#0ea5e9'; }
-            else if(pct<85) { bar.style.background='#f59e0b'; stat.innerText="Atenção"; stat.style.color='#f59e0b'; }
-            else { bar.style.background='#ef4444'; stat.innerText="Crítico"; stat.style.color='#ef4444'; }
-            document.getElementById('limitPct').innerText=pct.toFixed(0)+'%';
+                const pct = Math.min((tc/budget)*100, 100);
+                const bar = document.getElementById('limitBar'); const stat = document.getElementById('limitStatus');
+                bar.style.width=pct+'%';
+                if(pct<50) { bar.style.background='#0ea5e9'; stat.innerText="Confortável"; stat.style.color='#0ea5e9'; }
+                else if(pct<85) { bar.style.background='#f59e0b'; stat.innerText="Atenção"; stat.style.color='#f59e0b'; }
+                else { bar.style.background='#ef4444'; stat.innerText="Crítico"; stat.style.color='#ef4444'; }
+                document.getElementById('limitPct').innerText=pct.toFixed(0)+'%';
 
-            const c = document.getElementById('cardInvoice'); const b = document.getElementById('btnPay');
-            if(isPaid) { c.classList.add('paid'); document.getElementById('invStatus').innerText="PAGO"; b.innerText="DESFAZER"; b.style.color="#059669"; }
-            else { c.classList.remove('paid'); document.getElementById('invStatus').innerText="ABERTA"; b.innerText="PAGAR"; b.style.color="#001F5B"; }
-            document.getElementById('dueDayDisp').innerText = db.config.dueDay;
+                const c = document.getElementById('cardInvoice'); const b = document.getElementById('btnPay');
+                if(isPaid) { c.classList.add('paid'); document.getElementById('invStatus').innerText="PAGO"; b.innerText="DESFAZER"; b.style.color="#059669"; }
+                else { c.classList.remove('paid'); document.getElementById('invStatus').innerText="ABERTA"; b.innerText="PAGAR"; b.style.color="#001F5B"; }
+                document.getElementById('dueDayDisp').innerText = db.config.dueDay;
+            } catch(e) { console.log("Render Error (Safe Mode)", e); }
         }
 
         // LOGIC
         function getMonthData(d) {
             const m=d.getMonth(), y=d.getFullYear(); let res=[];
             db.transactions.forEach(t => {
+                if(!t.date) return; // SKIP BAD DATA
                 const [ty, tm, td] = t.date.split('-').map(Number);
                 const tDate = new Date(ty, tm-1, td);
                 if(t.type !== 'credit') { if(tDate.getMonth()===m && tDate.getFullYear()===y) res.push({...t, instVal: t.val}); return; }
@@ -554,7 +549,7 @@
         function exportData() { const a = document.createElement('a'); a.href = "data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(db)); a.download = "benai_card_backup.json"; a.click(); }
         async function syncCloud() {
             const token = localStorage.getItem('benai_coach_gh_token'); if(!token) return;
-            try { const res = await fetch('https://api.github.com/gists', { headers: { Authorization: `token ${token}` } }); const gists = await res.json(); const found = gists.find(g => g.description === GIST_DESC); if (found) { const content = await fetch(found.files['card_v25.json'].raw_url).then(r=>r.json()); if(content.transactions.length >= db.transactions.length) { db=content; saveData(); render(); } else { await fetch(`https://api.github.com/gists/${found.id}`, { method:'PATCH', headers:{Authorization:`token ${token}`}, body:JSON.stringify({files:{'card_v25.json':{content:JSON.stringify(db)}}}) }); } } else { await fetch('https://api.github.com/gists', { method:'POST', headers:{Authorization:`token ${token}`}, body:JSON.stringify({description:GIST_DESC, public:false, files:{'card_v25.json':{content:JSON.stringify(db)}}}) }); } } catch(e) {}
+            try { const res = await fetch('https://api.github.com/gists', { headers: { Authorization: `token ${token}` } }); const gists = await res.json(); const found = gists.find(g => g.description === GIST_DESC); if (found) { const content = await fetch(found.files['card_v27.json'].raw_url).then(r=>r.json()); if(content.transactions.length >= db.transactions.length) { db=content; saveData(); render(); } else { await fetch(`https://api.github.com/gists/${found.id}`, { method:'PATCH', headers:{Authorization:`token ${token}`}, body:JSON.stringify({files:{'card_v27.json':{content:JSON.stringify(db)}}}) }); } } else { await fetch('https://api.github.com/gists', { method:'POST', headers:{Authorization:`token ${token}`}, body:JSON.stringify({description:GIST_DESC, public:false, files:{'card_v27.json':{content:JSON.stringify(db)}}}) }); } } catch(e) {}
         }
         function importData(input) {
             const file = input.files[0]; const reader = new FileReader();
