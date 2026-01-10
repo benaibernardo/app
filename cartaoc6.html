@@ -118,7 +118,7 @@
 
         .list { display:flex; flex-direction:column; gap:10px; }
         .item { background:white; border:1px solid var(--border); border-radius:18px; padding:15px 20px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; transition:0.2s; position:relative; overflow:hidden; }
-        .item:hover { transform:translateX(5px); }
+        .item:hover { transform:translateX(5px); border-color:var(--accent); }
         
         .item.pending { border-left:5px solid var(--credit); background:#fff1f2; }
         .item.paid { border-left:5px solid var(--debit); background:#f0fdf4; }
@@ -139,7 +139,7 @@
         /* CHARTS (2x2 Grid Fixed) */
         .charts-container { display:none; height:100%; grid-template-columns:1fr 1fr; gap:25px; align-content:start; }
         .charts-container.active { display:grid; }
-        .chart-box { background:white; border:1px solid var(--border); border-radius:24px; padding:25px; height:400px; display:flex; flex-direction:column; box-shadow:0 4px 10px rgba(0,0,0,0.02); }
+        .chart-box { background:white; border:1px solid var(--border); border-radius:24px; padding:25px; height:350px; display:flex; flex-direction:column; box-shadow:0 4px 10px rgba(0,0,0,0.02); }
         .ch-title { font-weight:700; color:var(--primary); margin-bottom:15px; font-size:1rem; font-family:'Poppins'; }
         .ch-area { flex:1; position:relative; width:100%; }
 
@@ -233,7 +233,7 @@
                 <div class="ms-lbl" id="monthDisplay">JANEIRO 2026</div>
                 <button class="ms-btn" onclick="changeMonth(1)"><i data-lucide="chevron-right"></i></button>
             </div>
-            <div style="display:flex; gap:10px">
+            <div class="top-actions">
                 <div class="icon-btn" onclick="openModal('modalConfig')"><i data-lucide="settings"></i></div>
                 <div class="icon-btn" onclick="openModal('modalCloud')"><i data-lucide="cloud"></i></div>
             </div>
@@ -263,7 +263,7 @@
                         <input id="searchInp" class="f-search" placeholder="Buscar..." onkeyup="render()">
                         <select id="dateFilter" class="f-sel" onchange="render()"><option value="all">Todas as Datas</option></select>
                         <select id="catFilter" class="f-sel" onchange="render()"><option value="all">Categorias</option></select>
-                        <select id="typeFilter" class="f-sel" onchange="render()"><option value="all">Tipos</option><option value="credit">Crédito</option><option value="debit">Débito</option></select>
+                        <select id="typeFilter" class="f-sel" onchange="render()"><option value="all">Todos Tipos</option><option value="credit">Crédito</option><option value="debit">Débito</option></select>
                     </div>
                     <div id="transList" class="list"></div>
                 </div>
@@ -271,10 +271,10 @@
         </div>
 
         <div id="view-charts" class="view-section charts-container">
-            <div class="chart-box"><div class="ch-title">Por Categoria (Crédito)</div><div class="ch-area"><canvas id="chartCat"></canvas></div></div>
-            <div class="chart-box"><div class="ch-title">Evolução Diária</div><div class="ch-area"><canvas id="chartDay"></canvas></div></div>
-            <div class="chart-box"><div class="ch-title">Top 5 Locais</div><div class="ch-area"><canvas id="chartLoc"></canvas></div></div>
             <div class="chart-box"><div class="ch-title">Formas de Pagamento</div><div class="ch-area"><canvas id="chartType"></canvas></div></div>
+            <div class="chart-box"><div class="ch-title">Top 5 Locais</div><div class="ch-area"><canvas id="chartLoc"></canvas></div></div>
+            <div class="chart-box"><div class="ch-title">Categorias (Crédito)</div><div class="ch-area"><canvas id="chartCat"></canvas></div></div>
+            <div class="chart-box"><div class="ch-title">Evolução Diária</div><div class="ch-area"><canvas id="chartDay"></canvas></div></div>
         </div>
     </main>
 
@@ -372,9 +372,18 @@
         function switchView(id, el) {
             document.querySelectorAll('.view-section').forEach(v=>v.classList.remove('active'));
             document.querySelector('.charts-container').classList.remove('active');
-            if(id==='charts') { document.querySelector('.charts-container').classList.add('active'); setTimeout(renderCharts, 200); }
-            else document.getElementById('view-'+id).classList.add('active');
-            if(el) { document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); document.querySelectorAll('.mn-item').forEach(n=>n.classList.remove('active')); el.classList.add('active'); }
+            
+            if(id==='charts') {
+                document.querySelector('.charts-container').classList.add('active');
+                setTimeout(renderCharts, 200);
+            } else {
+                document.getElementById('view-'+id).classList.add('active');
+            }
+            if(el) {
+                document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+                document.querySelectorAll('.mn-item').forEach(n=>n.classList.remove('active'));
+                el.classList.add('active');
+            }
         }
 
         // RENDER
@@ -555,6 +564,7 @@
         function renderCharts() {
             const data = getMonthData(curDate);
             const pType={}, cats={}, locs={}, days={};
+            // Clear prev
             if(chartInstances['chartType']) chartInstances['chartType'].destroy();
             if(chartInstances['chartLoc']) chartInstances['chartLoc'].destroy();
             if(chartInstances['chartCat']) chartInstances['chartCat'].destroy();
@@ -565,12 +575,12 @@
                 if(t.type === 'credit') { cats[t.cat] = (cats[t.cat]||0)+t.instVal; const l = t.loc || 'Outros'; locs[l] = (locs[l]||0)+t.instVal; const d = t.date.split('-')[2]; days[d] = (days[d]||0)+t.instVal; }
             });
 
+            chartInstances['chartType'] = new Chart(document.getElementById('chartType'), { type:'pie', data:{labels:Object.keys(pType), datasets:[{data:Object.values(pType), backgroundColor:['#ef4444','#10b981']}]}, options:{maintainAspectRatio:false} });
+            const sLocs = Object.entries(locs).sort((a,b)=>b[1]-a[1]).slice(0,5);
+            chartInstances['chartLoc'] = new Chart(document.getElementById('chartLoc'), { type:'bar', data:{labels:sLocs.map(x=>x[0]), datasets:[{label:'R$', data:sLocs.map(x=>x[1]), backgroundColor:'#0ea5e9', borderRadius:4}]}, options:{indexAxis:'y', maintainAspectRatio:false} });
             chartInstances['chartCat'] = new Chart(document.getElementById('chartCat'), { type:'doughnut', data:{labels:Object.keys(cats), datasets:[{data:Object.values(cats), backgroundColor:VIVID_COLORS, borderWidth:0}]}, options:{maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}} });
             const sDays = Object.keys(days).sort();
             chartInstances['chartDay'] = new Chart(document.getElementById('chartDay'), { type:'bar', data:{labels:sDays, datasets:[{label:'Gasto', data:sDays.map(d=>days[d]), backgroundColor:'#001F5B', borderRadius:6}]}, options:{maintainAspectRatio:false, scales:{x:{grid:{display:false}}}} });
-            const sLocs = Object.entries(locs).sort((a,b)=>b[1]-a[1]).slice(0,5);
-            chartInstances['chartLoc'] = new Chart(document.getElementById('chartLoc'), { type:'bar', data:{labels:sLocs.map(x=>x[0]), datasets:[{label:'R$', data:sLocs.map(x=>x[1]), backgroundColor:'#0ea5e9', borderRadius:4}]}, options:{indexAxis:'y', maintainAspectRatio:false} });
-            chartInstances['chartType'] = new Chart(document.getElementById('chartType'), { type:'pie', data:{labels:Object.keys(pType), datasets:[{data:Object.values(pType), backgroundColor:['#ef4444','#10b981']}]}, options:{maintainAspectRatio:false} });
         }
     </script>
 </body>
