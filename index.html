@@ -1,536 +1,348 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Benai App</title>
+    <title>Benai App | Hub Central</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
-
-    <script>
-        (function() {
-            // --- CONFIGURAÇÃO DE SEGURANÇA ---
-            const PIN_MASTER = "16359001";
-            const PIN_GUEST = "Melissa0107"; // Senha da Namorada
-
-            // Verifica se já está logado
-            const sessionType = sessionStorage.getItem("benai_access_type");
-            if (sessionType === "master" || sessionType === "guest") return;
-
-            // Bloqueio de Tela (Gatekeeper)
-            document.write(`
-                <style>
-                    body { visibility: hidden; overflow: hidden; background: #0f172a; }
-                    #gatekeeper {
-                        visibility: visible; position: fixed; inset: 0;
-                        background: #0f172a; color: white; z-index: 99999;
-                        display: flex; flex-direction: column; align-items: center; justify-content: center;
-                        font-family: 'Outfit', sans-serif;
-                    }
-                    .pin-box { text-align: center; animation: fadeIn 0.5s ease; width: 90%; max-width: 320px; }
-                    .pin-inp { 
-                        padding: 15px; font-size: 1.5rem; text-align: center; 
-                        border-radius: 12px; border: 1px solid #1e293b; outline: none; margin-top: 25px;
-                        background: rgba(255,255,255,0.05); color: white; letter-spacing: 2px; width: 100%;
-                        transition: 0.3s; 
-                    }
-                    .pin-inp:focus { border-color: #38bdf8; box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.1); }
-                    .pin-msg { color: #ef4444; margin-top: 15px; font-weight: 600; font-size: 0.9rem; height: 20px; }
-                    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-                </style>
-                <div id="gatekeeper">
-                    <div class="pin-box">
-                        <i class="fa-solid fa-shield-halved" style="font-size: 3.5rem; color: #38bdf8; margin-bottom: 20px;"></i>
-                        <h2 style="font-size: 1.5rem; margin-bottom: 5px;">Acesso Restrito</h2>
-                        <p style="opacity: 0.6; font-size: 0.9rem;">Digite seu código pessoal</p>
-                        <input type="password" class="pin-inp" placeholder="Senha" autocomplete="off" onkeyup="verifyPin(this)" autofocus>
-                        <div class="pin-msg" id="pin-error"></div>
-                    </div>
-                </div>
-            `);
-
-            window.verifyPin = function(el) {
-                if (el.value.length >= 8) {
-                    if (el.value === PIN_MASTER) {
-                        sessionStorage.setItem("benai_access_type", "master");
-                        location.reload();
-                    } else if (el.value === PIN_GUEST) {
-                        sessionStorage.setItem("benai_access_type", "guest");
-                        location.reload();
-                    } else if (el.value.length > 12) { 
-                         document.getElementById("pin-error").innerText = "Código Incorreto";
-                         el.value = "";
-                         if(navigator.vibrate) navigator.vibrate(200);
-                    }
-                }
-            };
-        })();
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
         :root {
-            --bg-dark: #0f172a;
-            --surface-glass: rgba(30, 41, 59, 0.6);
-            --border-glass: rgba(255, 255, 255, 0.1);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent: #38bdf8;
-            --accent-glow: rgba(56, 189, 248, 0.3);
-            --font-head: 'Outfit', sans-serif;
-            --font-body: 'Plus Jakarta Sans', sans-serif;
+            --bg-dark: #020617;
+            --card-blue: rgba(30, 41, 59, 0.7);
+            --card-hover: rgba(30, 58, 138, 0.8);
+            --cyan: #00aeef;
+            --text-main: #f1f5f9;
+            --text-dim: #94a3b8;
+            --success: #10b981;
+            --danger: #ef4444;
+
+            /* Cores de ícones */
+            --icon-tracker: #22d3ee;
+            --icon-fin: #4ade80;
+            --icon-card: #fbbf24;
+            --icon-diet: #f87171;
+            --icon-coach: #a78bfa;
+            --icon-work: #6366f1;
+            --icon-prime: #ffd700;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; text-decoration: none; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
-        body { 
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            font-family: var(--font-body);
-            min-height: 100vh;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 20px;
-            overflow-x: hidden;
-            background: linear-gradient(-45deg, #0f172a, #1e3a8a, #312e81, #0f172a);
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(-45deg, #020617, #0f172a, #1e1b4b, #020617);
             background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
+            animation: gradientMove 15s ease infinite;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
         }
 
-        @keyframes gradientBG {
+        @keyframes gradientMove {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
 
-        /* SETTINGS BUTTON */
-        .settings-btn {
-            position: absolute; top: 20px; right: 20px;
-            background: rgba(255,255,255,0.1);
-            width: 45px; height: 45px; border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            color: var(--text-main); cursor: pointer; transition: 0.3s;
-            z-index: 50; border: 1px solid var(--border-glass);
-            font-size: 1.2rem;
+        /* --- BLOQUEIO --- */
+        #gatekeeper {
+            position: fixed; inset: 0; background: var(--bg-dark);
+            z-index: 10000; display: flex; align-items: center; justify-content: center;
         }
-        .settings-btn:hover { background: var(--accent); color: white; box-shadow: 0 0 15px var(--accent-glow); }
-        .token-active-dot {
-            width: 10px; height: 10px; background: #10b981; border-radius: 50%;
-            position: absolute; top: 8px; right: 8px; display: none;
-            box-shadow: 0 0 8px #10b981;
+        .pin-card {
+            background: #1e293b; padding: 2.5rem; border-radius: 28px;
+            width: 90%; max-width: 360px; text-align: center; border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
-
-        .app-container { 
-            width: 100%; max-width: 440px; 
-            display: flex; flex-direction: column; align-items: center;
-            animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
-            padding-bottom: 80px; 
+        .pin-input {
+            width: 100%; padding: 1rem; font-size: 1.5rem; text-align: center;
+            background: rgba(0,0,0,0.3); border: 2px solid var(--cyan);
+            border-radius: 15px; color: white; margin-top: 1.5rem; outline: none;
         }
 
-        .brand-header { text-align: center; margin-bottom: 30px; margin-top: 30px; }
-        .brand-icon { 
-            font-size: 3.5rem; color: var(--accent); margin-bottom: 15px; 
-            filter: drop-shadow(0 0 20px var(--accent-glow));
-            animation: float 3s ease-in-out infinite;
+        /* --- HEADER CENTRALIZADO --- */
+        header {
+            padding: 3rem 1.5rem 2rem;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            position: relative;
         }
-        .brand-title { font-family: var(--font-head); font-weight: 800; font-size: 2.2rem; letter-spacing: -1px; line-height: 1; margin-bottom: 5px; }
-        .brand-title span { color: var(--accent); }
-        .brand-subtitle { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 3px; font-weight: 600; opacity: 0.8; }
+        .logo-text { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 2.2rem; line-height: 1; margin-bottom: 8px; }
+        .logo-text span { color: var(--cyan); }
+        
+        .date-text { font-size: 0.9rem; color: var(--text-dim); text-transform: capitalize; margin-bottom: 15px; }
+        
+        .status-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 5px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 600;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+        }
+        .dot { width: 8px; height: 8px; border-radius: 50%; }
+        .dot-online { background: var(--success); box-shadow: 0 0 8px var(--success); }
+        .dot-offline { background: var(--danger); }
 
-        .section-wrapper { width: 100%; margin-bottom: 25px; }
-        .section-header {
-            font-family: var(--font-head); font-weight: 700; font-size: 0.8rem;
-            color: var(--text-muted); text-align: center; text-transform: uppercase;
-            letter-spacing: 1px; margin-bottom: 15px; position: relative; opacity: 0.6;
+        .btn-config-float {
+            position: absolute; right: 1.5rem; top: 3.5rem;
+            background: var(--card-blue); border: 1px solid rgba(255,255,255,0.1);
+            color: white; padding: 10px; border-radius: 12px; cursor: pointer; backdrop-filter: blur(10px);
         }
-        .section-header::before, .section-header::after {
-            content: ''; position: absolute; top: 50%; width: 35%; height: 1px; background: var(--border-glass); opacity: 0.5;
-        }
-        .section-header::before { left: 0; } .section-header::after { right: 0; }
 
-        .grid-apps {
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 100%;
+        /* --- GRID --- */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 1.5rem 5rem;
+            width: 100%;
+        }
+        section { margin-bottom: 2.5rem; }
+        .section-label { 
+            font-family: 'Poppins', sans-serif; font-size: 0.75rem; text-transform: uppercase; 
+            letter-spacing: 2px; color: var(--cyan); margin-bottom: 1rem; display: block; text-align: center;
+        }
+        .app-grid { 
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); 
+            gap: 1.2rem; justify-content: center;
         }
         
         .app-card {
-            background: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
-            border: 1px solid var(--border-glass); border-radius: 20px;
-            padding: 20px; min-height: 120px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: grab;
-            position: relative; overflow: hidden; backdrop-filter: blur(5px);
+            background: var(--card-blue); border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 24px; padding: 1.5rem; text-decoration: none; transition: 0.3s;
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+            backdrop-filter: blur(10px);
         }
-        .app-card:active { cursor: grabbing; transform: scale(0.96); }
-        .app-card:hover {
-            transform: translateY(-4px); border-color: rgba(255,255,255,0.25);
-            box-shadow: 0 15px 30px -5px rgba(0,0,0,0.3); background: rgba(255,255,255,0.08);
-        }
+        .app-card:hover { transform: translateY(-8px); background: var(--card-hover); border-color: var(--cyan); }
+        .icon-box { width: 50px; height: 50px; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; background: rgba(0,0,0,0.2); }
+        .app-card h4 { font-family: 'Poppins', sans-serif; font-size: 0.95rem; color: white; margin-bottom: 4px; }
+        .app-card p { font-size: 0.7rem; color: var(--text-dim); line-height: 1.3; }
+
+        /* --- MODAL --- */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(2, 6, 23, 0.95); z-index: 11000; align-items: center; justify-content: center; padding: 1.5rem; backdrop-filter: blur(5px); }
+        .modal-box { background: #1e293b; width: 100%; max-width: 480px; border-radius: 32px; padding: 2rem; border: 1px solid rgba(255,255,255,0.1); }
+        .config-item { background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 20px; margin-bottom: 1rem; border: 1px solid rgba(255,255,255,0.05); }
+        .config-item label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--cyan); margin-bottom: 4px; }
+        .config-item small { display: block; font-size: 0.65rem; color: var(--text-dim); margin-bottom: 10px; line-height: 1.2; }
+        .config-input { width: 100%; background: var(--bg-dark); border: 1px solid rgba(255,255,255,0.1); padding: 0.8rem; border-radius: 10px; color: white; font-family: monospace; font-size: 0.8rem; }
         
-        .ac-icon { font-size: 2rem; margin-bottom: 12px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.05)); transition: 0.3s; }
-        .app-card:hover .ac-icon { transform: scale(1.1); filter: drop-shadow(0 0 15px var(--accent-glow)); }
-        .ac-name { font-family: var(--font-head); font-weight: 700; font-size: 1rem; color: #fff; text-align: center; }
-        .ac-desc { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; text-align: center; opacity: 0.9; }
+        .btn-action { width: 100%; padding: 0.8rem; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; transition: 0.3s; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.8rem; }
+        .btn-save { background: var(--cyan); color: var(--bg-dark); margin-top: 15px; }
+        .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); }
 
-        .card-tracker .ac-icon { color: #38bdf8; } .card-fin .ac-icon { color: #4ade80; }
-        .card-c6 .ac-icon { color: #fbbf24; } .card-diet .ac-icon { color: #f472b6; }
-        .card-coach .ac-icon { color: #c084fc; } .card-aluno .ac-icon { color: #a78bfa; }
-        .card-fit .ac-icon { color: #ef4444; } .card-prime .ac-icon { color: #ffd700; } 
-
-        .sortable-ghost { opacity: 0.3; background: var(--accent-glow); border: 2px dashed var(--accent); }
-
-        /* MODAL */
-        .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:999; align-items:center; justify-content:center; backdrop-filter:blur(8px); }
-        .modal-box { background: #1e293b; padding: 35px; border-radius: 26px; width: 90%; max-width: 380px; border: 1px solid var(--border-glass); text-align: center; box-shadow: 0 50px 100px -20px rgba(0,0,0,0.6); max-height: 85vh; overflow-y: auto; }
-        .btn-full { width:100%; padding:15px; margin-bottom:12px; border-radius: 14px; border:none; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; font-size: 1rem; transition: 0.2s; font-family: var(--font-head); }
-        .btn-full:hover { transform: scale(1.02); }
-        .btn-down { background: var(--accent); color: white; box-shadow: 0 0 20px var(--accent-glow); }
-        .btn-green { background: #10b981; color: white; box-shadow: 0 0 20px rgba(16,185,129,0.3); }
-        .btn-up { background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--border-glass); }
-        .btn-close { background: transparent; color: var(--text-muted); border: none; font-size: 0.9rem; cursor: pointer; margin-top: 10px; }
-
-        .token-input {
-            width: 100%; padding: 15px; margin-bottom: 20px;
-            background: rgba(0,0,0,0.3); border: 1px solid var(--border-glass);
-            border-radius: 12px; color: white; font-family: monospace;
-            text-align: center; outline: none; font-size: 0.9rem;
+        @media (max-width: 480px) { 
+            .app-grid { grid-template-columns: repeat(2, 1fr); gap: 0.8rem; } 
+            .btn-config-float { position: static; margin: 10px auto; display: block; width: fit-content; }
         }
-        .token-input:focus { border-color: var(--accent); }
-
-        /* PERMISSION TOGGLES */
-        .perm-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .perm-item span { color: #f8fafc; font-size: 0.9rem; }
-        .perm-check { width: 18px; height: 18px; accent-color: #38bdf8; cursor: pointer; }
-
-        @keyframes fadeInUp { from { opacity:0; transform: translateY(40px); } to { opacity:1; transform: translateY(0); } }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
     </style>
 </head>
 <body>
 
-    <div class="settings-btn" id="btnSettings" onclick="openConfig()">
-        <i class="fa-solid fa-user-astronaut"></i>
-        <div class="token-active-dot" id="tokenDot"></div>
+    <!-- BLOQUEIO -->
+    <div id="gatekeeper">
+        <div class="pin-card">
+            <h2 style="font-family: 'Poppins'; color: var(--cyan)">BENAI HUB</h2>
+            <p style="font-size: 0.8rem; color: var(--text-dim)">Insira seu PIN de segurança</p>
+            <input type="password" id="pinInput" class="pin-input" maxlength="8" placeholder="••••••••" autofocus>
+        </div>
     </div>
 
-    <div class="app-container">
+    <header>
+        <div class="logo-area">
+            <div class="logo-text">BENAI <span>APP</span></div>
+            <div id="currentDate" class="date-text">...</div>
+        </div>
         
-        <div class="brand-header">
-            <i class="fa-solid fa-layer-group brand-icon"></i>
-            <h1 class="brand-title">Benai <span>App</span></h1>
-            <p class="brand-subtitle">Sistema Integrado de Gestão</p>
+        <div id="tokenStatus" class="status-badge">
+            <div id="statusDot" class="dot dot-offline"></div>
+            <span id="statusText">Nuvem Desconectada</span>
         </div>
 
-        <div class="section-wrapper" id="sec-personal">
-            <div class="section-header">Pessoal</div>
-            <div class="grid-apps" id="gridPersonal">
-                <a href="tracker.html" class="app-card card-tracker" data-id="tracker">
-                    <div class="ac-icon"><i class="fa-solid fa-layer-group"></i></div>
-                    <div class="ac-name">Tracker</div>
-                    <div class="ac-desc">Rotina & Metas</div>
+        <button class="btn-config-float" onclick="toggleModal(true)">
+            <i data-lucide="settings-2"></i>
+        </button>
+    </header>
+
+    <main class="container">
+        <!-- PESSOAL -->
+        <section>
+            <span class="section-label">Vida & Finanças</span>
+            <div class="app-grid">
+                <a href="tracker.html" class="app-card">
+                    <div class="icon-box"><i data-lucide="check-circle" style="color: var(--icon-tracker)"></i></div>
+                    <h4>Tracker</h4>
+                    <p>Metas e Hábitos</p>
                 </a>
-                <a href="financeiro.html" class="app-card card-fin" data-id="financeiro">
-                    <div class="ac-icon"><i class="fa-solid fa-chart-pie"></i></div>
-                    <div class="ac-name">Financeiro</div>
-                    <div class="ac-desc">Orçamento</div>
+                <a href="financeiro.html" class="app-card">
+                    <div class="icon-box"><i data-lucide="pie-chart" style="color: var(--icon-fin)"></i></div>
+                    <h4>Financeiro</h4>
+                    <p>Controle de Gastos</p>
                 </a>
-                <a href="cartaoc6.html" class="app-card card-c6" data-id="cartao">
-                    <div class="ac-icon"><i class="fa-solid fa-credit-card"></i></div>
-                    <div class="ac-name">Cartão C6</div>
-                    <div class="ac-desc">Crédito</div>
+                <a href="cartao.html" class="app-card">
+                    <div class="icon-box"><i data-lucide="credit-card" style="color: var(--icon-card)"></i></div>
+                    <h4>Cartão C6</h4>
+                    <p>Faturas e Limites</p>
                 </a>
-                <a href="dieta.html" class="app-card card-diet" data-id="dieta">
-                    <div class="ac-icon"><i class="fa-solid fa-apple-whole"></i></div>
-                    <div class="ac-name">Dieta</div>
-                    <div class="ac-desc">Nutrição</div>
+                <a href="dieta.html" class="app-card">
+                    <div class="icon-box"><i data-lucide="apple" style="color: var(--icon-diet)"></i></div>
+                    <h4>Dieta</h4>
+                    <p>Plano Alimentar</p>
                 </a>
             </div>
-        </div>
+        </section>
 
-        <div class="section-wrapper" id="sec-consultancy">
-            <div class="section-header">Consultoria Online</div>
-            <div class="grid-apps" id="gridConsult">
-                <a href="gerador.html" class="app-card card-coach" data-id="gerador">
-                    <div class="ac-icon"><i class="fa-solid fa-dumbbell"></i></div>
-                    <div class="ac-name">Gerador</div>
-                    <div class="ac-desc">Criar Treinos</div>
+        <!-- CONSULTORIA -->
+        <section>
+            <span class="section-label">Consultoria Benai</span>
+            <div class="app-grid">
+                <a href="gerador.html" class="app-card">
+                    <div class="icon-box"><i data-lucide="dumbbell" style="color: var(--icon-coach)"></i></div>
+                    <h4>Gerador</h4>
+                    <p>Criação de Treinos</p>
                 </a>
-                <a href="aluno.html" class="app-card card-aluno" data-id="aluno">
-                    <div class="ac-icon"><i class="fa-solid fa-user-ninja"></i></div>
-                    <div class="ac-name">Viewer</div>
-                    <div class="ac-desc">Modo Aluno</div>
-                </a>
-            </div>
-        </div>
-
-        <div class="section-wrapper" id="sec-work" style="margin-bottom: 60px;">
-            <div class="section-header">Trabalho</div>
-            <div class="grid-apps" id="gridWork">
-                <a href="fit_studio.html" class="app-card card-fit" data-id="fit_studio">
-                    <div class="ac-icon"><i class="fa-solid fa-users-gear"></i></div>
-                    <div class="ac-name">Fit Studio</div>
-                    <div class="ac-desc">Controle de Sala</div>
-                </a>
-                <a href="prime.html" class="app-card card-prime" data-id="prime">
-                    <div class="ac-icon"><i class="fa-solid fa-crown"></i></div>
-                    <div class="ac-name" style="font-size: 0.9rem;">PRIME Acquafit</div>
-                    <div class="ac-desc">Gestão de Alunos</div>
+                <a href="aluno.html" class="app-card">
+                    <div class="icon-box"><i data-lucide="users" style="color: var(--icon-work)"></i></div>
+                    <h4>Portal Aluno</h4>
+                    <p>Área do Cliente</p>
                 </a>
             </div>
-        </div>
+        </section>
 
-    </div>
+        <!-- TRABALHO -->
+        <section>
+            <span class="section-label">Gestão Studio</span>
+            <div class="app-grid">
+                <a href="fit_studio.html" class="app-card">
+                    <div class="icon-box"><i data-lucide="layout" style="color: var(--icon-work)"></i></div>
+                    <h4>Fit Studio</h4>
+                    <p>Gestão de Sala</p>
+                </a>
+                <a href="prime.html" class="app-card">
+                    <div class="icon-box"><i data-lucide="gem" style="color: var(--icon-prime)"></i></div>
+                    <h4>Membros Prime</h4>
+                    <p>Status Premium</p>
+                </a>
+            </div>
+        </section>
+    </main>
 
-    <div id="modalConfig" class="modal" onclick="if(event.target===this)this.style.display='none'">
+    <!-- CONFIGURAÇÕES -->
+    <div id="configModal" class="modal">
         <div class="modal-box">
-            <h2 style="color:white; margin-bottom:15px; font-family:'Outfit'; font-size: 1.5rem;">Benai Cloud</h2>
-            
-            <p style="color:#94a3b8; font-size:0.75rem; margin-bottom:5px; text-align:left; font-weight:700;">TOKEN MESTRE</p>
-            <input type="password" id="tokenInput" class="token-input" placeholder="Cole seu Token (ghp_...)">
-            <button class="btn-full btn-green" onclick="saveToken()">
-                <i class="fa-solid fa-link"></i> Salvar e Conectar
-            </button>
-            
-            <div style="width:100%; height:1px; background:var(--border-glass); margin:20px 0;"></div>
-            
-            <p style="color:#94a3b8; font-size:0.75rem; margin-bottom:10px; text-align:left; font-weight:700;">CONTROLE DE ACESSO (VISITANTE)</p>
-            <div id="permList" style="margin-bottom: 15px; background: rgba(0,0,0,0.2); border-radius: 12px; padding: 10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+                <h2 style="font-family:'Poppins';">Painel de Controle</h2>
+                <i data-lucide="x" onclick="toggleModal(false)" style="cursor:pointer; color:var(--text-dim)"></i>
+            </div>
+
+            <div class="config-item">
+                <label>Sincronização Cloud</label>
+                <small>Token GitHub Gist para backup automático entre dispositivos.</small>
+                <input type="password" id="globalToken" class="config-input" placeholder="ghp_xxxxxx">
+            </div>
+
+            <div class="config-item">
+                <label>Banco de Dados</label>
+                <small>Importe ou exporte o arquivo completo do Benai App (.json).</small>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <button class="btn-action btn-outline" onclick="exportBackup()"><i data-lucide="download" style="width:14px"></i> Exportar</button>
+                    <button class="btn-action btn-outline" onclick="document.getElementById('importInput').click()"><i data-lucide="upload" style="width:14px"></i> Importar</button>
                 </div>
-            <button class="btn-full btn-up" onclick="savePermissions()">
-                <i class="fa-solid fa-user-lock"></i> Salvar Permissões
-            </button>
+                <input type="file" id="importInput" hidden accept=".json" onchange="importBackup(event)">
+            </div>
 
-            <div style="width:100%; height:1px; background:var(--border-glass); margin:20px 0;"></div>
-            
-            <p style="color:#94a3b8; font-size:0.75rem; margin-bottom:15px; text-align:left; font-weight:700;">BACKUP GLOBAL</p>
-            <button class="btn-full btn-up" onclick="backupAll()">
-                <i class="fa-solid fa-download"></i> Baixar Tudo
-            </button>
-            <button class="btn-full btn-up" onclick="document.getElementById('fileRestore').click()">
-                <i class="fa-solid fa-upload"></i> Restaurar Tudo
-            </button>
-            <input type="file" id="fileRestore" hidden onchange="restoreAll(this)">
-
-            <button class="btn-close" onclick="document.getElementById('modalConfig').style.display='none'">Fechar</button>
+            <button class="btn-action btn-save" onclick="saveSettings()">Salvar Alterações</button>
         </div>
     </div>
 
     <script>
-        const KEY_TOKEN = 'benai_coach_gh_token';
-        const KEY_PERMS = 'benai_guest_perms';
-        const GIST_PERSONAL = 'BENAI_PERSONAL_DB'; // Onde as permissões serão salvas
+        const MASTER_PIN = "16359001";
 
-        // Configuração Padrão de Permissões (IDs dos cards)
-        const appsList = [
-            {id: 'tracker', name: 'Tracker'},
-            {id: 'financeiro', name: 'Financeiro'},
-            {id: 'cartao', name: 'Cartão C6'},
-            {id: 'dieta', name: 'Dieta'},
-            {id: 'gerador', name: 'Gerador'},
-            {id: 'aluno', name: 'Viewer'},
-            {id: 'fit_studio', name: 'Fit Studio'},
-            {id: 'prime', name: 'PRIME'}
-        ];
-
-        document.addEventListener("DOMContentLoaded", () => {
-            const userType = sessionStorage.getItem("benai_access_type");
-            const token = localStorage.getItem(KEY_TOKEN);
-
-            // Carrega Permissões salvas (Local ou Default)
-            let allowedApps = JSON.parse(localStorage.getItem(KEY_PERMS)) || ['cartao'];
-
-            if (userType === "guest") {
-                // MODO VISITANTE
-                document.getElementById('btnSettings').style.display = 'none'; // Sem config
-                document.getElementById('sec-work').style.display = 'none'; // Sem trabalho
-                document.getElementById('sec-consultancy').style.display = 'none'; // Sem consultoria (exceto se permitido)
-
-                // Filtra Apps
-                document.querySelectorAll('.app-card').forEach(card => {
-                    const id = card.getAttribute('data-id');
-                    if (!allowedApps.includes(id)) {
-                        card.style.display = 'none';
-                    }
-                });
-                
-                // Tenta atualizar permissões da nuvem (se tiver token salvo no navegador)
-                if(token) syncPermissions(token, false);
-
-            } else if (userType === "master") {
-                // MODO MESTRE
-                if(token) {
-                    document.getElementById('tokenDot').style.display = 'block';
-                    document.getElementById('tokenInput').value = token;
-                    // Tenta atualizar da nuvem para garantir que está sincronizado
-                    syncPermissions(token, false);
-                }
-                
-                // Renderiza Lista de Permissões no Modal
-                renderPermList(allowedApps);
-                
-                // Drag and Drop
-                initSortable('gridPersonal', 'benai_order_p');
-                initSortable('gridConsult', 'benai_order_c');
-                initSortable('gridWork', 'benai_order_w');
+        // --- SEGURANÇA & SESSÃO ---
+        document.getElementById('pinInput').addEventListener('input', (e) => {
+            if (e.target.value === MASTER_PIN) {
+                sessionStorage.setItem('benai_auth', 'true');
+                document.getElementById('gatekeeper').style.display = 'none';
             }
         });
 
-        // --- LÓGICA DE PERMISSÕES ---
-        function renderPermList(allowed) {
-            const container = document.getElementById('permList');
-            container.innerHTML = '';
-            appsList.forEach(app => {
-                const checked = allowed.includes(app.id) ? 'checked' : '';
-                container.innerHTML += `
-                    <div class="perm-item">
-                        <span>${app.name}</span>
-                        <input type="checkbox" class="perm-check" value="${app.id}" ${checked}>
-                    </div>
-                `;
-            });
+        if (sessionStorage.getItem('benai_auth') === 'true') {
+            document.getElementById('gatekeeper').style.display = 'none';
         }
 
-        async function savePermissions() {
-            const checkboxes = document.querySelectorAll('.perm-check');
-            const newPerms = [];
-            checkboxes.forEach(cb => { if(cb.checked) newPerms.push(cb.value); });
-            
-            // Salva Local
-            localStorage.setItem(KEY_PERMS, JSON.stringify(newPerms));
-            
-            // Salva Nuvem (Se tiver token)
-            const token = localStorage.getItem(KEY_TOKEN);
-            if(token) {
-                try {
-                    await syncPermissions(token, true, newPerms);
-                    alert("Permissões salvas na Nuvem!");
-                } catch(e) {
-                    alert("Salvo localmente. Erro na nuvem: " + e.message);
-                }
+        // --- DATA POR EXTENSO ---
+        function setDate() {
+            const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+            const today = new Date().toLocaleDateString('pt-BR', options);
+            document.getElementById('currentDate').innerText = today;
+        }
+
+        // --- STATUS DO TOKEN ---
+        function checkTokenStatus() {
+            const token = localStorage.getItem('BENAI_GLOBAL_TOKEN');
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
+
+            if (token && token.startsWith('ghp_') && token.length > 10) {
+                dot.className = 'dot dot-online';
+                text.innerText = 'Nuvem Conectada';
             } else {
-                alert("Salvo localmente (Sem Token configurado).");
+                dot.className = 'dot dot-offline';
+                text.innerText = 'Nuvem Desconectada';
             }
         }
 
-        async function syncPermissions(token, isWrite, data = null) {
-            // Busca Gist Pessoal
-            let gistId = null;
-            const s = await fetch('https://api.github.com/gists', { headers: { 'Authorization': `token ${token}` } });
-            const g = await s.json();
-            const f = g.find(x => x.description === GIST_PERSONAL);
-            if(f) gistId = f.id;
-
-            if(!gistId && isWrite) {
-                // Cria se não existe (apenas ao escrever)
-                const res = await fetch('https://api.github.com/gists', { 
-                    method: 'POST', 
-                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ description: GIST_PERSONAL, public: false, files: { "permissions.json": { content: JSON.stringify(data) } } })
-                });
-                return;
-            }
-
-            if(gistId) {
-                if(isWrite) {
-                    // Atualiza
-                    await fetch(`https://api.github.com/gists/${gistId}`, { 
-                        method: 'PATCH', 
-                        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ files: { "permissions.json": { content: JSON.stringify(data) } } })
-                    });
-                } else {
-                    // Lê
-                    const r = await fetch(`https://api.github.com/gists/${gistId}`, { headers: { 'Authorization': `token ${token}` } });
-                    const j = await r.json();
-                    if(j.files["permissions.json"]) {
-                        const cloudPerms = JSON.parse(j.files["permissions.json"].content);
-                        localStorage.setItem(KEY_PERMS, JSON.stringify(cloudPerms));
-                        // Se estiver no modal, atualiza a vista
-                        if(document.getElementById('modalConfig').style.display === 'flex') renderPermList(cloudPerms);
-                    }
-                }
-            }
+        // --- CONFIGURAÇÕES ---
+        function toggleModal(show) {
+            document.getElementById('configModal').style.display = show ? 'flex' : 'none';
+            if (show) document.getElementById('globalToken').value = localStorage.getItem('BENAI_GLOBAL_TOKEN') || '';
         }
 
-        // --- CONFIG ---
-        function openConfig() { document.getElementById('modalConfig').style.display='flex'; }
-        
-        function saveToken() {
-            const t = document.getElementById('tokenInput').value.trim();
-            if(t) {
-                localStorage.setItem(KEY_TOKEN, t);
-                document.getElementById('tokenDot').style.display = 'block';
-                alert("✅ Token Salvo!");
-            }
+        function saveSettings() {
+            const token = document.getElementById('globalToken').value.trim();
+            localStorage.setItem('BENAI_GLOBAL_TOKEN', token);
+            checkTokenStatus();
+            alert("Sincronização configurada!");
+            toggleModal(false);
         }
 
-        // --- BACKUP GLOBAL (CORRIGIDO) ---
-        function backupAll() {
-            let backup = {};
-            // Varredura Agressiva: Pega TUDO que parece ser do sistema
+        function exportBackup() {
+            const data = {};
             for (let i = 0; i < localStorage.length; i++) {
                 const key = localStorage.key(i);
-                // Filtros de chaves conhecidas
-                if (key.includes('benai') || key.includes('fit_studio') || key.includes('prime') || key.includes('token') || key.includes('order')) {
-                    try {
-                        const val = localStorage.getItem(key);
-                        // Tenta parsear JSON, se falhar salva como string
-                        try { backup[key] = JSON.parse(val); } catch { backup[key] = val; }
-                    } catch(e) { console.error("Erro ao salvar chave:", key); }
-                }
+                data[key] = localStorage.getItem(key);
             }
-
-            if (Object.keys(backup).length === 0) return alert("Nenhum dado encontrado no navegador.");
-            
-            const date = new Date().toISOString().slice(0,10);
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backup));
-            const node = document.createElement('a');
-            node.setAttribute("href", dataStr);
-            node.setAttribute("download", `BENAI_OS_FULL_BACKUP_${date}.json`);
-            document.body.appendChild(node);
-            node.click();
-            node.remove();
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `benai_full_backup_${new Date().getTime()}.json`;
+            a.click();
         }
 
-        function restoreAll(input) {
-            const file = input.files[0]; if(!file) return;
+        function importBackup(event) {
+            const file = event.target.files[0];
+            if (!file) return;
             const reader = new FileReader();
-            reader.onload = e => {
+            reader.onload = function(e) {
                 try {
                     const data = JSON.parse(e.target.result);
-                    Object.keys(data).forEach(key => {
-                        const val = data[key];
-                        // Se for objeto, stringify. Se for string (token), salva direto.
-                        localStorage.setItem(key, typeof val === 'object' ? JSON.stringify(val) : val);
-                    });
-                    alert(`Restauração concluída!`); location.reload();
-                } catch(err) { alert("Arquivo inválido."); }
+                    Object.keys(data).forEach(key => localStorage.setItem(key, data[key]));
+                    alert("Dados restaurados! Reiniciando...");
+                    location.reload();
+                } catch (err) { alert("Arquivo inválido."); }
             };
             reader.readAsText(file);
         }
 
-        function initSortable(gridId, storageKey) {
-            const grid = document.getElementById(gridId);
-            if(!grid) return;
-            const savedOrder = localStorage.getItem(storageKey);
-            if (savedOrder) {
-                try {
-                    const order = JSON.parse(savedOrder);
-                    const items = Array.from(grid.children);
-                    order.forEach(id => {
-                        const item = items.find(el => el.getAttribute('data-id') === id);
-                        if (item) grid.appendChild(item);
-                    });
-                } catch(e) {}
-            }
-            Sortable.create(grid, {
-                animation: 250, ghostClass: 'sortable-ghost', delay: 150, delayOnTouchOnly: true,
-                onEnd: () => {
-                    const newOrder = Array.from(grid.children).map(el => el.getAttribute('data-id'));
-                    localStorage.setItem(storageKey, JSON.stringify(newOrder));
-                }
-            });
-        }
+        // Inicialização
+        setDate();
+        checkTokenStatus();
+        lucide.createIcons();
     </script>
 </body>
 </html>
