@@ -27,8 +27,9 @@
 
         /* --- GATEKEEPER --- */
         #gatekeeper { position: fixed; inset: 0; z-index: 99999; background: #020617; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .pin-input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; letter-spacing: 12px; font-size: 1.5rem; text-align: center; padding: 1rem; border-radius: 1rem; width: 200px; outline: none; transition: 0.3s; }
-        .pin-input:focus { border-color: var(--secondary); box-shadow: 0 0 20px rgba(0, 168, 154, 0.2); }
+        .pin-input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; letter-spacing: 2px; font-size: 1.2rem; text-align: center; padding: 1rem; border-radius: 1rem; width: 100%; outline: none; transition: 0.3s; }
+        .pin-input:focus { border-color: var(--secondary); box-shadow: 0 0 20px rgba(0, 168, 154, 0.2); background: rgba(255,255,255,0.1); }
+        .pin-input::placeholder { color: rgba(255,255,255,0.3); font-size: 0.9rem; letter-spacing: 1px; }
 
         /* --- HEADER & NAV --- */
         .glass-header {
@@ -71,12 +72,15 @@
         .date-icon { position: absolute; left: 12px; pointer-events: none; color: var(--accent); z-index: 10; }
         .input-date-custom { padding-left: 40px; }
 
-        /* --- AGENDA TABLE --- */
+        /* --- AGENDA TABLE & DRAWER --- */
         .agenda-row { border-bottom: 1px solid #f1f5f9; transition: all 0.2s; cursor: pointer; position: relative; }
-        .agenda-row:hover { transform: scale-[0.995]; z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .agenda-row:hover { background-color: #f8fafc; }
         .agenda-time { font-family: 'Outfit', sans-serif; font-weight: 700; color: var(--primary); font-size: 1.1rem; }
         .agenda-workout { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 2px 8px; border-radius: 4px; background: rgba(0, 168, 154, 0.1); color: #00796b; display: inline-block; }
         
+        .drawer-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-in-out, opacity 0.4s; opacity: 0; background: #f8fafc; }
+        .drawer-content.open { max-height: 600px; opacity: 1; border-bottom: 1px solid #e2e8f0; }
+
         /* Time Separator */
         .time-separator-row td { padding: 0; border: none; }
         .time-separator {
@@ -97,10 +101,6 @@
         @keyframes slideInUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .fade-in-up { animation: slideInUp 0.5s ease-out forwards; }
         
-        /* --- DRAWER --- */
-        .drawer-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-in-out, opacity 0.4s; opacity: 0; background: #f8fafc; }
-        .drawer-content.open { max-height: 500px; opacity: 1; border-bottom: 1px solid #e2e8f0; }
-
         /* --- BUTTONS --- */
         .btn-gold { background: linear-gradient(135deg, #C5A059 0%, #D4AF37 100%); color: white; box-shadow: 0 4px 15px rgba(197, 160, 89, 0.4); }
         .btn-gold:hover { filter: brightness(110%); transform: translateY(-1px); }
@@ -117,20 +117,31 @@
         .dot.offline { background: #94a3b8; }
         .dot.sync { background: #38bdf8; animation: pulse 1s infinite; }
         @keyframes pulse { 50% { opacity: 0.5; } }
+
+        /* Profile Week Grid matches Agenda style */
+        .pf-grid-item { flex: 1; min-width: 80px; padding: 10px; border-radius: 12px; border: 1px solid #e2e8f0; text-align: center; transition: all 0.3s; background: white; }
+        .pf-grid-item.active { border-left: 4px solid var(--secondary); box-shadow: 0 2px 8px rgba(0,168,154,0.1); background: #f0fdfa; }
     </style>
 </head>
 <body>
 
     <!-- GATEKEEPER -->
     <div id="gatekeeper">
-        <div class="text-center">
+        <div class="text-center w-full max-w-[280px]">
             <div class="w-20 h-20 bg-gradient-to-br from-[#C5A059] to-[#b8860b] rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-yellow-900/50">
                 <i class="fa-solid fa-dumbbell text-4xl text-white"></i>
             </div>
-            <h1 class="text-3xl font-bold text-white mb-2 font-heading tracking-tight">PRIME <span class="text-[#C5A059]">ACQUAFIT</span></h1>
-            <p class="text-slate-400 mb-8 text-sm uppercase tracking-widest">Acesso Restrito</p>
-            <input type="password" id="pinInput" class="pin-input" maxlength="8" placeholder="••••••••" inputmode="numeric">
-            <div id="loginError" class="text-red-500 mt-4 font-bold text-sm h-5"></div>
+            <h1 class="text-2xl font-bold text-white mb-2 font-heading tracking-tight">PRIME <span class="text-[#C5A059]">ACQUAFIT</span></h1>
+            <p class="text-slate-400 mb-8 text-[10px] uppercase tracking-widest">Área Restrita</p>
+            
+            <div class="flex flex-col gap-3">
+                <input type="text" id="userInput" class="pin-input text-sm font-bold uppercase" placeholder="USUÁRIO" autocomplete="off">
+                <input type="password" id="passInput" class="pin-input" placeholder="SENHA" onkeyup="if(event.key==='Enter') attemptLogin()">
+                <button onclick="attemptLogin()" class="mt-2 bg-[#C5A059] text-white font-bold py-3.5 rounded-xl hover:bg-[#b8860b] transition shadow-lg shadow-yellow-900/40 tracking-widest text-sm w-full">
+                    ACESSAR SISTEMA
+                </button>
+            </div>
+            <div id="loginError" class="text-red-500 mt-4 font-bold text-xs h-5"></div>
         </div>
     </div>
 
@@ -141,8 +152,7 @@
         <header class="glass-header">
             <div class="max-w-7xl mx-auto px-4 h-[70px] flex justify-between items-center">
                 <div class="flex items-center gap-4">
-                    <!-- BOTÃO VOLTAR PARA O HUB (index.html) -->
-                    <a href="index.html" onclick="window.location.href='index.html'; return false;" class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition border border-white/10">
+                    <a href="index.html" class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition border border-white/10">
                         <i data-lucide="arrow-left" class="w-5 h-5"></i>
                     </a>
                     <div>
@@ -185,7 +195,6 @@
                             </div>
                             
                             <form onsubmit="handleCheckin(event)" class="p-6 space-y-4 relative">
-                                <!-- HIDDEN ID FOR EDITING -->
                                 <input type="hidden" id="ci-edit-id" value="">
                                 
                                 <div id="edit-indicator" class="hidden absolute top-0 left-0 right-0 bg-yellow-100 text-yellow-800 text-xs font-bold px-6 py-1 flex justify-between items-center">
@@ -207,12 +216,22 @@
                                 <div>
                                     <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Aluno</label>
                                     <div class="flex gap-2">
-                                        <select id="ci-student" class="input-prime text-sm" onchange="checkAlerts(this.value)">
+                                        <select id="ci-student" class="input-prime text-sm" onchange="handleStudentSelection(this.value)">
                                             <option value="">Selecione...</option>
                                         </select>
                                         <button type="button" onclick="openStudentModal(null, true)" class="bg-[#00A89A] text-white px-3 rounded-xl hover:bg-teal-600 transition shadow-lg shadow-teal-500/30">
                                             <i data-lucide="plus" class="w-5 h-5"></i>
                                         </button>
+                                    </div>
+                                    <!-- LAST WORKOUT INFO (CHECK-IN) -->
+                                    <div id="last-workout-box" class="hidden mt-2 p-3 bg-slate-50 border border-slate-200 rounded-lg flex justify-between items-center">
+                                        <div>
+                                            <div class="text-[10px] font-bold text-slate-400 uppercase">Último Treino</div>
+                                            <div id="lw-date" class="text-xs font-bold text-[#05364F]">--/--/--</div>
+                                        </div>
+                                        <div id="lw-type" class="bg-[#00A89A] text-white text-[10px] font-bold px-2 py-1 rounded uppercase">
+                                            -
+                                        </div>
                                     </div>
                                     <!-- ALERT BOX -->
                                     <div id="ci-alert" class="hidden mt-3 bg-red-50 border border-red-100 rounded-lg p-3 flex gap-3 items-start animate-pulse">
@@ -272,7 +291,10 @@
                                         <i data-lucide="calendar" class="date-icon w-4 h-4"></i>
                                         <input type="date" id="ag-date" class="bg-white border border-slate-200 rounded-lg py-2 pr-3 text-sm font-bold text-[#05364F] outline-none focus:border-[#00A89A] input-date-custom" onchange="renderAgenda()">
                                     </div>
-                                    <select id="ag-filter-time" class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm font-bold text-[#05364F] outline-none focus:border-[#00A89A]" onchange="renderAgenda()"><option value="">Todos</option></select>
+                                    <select id="ag-filter-time" class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm font-bold text-[#05364F] outline-none focus:border-[#00A89A]" onchange="renderAgenda()">
+                                        <option value="">Todos Horários</option>
+                                        <!-- Populated via JS -->
+                                    </select>
                                     <input type="text" id="ag-search" placeholder="Buscar aluno..." class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm font-bold outline-none focus:border-[#00A89A] w-32" onkeyup="renderAgenda()">
                                 </div>
                             </div>
@@ -309,7 +331,13 @@
                     <div class="overflow-x-auto rounded-xl border border-slate-100">
                         <table class="w-full text-sm text-left">
                             <thead class="bg-slate-50 text-slate-500 uppercase text-xs font-bold border-b border-slate-200">
-                                <tr><th class="px-6 py-4">Nome</th><th class="px-6 py-4">Objetivo</th><th class="px-6 py-4">Status</th><th class="px-6 py-4 text-right">Ações</th></tr>
+                                <tr>
+                                    <th class="px-6 py-4 text-[#05364F]">Nome</th>
+                                    <th class="px-6 py-4 text-[#00A89A]">Objetivo</th>
+                                    <th class="px-6 py-4 text-purple-600">Plano</th>
+                                    <th class="px-6 py-4 text-[#C5A059]">Status</th>
+                                    <th class="px-6 py-4 text-right">Ações</th>
+                                </tr>
                             </thead>
                             <tbody id="stu-body" class="bg-white divide-y divide-slate-100"></tbody>
                         </table>
@@ -384,10 +412,18 @@
                     <div id="pf-avatar" class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#00A89A] to-[#05364F] text-white flex items-center justify-center text-xl font-bold shadow-lg"></div>
                     <div><h2 id="pf-name" class="text-2xl font-black text-[#05364F] font-heading leading-tight">NOME</h2><p class="text-xs font-bold text-[#C5A059] uppercase tracking-wider mt-1"><span id="pf-obj">OBJETIVO</span> • <span id="pf-plan">PLANO</span></p></div>
                 </div>
-                <button onclick="document.getElementById('profile-modal').style.display='none'" class="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center"><i data-lucide="x" class="w-5 h-5 text-slate-500"></i></button>
+                <div class="flex items-center gap-2">
+                    <button id="pf-btn-edit" class="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition">
+                        <i data-lucide="edit" class="w-4 h-4"></i> Editar Dados
+                    </button>
+                    <button onclick="document.getElementById('profile-modal').style.display='none'" class="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center"><i data-lucide="x" class="w-5 h-5 text-slate-500"></i></button>
+                </div>
             </div>
             <div class="p-8 overflow-y-auto space-y-8 bg-slate-50/50 flex-grow">
-                 <div class="card-prime p-6 border-slate-200"><h3 class="text-xs font-bold text-slate-400 uppercase mb-4 flex items-center gap-2"><i data-lucide="calendar-days" class="w-4 h-4"></i> Frequência Semana Atual</h3><div id="pf-week-grid" class="flex gap-2 overflow-x-auto pb-2"></div></div>
+                 <div class="card-prime p-6 border-slate-200">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase mb-4 flex items-center gap-2"><i data-lucide="calendar-days" class="w-4 h-4"></i> Frequência Semana Atual</h3>
+                    <div id="pf-week-grid" class="flex gap-3 overflow-x-auto pb-2"></div>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="p-6 rounded-2xl bg-red-50 border border-red-100"><h4 class="font-bold text-red-700 mb-4 flex items-center gap-2 text-sm uppercase"><i data-lucide="alert-triangle" class="w-4 h-4"></i> Limitações</h4><ul id="pf-lim-list" class="space-y-3 text-sm text-red-800 font-medium"></ul></div>
                     <div class="p-6 rounded-2xl bg-blue-50 border border-blue-100"><h4 class="font-bold text-blue-700 mb-4 flex items-center gap-2 text-sm uppercase"><i data-lucide="clipboard-list" class="w-4 h-4"></i> Observações</h4><ul id="pf-obs-list" class="space-y-3 text-sm text-blue-800 font-medium"></ul></div>
@@ -432,157 +468,100 @@
         const DB_KEY = 'prime_main_db'; 
         const TOKEN_KEY = 'BENAI_GLOBAL_TOKEN'; 
         const GIST_DESC = 'BENAI_WORK_DB';
-        const PIN = "16359001";
+        const MASTER_PIN = "16359001";
+        const STAFF_USER = "PRIME";
+        const STAFF_PASS = "123";
         
-        // GLOBAL VARS
         let db = { students: [], checkins: [], professors: [] };
         let charts = {}; 
         let gistId = null;
         
-        // COLORS ARRAY
-        const colors = ['bg-red-500','bg-orange-500','bg-amber-500','bg-yellow-500','bg-lime-500','bg-green-500','bg-emerald-500','bg-teal-500','bg-cyan-500','bg-sky-500','bg-blue-500','bg-indigo-500','bg-violet-500','bg-purple-500','bg-fuchsia-500','bg-pink-500','bg-rose-500'];
-
         const INITIAL_PROFS = ['BENAI', 'JUAN', 'THUR', 'LUANA', 'BENJAMIN'];
         const INITIAL_STUDENTS = [
              {"id":"1","name":"NILTON FLORIANO","objective":"GANHAR MASSA","limitations":"HERNIA INGUINAL","notes":"GOSTA DE FAZER BURPEES AO FINAL DA AULA","plan":"3X"},
             {"id":"2","name":"LINDAMIR FLORIANO (MIME)","objective":"EMAGRECIMENTO","limitations":"NENHUMA","notes":"","plan":"3X"},
-            {"id":"3","name":"LUCIMARA STELE","objective":"EMAGRECIMENTO","limitations":"HERNIA LOMBA L5, NÃO SENTE DORES | DORES NO ANTEBRAÇO","notes":"","plan":"3X"},
-            {"id":"4","name":"VITOR HUGO","objective":"","limitations":"","notes":"","plan":""},
-            {"id":"5","name":"JOSE LUIS RODRIGUES (ZÉ)","objective":"FORTALECIMENTO","limitations":"NENHUMA","notes":"SEM OBSERVAÇÕES","plan":""},
-            {"id":"6","name":"CLEIDE FLORIANO","objective":"FORTALECIMENTO","limitations":"NENHUMA","notes":"PRESSÃO BAIXA SOB MUITO ESFORÇO","plan":""},
-            {"id":"7","name":"VILMA KAISS","objective":"EMAGRECIMENTO","limitations":"NENHUMA","notes":"SEM OBSERVAÇÕES","plan":"3X"},
-            {"id":"8","name":"JOSEMAR KAISS (ZICO)","objective":"EMAGRECIMENTO","limitations":"NENHUMA","notes":"SENTE DOR NOS DOIS OMBROS NO MOVIMENTO DE ELEVAÇÃO LATERAL","plan":"3X"},
-            {"id":"9","name":"ANA PAULA CARNEIRO","objective":"","limitations":"NENHUMA","notes":"DISCINESIA ESCAPULAR DIREITA, FORTALECER OMBROS, PEITORAL E COSTAS.","plan":"3X"},
-            {"id":"10","name":"ANA CAROLINE (ANINHA)","objective":"","limitations":"TENDINITE NOS PUNHOS","notes":"","plan":"5X"},
-            {"id":"11","name":"ENDRIGO GOMES","objective":"","limitations":"","notes":"","plan":""},
-            {"id":"12","name":"CLAUDIA SANTOS","objective":"EMAGRECIMENTO","limitations":"NENHUMA","notes":"","plan":"3X"},
-            {"id":"13","name":"RAPHAELA SOSNOVSKI","objective":"SAÚDE E FORTALECIMENTO","limitations":"NENHUMA","notes":"ENDOMETRIOSE (QUESTÃO PARTICULAR)","plan":"3X"},
-            {"id":"14","name":"CLAUDIA MIALSKI","objective":"SAÚDE E EMAGRECIMENTO","limitations":"LIMITAÇÃO NO JOELHO ESQUERDO","notes":"RELATOU DORES NAS ARTICULAÇÕES DE TODO CORPO","plan":"3X"},
-            {"id":"15","name":"RODRIGO LOPES","objective":"","limitations":"","notes":"","plan":""},
-            {"id":"16","name":"CARLA LOCOMAN","objective":"","limitations":"","notes":"","plan":""},
-            {"id":"17","name":"GABRIELA NEVES","objective":"","limitations":"","notes":"","plan":"3X"},
-            {"id":"18","name":"DANIELE BARBETA NEVES","objective":"","limitations":"","notes":"","plan":"3X"},
-            {"id":"19","name":"FELIPE NEVES","objective":"","limitations":"NENHUMA","notes":"APRESENTANDO DORES NO COTOVELO DIREITO, FORTALECER ANTEBRAÇO","plan":"3X"},
-            {"id":"20","name":"PAULA DAIANY","objective":"","limitations":"","notes":"","plan":""},
-            {"id":"21","name":"MATEUS","objective":"","limitations":"MENISCO DIREITO","notes":"DOR NO JOELHO ESQUERDO","plan":"3X"},
-            {"id":"22","name":"ISABELA PECHEL","objective":"GANHO DE MASSA","limitations":"NENHUMA","notes":"DOR NO OMBRO DIREITO AS VEZES","plan":"3X"},
-            {"id":"23","name":"ROSEMERI PECHEL","objective":"EMAGRECIMENTO E GANHO DE MASSA","limitations":"LIPEDEMA E DOIS JOELHOS DESGASTES NATURAIS","notes":"","plan":"3X"},
-            {"id":"24","name":"EMERSON BATISTA","objective":"GANHO DE MASSA","limitations":"NENHUMA","notes":"","plan":"3X"},
-            {"id":"25","name":"GISELI PAULUK","objective":"GANHAR MASSA E RESISTÊNCIA CARDIOVASCULAR","limitations":"JOELHO ESQUERDO DÓI AS VEZES","notes":"FORTALECER GLÚTEO","plan":""},
-            {"id":"26","name":"GABRIEL MORRETES","objective":"SAÚDE E EMAGRECIMENTO","limitations":"NENHUMA","notes":"FAZ NATAÇÃO ANTES DO PRIME","plan":"3X"},
-            {"id":"27","name":"JEAN MATHEUS SANTOS","objective":"GANHAR MASSA","limitations":"IMPACTO NA COLUNA","notes":"EXERCÍCIOS UNILATERAIS PARA FORTALECER PARAVERTEBRAIS E DORSAL","plan":"3X"},
-            {"id":"28","name":"ROBIANE MACHADO","objective":"EMAGRECIMENTO","limitations":"NENHUMA","notes":"FOCO EM GLÚTEO E TRÍCEPS","plan":"3X"},
-            {"id":"29","name":"ANA BEATRIZ (BIA)","objective":"EMAGRECIMENTO","limitations":"NENHUMA","notes":"HIPERLORDOSE","plan":"3X"},
-            {"id":"30","name":"ALINE GALIOTTO","objective":"","limitations":"NENHUMA","notes":"","plan":"3X"},
-            {"id":"31","name":"ISABELA GALIOTTO","objective":"","limitations":"NENHUMA","notes":"PREGUIÇA","plan":"3X"},
-            {"id":"32","name":"JULIANO PIANTADOSI","objective":"SAÚDE E EMAGRECIMENTO","limitations":"HERNIA NA LOMBAR","notes":"MUITA FRAQUEZA NO GLÚTEO, PERNAS E PARAVERTEBRAIS - HISTÓRICO DE PRESSÃO ALTA","plan":"3X"},
-            {"id":"33","name":"CLAUDIA ODETE TORRES","objective":"","limitations":"INFILTRAÇÃO OMBRO DIREITO | HERNIA DE DISCO LOMBAR","notes":"EVITAR LEG PRESS, DESENVOLVIMENTO, AGACHAMENTO COM CARGAS ALTAS","plan":"3X"},
-            {"id":"34","name":"ERIKA FLORIANO","objective":"SAÚDE E EMAGRECIMENTO","limitations":"ASMA | ALERGIAS","notes":"TRAZER BASTANTE FORTALECIMENTO CARDIOVASCULAR","plan":"3X"},
-            {"id":"35","name":"ADRIANE GALESKI","objective":"SAÚDE E EMAGRECIMENTO","limitations":"SINDROME DO TUNEL DO CARPO | COLESTEROL | DIABETES | HERNIA DE DISCO NA LOMBAR","notes":"EVITAR EXERCÍCIOS COM SALTO","plan":"3X"},
-            {"id":"36","name":"TATIANA","objective":"SAÚDE E EMAGRECIMENTO","limitations":"NENHUMA","notes":"","plan":""},
-            {"id":"37","name":"MATHEUS BORGES","objective":"GANHAR MASSA","limitations":"","notes":"","plan":"3X"},
-            {"id":"38","name":"IZABEL SILVEIRA (IZA)","objective":"","limitations":"","notes":"","plan":"3X"},
-            {"id":"39","name":"EVELYN ROSE","objective":"","limitations":"","notes":"","plan":"3X"},
-            {"id":"40","name":"MARCIA BUENO","objective":"GANHAR MASSA","limitations":"LIPEDEMA BRAÇO DIREITO","notes":"","plan":"3X"},
-            {"id":"41","name":"AMAURI BARBOSA","objective":"","limitations":"","notes":"","plan":"3X"},
-            {"id":"42","name":"GISELE DIAS VAZ","objective":"","limitations":"HERNIA NA LOMBAR","notes":"","plan":"3X"},
-            {"id":"43","name":"ANGELA SILVA","objective":"SAÚDE E EMAGRECIMENTO","limitations":"HÉRNIA CERVICAL E LUXAÇÃO NO CÓCCIX","notes":"DORES NO QUADRIL DIREITO, HIPERCIFOSE, HIPERLORDOSE, ENCURTAMENTO DE DORSAL","plan":"3X"},
-            {"id":"44","name":"ANTONY OLIMPIO ROCHA","objective":"EMAGRECIMENTO","limitations":"SEM RESTRIÇÕES","notes":"","plan":"2X KIDS"},
-            {"id":"45","name":"CARLOS ALBERTO DOLCI","objective":"EMAGRECIMENTO","limitations":"SEM RESTRIÇÕES","notes":"SENTE INCOMODOS AO REALIZAR BICICLETA, PRIORIZAR OUTROS APARELHOS PARA CARDIO","plan":"3X"},
-            {"id":"46","name":"CARLOS EUGENIO FOERSTER","objective":"QUALIDADE DE VIDA","limitations":"SEM RESTRIÇÕES","notes":"SENTE INCOMODOS COM EXCESSO DE MOVIMENTOS DE FLEXÃO DE QUADRIL","plan":"3X"},
-            {"id":"47","name":"EDUARDO STELLFELD","objective":"EMAGRECIMENTO","limitations":"SEM RESTRIÇÕES","notes":"","plan":"3X KIDS"},
-            {"id":"48","name":"FABRICIO MARTINS ABDO","objective":"QUALIDADE DE VIDA","limitations":"SEM RESTRIÇÕES","notes":"","plan":"3X KIDS"},
-            {"id":"49","name":"FELIPE RINALDI STEVÃO","objective":"HIPERTROFIA","limitations":"SEM RESTRIÇÕES","notes":"","plan":"3X KIDS"},
-            {"id":"50","name":"GABRIEL RIPULA PEREIRA","objective":"QUALIDADE DE VIDA","limitations":"SEM RESTRIÇÕES","notes":"","plan":"3X KIDS"},
-            {"id":"51","name":"ISADORA GALIOTTO PADILHA","objective":"HIPERTROFIA","limitations":"SEM RESTRIÇÕES","notes":"","plan":"2X KIDS"},
-            {"id":"52","name":"JAIRO TEIXEIRA","objective":"HIPERTROFIA","limitations":"SEM RESTRIÇÕES","notes":"INFILTRAÇÃO NO QUADRIL POR CONTA DE UM DESGASTE DE CARTILAGEM, MAS HJ SEM DOR","plan":"3X"},
-            {"id":"53","name":"JULIANA MAIA BENATO","objective":"HIPERTROFIA","limitations":"SEM RESTRIÇÕES","notes":"","plan":"3X"},
-            {"id":"54","name":"KELLEN YAMASHIRO","objective":"EMAGRECIMENTO","limitations":"SEM RESTRIÇÕES","notes":"","plan":"3X"},
-            {"id":"55","name":"LILIAN FACCIO","objective":"HIPERTROFIA","limitations":"SEM RESTRIÇÕES","notes":"","plan":"2X"},
-            {"id":"56","name":"LILIAN RAMALHO","objective":"EMAGRECIMENTO","limitations":"SEM RESTRIÇÕES","notes":"","plan":"3X"},
-            {"id":"57","name":"MARIA ALICE FELSKI","objective":"QUALIDADE DE VIDA","limitations":"SEM RESTRIÇÕES","notes":"","plan":"2X KIDS"},
-            {"id":"58","name":"MARIA DO CARMO DA SILVA","objective":"EMAGRECIMENTO","limitations":"BURSITE E TENDINITE OMBROS","notes":"SENTE DORES NO JOELHO, EVITAR IMPACTO E INCOMODOS NOS OMBROS","plan":"3X"},
-            {"id":"59","name":"MARIANA LARISSA SPOLADOR","objective":"EMAGRECIMENTO","limitations":"SEM RESTRIÇÕES","notes":"","plan":"3X"},
-            {"id":"60","name":"MATHIAS RINALDI STEVÃO","objective":"QUALIDADE DE VIDA","limitations":"SEM RESTRIÇÕES","notes":"","plan":"3X KIDS"},
-            {"id":"61","name":"NAVARRO RANGEL DE SOUZA","objective":"HIPERTROFIA","limitations":"SEM RESTRIÇÕES","notes":"DIVISÃO TREINO: PEITO/TRICEPS/OMBROS, COSTAS/BICEPS/CORE E MMII E CARDIO","plan":"3X"},
-            {"id":"62","name":"OTAVIO FURTADO","objective":"HIPERTROFIA","limitations":"HERNIA DE DISCO LOMBAR","notes":"EVITAR EXERCICIOS DE IMPACTO, CORRIDA E SOBRECARGA NAS COSTAS","plan":"3X"},
-            {"id":"63","name":"PAOLA GENTINA","objective":"EMAGRECIMENTO","limitations":"SEM RESTRIÇÕES","notes":"SENTE INCOMODO LOMBAR EM EXERCICIOS NO SMITH","plan":"3X"},
-            {"id":"64","name":"RODRIGO FRICATE MORALES","objective":"QUALIDADE DE VIDA","limitations":"SEM RESTRIÇÕES","notes":"","plan":"3X"},
-            {"id":"65","name":"RODRIGO RUBIO COLIN","objective":"HIPERTROFIA","limitations":"SEM RESTRIÇÕES","notes":"FOCO NOS CIRCUITOS PARA PERDER GORDURA","plan":""},
-            {"id":"66","name":"TANIA MARA VENDITE DOLCI","objective":"EMAGRECIMENTO","limitations":"SEM RESTRIÇÕES","notes":"AS VEZES SENTE INCOMODOS NA LOMBAR, EM ESPECIFICO EM EXERCICIOS DE CORE","plan":""},
-            {"id":"67","name":"TATIANE SAVARIS","objective":"HIPERTROFIA","limitations":"SEM RESTRIÇÕES","notes":"","plan":""},
-            {"id":"68","name":"GUILHERME NICHETTI","objective":"EMAGRECIMENTO E GANHO DE MASSA","limitations":"SEM RESTRIÇÕES","notes":"","plan":"3X"},
-            {"id":"69","name":"ANDRESSA CYRNE","objective":"EMAGRECIMENTO E GANHO DE MASSA","limitations":"PROTUSÃO CERVICAL","notes":"","plan":"3X"},
-            {"id":"70","name":"GERLAINE","objective":"QUALIDADE DE VIDA","limitations":"","notes":"","plan":"5X"},
-            {"id":"71","name":"IAZANA","objective":"HIPERTROFIA","limitations":"","notes":"RARAS DORES NO JOELHO E LOMBAR","plan":"5X"},
-            {"id":"72","name":"GIOVANA","objective":"EMAGRECIMENTO E GANHO DE MASSA","limitations":"","notes":"","plan":"5X"},
-            {"id":"73","name":"IVO PAULO","objective":"HIPERTROFIA","limitations":"","notes":"","plan":"5X"},
-            {"id":"74","name":"LUCAS CRUZ","objective":"HIPERTROFIA","limitations":"","notes":"","plan":"5X"},
-            {"id":"75","name":"ANDREIA","objective":"HIPERTROFIA","limitations":"","notes":"","plan":"5X"},
-            {"id":"76","name":"FERNANDO BOGO","objective":"EMAGRECIMENTO E GANHO DE MASSA","limitations":"","notes":"","plan":"5X"},
-            {"id":"77","name":"LUCIANA","objective":"EMAGRECIMENTO E GANHO DE MASSA","limitations":"","notes":"","plan":"5X"},
-            {"id":"78","name":"BEATRIZ BARUCH","objective":"HIPERTROFIA","limitations":"","notes":"","plan":"5X"},
-            {"id":"79","name":"CRISTIANE WISNIEWSKI","objective":"HIPERTROFIA","limitations":"","notes":"","plan":"5X"},
-            {"id":"80","name":"JANAINA","objective":"HIPERTROFIA","limitations":"","notes":"","plan":"5X"},
-            {"id":"81","name":"LEONI","objective":"EMAGRECIMENTO E GANHO DE MASSA","limitations":"","notes":"","plan":"3X"},
-            {"id":"82","name":"JUAREZ","objective":"EMAGRECIMENTO E GANHO DE MASSA","limitations":"","notes":"","plan":"3X"},
-            {"id":"83","name":"ANDRESSA","objective":"EMAGRECIMENTO E GANHO DE MASSA","limitations":"","notes":"","plan":"3X"},
-            {"id":"84","name":"MARCO","objective":"EMAGRECIMENTO E GANHO DE MASSA","limitations":"","notes":"","plan":"3X"},
-            {"id":"85","name":"GIULIA","objective":"EMAGRECIMENTO E GANHO DE MASSA","limitations":"","notes":"","plan":"5X"},
-            {"id":"86","name":"JEAN","objective":"HIPERTROFIA","limitations":"","notes":"","plan":"3X"},
-            {"id":"87","name":"MILLENA","objective":"EMAGRECIMENTO E GANHO DE MASSA","limitations":"","notes":"","plan":"3X"},
-            {"id":"88","name":"LARISSA","objective":"HIPERTROFIA E EMAGRECIMENTO","limitations":"","notes":"","plan":"3X"},
-            {"id":"89","name":"ANDREIA DOMINGUES","objective":"EMAGRECIMENTO E QUALIDADE DE VIDA","limitations":"IMPACTO, DOR NA LOMBAR E PÉ","notes":"TEM CISTOS NA PERNA, DOR NA LOMBAR, NÃO PODE SOBRECARREGAR O JOELHO","plan":"3X"},
-            {"id":"90","name":"CAROLINA BATISTA","objective":"","limitations":"DOR NA LOMBAR E MUITO CANSAÇO","notes":"ESTÁ GRÁVIDA","plan":"3X"}
         ];
 
         async function init() {
-            let saved = localStorage.getItem(DB_KEY);
-            if (saved) {
-                db = JSON.parse(saved);
-                if (!db.students || db.students.length < 5) db.students = INITIAL_STUDENTS; 
-                if (!db.professors) db.professors = INITIAL_PROFS;
-            } else {
-                db = { students: INITIAL_STUDENTS, checkins: [], professors: INITIAL_PROFS };
-                saveDB();
-            }
+            // 1. Fix Date (Timezone safe)
+            const today = new Date();
+            const offset = today.getTimezoneOffset();
+            const todayLocal = new Date(today.getTime() - (offset*60*1000)).toISOString().split('T')[0];
+            document.getElementById('ag-date').value = todayLocal;
+            
+            // 2. Auth & Token Check
             const t = localStorage.getItem(TOKEN_KEY);
             if(t && document.getElementById('manualToken')) document.getElementById('manualToken').value = t;
 
+            // 3. TRY CLOUD FIRST (Blocking)
+            if(t) {
+                await syncCloud(); 
+            } else {
+                loadLocal(); 
+                renderAll();
+            }
+
+            // 4. Setup UI
             lucide.createIcons();
             setTab('daily');
-            updateStats();
             setInterval(() => document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}), 1000);
             
             Chart.defaults.font.family = "'Inter', sans-serif";
             Chart.defaults.color = '#94a3b8';
             Chart.defaults.scale.grid.color = 'rgba(255,255,255,0.05)';
             
-            await syncCloud();
+            setupReportFilter();
+            const tf = document.getElementById('ag-filter-time');
+            if(tf.options.length <= 1) { for(let h=6; h<=21; h++) tf.add(new Option(`${h}H`, `${h}H`)); }
+        }
+
+        function loadLocal() {
+            let saved = localStorage.getItem(DB_KEY);
+            if (saved) {
+                db = JSON.parse(saved);
+            } else {
+                db = { students: INITIAL_STUDENTS, checkins: [], professors: INITIAL_PROFS };
+            }
+        }
+
+        function renderAll() {
+            updateStats();
+            renderAgenda();
+            renderStudentsTable();
         }
 
         // AUTH
         function checkAuth() {
             if (sessionStorage.getItem("benai_auth") === "true") {
-                document.getElementById('gatekeeper').style.display = 'none';
-                document.getElementById('app-content').style.display = 'block';
-                init();
-            } else {
-                document.getElementById('pinInput').addEventListener('keyup', function(e) {
-                    if (this.value.length === 8) {
-                        if (this.value === PIN) {
-                            sessionStorage.setItem("benai_auth", "true");
-                            document.getElementById('gatekeeper').style.display = 'none';
-                            document.getElementById('app-content').style.display = 'block';
-                            init();
-                        } else {
-                            document.getElementById('loginError').innerText = "Código Incorreto";
-                            this.value = "";
-                        }
-                    }
-                });
+                unlockApp();
             }
         }
+
+        function attemptLogin() {
+            const user = document.getElementById('userInput').value.toUpperCase().trim();
+            const pass = document.getElementById('passInput').value.trim();
+            const err = document.getElementById('loginError');
+
+            // Logic: Master PIN bypasses User check, OR Staff credentials
+            const isMaster = pass === MASTER_PIN;
+            const isStaff = user === STAFF_USER && pass === STAFF_PASS;
+
+            if (isMaster || isStaff) {
+                sessionStorage.setItem("benai_auth", "true");
+                unlockApp();
+            } else {
+                err.innerText = "Credenciais Inválidas";
+                document.getElementById('passInput').value = "";
+                setTimeout(() => err.innerText = "", 2000);
+            }
+        }
+
+        function unlockApp() {
+            document.getElementById('gatekeeper').style.display = 'none';
+            document.getElementById('app-content').style.display = 'block';
+            init();
+        }
+
         checkAuth();
 
         function setTab(id) {
@@ -591,33 +570,24 @@
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('btn-'+id).classList.add('active');
             
-            if(id === 'daily') setupDailyView();
+            if(id === 'daily') {
+                setupCheckinForm();
+                renderAgenda();
+            }
             if(id === 'students') renderStudentsTable();
-            if(id === 'reports') { setupReportFilter(); renderReports(); }
+            if(id === 'reports') renderReports();
             lucide.createIcons();
         }
 
-        function setupDailyView() {
-            setupCheckinForm();
-            const currentFilterDate = document.getElementById('ag-date').value;
-            if(!currentFilterDate) {
-                 document.getElementById('ag-date').value = new Date().toISOString().split('T')[0];
-            }
-            renderAgenda();
-            
-            const tf = document.getElementById('ag-filter-time');
-            if(tf.options.length <= 1) {
-                 for(let h=6; h<=21; h++) tf.add(new Option(`${h}H`, `${h}H`));
-            }
-        }
-
         function setupCheckinForm() {
-            cancelEdit(); // Garante estado limpo
-            const now = new Date();
+            cancelEdit();
+            // Ensure date is set even if switching tabs
             if(!document.getElementById('ci-date').value) {
-                document.getElementById('ci-date').value = now.toISOString().split('T')[0];
+                const today = new Date();
+                const offset = today.getTimezoneOffset();
+                document.getElementById('ci-date').value = new Date(today.getTime() - (offset*60*1000)).toISOString().split('T')[0];
             }
-            
+
             const sEl = document.getElementById('ci-student'); 
             const currentVal = sEl.value;
             sEl.innerHTML = '<option value="">Selecione...</option>'; 
@@ -627,22 +597,48 @@
             const tEl = document.getElementById('ci-time'); 
             const currentTimeVal = tEl.value;
             tEl.innerHTML = '';
-            const isSat = now.getDay() === 6;
-            for(let h=(isSat?8:6); h<=(isSat?12:21); h++) { 
+            for(let h=6; h<=21; h++) { 
                 const opt = new Option(`${h}:00`, `${h}H`); 
-                if(!currentTimeVal && h === now.getHours()) opt.selected = true; 
+                if(!currentTimeVal && h === new Date().getHours()) opt.selected = true; 
                 tEl.add(opt); 
             }
             if(currentTimeVal) tEl.value = currentTimeVal;
 
             const pEl = document.getElementById('ci-prof'); 
-            if(pEl.options.length === 0) {
-                 db.professors.forEach(p => pEl.innerHTML += `<option>${p}</option>`);
+            pEl.innerHTML = '';
+            db.professors.forEach(p => pEl.innerHTML += `<option>${p}</option>`);
+        }
+
+        function handleStudentSelection(id) {
+            if(!id) {
+                document.getElementById('last-workout-box').classList.add('hidden');
+                document.getElementById('ci-alert').classList.add('hidden');
+                return;
+            }
+
+            const s = db.students.find(x => x.id === id);
+            
+            // Alerts
+            if (s && s.limitations && s.limitations !== 'NENHUMA') {
+                document.getElementById('ci-alert-text').innerText = s.limitations;
+                document.getElementById('ci-alert').classList.remove('hidden');
+            } else { 
+                document.getElementById('ci-alert').classList.add('hidden'); 
+            }
+
+            // History
+            const history = db.checkins.filter(c => c.studentId === id).sort((a,b) => b.isoDate.localeCompare(a.isoDate));
+            if(history.length > 0) {
+                const last = history[0];
+                document.getElementById('lw-date').innerText = last.isoDate.split('-').reverse().slice(0,2).join('/');
+                document.getElementById('lw-type').innerText = last.workout;
+                document.getElementById('last-workout-box').classList.remove('hidden');
+            } else {
+                document.getElementById('last-workout-box').classList.add('hidden');
             }
         }
 
-        // --- CHECKIN & EDIT LOGIC (FIXED) ---
-        
+        // --- CHECKIN LOGIC ---
         function handleCheckin(e) {
             e.preventDefault();
             const sId = document.getElementById('ci-student').value;
@@ -653,15 +649,8 @@
             if(!sId) return alert('Selecione um aluno');
             if(!sDate) return alert('Selecione uma data');
 
-            // Validação de Duplicidade (Excluindo o próprio registro se for edição)
-            const duplicate = db.checkins.some(c => 
-                c.studentId === sId && 
-                c.isoDate === sDate && 
-                c.time === sTime && 
-                c.id !== editId // Pulo do gato: ignora a si mesmo
-            );
-
-            if(duplicate) return alert('ERRO: Este aluno já possui check-in neste horário e data.');
+            const duplicate = db.checkins.some(c => c.studentId === sId && c.isoDate === sDate && c.time === sTime && c.id !== editId);
+            if(duplicate) return alert('Check-in já existe.');
 
             let wk = document.getElementById('ci-workout').value;
             if(wk === 'OUTRO') wk = document.getElementById('ci-custom').value.toUpperCase() || 'PERSONALIZADO';
@@ -677,33 +666,29 @@
 
             if(editId) {
                 const idx = db.checkins.findIndex(c => c.id === editId);
-                if(idx > -1) {
-                    db.checkins[idx] = { ...db.checkins[idx], ...data };
-                    toast('Registro Atualizado!');
-                }
+                if(idx > -1) db.checkins[idx] = { ...db.checkins[idx], ...data };
             } else {
                 db.checkins.push({ id: Date.now().toString(), ...data });
-                toast('Presença Confirmada!');
             }
 
             saveDB();
-            cancelEdit(); // Limpa e volta ao estado normal
+            cancelEdit();
             renderAgenda();
+            toast('Salvo!');
         }
 
-        window.openEditCheckin = function(e, id) {
+        function openEditCheckin(e, id) {
             e.stopPropagation();
             const item = db.checkins.find(c => c.id === id);
             if(!item) return;
-
             document.getElementById('ci-edit-id').value = id;
             document.getElementById('ci-date').value = item.isoDate;
             document.getElementById('ci-time').value = item.time;
             document.getElementById('ci-student').value = item.studentId;
             document.getElementById('ci-prof').value = item.prof;
             
-            const standardWorkouts = ["QUADRICEPS","POSTERIOR/GLÚTEO","PEITO/TRÍCEPS/OMBRO","COSTAS/BÍCEPS/ANTEBRAÇO","FULL BODY","MMSS","MMII","CORE","AERÓBICO","AVALIAÇÃO"];
-            if(standardWorkouts.includes(item.workout)) {
+            const standard = ["QUADRICEPS","POSTERIOR/GLÚTEO","PEITO/TRÍCEPS/OMBRO","COSTAS/BÍCEPS/ANTEBRAÇO","FULL BODY","MMSS","MMII","CORE","AERÓBICO","AVALIAÇÃO"];
+            if(standard.includes(item.workout)) {
                 document.getElementById('ci-workout').value = item.workout;
                 document.getElementById('ci-custom').classList.add('hidden');
             } else {
@@ -711,64 +696,31 @@
                 document.getElementById('ci-custom').classList.remove('hidden');
                 document.getElementById('ci-custom').value = item.workout;
             }
-
-            checkAlerts(item.studentId);
-            
-            // UI CHANGES FOR EDIT MODE
+            handleStudentSelection(item.studentId);
             document.getElementById('form-title').innerText = "Editando Registro";
             document.getElementById('edit-indicator').classList.remove('hidden');
-            document.getElementById('ci-btn-submit').innerHTML = '<i data-lucide="save" class="w-5 h-5"></i> Salvar Alterações';
-            document.getElementById('ci-btn-submit').classList.remove('from-[#00A89A]', 'to-[#008f83]');
-            document.getElementById('ci-btn-submit').classList.add('from-[#C5A059]', 'to-[#b8860b]');
-            
-            // Scroll to top
             window.scrollTo({top: 0, behavior: 'smooth'});
-            lucide.createIcons();
         }
 
-        window.cancelEdit = function() {
+        function cancelEdit() {
             document.getElementById('ci-edit-id').value = "";
             document.getElementById('ci-student').value = "";
             document.getElementById('ci-workout').value = "QUADRICEPS";
             document.getElementById('ci-custom').classList.add('hidden');
             document.getElementById('ci-alert').classList.add('hidden');
-            
-            // Reset UI
+            document.getElementById('last-workout-box').classList.add('hidden');
             document.getElementById('form-title').innerText = "Novo Check-in";
             document.getElementById('edit-indicator').classList.add('hidden');
-            document.getElementById('ci-btn-submit').innerHTML = '<i data-lucide="check" class="w-5 h-5"></i> Confirmar';
-            document.getElementById('ci-btn-submit').classList.add('from-[#00A89A]', 'to-[#008f83]');
-            document.getElementById('ci-btn-submit').classList.remove('from-[#C5A059]', 'to-[#b8860b]');
-            
-            lucide.createIcons();
         }
 
-        // --- DEFINITELY GLOBAL DELETE FUNCTION ---
-        window.removeCheckin = function(e, id) {
+        function removeCheckin(e, id) {
             e.stopPropagation();
-            if(confirm('Tem certeza que deseja apagar este registro da agenda?')) {
-                // Filtro usando String() para garantir comparação correta
+            if(confirm('Apagar registro?')) {
                 db.checkins = db.checkins.filter(x => String(x.id) !== String(id));
                 saveDB();
                 renderAgenda();
-                toast('Registro removido.');
-            }
-        };
-
-        function checkAlerts(id) {
-            const s = db.students.find(x=>x.id === id);
-            const box = document.getElementById('ci-alert');
-            const txt = document.getElementById('ci-alert-text');
-            
-            if (s && s.limitations && s.limitations !== 'NENHUMA') {
-                txt.innerText = s.limitations;
-                box.classList.remove('hidden');
-            } else { 
-                box.classList.add('hidden'); 
             }
         }
-        function toggleCustom(val) { document.getElementById('ci-custom').classList.toggle('hidden', val !== 'OUTRO'); }
-
 
         // --- AGENDA & DRAWER ---
         function renderAgenda() {
@@ -781,33 +733,20 @@
             if(term) list = list.filter(c => c.studentName.toLowerCase().includes(term));
             
             list.sort((a,b) => parseInt(a.time) - parseInt(b.time));
-
             const tb = document.getElementById('agenda-body'); tb.innerHTML = '';
             
             if(list.length === 0) {
-                tb.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-slate-400 italic">Nenhum registro encontrado.</td></tr>';
+                tb.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-slate-400 italic">Nenhum registro.</td></tr>';
                 return;
             }
 
             let lastTime = null;
-
             list.forEach(c => {
-                // Time Separator Logic
                 if(c.time !== lastTime) {
-                    tb.innerHTML += `
-                        <tr class="time-separator-row">
-                            <td colspan="5">
-                                <div class="time-separator">
-                                    <div class="time-line"></div>
-                                    <div class="time-pill">${c.time}</div>
-                                    <div class="time-line"></div>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
+                    tb.innerHTML += `<tr class="time-separator-row"><td colspan="5"><div class="time-separator"><div class="time-line"></div><div class="time-pill">${c.time}</div><div class="time-line"></div></div></td></tr>`;
                     lastTime = c.time;
                 }
-
+                
                 tb.innerHTML += `
                 <tr class="agenda-row" onclick="toggleDrawer('${c.id}', '${c.studentId}')">
                     <td class="px-6 py-4 text-center border-r border-slate-200 agenda-time bg-slate-50 text-slate-600">${c.time}</td>
@@ -815,359 +754,306 @@
                     <td class="px-6 py-4 bg-teal-50/30 border-l border-teal-100"><span class="agenda-workout">${c.workout}</span></td>
                     <td class="px-6 py-4 text-center font-bold text-xs text-slate-500 bg-amber-50/30 border-l border-amber-100">${c.prof}</td>
                     <td class="px-6 py-4 text-center flex justify-center gap-3 bg-white border-l border-slate-100">
-                        <button onclick="openEditCheckin(event, '${c.id}')" class="text-blue-400 hover:text-blue-600 transition p-1"><i data-lucide="pencil" class="w-4 h-4"></i></button>
-                        <button onclick="removeCheckin(event, '${c.id}')" class="text-red-300 hover:text-red-500 transition p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        <button onclick="openEditCheckin(event, '${c.id}')" class="text-blue-400 hover:text-blue-600 p-1"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+                        <button onclick="removeCheckin(event, '${c.id}')" class="text-red-300 hover:text-red-500 p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                     </td>
                 </tr>
-                <tr><td colspan="5" class="p-0 border-0"><div id="drawer-${c.id}" class="drawer-content"></div></td></tr>`;
+                <tr>
+                    <td colspan="5" class="p-0 border-0">
+                        <div id="drawer-${c.id}" class="drawer-content"></div>
+                    </td>
+                </tr>`;
             });
             lucide.createIcons();
             updateStats();
         }
 
         function toggleDrawer(cid, sid) {
-            const row = document.getElementById(`drawer-${cid}`);
-            const isActive = row.classList.contains('open');
+            const drawer = document.getElementById(`drawer-${cid}`);
+            const isOpen = drawer.classList.contains('open');
             
-            // Close all
+            // Close all first
             document.querySelectorAll('.drawer-content').forEach(d => d.classList.remove('open'));
             
-            if(!isActive) {
-                const s = db.students.find(x=>x.id===sid);
-                const history = db.checkins.filter(k => k.studentId === sid).sort((a,b) => b.isoDate.localeCompare(a.isoDate));
+            if(!isOpen) {
+                const s = db.students.find(x => x.id === sid);
+                const history = db.checkins.filter(c => c.studentId === sid);
                 
-                // Build Week Grid
+                // Weekly Grid
                 const today = new Date(); const d = today.getDate()-today.getDay()+(today.getDay()===0?-6:1); const mon = new Date(today.setDate(d));
-                let weekHTML = '<div class="flex gap-2 pb-2 overflow-x-auto">';
+                let weekHTML = '<div class="flex gap-2 overflow-x-auto pb-2">';
                 ['SEG','TER','QUA','QUI','SEX','SÁB'].forEach((day,i)=>{ 
-                    let dt = new Date(mon); dt.setDate(mon.getDate()+i); const iso = dt.toISOString().split('T')[0];
+                    let dt = new Date(mon); dt.setDate(mon.getDate()+i); 
+                    const iso = dt.toISOString().split('T')[0];
                     const chk = history.find(k=>k.isoDate===iso);
                     weekHTML += `
-                    <div class="flex-1 p-2 rounded-lg border text-center ${chk?'bg-[#00A89A] text-white border-[#00A89A]':'bg-white border-slate-200 text-slate-300'}">
-                        <div class="text-[9px] font-bold mb-1 opacity-80">${day}</div>
-                        <div class="text-[10px] font-bold uppercase truncate">${chk ? chk.workout : '.'}</div>
+                    <div class="flex-1 min-w-[70px] p-2 rounded-xl border text-center ${chk?'bg-teal-50 border-teal-200':'bg-white border-slate-200'}">
+                        <div class="text-[9px] font-bold uppercase opacity-60 mb-1">${day}</div>
+                        <div class="text-[8px] font-bold uppercase truncate ${chk?'text-[#00A89A]':'text-slate-300'}">${chk ? chk.workout : '--'}</div>
                     </div>`; 
-                }); 
+                });
                 weekHTML += '</div>';
 
-                row.innerHTML = `
-                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50">
-                    <div>
-                        <h4 class="text-xs font-bold text-slate-400 uppercase mb-3">Histórico Semanal</h4>
-                        ${weekHTML}
+                // Alerts HTML
+                let alertsHTML = '';
+                if(s.limitations && s.limitations !== 'NENHUMA') {
+                    alertsHTML += `<div class="bg-red-50 p-3 rounded-xl border border-red-100 flex gap-2 items-start mb-2"><i data-lucide="alert-triangle" class="w-4 h-4 text-red-500 shrink-0 mt-0.5"></i><div class="text-xs text-red-800 font-bold leading-tight">${s.limitations}</div></div>`;
+                }
+                if(s.notes) {
+                    alertsHTML += `<div class="bg-blue-50 p-3 rounded-xl border border-blue-100 flex gap-2 items-start"><i data-lucide="info" class="w-4 h-4 text-blue-500 shrink-0 mt-0.5"></i><div class="text-xs text-blue-800 font-medium leading-tight">${s.notes}</div></div>`;
+                }
+
+                drawer.innerHTML = `
+                <div class="p-4 bg-slate-50 border-t border-slate-100">
+                    <h4 class="text-[10px] font-bold text-slate-400 uppercase mb-2">Histórico da Semana</h4>
+                    ${weekHTML}
+                    <div class="mt-4">
+                        ${alertsHTML}
                     </div>
-                    <div class="space-y-3">
-                        <div class="bg-red-50 p-3 rounded-xl border border-red-100 flex gap-3">
-                             <i data-lucide="alert-triangle" class="w-4 h-4 text-red-500 mt-0.5"></i>
-                             <div><span class="text-xs font-bold text-red-500 block">LIMITAÇÕES</span><p class="text-sm text-red-800 font-bold leading-tight">${s.limitations||'Nenhuma'}</p></div>
-                        </div>
-                        <div class="bg-blue-50 p-3 rounded-xl border border-blue-100 flex gap-3">
-                             <i data-lucide="info" class="w-4 h-4 text-blue-500 mt-0.5"></i>
-                             <div><span class="text-xs font-bold text-blue-500 block">OBSERVAÇÕES</span><p class="text-sm text-blue-900 leading-tight">${s.notes||'-'}</p></div>
-                        </div>
-                        <button onclick="openProfile('${sid}')" class="w-full text-xs font-bold text-[#05364F] bg-white hover:bg-slate-100 py-2.5 rounded-xl border border-slate-200 transition">VER PERFIL COMPLETO</button>
+                    <div class="flex gap-3 mt-4">
+                        <button onclick="openProfile('${sid}')" class="flex-1 py-2.5 bg-[#05364F] text-white rounded-xl text-xs font-bold hover:bg-[#032435]">VER PERFIL COMPLETO</button>
+                        <button onclick="openStudentModal('${sid}')" class="flex-1 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-100">EDITAR DADOS</button>
                     </div>
                 </div>`;
+                
                 lucide.createIcons();
-                row.classList.add('open');
+                drawer.classList.add('open');
             }
         }
 
-        // --- STUDENTS CRUD ---
-        function getAvatarColor(name) {
-            let hash = 0;
-            for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-            return colors[Math.abs(hash) % colors.length];
-        }
-
-        function getInitials(name) {
-            return name.split(' ').slice(0,2).map(n=>n[0]).join('');
-        }
-
+        // --- STUDENTS TABLE ---
         function renderStudentsTable() {
             const term = document.getElementById('stu-search').value.toLowerCase();
             const tb = document.getElementById('stu-body'); tb.innerHTML = '';
             
             db.students.filter(s => s.name.toLowerCase().includes(term)).sort((a,b)=>a.name.localeCompare(b.name)).forEach(s => {
-                const colorClass = getAvatarColor(s.name);
-                const alert = s.limitations !== 'NENHUMA';
-                
                 tb.innerHTML += `
                 <tr class="hover:bg-slate-50 border-b border-slate-100 cursor-pointer" onclick="if(!event.target.closest('button')) openProfile('${s.id}')">
-                    <td class="px-6 py-4 flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full ${colorClass} text-white flex items-center justify-center text-xs font-bold">${getInitials(s.name)}</div>
-                        <span class="font-bold text-[#05364F]">${s.name}</span>
-                    </td>
-                    <td class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">${s.objective}</td>
-                    <td class="px-6 py-4">${alert?'<span class="text-red-500 font-bold text-xs flex gap-1 items-center"><i data-lucide="alert-triangle" class="w-3 h-3"></i> Restrição</span>':'<span class="text-slate-300 text-xs flex gap-1 items-center"><i data-lucide="check" class="w-3 h-3"></i> Ok</span>'}</td>
+                    <td class="px-6 py-4 font-bold text-[#05364F]">${s.name}</td>
+                    <td class="px-6 py-4 text-xs font-bold text-[#00A89A] uppercase">${s.objective}</td>
+                    <td class="px-6 py-4 text-xs font-bold text-purple-600 uppercase">${s.plan || '-'}</td>
+                    <td class="px-6 py-4">${s.limitations!=='NENHUMA'?'<span class="text-red-500 font-bold text-xs flex gap-1 items-center"><i data-lucide="alert-triangle" class="w-3 h-3"></i> Restrição</span>':'<span class="text-[#C5A059] font-bold text-xs flex gap-1 items-center"><i data-lucide="check" class="w-3 h-3"></i> Regular</span>'}</td>
                     <td class="px-6 py-4 text-right">
                         <button onclick="openStudentModal('${s.id}')" class="p-2 text-blue-400 hover:bg-blue-50 rounded"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
-                        <button onclick="if(confirm('Excluir?')){db.students=db.students.filter(x=>x.id!=='${s.id}');saveDB();renderStudentsTable()}" class="p-2 text-red-400 hover:bg-red-50 rounded"><i data-lucide="trash" class="w-4 h-4"></i></button>
+                        <button onclick="deleteStudent('${s.id}')" class="p-2 text-red-400 hover:bg-red-50 rounded"><i data-lucide="trash" class="w-4 h-4"></i></button>
                     </td>
                 </tr>`;
             });
             lucide.createIcons();
         }
 
-        function openStudentModal(id, quickAdd = false) {
-            const m = document.getElementById('modal-student'); m.style.display='flex';
-            document.getElementById('ms-quick-add').value = quickAdd ? 'true' : 'false';
-            
-            if(id) { 
-                const s = db.students.find(x=>x.id===id); 
-                document.getElementById('ms-title').innerText = "Editar Aluno"; document.getElementById('ms-id').value = s.id; 
-                document.getElementById('ms-name').value = s.name; document.getElementById('ms-obj').value = s.objective; 
-                document.getElementById('ms-plan').value = s.plan; document.getElementById('ms-lim').value = s.limitations; 
-                document.getElementById('ms-obs').value = s.notes; 
-            } else { 
-                document.getElementById('ms-title').innerText = "Novo Aluno"; document.getElementById('ms-id').value = "NEW"; 
-                document.querySelector('#modal-student form').reset(); 
+        function deleteStudent(id) {
+            if(confirm('Tem certeza? Isso apagará o histórico deste aluno.')) {
+                db.students = db.students.filter(x => x.id !== id);
+                db.checkins = db.checkins.filter(x => x.studentId !== id);
+                saveDB();
+                renderStudentsTable();
+                toast('Aluno Excluído');
             }
         }
 
-        function saveStudent(e) { 
-            e.preventDefault(); 
-            const id = document.getElementById('ms-id').value; 
-            const quickAdd = document.getElementById('ms-quick-add').value === 'true';
-            
-            const d = { 
-                name: document.getElementById('ms-name').value.toUpperCase(), 
-                objective: document.getElementById('ms-obj').value.toUpperCase(), 
-                plan: document.getElementById('ms-plan').value, 
-                limitations: document.getElementById('ms-lim').value.toUpperCase()||'NENHUMA', 
-                notes: document.getElementById('ms-obs').value.toUpperCase() 
-            }; 
+        function openStudentModal(id, quick = false) {
+            document.getElementById('modal-student').style.display='flex';
+            document.getElementById('ms-quick-add').value = quick ? 'true' : 'false';
+            if(id) {
+                const s = db.students.find(x=>x.id===id);
+                document.getElementById('ms-title').innerText = "Editar Aluno";
+                document.getElementById('ms-id').value = s.id;
+                document.getElementById('ms-name').value = s.name;
+                document.getElementById('ms-obj').value = s.objective;
+                document.getElementById('ms-plan').value = s.plan;
+                document.getElementById('ms-lim').value = s.limitations;
+                document.getElementById('ms-obs').value = s.notes;
+            } else {
+                document.getElementById('ms-title').innerText = "Novo Aluno";
+                document.getElementById('ms-id').value = "NEW";
+                document.querySelector('#modal-student form').reset();
+            }
+        }
+
+        function saveStudent(e) {
+            e.preventDefault();
+            const id = document.getElementById('ms-id').value;
+            const data = {
+                name: document.getElementById('ms-name').value.toUpperCase(),
+                objective: document.getElementById('ms-obj').value.toUpperCase(),
+                plan: document.getElementById('ms-plan').value,
+                limitations: document.getElementById('ms-lim').value.toUpperCase()||'NENHUMA',
+                notes: document.getElementById('ms-obs').value.toUpperCase()
+            };
             
             let newId = id;
-            if(id === 'NEW') { newId = Date.now().toString(); db.students.push({id: newId, ...d}); } 
-            else { const i = db.students.findIndex(x=>x.id===id); db.students[i] = {...db.students[i], ...d}; } 
+            if(id === 'NEW') { newId = Date.now().toString(); db.students.push({id: newId, ...data}); } 
+            else { const i = db.students.findIndex(x=>x.id===id); db.students[i] = {...db.students[i], ...data}; }
             
-            saveDB(); 
-            document.getElementById('modal-student').style.display='none'; 
-            renderStudentsTable();
-
-            if(quickAdd) {
+            saveDB();
+            document.getElementById('modal-student').style.display='none';
+            if(document.getElementById('view-students').classList.contains('hidden') === false) renderStudentsTable();
+            
+            if(document.getElementById('ms-quick-add').value === 'true') {
                 setupCheckinForm();
                 document.getElementById('ci-student').value = newId;
-                checkAlerts(newId);
-                toast('Aluno Cadastrado!');
-            } else {
-                toast('Dados Salvos!');
+                handleStudentSelection(newId);
             }
+            toast('Salvo');
         }
 
-        // --- STATS & CHARTS ---
-        function updateStats() {
-            const date = document.getElementById('ag-date').value || new Date().toISOString().split('T')[0];
-            const todays = db.checkins.filter(c=>c.isoDate===date);
-            
-            document.getElementById('st-total').innerText = todays.length;
-            
-            const c={}; todays.forEach(x=>{c[x.time]=(c[x.time]||0)+1}); 
-            document.getElementById('st-peak').innerText = Object.keys(c).reduce((a,b)=>c[a]>c[b]?a:b, '-');
-            
-            const w={}; todays.forEach(x=>{w[x.workout]=(w[x.workout]||0)+1}); 
-            const pop = Object.keys(w).reduce((a,b)=>w[a]>w[b]?a:b, '-'); 
-            document.getElementById('st-pop').innerText = pop.length>12?pop.substring(0,10)+'...':pop;
-            
-            document.getElementById('st-new').innerText = db.students.filter(s => parseInt(s.id) > new Date(date).getTime()).length;
-        }
-
-        // --- DYNAMIC REPORT FILTER ---
-        function setupReportFilter() {
-            const select = document.getElementById('report-period');
-            // Avoid duplicates if already populated (simple check)
-            if(select.options.length > 1) return;
-            
-            select.innerHTML = '';
-            
-            // Add Global option
-            const optGlobal = new Option('Global (Últimos 6 Meses)', 'global');
-            select.add(optGlobal);
-
-            // Add last 12 months dynamically
-            const now = new Date();
-            for(let i = 0; i < 12; i++) {
-                const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-                // e.g. "2023-10"
-                const value = d.toISOString().slice(0, 7); 
-                // e.g. "Outubro 2023"
-                const label = d.toLocaleString('pt-BR', { month: 'long', year: 'numeric' });
-                const capLabel = label.charAt(0).toUpperCase() + label.slice(1);
-                
-                const opt = new Option(capLabel, value);
-                if(i === 0) opt.selected = true; // Select current month by default
-                select.add(opt);
-            }
-        }
-
-        function renderReports() {
-            // Chart Defaults
-            Chart.defaults.color = '#94a3b8';
-            Chart.defaults.borderColor = 'rgba(255,255,255,0.05)';
-            
-            const period = document.getElementById('report-period').value;
-            let data = db.checkins;
-            let labelType = 'day';
-
-            if (period === 'global') {
-                labelType = 'month';
-                // Filter last 6 months for relevance
-                const sixMonthsAgo = new Date();
-                sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
-                sixMonthsAgo.setDate(1);
-                const isoStart = sixMonthsAgo.toISOString().split('T')[0];
-                data = data.filter(c => c.isoDate >= isoStart);
-            } else {
-                // Filter by specific month (YYYY-MM)
-                data = data.filter(c => c.isoDate.startsWith(period));
-            }
-
-            // --- CHART 1: TIMELINE ---
-            const ctx1=document.getElementById('chart1').getContext('2d'); if(charts.c1) charts.c1.destroy();
-            const timeLabels = []; const timeData = [];
-            
-            if(labelType === 'day') {
-                // Show daily volume for the selected month
-                const [year, month] = period.split('-');
-                const daysInMonth = new Date(year, month, 0).getDate();
-                
-                for(let i = 1; i <= daysInMonth; i++) {
-                    const dayStr = String(i).padStart(2, '0');
-                    const dateStr = `${period}-${dayStr}`;
-                    timeLabels.push(dayStr);
-                    timeData.push(data.filter(c => c.isoDate === dateStr).length);
-                }
-            } else {
-                // Show monthly volume for global
-                const months = {};
-                data.forEach(c => {
-                    const k = c.isoDate.slice(0,7); // YYYY-MM
-                    months[k] = (months[k]||0)+1;
-                });
-                Object.keys(months).sort().forEach(k => {
-                    const [y, m] = k.split('-');
-                    timeLabels.push(`${m}/${y.slice(2)}`);
-                    timeData.push(months[k]);
-                });
-            }
-
-            charts.c1 = new Chart(ctx1, {
-                type: 'bar', 
-                data: {
-                    labels: timeLabels, 
-                    datasets: [{
-                        label: 'Check-ins', 
-                        data: timeData, 
-                        backgroundColor: '#00A89A', 
-                        borderRadius: 4
-                    }]
-                }, 
-                options: {
-                    responsive: true, 
-                    maintainAspectRatio: false, 
-                    plugins: {legend: {display: false}}, 
-                    scales: {y: {beginAtZero: true}}
-                }
-            });
-
-            // --- CHART 2: WORKOUT DISTRIBUTION ---
-            const ctx2=document.getElementById('chart2').getContext('2d'); if(charts.c2) charts.c2.destroy();
-            const wMap={}; data.forEach(c=>{ wMap[c.workout]=(wMap[c.workout]||0)+1 });
-            charts.c2=new Chart(ctx2, {type:'doughnut', data:{labels:Object.keys(wMap), datasets:[{data:Object.values(wMap), backgroundColor:['#05364F','#00C9B7','#C5A059','#38BDF8','#F43F5E'], borderWidth:0}]}, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'right', labels:{boxWidth:12, font:{size:10}}}}}});
-            
-            // --- CHART 3: PEAK HOURS ---
-            const ctx3=document.getElementById('chart3').getContext('2d'); if(charts.c3) charts.c3.destroy();
-            const hMap={}; data.forEach(c=>{ hMap[c.time]=(hMap[c.time]||0)+1 });
-            charts.c3=new Chart(ctx3, {type:'line', data:{labels:Object.keys(hMap).sort((a,b)=>parseInt(a)-parseInt(b)), datasets:[{label:'Fluxo', data:Object.values(hMap), borderColor:'#C5A059', backgroundColor:'rgba(197, 160, 89, 0.1)', fill:true, tension:0.4}]}, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}}}});
-
-            // --- CHART 4: ACTIVE STUDENTS ---
-            const ctx4=document.getElementById('chart4').getContext('2d'); if(charts.c4) charts.c4.destroy();
-            const activeStudents = new Set(data.map(c => c.studentId)).size;
-            const totalStudents = db.students.length;
-            
-            charts.c4=new Chart(ctx4, {type:'pie', data:{labels:['Ativos (Período)','Inativos'], datasets:[{data:[activeStudents, totalStudents-activeStudents], backgroundColor:['#00C9B7','#1e293b'], borderWidth:0}]}, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}}});
-        }
-
-        // --- PROFILE MODAL ---
+        // --- PROFILE ---
         function openProfile(id) {
-            const s = db.students.find(x=>x.id===id); const h = db.checkins.filter(c=>c.studentId===id);
-            document.getElementById('pf-name').innerText = s.name; document.getElementById('pf-obj').innerText = s.objective; document.getElementById('pf-plan').innerText = s.plan;
-            document.getElementById('pf-lim-list').innerHTML = s.limitations.split(/,|\n/).map(i=>i.trim()?`<li class="flex items-start gap-2"><i data-lucide="dot" class="w-4 h-4 text-red-500"></i>${i}</li>`:'').join('')||'<li class="italic text-slate-400">Sem restrições</li>';
-            document.getElementById('pf-obs-list').innerHTML = s.notes.split('\n').map(i=>i.trim()?`<li class="flex items-start gap-2"><i data-lucide="dot" class="w-4 h-4 text-blue-500"></i>${i}</li>`:'').join('')||'<li class="italic text-slate-400">Sem observações</li>';
+            const s = db.students.find(x=>x.id===id); if(!s) return;
+            const h = db.checkins.filter(c=>c.studentId===id).sort((a,b)=>b.isoDate.localeCompare(a.isoDate));
             
-            const initials = getInitials(s.name);
-            const colorClass = getAvatarColor(s.name).replace('bg-','from-').replace('500','600'); // Hack for gradient
-            document.getElementById('pf-avatar').className = `w-16 h-16 rounded-2xl bg-gradient-to-br ${colorClass} to-slate-800 text-white flex items-center justify-center text-xl font-bold shadow-lg`;
-            document.getElementById('pf-avatar').innerText = initials;
+            document.getElementById('pf-name').innerText = s.name;
+            document.getElementById('pf-obj').innerText = s.objective;
+            document.getElementById('pf-plan').innerText = s.plan;
+            document.getElementById('pf-avatar').innerText = s.name.split(' ').slice(0,2).map(n=>n[0]).join('');
+            
+            document.getElementById('pf-lim-list').innerHTML = s.limitations && s.limitations!=='NENHUMA' ? s.limitations.split(',').map(l=>`<li>${l}</li>`).join('') : '<li>Sem restrições</li>';
+            document.getElementById('pf-obs-list').innerHTML = s.notes ? s.notes.split('\n').map(n=>`<li>${n}</li>`).join('') : '<li>Sem observações</li>';
 
-            const wg = document.getElementById('pf-week-grid'); wg.innerHTML = ''; 
+            const wg = document.getElementById('pf-week-grid'); wg.innerHTML = '';
             const today = new Date(); const d = today.getDate()-today.getDay()+(today.getDay()===0?-6:1); const mon = new Date(today.setDate(d));
             ['SEG','TER','QUA','QUI','SEX','SÁB'].forEach((day,i)=>{ 
                 let dt = new Date(mon); dt.setDate(mon.getDate()+i); 
                 const chk = h.find(k=>k.isoDate===dt.toISOString().split('T')[0]); 
-                wg.innerHTML += `<div class="p-2 rounded-lg text-center ${chk?'bg-[#00A89A] text-white':'bg-slate-100 text-slate-300'}"><div class="text-[10px] font-bold mb-1">${day}</div><div>${chk?'✓':'.'}</div></div>`; 
+                wg.innerHTML += `
+                <div class="pf-grid-item ${chk?'active':''}">
+                    <div class="text-[9px] font-bold uppercase opacity-70">${day}</div>
+                    <div class="text-xs font-black my-1 text-[#05364F]">${dt.getDate()}</div>
+                    <div class="text-[8px] font-bold uppercase truncate text-[#00A89A]">${chk ? chk.workout : '--'}</div>
+                </div>`; 
             });
 
-            // Charts
+            document.getElementById('pf-btn-edit').onclick = () => { document.getElementById('profile-modal').style.display='none'; openStudentModal(id); };
+
             const fCtx = document.getElementById('chart-freq').getContext('2d'); if(charts.freq) charts.freq.destroy();
-            const fMap = {}; h.forEach(c=>{ const k=c.isoDate.substr(5,5); fMap[k]=(fMap[k]||0)+1 });
-            charts.freq = new Chart(fCtx, {type:'line', data:{labels:Object.keys(fMap).sort(), datasets:[{label:'Freq', data:Object.values(fMap), borderColor:'#00A89A', backgroundColor:'rgba(0,168,154,0.1)', fill:true, tension:0.4}]}, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}}}});
+            const last30 = {}; for(let i=0; i<30; i++){ let d=new Date(); d.setDate(d.getDate()-i); last30[d.toISOString().split('T')[0]]=0; }
+            h.forEach(c => { if(last30[c.isoDate] !== undefined) last30[c.isoDate] = 1; });
+            charts.freq = new Chart(fCtx, {type:'line', data:{labels:Object.keys(last30).sort().map(l=>l.split('-')[2]), datasets:[{label:'Presença', data:Object.keys(last30).sort().map(k=>last30[k]), borderColor:'#00A89A', backgroundColor:'rgba(0,168,154,0.1)', fill:true, tension:0.4}]}, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true, max:1, ticks:{stepSize:1}}}}});
             
             const wCtx = document.getElementById('chart-workouts').getContext('2d'); if(charts.work) charts.work.destroy();
             const wMap = {}; h.forEach(c=>{ wMap[c.workout]=(wMap[c.workout]||0)+1 });
             charts.work = new Chart(wCtx, {type:'doughnut', data:{labels:Object.keys(wMap), datasets:[{data:Object.values(wMap), backgroundColor:['#05364F','#00C9B7','#C5A059','#38BDF8'], borderWidth:0}]}, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'right', labels:{boxWidth:10, font:{size:9}}}}}});
 
-            document.getElementById('profile-modal').style.display = 'flex'; lucide.createIcons();
+            document.getElementById('profile-modal').style.display='flex';
+            lucide.createIcons();
         }
 
-        // --- UTILS & DATA MGMT ---
-        function saveLocal() { localStorage.setItem(DB_KEY, JSON.stringify(db)); }
-        function saveDB() { saveLocal(); pushCloud(); } 
+        // --- REPORTS ---
+        function setupReportFilter() {
+            const select = document.getElementById('report-period');
+            select.innerHTML = '<option value="global">Global (Todo Tempo)</option>';
+            const currentYear = new Date().getFullYear();
+            
+            for(let i=0; i<12; i++) {
+                // Month is 0-indexed (0=Jan, 11=Dec)
+                const d = new Date(currentYear, i, 1);
+                // To display future months, we just iterate 0 to 11.
+                // The value will be "2026-01", "2026-02", etc.
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const val = `${year}-${month}`;
+                
+                const label = d.toLocaleString('pt-BR', {month:'long', year:'numeric'});
+                const capLabel = label.charAt(0).toUpperCase() + label.slice(1);
+                
+                select.add(new Option(capLabel, val));
+            }
+        }
+
+        function renderReports() {
+            const period = document.getElementById('report-period').value;
+            let data = db.checkins;
+            let labels = []; let values = [];
+
+            if(period === 'global') {
+                const months = {}; data.forEach(c => { const k=c.isoDate.slice(0,7); months[k]=(months[k]||0)+1; });
+                labels = Object.keys(months).sort(); values = Object.values(months);
+            } else {
+                data = data.filter(c => c.isoDate.startsWith(period));
+                const [y, m] = period.split('-');
+                const days = new Date(y, m, 0).getDate();
+                for(let i=1; i<=days; i++) {
+                    const dStr = String(i).padStart(2,'0');
+                    labels.push(dStr);
+                    values.push(data.filter(c=>c.isoDate===`${period}-${dStr}`).length);
+                }
+            }
+
+            const ctx1 = document.getElementById('chart1').getContext('2d'); if(charts.c1) charts.c1.destroy();
+            charts.c1 = new Chart(ctx1, {type:'bar', data:{labels, datasets:[{label:'Check-ins', data:values, backgroundColor:'#00A89A', borderRadius:4}]}, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}}}});
+
+            const ctx2 = document.getElementById('chart2').getContext('2d'); if(charts.c2) charts.c2.destroy();
+            const wMap={}; data.forEach(c=>{ wMap[c.workout]=(wMap[c.workout]||0)+1 });
+            charts.c2=new Chart(ctx2, {type:'doughnut', data:{labels:Object.keys(wMap), datasets:[{data:Object.values(wMap), backgroundColor:['#05364F','#00C9B7','#C5A059','#38BDF8','#F43F5E'], borderWidth:0}]}, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'right', labels:{boxWidth:12}}}}});
+
+            const ctx3=document.getElementById('chart3').getContext('2d'); if(charts.c3) charts.c3.destroy();
+            const hMap={}; data.forEach(c=>{ hMap[c.time]=(hMap[c.time]||0)+1 });
+            charts.c3=new Chart(ctx3, {type:'line', data:{labels:Object.keys(hMap).sort((a,b)=>parseInt(a)-parseInt(b)), datasets:[{label:'Fluxo', data:Object.values(hMap), borderColor:'#C5A059', backgroundColor:'rgba(197, 160, 89, 0.1)', fill:true, tension:0.4}]}, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}}}});
+
+            const ctx4=document.getElementById('chart4').getContext('2d'); if(charts.c4) charts.c4.destroy();
+            const active = new Set(data.map(c => c.studentId)).size;
+            charts.c4=new Chart(ctx4, {type:'pie', data:{labels:['Ativos','Inativos'], datasets:[{data:[active, db.students.length-active], backgroundColor:['#00C9B7','#1e293b'], borderWidth:0}]}, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}}});
+        }
+
+        function updateStats() {
+            const dt = document.getElementById('ag-date').value || new Date().toISOString().split('T')[0];
+            const list = db.checkins.filter(c => c.isoDate === dt);
+            document.getElementById('st-total').innerText = list.length;
+            document.getElementById('st-new').innerText = db.students.filter(s => parseInt(s.id) > new Date(dt).getTime()).length;
+        }
+
+        // --- UTILS ---
+        function saveDB() { localStorage.setItem(DB_KEY, JSON.stringify(db)); pushCloud(); }
         function toast(msg) { const t=document.getElementById('toast'); document.getElementById('toast-msg').innerText=msg; t.style.transform='translateX(0)'; setTimeout(()=>t.style.transform='translateX(150%)', 3000); }
+        function toggleCustom(val) { document.getElementById('ci-custom').classList.toggle('hidden', val !== 'OUTRO'); }
         function openCloudModal() { document.getElementById('modal-cloud').style.display='flex'; }
-        function closeCloudModal() { document.getElementById('modal-cloud').style.display='none'; }
-        function openProfModal() { document.getElementById('prof-modal').style.display='flex'; renderProfList(); }
         function closeProfModal() { document.getElementById('prof-modal').style.display='none'; setupCheckinForm(); }
+        function openProfModal() { document.getElementById('prof-modal').style.display='flex'; renderProfList(); }
         function renderProfList(){ const l=document.getElementById('prof-list'); l.innerHTML=''; db.professors.forEach((p,i)=>l.innerHTML+=`<li class="flex justify-between p-3 bg-slate-50 text-sm font-bold text-[#05364F] rounded-lg">${p} <i data-lucide="trash" onclick="if(confirm('Excluir?')){db.professors.splice(${i},1);saveDB();renderProfList()}" class="w-4 h-4 text-red-400 cursor-pointer"></i></li>`); lucide.createIcons(); }
         function addProfessor(){ const n=document.getElementById('new-prof-name').value.toUpperCase(); if(n){ db.professors.push(n); saveDB(); renderProfList(); document.getElementById('new-prof-name').value=''; }}
-        
+        function backupData() { const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(db)],{type:"application/json"})); a.download=`prime_backup.json`; a.click(); }
+        function restoreData(i) { const r=new FileReader(); r.onload=e=>{ try{ db=JSON.parse(e.target.result); saveDB(); location.reload(); }catch{alert('Erro');} }; r.readAsText(i.files[0]); }
+        function forceSync() { syncCloud().then(() => { renderAll(); toast('Sincronizado'); }); }
+        function saveManualToken() { const t = document.getElementById('manualToken').value.trim(); if(t) { localStorage.setItem(TOKEN_KEY, t); toast('Token Salvo'); syncCloud(); } }
+
         function updateCloudStatus(st) { 
-            const dot = document.getElementById('statusDot');
-            if(!dot) return;
-            if(st === 'ok') { dot.className = 'dot online'; } 
-            else if (st === 'syncing') { dot.className = 'dot sync'; } 
-            else { dot.className = 'dot offline'; }
+            const dot = document.getElementById('statusDot'); if(!dot) return;
+            if(st === 'ok') { dot.className = 'dot online'; } else if (st === 'syncing') { dot.className = 'dot sync'; } else { dot.className = 'dot offline'; }
         }
-        
-        // --- CLOUD SYNC ---
-        function saveManualToken() {
-            const t = document.getElementById('manualToken').value.trim();
-            if(t) { localStorage.setItem(TOKEN_KEY, t); alert("Token salvo!"); syncCloud(); }
-        }
+
         async function syncCloud() {
-            const token = localStorage.getItem(TOKEN_KEY); if(!token) return updateCloudStatus('error'); updateCloudStatus('syncing');
+            const token = localStorage.getItem(TOKEN_KEY); 
+            if(!token) return updateCloudStatus('error'); 
+            updateCloudStatus('syncing');
             try {
-                if(!gistId) { const s = await fetch('https://api.github.com/gists',{headers:{'Authorization':`token ${token}`}}); const g = await s.json(); const f = g.find(x=>x.description===GIST_DESC); if(f) gistId = f.id; }
-                if(gistId) {
-                    const r = await fetch(`https://api.github.com/gists/${gistId}`,{headers:{'Authorization':`token ${token}`}}); const j = await r.json();
-                    if(j.files["prime_db.json"]) { db = JSON.parse(j.files["prime_db.json"].content); saveLocal(); updateStats(); renderAgenda(); } else await pushCloud();
-                    updateCloudStatus('ok');
-                } else await pushCloud();
-            } catch(e) { updateCloudStatus('error'); }
+                const s = await fetch('https://api.github.com/gists',{headers:{'Authorization':`token ${token}`}});
+                const g = await s.json();
+                const f = g.find(x=>x.description===GIST_DESC);
+                if(f) {
+                    gistId = f.id;
+                    const r = await fetch(`https://api.github.com/gists/${gistId}`,{headers:{'Authorization':`token ${token}`}});
+                    const j = await r.json();
+                    if(j.files["prime_db.json"]) {
+                        db = JSON.parse(j.files["prime_db.json"].content);
+                        localStorage.setItem(DB_KEY, JSON.stringify(db));
+                        renderAll(); // FORCE UI UPDATE AFTER LOAD
+                    }
+                }
+                updateCloudStatus('ok');
+            } catch(e) { console.error(e); updateCloudStatus('error'); }
         }
+
         async function pushCloud() {
             const token = localStorage.getItem(TOKEN_KEY); if(!token) return; updateCloudStatus('syncing');
             try {
-                let url = 'https://api.github.com/gists'; let method = 'POST'; if(gistId) { url += '/'+gistId; method = 'PATCH'; }
+                let url = 'https://api.github.com/gists'; let method = 'POST'; 
+                if(gistId) { url += '/'+gistId; method = 'PATCH'; }
                 const body = JSON.stringify({description:GIST_DESC, public:false, files:{'prime_db.json':{content:JSON.stringify(db)}}});
-                await fetch(url, {method, headers:{'Authorization':`token ${token}`}, body}); updateCloudStatus('ok');
+                await fetch(url, {method, headers:{'Authorization':`token ${token}`}, body});
+                updateCloudStatus('ok');
             } catch(e) { updateCloudStatus('error'); }
         }
-        function forceSync() { if(confirm("Baixar dados?")) { syncCloud(); closeCloudModal(); } }
-        function backupData() { const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(db)],{type:"application/json"})); a.download=`prime_backup.json`; a.click(); }
-        function restoreData(i) { const r=new FileReader(); r.onload=e=>{ try{ db=JSON.parse(e.target.result); saveDB(); location.reload(); }catch{alert('Erro');} }; r.readAsText(i.files[0]); }
-        function hardReset() { if(confirm('Apagar tudo?')) { localStorage.removeItem(DB_KEY); location.reload(); } }
 
     </script>
 </body>
