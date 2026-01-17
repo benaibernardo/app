@@ -121,6 +121,20 @@
         /* Profile Week Grid matches Agenda style */
         .pf-grid-item { flex: 1; min-width: 80px; padding: 10px; border-radius: 12px; border: 1px solid #e2e8f0; text-align: center; transition: all 0.3s; background: white; }
         .pf-grid-item.active { border-left: 4px solid var(--secondary); box-shadow: 0 2px 8px rgba(0,168,154,0.1); background: #f0fdfa; }
+
+        /* Custom Dropdown for Time Filter */
+        .custom-dropdown-content {
+            display: none; position: absolute; top: 100%; right: 0; 
+            background: white; border: 1px solid #e2e8f0; 
+            border-radius: 12px; padding: 10px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+            z-index: 60; width: 220px; max-height: 300px; overflow-y: auto;
+        }
+        .custom-dropdown-content.show { display: block; animation: slideInUp 0.2s ease-out; }
+        .cb-item { display: flex; align-items: center; gap: 8px; padding: 6px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+        .cb-item:hover { background: #f1f5f9; }
+        .cb-item input { accent-color: var(--secondary); width: 16px; height: 16px; }
+        .cb-item label { font-size: 0.85rem; font-weight: 600; color: #05364F; flex: 1; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -181,10 +195,11 @@
 
             <!-- VIEW: DAILY -->
             <section id="view-daily" class="view-section fade-in-up">
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 relative">
                     
                     <!-- LEFT COLUMN: CHECKIN FORM -->
-                    <div class="lg:col-span-4 space-y-6">
+                    <!-- Alterado para lg:sticky e h-fit para rolar junto -->
+                    <div class="lg:col-span-4 space-y-6 lg:sticky lg:top-[90px] h-fit z-10">
                         <div class="card-prime">
                             <div class="bg-[#05364F] px-6 py-4 flex justify-between items-center border-b border-[#084566]">
                                 <h2 class="text-white font-bold flex items-center gap-2 text-sm uppercase tracking-wide">
@@ -245,9 +260,12 @@
 
                                 <div class="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Treino</label>
+                                        <div class="flex justify-between items-center mb-1">
+                                            <label class="text-[10px] font-bold text-slate-400 uppercase block">Treino</label>
+                                            <button type="button" onclick="openWorkoutModal()" class="text-[10px] font-bold text-[#00A89A] hover:underline">GERENCIAR</button>
+                                        </div>
                                         <select id="ci-workout" class="input-prime text-sm" onchange="toggleCustom(this.value)">
-                                            <option>QUADRICEPS</option><option>POSTERIOR/GLÚTEO</option><option>PEITO/TRÍCEPS/OMBRO</option><option>COSTAS/BÍCEPS/ANTEBRAÇO</option><option>FULL BODY</option><option>MMSS</option><option>MMII</option><option>CORE</option><option>AERÓBICO</option><option>AVALIAÇÃO</option><option value="OUTRO">OUTRO...</option>
+                                            <!-- Preenchido via JS -->
                                         </select>
                                         <input id="ci-custom" type="text" class="hidden mt-2 input-prime text-sm border-[#00A89A]" placeholder="Digite o treino...">
                                     </div>
@@ -291,10 +309,22 @@
                                         <i data-lucide="calendar" class="date-icon w-4 h-4"></i>
                                         <input type="date" id="ag-date" class="bg-white border border-slate-200 rounded-lg py-2 pr-3 text-sm font-bold text-[#05364F] outline-none focus:border-[#00A89A] input-date-custom" onchange="renderAgenda()">
                                     </div>
-                                    <select id="ag-filter-time" class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm font-bold text-[#05364F] outline-none focus:border-[#00A89A]" onchange="renderAgenda()">
-                                        <option value="">Todos Horários</option>
-                                        <!-- Populated via JS -->
-                                    </select>
+                                    
+                                    <!-- Novo Dropdown Multi-select -->
+                                    <div class="relative">
+                                        <button onclick="toggleTimeDropdown()" id="btn-time-filter" class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm font-bold text-[#05364F] hover:border-[#00A89A] flex items-center gap-2">
+                                            <span>Todos Horários</span>
+                                            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i>
+                                        </button>
+                                        <div id="time-dropdown-content" class="custom-dropdown-content">
+                                            <div class="flex justify-between border-b pb-2 mb-2">
+                                                <span class="text-xs font-bold text-slate-400">Filtrar Horários</span>
+                                                <span onclick="clearTimeFilter()" class="text-xs font-bold text-[#00A89A] cursor-pointer">Limpar</span>
+                                            </div>
+                                            <div id="time-checkboxes" class="space-y-1"></div>
+                                        </div>
+                                    </div>
+
                                     <input type="text" id="ag-search" placeholder="Buscar aluno..." class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm font-bold outline-none focus:border-[#00A89A] w-32" onkeyup="renderAgenda()">
                                 </div>
                             </div>
@@ -454,11 +484,21 @@
         </div>
     </div>
 
+    <!-- MODAL PROFESSOR -->
     <div id="prof-modal" class="modal-overlay">
         <div class="modal-card max-w-sm">
              <div class="flex justify-between items-center mb-4"><h3 class="font-bold text-[#05364F]">Equipe</h3><button onclick="closeProfModal()"><i data-lucide="x" class="w-5 h-5"></i></button></div>
              <div class="flex gap-2 mb-4"><input type="text" id="new-prof-name" class="input-prime py-2 text-sm" placeholder="Nome"><button onclick="addProfessor()" class="bg-[#00A89A] text-white px-3 rounded-lg"><i data-lucide="plus" class="w-4 h-4"></i></button></div>
              <ul id="prof-list" class="space-y-2 max-h-60 overflow-y-auto"></ul>
+        </div>
+    </div>
+
+    <!-- MODAL WORKOUT MANAGER (NOVO) -->
+    <div id="workout-modal" class="modal-overlay">
+        <div class="modal-card max-w-sm">
+             <div class="flex justify-between items-center mb-4"><h3 class="font-bold text-[#05364F]">Gerenciar Treinos</h3><button onclick="closeWorkoutModal()"><i data-lucide="x" class="w-5 h-5"></i></button></div>
+             <div class="flex gap-2 mb-4"><input type="text" id="new-workout-name" class="input-prime py-2 text-sm" placeholder="Nome do Treino"><button onclick="addWorkout()" class="bg-[#00A89A] text-white px-3 rounded-lg"><i data-lucide="plus" class="w-4 h-4"></i></button></div>
+             <ul id="workout-list" class="space-y-2 max-h-60 overflow-y-auto"></ul>
         </div>
     </div>
 
@@ -472,11 +512,13 @@
         const STAFF_USER = "PRIME";
         const STAFF_PASS = "123";
         
-        let db = { students: [], checkins: [], professors: [] };
+        let db = { students: [], checkins: [], professors: [], workouts: [] };
         let charts = {}; 
         let gistId = null;
+        let selectedHours = new Set(); // For multi-select filter
         
         const INITIAL_PROFS = ['BENAI', 'JUAN', 'THUR', 'LUANA', 'BENJAMIN'];
+        const INITIAL_WORKOUTS = ["QUADRICEPS","POSTERIOR/GLÚTEO","PEITO/TRÍCEPS/OMBRO","COSTAS/BÍCEPS/ANTEBRAÇO","FULL BODY","MMSS","MMII","CORE","AERÓBICO","AVALIAÇÃO"];
         const INITIAL_STUDENTS = [
              {"id":"1","name":"NILTON FLORIANO","objective":"GANHAR MASSA","limitations":"HERNIA INGUINAL","notes":"GOSTA DE FAZER BURPEES AO FINAL DA AULA","plan":"3X"},
             {"id":"2","name":"LINDAMIR FLORIANO (MIME)","objective":"EMAGRECIMENTO","limitations":"NENHUMA","notes":"","plan":"3X"},
@@ -504,6 +546,7 @@
             // 4. Setup UI
             lucide.createIcons();
             setTab('daily');
+            setupTimeDropdown(); // Setup checkboxes
             setInterval(() => document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}), 1000);
             
             Chart.defaults.font.family = "'Inter', sans-serif";
@@ -511,16 +554,21 @@
             Chart.defaults.scale.grid.color = 'rgba(255,255,255,0.05)';
             
             setupReportFilter();
-            const tf = document.getElementById('ag-filter-time');
-            if(tf.options.length <= 1) { for(let h=6; h<=21; h++) tf.add(new Option(`${h}H`, `${h}H`)); }
+            
+            // Populate time select options for Check-in form (Standard Select)
+            const tEl = document.getElementById('ci-time');
+            if(tEl.options.length === 0) {
+                 for(let h=6; h<=21; h++) tEl.add(new Option(`${h}:00`, `${h}H`));
+            }
         }
 
         function loadLocal() {
             let saved = localStorage.getItem(DB_KEY);
             if (saved) {
                 db = JSON.parse(saved);
+                if(!db.workouts || db.workouts.length === 0) db.workouts = INITIAL_WORKOUTS;
             } else {
-                db = { students: INITIAL_STUDENTS, checkins: [], professors: INITIAL_PROFS };
+                db = { students: INITIAL_STUDENTS, checkins: [], professors: INITIAL_PROFS, workouts: INITIAL_WORKOUTS };
             }
         }
 
@@ -528,6 +576,7 @@
             updateStats();
             renderAgenda();
             renderStudentsTable();
+            renderWorkoutsSelect();
         }
 
         // AUTH
@@ -607,7 +656,102 @@
             const pEl = document.getElementById('ci-prof'); 
             pEl.innerHTML = '';
             db.professors.forEach(p => pEl.innerHTML += `<option>${p}</option>`);
+            
+            renderWorkoutsSelect();
         }
+
+        // --- TIME FILTER LOGIC (MULTI-SELECT) ---
+        function setupTimeDropdown() {
+            const container = document.getElementById('time-checkboxes');
+            container.innerHTML = '';
+            for(let h=6; h<=21; h++) {
+                const val = `${h}H`;
+                container.innerHTML += `
+                    <div class="cb-item" onclick="toggleTimeSelection('${val}')">
+                        <input type="checkbox" id="cb-${val}" value="${val}" onclick="event.stopPropagation(); toggleTimeSelection('${val}')">
+                        <label>${val}</label>
+                    </div>`;
+            }
+        }
+
+        function toggleTimeDropdown() {
+            const dd = document.getElementById('time-dropdown-content');
+            dd.classList.toggle('show');
+            // Close if clicking outside logic can be added here if needed, but for simplicity
+            // we rely on the user clicking the button again or clicking options.
+        }
+
+        function toggleTimeSelection(val) {
+            const cb = document.getElementById(`cb-${val}`);
+            // If function triggered by div click, toggle checkbox manually
+            if(event.target.tagName !== 'INPUT') {
+                 cb.checked = !cb.checked;
+            }
+
+            if(cb.checked) selectedHours.add(val);
+            else selectedHours.delete(val);
+
+            updateTimeButtonLabel();
+            renderAgenda();
+        }
+
+        function clearTimeFilter() {
+            selectedHours.clear();
+            document.querySelectorAll('#time-checkboxes input').forEach(c => c.checked = false);
+            updateTimeButtonLabel();
+            renderAgenda();
+        }
+
+        function updateTimeButtonLabel() {
+            const btn = document.getElementById('btn-time-filter').querySelector('span');
+            if(selectedHours.size === 0) btn.innerText = "Todos Horários";
+            else if(selectedHours.size === 1) btn.innerText = Array.from(selectedHours)[0];
+            else btn.innerText = `${selectedHours.size} Horários`;
+        }
+
+        // --- WORKOUT MANAGEMENT ---
+        function renderWorkoutsSelect() {
+            const wEl = document.getElementById('ci-workout');
+            const current = wEl.value;
+            wEl.innerHTML = '';
+            // Ensure db.workouts exists
+            if(!db.workouts) db.workouts = INITIAL_WORKOUTS;
+            
+            db.workouts.forEach(w => wEl.add(new Option(w, w)));
+            wEl.add(new Option('OUTRO...', 'OUTRO'));
+            
+            if(current) wEl.value = current;
+        }
+
+        function openWorkoutModal() { document.getElementById('workout-modal').style.display='flex'; renderWorkoutListUI(); }
+        function closeWorkoutModal() { document.getElementById('workout-modal').style.display='none'; renderWorkoutsSelect(); }
+        
+        function renderWorkoutListUI() {
+            const l = document.getElementById('workout-list'); l.innerHTML = '';
+            db.workouts.forEach((w, i) => {
+                l.innerHTML += `<li class="flex justify-between p-3 bg-slate-50 text-sm font-bold text-[#05364F] rounded-lg">${w} <i data-lucide="trash" onclick="deleteWorkout(${i})" class="w-4 h-4 text-red-400 cursor-pointer"></i></li>`;
+            });
+            lucide.createIcons();
+        }
+
+        function addWorkout() {
+            const n = document.getElementById('new-workout-name').value.toUpperCase().trim();
+            if(n && !db.workouts.includes(n)) {
+                db.workouts.push(n);
+                saveDB();
+                renderWorkoutListUI();
+                document.getElementById('new-workout-name').value = '';
+            }
+        }
+
+        function deleteWorkout(index) {
+            if(confirm('Excluir este tipo de treino?')) {
+                db.workouts.splice(index, 1);
+                saveDB();
+                renderWorkoutListUI();
+            }
+        }
+
 
         function handleStudentSelection(id) {
             if(!id) {
@@ -687,8 +831,7 @@
             document.getElementById('ci-student').value = item.studentId;
             document.getElementById('ci-prof').value = item.prof;
             
-            const standard = ["QUADRICEPS","POSTERIOR/GLÚTEO","PEITO/TRÍCEPS/OMBRO","COSTAS/BÍCEPS/ANTEBRAÇO","FULL BODY","MMSS","MMII","CORE","AERÓBICO","AVALIAÇÃO"];
-            if(standard.includes(item.workout)) {
+            if(db.workouts.includes(item.workout)) {
                 document.getElementById('ci-workout').value = item.workout;
                 document.getElementById('ci-custom').classList.add('hidden');
             } else {
@@ -705,7 +848,7 @@
         function cancelEdit() {
             document.getElementById('ci-edit-id').value = "";
             document.getElementById('ci-student').value = "";
-            document.getElementById('ci-workout').value = "QUADRICEPS";
+            renderWorkoutsSelect(); // Reset workout select to hide OUTRO logic if pending
             document.getElementById('ci-custom').classList.add('hidden');
             document.getElementById('ci-alert').classList.add('hidden');
             document.getElementById('last-workout-box').classList.add('hidden');
@@ -725,11 +868,16 @@
         // --- AGENDA & DRAWER ---
         function renderAgenda() {
             const dt = document.getElementById('ag-date').value;
-            const tm = document.getElementById('ag-filter-time').value;
+            // Removed single select logic: const tm = document.getElementById('ag-filter-time').value;
             const term = document.getElementById('ag-search').value.toLowerCase();
 
             let list = db.checkins.filter(c => c.isoDate === dt);
-            if(tm) list = list.filter(c => c.time === tm);
+            
+            // Multi-select logic
+            if(selectedHours.size > 0) {
+                list = list.filter(c => selectedHours.has(c.time));
+            }
+            
             if(term) list = list.filter(c => c.studentName.toLowerCase().includes(term));
             
             list.sort((a,b) => parseInt(a.time) - parseInt(b.time));
