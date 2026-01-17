@@ -93,7 +93,7 @@
         /* PIN INPUT */
         .pin-digit {
             font-family: 'Space Grotesk', monospace;
-            letter-spacing: 0.5em;
+            letter-spacing: 0.2em;
             text-align: center;
         }
 
@@ -101,6 +101,15 @@
         .logo-b {
             background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
             box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.5);
+        }
+
+        /* Custom Toggle Switch */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #0ea5e9;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #0ea5e9;
         }
     </style>
 </head>
@@ -113,7 +122,7 @@
 
     <!-- GATEKEEPER (Lock Screen) -->
     <div id="gatekeeper" class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-sky-50/90 dark:bg-[#0b1121]/95 backdrop-blur-xl transition-all duration-700">
-        <div class="text-center space-y-8 animate-float">
+        <div class="text-center space-y-8 animate-float px-6">
             <!-- Logo Grande -->
             <div class="w-24 h-24 mx-auto rounded-3xl logo-b flex items-center justify-center rotate-3 hover:rotate-0 transition-transform duration-500">
                 <span class="font-mono text-6xl font-bold text-white tracking-tighter">B.</span>
@@ -124,9 +133,13 @@
                 <p class="text-slate-500 dark:text-sky-400/70 text-xs uppercase tracking-[0.3em] font-bold">Acesso Seguro</p>
             </div>
 
-            <div class="relative group">
-                <input type="password" id="pinInput" maxlength="8" class="pin-digit w-64 bg-transparent border-b-2 border-slate-300 dark:border-sky-900 text-2xl focus:outline-none focus:border-sky-500 transition-colors py-3 text-center" placeholder="••••••••" autofocus inputmode="numeric">
-                <div id="pinError" class="absolute -bottom-8 left-0 right-0 text-red-500 text-xs font-bold opacity-0 transition-opacity">PIN INCORRETO</div>
+            <div class="relative group flex flex-col gap-4 w-64 mx-auto">
+                <input type="text" id="userInput" class="pin-digit w-full bg-transparent border-b-2 border-slate-300 dark:border-sky-900/50 text-lg focus:outline-none focus:border-sky-500 transition-colors py-2 text-center placeholder-slate-400 dark:placeholder-slate-600 uppercase" placeholder="USUÁRIO" autocomplete="off">
+                <input type="password" id="passInput" class="pin-digit w-full bg-transparent border-b-2 border-slate-300 dark:border-sky-900/50 text-lg focus:outline-none focus:border-sky-500 transition-colors py-2 text-center placeholder-slate-400 dark:placeholder-slate-600" placeholder="SENHA" onkeyup="if(event.key==='Enter') attemptLogin()">
+                
+                <button onclick="attemptLogin()" class="mt-4 w-full py-3 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-xl shadow-lg shadow-sky-500/20 transition tracking-widest text-xs">ENTRAR</button>
+                
+                <div id="pinError" class="absolute -bottom-10 left-0 right-0 text-red-500 text-xs font-bold opacity-0 transition-opacity text-center">CREDENCIAIS INVÁLIDAS</div>
             </div>
         </div>
     </div>
@@ -142,7 +155,8 @@
                 <button onclick="toggleTheme()" class="w-10 h-10 rounded-full glass-card flex items-center justify-center hover:bg-white/50 dark:hover:bg-sky-900/50 transition">
                     <i id="themeIcon" data-lucide="moon" class="w-5 h-5 text-slate-600 dark:text-sky-300"></i>
                 </button>
-                <button onclick="openSettings()" class="w-10 h-10 rounded-full glass-card flex items-center justify-center hover:bg-white/50 dark:hover:bg-sky-900/50 transition relative">
+                <!-- Botão Settings (Apenas Admin vê, controlado via JS) -->
+                <button id="btn-settings" onclick="openSettings()" class="w-10 h-10 rounded-full glass-card flex items-center justify-center hover:bg-white/50 dark:hover:bg-sky-900/50 transition relative">
                     <div id="syncIndicator" class="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-900"></div>
                     <i data-lucide="settings-2" class="w-5 h-5 text-slate-600 dark:text-sky-300"></i>
                 </button>
@@ -174,19 +188,11 @@
                     <div class="h-px bg-gradient-to-r from-transparent via-sky-300 dark:via-sky-700 to-transparent w-24"></div>
                 </div>
 
-                <!-- Atualizado para suportar 5 itens responsivamente -->
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                    <!-- Tracker -->
-                    <a href="tracker.html" class="glass-card rounded-2xl p-5 hover-lift flex flex-col items-center text-center group">
-                        <div class="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                            <i data-lucide="check-circle-2" class="w-6 h-6"></i>
-                        </div>
-                        <h3 class="font-bold text-slate-700 dark:text-white">Tracker</h3>
-                        <p class="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 mt-1">Hábitos & Metas</p>
-                    </a>
-
+                <!-- Botões -->
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 justify-center">
+                    
                     <!-- Financeiro -->
-                    <a href="financeiro.html" class="glass-card rounded-2xl p-5 hover-lift flex flex-col items-center text-center group">
+                    <a href="financeiro.html" id="btn-finance" class="glass-card rounded-2xl p-5 hover-lift flex flex-col items-center text-center group">
                         <div class="w-12 h-12 rounded-xl bg-violet-100 dark:bg-violet-500/20 text-violet-600 dark:text-violet-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                             <i data-lucide="pie-chart" class="w-6 h-6"></i>
                         </div>
@@ -194,8 +200,8 @@
                         <p class="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 mt-1">Gestão de Gastos</p>
                     </a>
 
-                    <!-- Cartão -->
-                    <a href="cartao.html" class="glass-card rounded-2xl p-5 hover-lift flex flex-col items-center text-center group">
+                    <!-- Cartão (Permitido Convidado por Padrão) -->
+                    <a href="cartao.html" id="btn-card" class="glass-card rounded-2xl p-5 hover-lift flex flex-col items-center text-center group">
                         <div class="w-12 h-12 rounded-xl bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                             <i data-lucide="credit-card" class="w-6 h-6"></i>
                         </div>
@@ -204,7 +210,7 @@
                     </a>
 
                     <!-- Dieta -->
-                    <a href="dieta.html" class="glass-card rounded-2xl p-5 hover-lift flex flex-col items-center text-center group">
+                    <a href="dieta.html" id="btn-diet" class="glass-card rounded-2xl p-5 hover-lift flex flex-col items-center text-center group">
                         <div class="w-12 h-12 rounded-xl bg-rose-100 dark:bg-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                             <i data-lucide="apple" class="w-6 h-6"></i>
                         </div>
@@ -212,8 +218,8 @@
                         <p class="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 mt-1">Plano Alimentar</p>
                     </a>
 
-                    <!-- Viagens (NOVO) -->
-                    <a href="viagens.html" class="glass-card rounded-2xl p-5 hover-lift flex flex-col items-center text-center group">
+                    <!-- Viagens (Permitido Convidado por Padrão) -->
+                    <a href="viagens.html" id="btn-travel" class="glass-card rounded-2xl p-5 hover-lift flex flex-col items-center text-center group">
                         <div class="w-12 h-12 rounded-xl bg-fuchsia-100 dark:bg-fuchsia-500/20 text-fuchsia-600 dark:text-fuchsia-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                             <i data-lucide="plane" class="w-6 h-6"></i>
                         </div>
@@ -224,7 +230,7 @@
             </section>
 
             <!-- SEÇÃO 2: CONSULTORIA -->
-            <section class="animate-fade-in" style="animation-delay: 200ms;">
+            <section id="sec-consultoria" class="animate-fade-in" style="animation-delay: 200ms;">
                 <div class="flex items-center justify-center gap-4 mb-8">
                     <div class="h-px bg-gradient-to-r from-transparent via-sky-300 dark:via-sky-700 to-transparent w-24"></div>
                     <h2 class="text-lg font-bold text-slate-700 dark:text-sky-100 uppercase tracking-widest flex items-center gap-2">
@@ -259,7 +265,7 @@
             </section>
 
             <!-- SEÇÃO 3: TRABALHO -->
-            <section class="animate-fade-in" style="animation-delay: 300ms;">
+            <section id="sec-trabalho" class="animate-fade-in" style="animation-delay: 300ms;">
                 <div class="flex items-center justify-center gap-4 mb-8">
                     <div class="h-px bg-gradient-to-r from-transparent via-sky-300 dark:via-sky-700 to-transparent w-24"></div>
                     <h2 class="text-lg font-bold text-slate-700 dark:text-sky-100 uppercase tracking-widest flex items-center gap-2">
@@ -318,6 +324,62 @@
 
             <div class="space-y-8 flex-1 overflow-y-auto">
                 
+                <!-- ADMIN CONTROLS (GUEST PERMISSIONS) -->
+                <div id="admin-controls" class="hidden">
+                    <div class="p-5 bg-amber-50 dark:bg-amber-900/10 rounded-2xl border border-amber-200 dark:border-amber-700 mb-6">
+                        <h3 class="text-sm font-bold flex items-center gap-2 mb-3 text-amber-800 dark:text-amber-400">
+                            <i data-lucide="shield-alert" class="w-4 h-4"></i> Acesso Convidado (Talita)
+                        </h3>
+                        <p class="text-[10px] text-slate-500 dark:text-slate-400 mb-4">Selecione o que a visitante pode visualizar.</p>
+                        
+                        <div class="space-y-3">
+                            <label class="flex items-center justify-between cursor-pointer">
+                                <span class="text-xs font-bold text-slate-600 dark:text-slate-300">Financeiro</span>
+                                <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                    <input type="checkbox" id="perm-btn-finance" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-slate-300"/>
+                                    <label for="perm-btn-finance" class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-300 cursor-pointer"></label>
+                                </div>
+                            </label>
+                            <label class="flex items-center justify-between cursor-pointer">
+                                <span class="text-xs font-bold text-slate-600 dark:text-slate-300">Cartão C6</span>
+                                <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                    <input type="checkbox" id="perm-btn-card" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-slate-300"/>
+                                    <label for="perm-btn-card" class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-300 cursor-pointer"></label>
+                                </div>
+                            </label>
+                            <label class="flex items-center justify-between cursor-pointer">
+                                <span class="text-xs font-bold text-slate-600 dark:text-slate-300">Dieta</span>
+                                <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                    <input type="checkbox" id="perm-btn-diet" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-slate-300"/>
+                                    <label for="perm-btn-diet" class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-300 cursor-pointer"></label>
+                                </div>
+                            </label>
+                            <label class="flex items-center justify-between cursor-pointer">
+                                <span class="text-xs font-bold text-slate-600 dark:text-slate-300">Viagens</span>
+                                <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                    <input type="checkbox" id="perm-btn-travel" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-slate-300"/>
+                                    <label for="perm-btn-travel" class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-300 cursor-pointer"></label>
+                                </div>
+                            </label>
+                            <label class="flex items-center justify-between cursor-pointer">
+                                <span class="text-xs font-bold text-slate-600 dark:text-slate-300">Seção Consultoria</span>
+                                <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                    <input type="checkbox" id="perm-sec-consultoria" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-slate-300"/>
+                                    <label for="perm-sec-consultoria" class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-300 cursor-pointer"></label>
+                                </div>
+                            </label>
+                            <label class="flex items-center justify-between cursor-pointer">
+                                <span class="text-xs font-bold text-slate-600 dark:text-slate-300">Seção Trabalho</span>
+                                <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                    <input type="checkbox" id="perm-sec-trabalho" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-slate-300"/>
+                                    <label for="perm-sec-trabalho" class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-300 cursor-pointer"></label>
+                                </div>
+                            </label>
+                        </div>
+                        <button onclick="saveGuestPermissions()" class="mt-4 w-full py-2 text-xs font-bold text-amber-600 bg-white border border-amber-200 rounded-lg hover:bg-amber-50 transition shadow-sm">SALVAR PERMISSÕES</button>
+                    </div>
+                </div>
+
                 <!-- TOKEN -->
                 <div>
                     <label class="block text-xs font-bold uppercase text-slate-400 mb-2 tracking-wider">GitHub Token (Global)</label>
@@ -363,9 +425,23 @@
 
     <script>
         // CONFIG
-        const PIN = "16359001";
+        const MASTER_PIN = "16359001";
+        const GUEST_USER = "TALITA";
+        const GUEST_PASS = "Melissa0107";
+        
         const GIST_DESC_GLOBAL = "BENAI_FULL_BACKUP_V3";
         const TOKEN_KEY = "BENAI_GLOBAL_TOKEN";
+        const PERMS_KEY = "BENAI_GUEST_PERMS";
+
+        // Default Guest Permissions (Initially defined as Card + Travel only)
+        const DEFAULT_PERMS = {
+            'btn-finance': false,
+            'btn-card': true,
+            'btn-diet': false,
+            'btn-travel': true,
+            'sec-consultoria': false,
+            'sec-trabalho': false
+        };
 
         // INIT
         document.addEventListener('DOMContentLoaded', () => {
@@ -382,31 +458,41 @@
             }
         });
 
-        // --- GATEKEEPER ---
+        // --- GATEKEEPER & AUTH ---
         function checkGatekeeper() {
             if(sessionStorage.getItem('benai_auth') === 'true') {
                 unlockUI();
             } else {
-                const input = document.getElementById('pinInput');
-                input.focus();
-                input.addEventListener('keyup', (e) => {
-                    if(e.target.value.length === 8) {
-                        if(e.target.value === PIN) {
-                            sessionStorage.setItem('benai_auth', 'true');
-                            unlockUI();
-                        } else {
-                            const err = document.getElementById('pinError');
-                            err.style.opacity = '1';
-                            e.target.classList.add('text-red-500', 'border-red-500');
-                            setTimeout(() => {
-                                e.target.value = '';
-                                e.target.classList.remove('text-red-500', 'border-red-500');
-                                err.style.opacity = '0';
-                            }, 1000);
-                        }
-                    }
-                });
+                // Focus on user input
+                document.getElementById('userInput').focus();
             }
+        }
+
+        function attemptLogin() {
+            const u = document.getElementById('userInput').value.toUpperCase().trim();
+            const p = document.getElementById('passInput').value.trim();
+            const err = document.getElementById('pinError');
+
+            // 1. ADMIN CHECK (Master PIN in Pass field, User optional OR correct admin creds)
+            if (p === MASTER_PIN) {
+                sessionStorage.setItem('benai_auth', 'true');
+                sessionStorage.setItem('benai_role', 'admin');
+                unlockUI();
+                return;
+            }
+
+            // 2. GUEST CHECK
+            if (u === GUEST_USER && p === GUEST_PASS) {
+                sessionStorage.setItem('benai_auth', 'true');
+                sessionStorage.setItem('benai_role', 'guest');
+                unlockUI();
+                return;
+            }
+
+            // 3. FAIL
+            err.style.opacity = '1';
+            document.getElementById('passInput').value = '';
+            setTimeout(() => err.style.opacity = '0', 2000);
         }
 
         function unlockUI() {
@@ -416,9 +502,67 @@
             gate.style.opacity = '0';
             gate.style.pointerEvents = 'none';
             
+            applyAccessControl(); // Apply ACL based on Role
+
             setTimeout(() => {
                 app.style.opacity = '1';
             }, 500);
+        }
+
+        function applyAccessControl() {
+            const role = sessionStorage.getItem('benai_role');
+            
+            if (role === 'guest') {
+                // Hide Settings Button
+                document.getElementById('btn-settings').style.display = 'none';
+
+                // Load Permissions
+                const saved = localStorage.getItem(PERMS_KEY);
+                const perms = saved ? JSON.parse(saved) : DEFAULT_PERMS;
+
+                Object.keys(perms).forEach(id => {
+                    const el = document.getElementById(id);
+                    if(el) {
+                        el.style.display = perms[id] ? '' : 'none'; // reset to default css display or none
+                    }
+                });
+
+            } else {
+                // Admin: Show admin controls in settings
+                document.getElementById('admin-controls').classList.remove('hidden');
+                loadAdminCheckboxes();
+                
+                // Ensure all buttons are visible for Admin
+                const ids = Object.keys(DEFAULT_PERMS);
+                ids.forEach(id => {
+                    const el = document.getElementById(id);
+                    if(el) el.style.display = '';
+                });
+            }
+        }
+
+        // --- PERMISSIONS MANAGEMENT (ADMIN ONLY) ---
+        function loadAdminCheckboxes() {
+            const saved = localStorage.getItem(PERMS_KEY);
+            const perms = saved ? JSON.parse(saved) : DEFAULT_PERMS;
+            
+            Object.keys(perms).forEach(id => {
+                const cb = document.getElementById('perm-' + id);
+                if(cb) cb.checked = perms[id];
+            });
+        }
+
+        function saveGuestPermissions() {
+            const perms = {};
+            const keys = Object.keys(DEFAULT_PERMS);
+            
+            keys.forEach(id => {
+                const cb = document.getElementById('perm-' + id);
+                if(cb) perms[id] = cb.checked;
+            });
+
+            localStorage.setItem(PERMS_KEY, JSON.stringify(perms));
+            showToast('Permissões de Visitante Atualizadas!');
         }
 
         // --- THEME ---
@@ -457,6 +601,12 @@
         function openSettings() {
             const modal = document.getElementById('settingsModal');
             const panel = document.getElementById('settingsPanel');
+            
+            // Refresh checkboxes state when opening
+            if(sessionStorage.getItem('benai_role') === 'admin') {
+                loadAdminCheckboxes();
+            }
+
             modal.classList.remove('hidden');
             setTimeout(() => panel.classList.remove('translate-x-full'), 10);
         }
