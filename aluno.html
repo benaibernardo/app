@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Benai Training</title>
+    <title>Benai Bernardo | Consultoria</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;800&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -11,34 +11,54 @@
 
     <style>
         :root {
-            --primary: #001F5B; --accent: #00A8E8; --bg: #f8fafc;
-            --text: #1f2937; --success: #10b981;
+            --primary: #001F5B; --primary-dark: #001640; 
+            --accent: #00A8E8; --accent-dark: #007bb0;
+            --bg: #f8fafc; --surface: #ffffff;
+            --text: #1f2937; --text-muted: #64748b;
+            --border: #e2e8f0;
             
-            /* CORES DOS MÉTODOS */
             --c-drop: #ef4444; --c-rnp: #f59e0b; --c-iso: #06b6d4; 
             --c-pyr: #8b5cf6; --c-fst: #ec4899; --c-bi: #00A8E8; --c-tri: #6366f1;
-            
             --wa-green: #25D366;
             --font-ui: 'Plus Jakarta Sans', sans-serif; --font-num: 'Outfit', sans-serif;
         }
+
+        [data-theme="dark"] {
+            --primary: #bae6fd; --primary-dark: #7dd3fc; /* Primary becomes text color in header */
+            --accent: #38bdf8;
+            --bg: #0f172a; --surface: #1e293b;
+            --text: #f1f5f9; --text-muted: #94a3b8;
+            --border: #334155;
+        }
         
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: var(--font-ui); }
-        body { background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        body { background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; transition: background 0.3s; }
 
-        .container { max-width: 480px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; height: 100%; background: #fff; box-shadow: 0 0 20px rgba(0,0,0,0.05); }
+        .container { max-width: 480px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; height: 100%; background: var(--bg); box-shadow: 0 0 20px rgba(0,0,0,0.05); }
 
         /* HEADER */
-        .header { background: var(--primary); padding: 25px 20px; color: white; flex-shrink: 0; border-bottom-left-radius: 24px; border-bottom-right-radius: 24px; box-shadow: 0 10px 30px -10px rgba(0, 31, 91, 0.4); z-index: 10; display: flex; justify-content: space-between; align-items: flex-start; }
-        .h-info { flex: 1; }
-        .h-brand { font-size: 0.65rem; letter-spacing: 2px; opacity: 0.7; text-transform: uppercase; margin-bottom: 4px; font-weight: 700; font-family: var(--font-num); cursor: pointer; }
-        .h-title { font-size: 1.6rem; font-weight: 800; font-family: var(--font-num); letter-spacing: -0.5px; line-height: 1.1; }
-        .h-sub { opacity: 0.9; font-size: 0.85rem; color: #bae6fd; font-weight: 500; margin-top: 2px; }
-        .h-actions { display: flex; gap: 10px; align-items: center; }
-        .h-btn { width: 42px; height: 42px; border-radius: 12px; border: none; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.4rem; cursor: pointer; transition: 0.2s; text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .btn-wa { background: var(--wa-green); animation: pulse 2s infinite; }
-        .btn-restore { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); display: none; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(37, 211, 102, 0); } 100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); } }
+        .header { background: #001F5B; padding: 25px 20px; flex-shrink: 0; border-bottom-left-radius: 24px; border-bottom-right-radius: 24px; box-shadow: 0 10px 30px -10px rgba(0,31,91,0.3); z-index: 10; display: flex; justify-content: space-between; align-items: flex-start; color: white; transition: background 0.3s; }
+        [data-theme="dark"] .header { background: #1e293b; box-shadow: none; border-bottom: 1px solid var(--border); }
 
+        .h-info { flex: 1; padding-right: 15px; }
+        .h-brand { font-size: 0.65rem; letter-spacing: 2px; opacity: 0.8; text-transform: uppercase; margin-bottom: 4px; font-weight: 700; font-family: var(--font-num); color: var(--accent); }
+        .h-sub-brand { font-size:0.5rem; letter-spacing:1px; opacity:0.8; margin-bottom:10px; font-weight:600; text-transform:uppercase; color:#bae6fd; }
+        [data-theme="dark"] .h-sub-brand { color: #94a3b8; }
+
+        .h-title { font-size: 1.6rem; font-weight: 800; font-family: var(--font-num); letter-spacing: -0.5px; line-height: 1.1; color: white; }
+        .h-sub { opacity: 0.8; font-size: 0.85rem; color: #bae6fd; font-weight: 500; margin-top: 2px; }
+        [data-theme="dark"] .h-sub { color: #94a3b8; }
+        
+        .h-expire { display: inline-flex; align-items: center; gap: 6px; font-size: 0.75rem; font-weight: 700; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 8px; margin-top: 8px; color: #e2e8f0; backdrop-filter: blur(5px); }
+        .h-expire.warning { color: #fcd34d; background: rgba(245, 158, 11, 0.2); }
+        .h-expire.urgent { color: #fca5a5; background: rgba(239, 68, 68, 0.2); }
+        
+        .h-actions { display: flex; gap: 8px; align-items: center; }
+        .h-btn { width: 40px; height: 40px; border-radius: 12px; border: none; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; cursor: pointer; transition: 0.2s; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); text-decoration: none; }
+        .h-btn:hover { background: rgba(255,255,255,0.25); }
+        .btn-wa { background: rgba(37, 211, 102, 0.2); border-color: rgba(37, 211, 102, 0.4); color: #4ade80; }
+        .btn-restore { display: none; }
+        
         /* CONTENT */
         .content { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; scroll-behavior: smooth; }
         .tab-pane { display: none; animation: fade 0.3s; }
@@ -48,103 +68,133 @@
         .section-title {
             color: var(--primary); font-family: var(--font-num); 
             font-weight: 800; text-transform: uppercase; letter-spacing: 1px; 
-            font-size: 0.85rem; margin: 20px 0 10px 5px; padding-left: 10px;
+            font-size: 0.85rem; margin: 25px 0 15px 5px; padding-left: 10px;
             border-left: 4px solid var(--accent);
         }
+        [data-theme="dark"] .section-title { color: var(--text); }
 
         .biset-wrap { border: 2px dashed var(--c-bi); background: #f0f9ff; margin-bottom: 20px; border-radius: 16px; padding-top: 30px; position: relative; overflow: hidden; }
+        [data-theme="dark"] .biset-wrap { background: rgba(0, 168, 232, 0.05); }
         .biset-lbl { position: absolute; top: 0; left: 0; background: var(--c-bi); color: white; font-size: 0.65rem; font-weight: 800; padding: 4px 12px; border-bottom-right-radius: 12px; }
 
         .triset-wrap { border: 2px dashed var(--c-tri); background: #fdf4ff; margin-bottom: 20px; border-radius: 16px; padding-top: 30px; position: relative; overflow: hidden; }
+        [data-theme="dark"] .triset-wrap { background: rgba(99, 102, 241, 0.05); }
         .triset-lbl { position: absolute; top: 0; left: 0; background: var(--c-tri); color: white; font-size: 0.65rem; font-weight: 800; padding: 4px 12px; border-bottom-right-radius: 12px; }
 
         /* --- EXERCÍCIOS --- */
         .row { 
             padding: 15px; margin-bottom: 12px; 
-            border: 1px solid #e2e8f0; border-radius: 14px; 
-            background: white; position: relative; border-left: 4px solid #cbd5e1; 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02); transition: 0.2s; 
+            border: 1px solid var(--border); border-radius: 14px; 
+            background: var(--surface); position: relative; border-left: 4px solid #cbd5e1; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02); transition: 0.2s; 
         }
-        .biset-wrap .row, .triset-wrap .row { margin-bottom: 0; border: none; border-radius: 0; box-shadow: none; border-left: 4px solid transparent; border-bottom: 1px dashed #cbd5e1; background: transparent; }
+        .biset-wrap .row, .triset-wrap .row { margin-bottom: 0; border: none; border-radius: 0; box-shadow: none; border-left: 4px solid transparent; border-bottom: 1px dashed var(--border); background: transparent; }
         .biset-wrap .row:last-child, .triset-wrap .row:last-child { border-bottom: none; }
 
-        .row.done { opacity: 0.6; filter: grayscale(90%); background: #f8fafc !important; border-left-color: #cbd5e1 !important; }
+        .row.done { opacity: 0.5; filter: grayscale(100%); background: var(--bg) !important; border-left-color: var(--border) !important; }
+        
+        /* Method Colors (Light Mode) */
         .row.m-Drop { border-left-color: var(--c-drop); background: #fef2f2; }
         .row.m-RNP { border-left-color: var(--c-rnp); background: #fff7ed; }
         .row.m-Iso { border-left-color: var(--c-iso); background: #ecfeff; }
         .row.m-Pyr { border-left-color: var(--c-pyr); background: #faf5ff; }
-        .row.m-FST7 { border-left-color: var(--c-fst); background: #fdf2f8; }
-        .row.m-Normal { border-left-color: #cbd5e1; background: white; }
+        .row.m-Normal { border-left-color: #cbd5e1; background: var(--surface); }
+
+        /* Method Colors (Dark Mode Overrides) */
+        [data-theme="dark"] .row.m-Drop { background: rgba(239, 68, 68, 0.1); }
+        [data-theme="dark"] .row.m-RNP { background: rgba(245, 158, 11, 0.1); }
+        [data-theme="dark"] .row.m-Iso { background: rgba(6, 182, 212, 0.1); }
+        [data-theme="dark"] .row.m-Pyr { background: rgba(139, 92, 246, 0.1); }
+        [data-theme="dark"] .row.m-Normal { background: var(--surface); }
 
         .m-tag { font-size: 0.55rem; font-weight: 800; color: white; padding: 3px 8px; border-radius: 6px; display: inline-block; margin-bottom: 6px; text-transform: uppercase; }
         .ex-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
         
-        .ex-title { font-size: 1rem; font-weight: 700; color: #1e293b; line-height: 1.3; font-family: var(--font-num); text-decoration: none; flex: 1; display: inline-flex; align-items: center; gap: 8px; }
+        .ex-title { font-size: 1rem; font-weight: 700; color: var(--text); line-height: 1.3; font-family: var(--font-num); text-decoration: none; flex: 1; display: inline-flex; align-items: center; gap: 8px; }
         .ex-title.has-video { color: var(--accent); }
         .yt-icon { color: #ef4444; font-size: 1.2rem; transition: transform 0.2s; filter: drop-shadow(0 2px 4px rgba(239, 68, 68, 0.2)); }
         .ex-title:active { opacity: 0.8; }
 
         .pills { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; align-items: center; }
         .pill { background: rgba(255,255,255,0.7); padding: 5px 10px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; color: #475569; border: 1px solid #e2e8f0; font-family: var(--font-num); }
+        [data-theme="dark"] .pill { background: rgba(0,0,0,0.2); border-color: var(--border); color: var(--text-muted); }
+        
         .pill.timer { margin-left: auto; border-color: var(--accent); color: var(--accent); background: rgba(0,168,232,0.05); cursor: pointer; display: flex; align-items: center; gap: 6px; }
 
         .obs { font-size: 0.8rem; color: #b45309; background: #fffbeb; padding: 10px; border-radius: 8px; margin-bottom: 12px; border-left: 3px solid #f59e0b; line-height: 1.4; word-wrap: break-word; }
+        [data-theme="dark"] .obs { background: rgba(245, 158, 11, 0.1); color: #fbbf24; }
 
         .action-row { display: flex; gap: 10px; height: 42px; }
-        .load-inp { width: 60px; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0 5px; font-family: var(--font-num); font-weight: 700; color: var(--primary); text-align: center; font-size: 1rem; transition: 0.2s; background: white; }
-        .load-inp:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(0,168,232,0.1); }
+        .load-inp { width: 60px; border: 1px solid var(--border); border-radius: 10px; padding: 0 5px; font-family: var(--font-num); font-weight: 700; color: var(--text); text-align: center; font-size: 1rem; transition: 0.2s; background: var(--surface); }
+        .load-inp:focus { border-color: var(--accent); outline: none; }
         .check-btn { flex: 1; border-radius: 10px; border: none; background: #e2e8f0; color: #64748b; font-weight: 800; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+        [data-theme="dark"] .check-btn { background: #334155; color: #94a3b8; }
         .row.done .check-btn { background: var(--success); color: white; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); }
 
         /* Logic & Method Cards */
-        .logic-card { background: white; border-radius: 16px; padding: 20px; border: 1px solid #e2e8f0; margin-bottom: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+        .logic-card { background: var(--surface); border-radius: 16px; padding: 20px; border: 1px solid var(--border); margin-bottom: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
         .logic-title { font-weight: 800; color: var(--primary); margin-bottom: 15px; font-family: var(--font-num); font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
+        [data-theme="dark"] .logic-title { color: var(--accent); }
         .logic-item { display: flex; gap: 12px; margin-bottom: 12px; align-items: flex-start; }
         .logic-icon { min-width: 24px; height: 24px; background: #dbeafe; color: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; margin-top: 2px; }
-        .logic-text { color: #475569; font-size: 0.9rem; line-height: 1.5; font-weight: 500; }
+        [data-theme="dark"] .logic-icon { background: rgba(56, 189, 248, 0.2); }
+        .logic-text { color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; font-weight: 500; }
 
         .method-grid { display: flex; flex-direction: column; gap: 12px; }
-        .method-card { padding: 18px; border-radius: 14px; background: white; border: 1px solid rgba(0,0,0,0.05); position: relative; overflow: hidden; display: flex; gap: 15px; align-items: flex-start; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .method-card { padding: 18px; border-radius: 14px; background: var(--surface); border: 1px solid rgba(0,0,0,0.05); position: relative; overflow: hidden; display: flex; gap: 15px; align-items: flex-start; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        [data-theme="dark"] .method-card { border-color: var(--border); }
         .mc-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: white; flex-shrink: 0; margin-top: 2px; }
         .mc-content { flex: 1; }
         .mc-title { font-family: var(--font-num); font-weight: 800; font-size: 1rem; margin-bottom: 4px; color: var(--text); }
-        .mc-text { font-size: 0.85rem; color: #475569; line-height: 1.5; }
+        .mc-text { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
         
         .mc-danger { background: #fef2f2; border: 1px solid #fee2e2; } .mc-danger .mc-icon { background: var(--danger); }
         .mc-blue { background: #eff6ff; border: 1px solid #dbeafe; } .mc-blue .mc-icon { background: var(--accent); }
-        .mc-purple { background: #faf5ff; border: 1px solid #f3e8ff; } .mc-purple .mc-icon { background: #8b5cf6; }
-        .mc-cyan { background: #ecfeff; border: 1px solid #cffafe; } .mc-cyan .mc-icon { background: #06b6d4; }
-        .mc-orange { background: #fff7ed; border: 1px solid #ffedd5; } .mc-orange .mc-icon { background: #f97316; }
-        .mc-green { background: #f0fdf4; border: 1px solid #dcfce7; } .mc-green .mc-icon { background: #10b981; }
+        /* Dark mode method overrides handled via general dark classes or specific if needed */
+        [data-theme="dark"] .mc-danger { background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); }
+        [data-theme="dark"] .mc-blue { background: rgba(56, 189, 248, 0.1); border-color: rgba(56, 189, 248, 0.2); }
 
-        /* Feedback (Prova Social) */
-        .feedback-box { background: white; border: 1px solid #e2e8f0; border-radius: 24px; padding: 30px 20px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.05); }
+        /* Feedback */
+        .feedback-box { background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 30px 20px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.05); }
         .fb-title { font-family: var(--font-num); font-weight: 800; font-size: 1.4rem; color: var(--primary); margin-bottom: 5px; }
-        .fb-sub { color: #64748b; font-size: 0.9rem; margin-bottom: 25px; }
+        [data-theme="dark"] .fb-title { color: white; }
+        .fb-sub { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 25px; }
         .stars { display: flex; justify-content: center; gap: 12px; margin-bottom: 25px; }
-        .star { font-size: 2.2rem; color: #e2e8f0; cursor: pointer; transition: 0.2s; }
+        .star { font-size: 2.2rem; color: var(--border); cursor: pointer; transition: 0.2s; }
         .star.filled { color: #f59e0b; transform: scale(1.1); filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.3)); }
-        .fb-area { width: 100%; border: 2px solid #f1f5f9; border-radius: 16px; padding: 15px; font-family: var(--font-ui); margin-bottom: 15px; resize: none; font-size: 0.95rem; background: #f8fafc; transition: 0.3s; }
-        .fb-area:focus { border-color: var(--accent); background: white; outline: none; }
-        .btn-send-fb { background: var(--wa-green); color: white; border: none; padding: 18px; width: 100%; border-radius: 14px; font-weight: 800; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 8px 25px rgba(37, 211, 102, 0.3); transition: 0.2s; }
-        .btn-send-fb:active { transform: scale(0.98); }
+        .fb-area { width: 100%; border: 2px solid var(--border); border-radius: 16px; padding: 15px; font-family: var(--font-ui); margin-bottom: 15px; resize: none; font-size: 0.95rem; background: var(--bg); transition: 0.3s; color: var(--text); }
+        .fb-area:focus { border-color: var(--accent); background: var(--surface); outline: none; }
+
+        /* PSE SLIDER */
+        .pse-container { margin: 20px 0; text-align: left; background: var(--bg); padding: 15px; border-radius: 16px; border: 1px solid var(--border); }
+        .pse-label { font-size: 0.8rem; font-weight: 800; color: var(--text-muted); margin-bottom: 10px; display: flex; justify-content: space-between; }
+        .pse-val { color: var(--accent); font-size: 1.2rem; }
+        .pse-range { -webkit-appearance: none; width: 100%; height: 8px; background: var(--border); border-radius: 5px; outline: none; }
+        .pse-range::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 24px; height: 24px; border-radius: 50%; background: var(--accent); cursor: pointer; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
         /* NAV */
-        .nav { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 380px; height: 65px; background: white; border-radius: 35px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); display: flex; justify-content: space-around; align-items: center; z-index: 100; border: 1px solid rgba(0,0,0,0.05); padding: 0 10px; }
+        .nav { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 380px; height: 65px; background: var(--surface); border-radius: 35px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); display: flex; justify-content: space-around; align-items: center; z-index: 90; border: 1px solid rgba(0,0,0,0.05); padding: 0 10px; }
+        [data-theme="dark"] .nav { border: 1px solid var(--border); box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
         .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #cbd5e1; font-size: 0.65rem; font-weight: 700; cursor: pointer; transition: 0.2s; position: relative; }
         .nav-btn.active { color: var(--primary); transform: translateY(-3px); }
+        [data-theme="dark"] .nav-btn.active { color: var(--accent); }
         .nav-btn.active::after { content: ''; width: 5px; height: 5px; background: var(--accent); border-radius: 50%; position: absolute; bottom: -6px; }
         .nav-btn i { font-size: 1.3rem; }
 
         /* TIMER */
         .timer-ov { position: fixed; inset: 0; background: rgba(0,31,91,0.95); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; color: white; backdrop-filter: blur(5px); }
+        [data-theme="dark"] .timer-ov { background: rgba(15, 23, 42, 0.95); }
         .t-disp { font-size: 5rem; font-weight: 900; font-family: var(--font-num); font-variant-numeric: tabular-nums; margin: 20px 0; }
         .t-row { display: flex; gap: 20px; }
         .t-btn { width: 70px; height: 70px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; font-size: 1.1rem; cursor: pointer; font-weight: 700; transition: 0.2s; }
         .t-btn:active { transform: scale(0.9); background: white; color: var(--primary); }
 
+        /* BLOCKED OVERLAY */
+        #blocked-ov { position: fixed; inset: 0; background: #0f172a; z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
+        .btn-send-fb { background: var(--wa-green); color: white; border: none; padding: 18px; width: 100%; border-radius: 14px; font-weight: 800; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 8px 25px rgba(37, 211, 102, 0.3); transition: 0.2s; }
+        
         /* Loading */
-        .loading-state { text-align:center; padding:50px 20px; color:#94a3b8; }
+        .loading-state { text-align:center; padding:50px 20px; color:var(--text-muted); }
         .spin { animation: spin 1s linear infinite; font-size: 2rem; margin-bottom: 15px; color: var(--accent); }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
@@ -153,19 +203,36 @@
 </head>
 <body>
 
+<!-- BLOCKED SCREEN -->
+<div id="blocked-ov">
+    <i class="fa-solid fa-lock" style="font-size: 3rem; color: #ef4444; margin-bottom: 20px;"></i>
+    <h2 style="color: white; font-size: 1.5rem; font-weight: 800; margin-bottom: 10px; font-family: var(--font-num);">Treino Expirado</h2>
+    <p style="color: #94a3b8; margin-bottom: 30px; font-size: 0.9rem;">O período do seu acompanhamento encerrou. Renove para continuar evoluindo.</p>
+    <a href="https://wa.me/5541997222664?text=Oi%20Benai,%20quero%20renovar%20a%20consultoria!" class="btn-send-fb" style="text-decoration:none;">
+        <i class="fa-brands fa-whatsapp"></i> RENOVAR PLANO
+    </a>
+</div>
+
 <div class="container">
     <div class="header">
         <div class="h-info">
-            <div class="h-brand" id="secretTrigger" onclick="toggleAdmin()">BENAI APP</div>
+            <div class="h-brand" id="secretTrigger" onclick="toggleAdmin()">BENAI BERNARDO</div>
+            <div class="h-sub-brand">CONSULTORIA DE TREINAMENTO</div>
             <div class="h-title" id="sName">Olá!</div>
             <div class="h-sub" id="sFocus">Carregando...</div>
+            <div id="h-expire" class="h-expire" style="display:none;"></div>
         </div>
         <div class="h-actions">
+            <a href="https://wa.me/5541997222664" target="_blank" class="h-btn btn-wa" title="Falar com Benai">
+                <i class="fa-brands fa-whatsapp"></i>
+            </a>
+            <button class="h-btn" onclick="toggleTheme()" title="Modo Escuro/Claro">
+                <i class="fa-solid fa-moon" id="theme-icon"></i>
+            </button>
             <button id="adminBtn" class="h-btn btn-restore" onclick="adminTriggerRestore()" title="Ver Relatório do Aluno">
                 <i class="fa-solid fa-cloud-arrow-up"></i>
             </button>
             <input type="file" id="adminRestoreFile" hidden onchange="adminLoadFile(this)">
-            <a href="https://wa.me/5541997222664" target="_blank" class="h-btn btn-wa" title="Falar com Benai"><i class="fa-brands fa-whatsapp"></i></a>
         </div>
     </div>
 
@@ -184,59 +251,19 @@
             <div class="logic-title"><i class="fa-solid fa-bullseye"></i> Lógica do Treino</div>
             <div id="logicTopics"></div>
         </div>
-        <div style="font-weight:900; color:#9ca3af; font-size:0.75rem; margin: 30px 0 15px; letter-spacing:1px; text-align:center; text-transform:uppercase;">Pilares do Treinamento</div>
+        <div style="font-weight:900; color:var(--text-muted); font-size:0.75rem; margin: 30px 0 15px; letter-spacing:1px; text-align:center; text-transform:uppercase;">Pilares do Treinamento</div>
         
-        <div class="method-grid">
-            <div class="method-card mc-danger">
-                <div class="mc-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                <div class="mc-content">
-                    <div class="mc-title">1. Dor Articular = PARE!</div>
-                    <div class="mc-text">Aprenda a ouvir seu corpo. Queimação muscular é sinal de esforço, mas pontadas ou <b>dor na articulação não são normais</b>. Ajuste a carga ou a postura imediatamente.</div>
-                </div>
-            </div>
-            <div class="method-card mc-blue">
-                <div class="mc-icon"><i class="fa-solid fa-wind"></i></div>
-                <div class="mc-content">
-                    <div class="mc-title">2. Respiração Consciente</div>
-                    <div class="mc-text">Não prenda o ar! <b>Inspire</b> profundamente na fase negativa (descida) e <b>solte o ar (expire)</b> ao fazer a força. Isso estabiliza sua pressão e aumenta a força.</div>
-                </div>
-            </div>
-            <div class="method-card mc-purple">
-                <div class="mc-icon"><i class="fa-solid fa-shield-halved"></i></div>
-                <div class="mc-content">
-                    <div class="mc-title">3. Core Ativo (Bracing)</div>
-                    <div class="mc-text">Mantenha o abdômen <b>contraído</b> o tempo todo, como se fosse levar um soco. Isso protege sua coluna e transfere mais força para os membros.</div>
-                </div>
-            </div>
-            <div class="method-card mc-cyan">
-                <div class="mc-icon"><i class="fa-solid fa-stopwatch"></i></div>
-                <div class="mc-content">
-                    <div class="mc-title">4. Cadência 3-0-1</div>
-                    <div class="mc-text">Domine o peso, não deixe ele te dominar. Desça controlando em <b>3 segundos</b>, sem pausa embaixo, e suba de forma explosiva (1s).</div>
-                </div>
-            </div>
-            <div class="method-card mc-orange">
-                <div class="mc-icon"><i class="fa-solid fa-hourglass-half"></i></div>
-                <div class="mc-content">
-                    <div class="mc-title">5. Descanso Estratégico</div>
-                    <div class="mc-text">Use o <b>timer</b>. Descansar de menos atrapalha a recuperação da força; descansar demais esfria o corpo. Respeite o tempo estipulado.</div>
-                </div>
-            </div>
-            <div class="method-card mc-green">
-                <div class="mc-icon"><i class="fa-solid fa-gauge-high"></i></div>
-                <div class="mc-content">
-                    <div class="mc-title">6. Intensidade Real</div>
-                    <div class="mc-text">As últimas repetições devem ser difíceis. Se você terminou a série sentindo que faria mais 5 tranquilamente, <b>aumente a carga</b>. Busque a falha técnica.</div>
-                </div>
-            </div>
+        <div id="pillarsContainer" class="method-grid">
+            <!-- PILLARS RENDERED VIA JS -->
         </div>
     </div>
 
     <div id="tab-3" class="tab-pane content">
         <div class="feedback-box">
-            <i class="fa-solid fa-quote-left" style="font-size:2rem; color:#e2e8f0; margin-bottom:15px;"></i>
+            <i class="fa-solid fa-quote-left" style="font-size:2rem; color:var(--border); margin-bottom:15px;"></i>
             <div class="fb-title">Avalie a Consultoria</div>
             <div class="fb-sub">Sua evolução e satisfação são meu foco.</div>
+            
             <div class="stars">
                 <i class="fa-solid fa-star star" onclick="rate(1)"></i>
                 <i class="fa-solid fa-star star" onclick="rate(2)"></i>
@@ -244,9 +271,20 @@
                 <i class="fa-solid fa-star star" onclick="rate(4)"></i>
                 <i class="fa-solid fa-star star" onclick="rate(5)"></i>
             </div>
+
+            <div class="pse-container">
+                <div class="pse-label">
+                    <span>NÍVEL DE ESFORÇO (PSE)</span>
+                    <span class="pse-val" id="pseVal">8</span>
+                </div>
+                <input type="range" min="1" max="10" value="8" class="pse-range" id="pseInput" oninput="document.getElementById('pseVal').innerText=this.value">
+                <div style="display:flex; justify-content:space-between; font-size:0.65rem; color:var(--text-muted); margin-top:5px; font-weight:700;">
+                    <span>LEVE</span><span>MODERADO</span><span>EXAUSTÃO</span>
+                </div>
+            </div>
+
             <textarea id="fbComment" class="fb-area" rows="4" placeholder="Como está se sentindo com o acompanhamento? O que melhorou na sua rotina/corpo?"></textarea>
-            <button class="btn-send-fb" onclick="generateReportFile()"><i class="fa-brands fa-whatsapp"></i> ENVIAR FEEDBACK</button>
-            <p style="font-size:0.7rem; color:#94a3b8; margin-top:15px; line-height:1.4;">Ao clicar, envie o arquivo gerado para o WhatsApp do Benai.</p>
+            <button class="btn-send-fb" onclick="sendWhatsAppFeedback()"><i class="fa-brands fa-whatsapp"></i> ENVIAR NO WHATSAPP</button>
         </div>
     </div>
 </div>
@@ -265,8 +303,53 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', () => {
+        initTheme();
+        init();
+    });
+    
     let tmr, sec=0, currentData=null, rating=5, adminClicks=0;
+
+    const PILLARS = {
+        'Musculação': [
+            {t:"1. Dor Boa vs. Dor Ruim", d:"Queimação muscular é sinal verde (evolução). Pontada aguda na articulação é SINAL VERMELHO. Pare e ajuste.", i:"triangle-exclamation", c:"danger"},
+            {t:"2. Não vire um Baiacu", d:"Não prenda o ar ficando roxo! Solte o ar (assopre a vela) quando fizer a força. Oxigênio é energia.", i:"wind", c:"blue"},
+            {t:"3. Postura de Super-herói", d:"Estufe o peito e trave o abdômen (como se fosse levar um soco). Essa armadura protege sua coluna.", i:"shield-halved", c:"purple"},
+            {t:"4. Quem manda é você", d:"Não deixe o peso despencar. Desça em câmera lenta (3 seg) e suba com explosão. Domine a carga.", i:"stopwatch", c:"cyan"},
+            {t:"5. O Descanso é Sagrado", d:"Respeite o timer. Menos descanso atrapalha a força, mais descanso esfria o corpo. Foco total.", i:"hourglass-half", c:"orange"},
+            {t:"6. Intensidade de Verdade", d:"Se terminou a série mexendo no celular, estava leve. O treino bom é aquele que a gente faz careta no final.", i:"gauge-high", c:"green"}
+        ],
+        'Calistenia': [
+            {t:"1. Dor vs. Desconforto", d:"O corpo vai tremer, é normal. Mas fisgada no ombro ou cotovelo não é. Suas articulações são ouro, cuide delas.", i:"triangle-exclamation", c:"danger"},
+            {t:"2. Corpo de Pedra (Tensão)", d:"Contraia tudo! Bumbum duro, ponta de pé esticada, barriga travada. Quanto mais rígido, mais leve você fica.", i:"link", c:"purple"},
+            {t:"3. Amplitude é Rei", d:"Estique o braço todo! Encoste o peito no chão! Meia repetição dá meio resultado. Busque a perfeição.", i:"maximize", c:"cyan"},
+            {t:"4. Ombros Longe da Orelha", d:"Não deixe os ombros subirem. Empurre o chão com vontade e mantenha as costas firmes.", i:"bone", c:"orange"},
+            {t:"5. Controle a Negativa", d:"A gravidade não pode te vencer. Segure a volta do movimento. É isso que te prepara para movimentos avançados.", i:"arrow-down", c:"green"},
+            {t:"6. Qualidade > Quantidade", d:"5 barras perfeitas valem mais que 20 barras 'minhoquinha'. Se a forma quebrou, a série acabou.", i:"award", c:"blue"}
+        ]
+    };
+
+    function initTheme() {
+        const theme = localStorage.getItem('theme');
+        if(theme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            document.getElementById('theme-icon').className = 'fa-solid fa-sun';
+        }
+    }
+
+    function toggleTheme() {
+        const root = document.documentElement;
+        const icon = document.getElementById('theme-icon');
+        if(root.hasAttribute('data-theme')) {
+            root.removeAttribute('data-theme');
+            localStorage.setItem('theme', 'light');
+            icon.className = 'fa-solid fa-moon';
+        } else {
+            root.setAttribute('data-theme', 'dark');
+            localStorage.setItem('theme', 'dark');
+            icon.className = 'fa-solid fa-sun';
+        }
+    }
 
     async function init() {
         const p = new URLSearchParams(window.location.search);
@@ -275,7 +358,6 @@
 
         if(id) {
             try {
-                // Lógica Nova: GitHub Gist
                 const req = await fetch(`https://api.github.com/gists/${id}`);
                 if(!req.ok) throw new Error("Treino não encontrado");
                 
@@ -283,23 +365,64 @@
                 const content = json.files["treino.json"].content;
                 currentData = JSON.parse(content);
                 
-                render(currentData);
-                restoreSession(); 
-                rate(5);
+                localStorage.setItem('cached_workout', JSON.stringify(currentData));
+
+                processData(currentData);
             } catch(e) {
-                document.getElementById('wList').innerHTML = `<div style="text-align:center; padding:40px; color:#ef4444;"><i class="fa-solid fa-triangle-exclamation" style="font-size:2rem;margin-bottom:10px;"></i><br>Erro ao baixar treino.<br><small>Verifique sua conexão.</small></div>`;
+                const cached = localStorage.getItem('cached_workout');
+                if(cached) {
+                    currentData = JSON.parse(cached);
+                    processData(currentData, true);
+                } else {
+                    document.getElementById('wList').innerHTML = `<div style="text-align:center; padding:40px; color:#ef4444;"><i class="fa-solid fa-triangle-exclamation" style="font-size:2rem;margin-bottom:10px;"></i><br>Erro ao baixar treino.<br><small>Sem internet e sem cache.</small></div>`;
+                }
             }
         } else if (dataOld) {
-            // Lógica Antiga: Link Gigante (Backup)
             try {
                 const json = LZString.decompressFromEncodedURIComponent(dataOld);
                 currentData = JSON.parse(json);
-                render(currentData);
-                restoreSession();
-                rate(5);
+                processData(currentData);
             } catch(e) { alert("Link antigo corrompido."); }
         } else {
-            document.getElementById('wList').innerHTML = '<div style="text-align:center; padding:40px; color:#9ca3af;">Link incompleto.</div>';
+            const cached = localStorage.getItem('cached_workout');
+            if(cached) {
+                currentData = JSON.parse(cached);
+                processData(currentData);
+            } else {
+                document.getElementById('wList').innerHTML = '<div style="text-align:center; padding:40px; color:#9ca3af;">Nenhum treino encontrado.</div>';
+            }
+        }
+    }
+
+    function processData(data, isOffline = false) {
+        if(data.expiryDate) {
+            const now = new Date();
+            const exp = new Date(data.expiryDate);
+            const diffTime = exp - now;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if(diffTime < 0) {
+                document.getElementById('blocked-ov').style.display = 'flex';
+                return;
+            }
+
+            const expEl = document.getElementById('h-expire');
+            expEl.style.display = 'inline-flex';
+            expEl.innerHTML = `<i class="fa-solid fa-calendar-days"></i> Vence: ${exp.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'})} (${diffDays} dias)`;
+            
+            if(diffDays <= 7) expEl.classList.add('urgent');
+            else if(diffDays <= 15) expEl.classList.add('warning');
+        }
+
+        render(data);
+        restoreSession(); 
+        rate(5);
+        
+        if(isOffline) {
+            const list = document.getElementById('wList');
+            const warning = document.createElement('div');
+            warning.innerHTML = '<div style="background:#fefce8; color:#854d0e; padding:10px; text-align:center; font-size:12px; font-weight:bold; border-bottom:1px solid #fef9c3;">Modo Offline (Última versão salva)</div>';
+            list.prepend(warning);
         }
     }
 
@@ -313,8 +436,25 @@
         const topics = logicText.split('\n').filter(t => t.trim() !== '');
         topics.forEach(topic => { logicContainer.innerHTML += `<div class="logic-item"><div class="logic-icon"><i class="fa-solid fa-check"></i></div><div class="logic-text">${topic}</div></div>`; });
 
+        const methodology = data.methodology || 'Musculação';
+        const pillars = PILLARS[methodology] || PILLARS['Musculação'];
+        const pCont = document.getElementById('pillarsContainer');
+        pCont.innerHTML = '';
+        pillars.forEach(p => {
+            pCont.innerHTML += `
+            <div class="method-card mc-${p.c}">
+                <div class="mc-icon"><i class="fa-solid fa-${p.i}"></i></div>
+                <div class="mc-content">
+                    <div class="mc-title">${p.t}</div>
+                    <div class="mc-text">${p.d}</div>
+                </div>
+            </div>`;
+        });
+
         const list = document.getElementById('wList');
+        const warning = list.querySelector('div[style*="background:#fefce8"]');
         list.innerHTML = ''; 
+        if(warning) list.appendChild(warning);
         
         if(data.blocks) {
             data.blocks.forEach((b, bIdx) => {
@@ -403,25 +543,18 @@
     
     function rate(n){rating=n;document.querySelectorAll('.star').forEach((s,i)=>{if(i<n)s.classList.add('filled');else s.classList.remove('filled');});}
     
-    async function generateReportFile(){
+    function sendWhatsAppFeedback() {
         if(!currentData) return alert("Erro: Treino não carregado.");
-        const c=document.getElementById('fbComment').value;
-        const n=currentData.name||"Aluno";
-        const w={};
-        document.querySelectorAll('.row').forEach(r=>{
-            const u=r.id.replace('r-',''),d=r.classList.contains('done'),l=document.getElementById('load-'+u).value,nm=r.getAttribute('data-name');
-            if(d||l)w[u]={name:nm,done:d,load:l};
-        });
-        const rep={student:n,date:new Date().toISOString(),feedback:{rating:rating,comment:c},data:w};
-        const b=new Blob([JSON.stringify(rep,null,2)],{type:'application/json'});
-        const f=new File([b],`Feedback_${n.replace(/\W/g,'_')}_${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.json`,{type:'application/json'});
+        const c = document.getElementById('fbComment').value;
+        const pse = document.getElementById('pseInput').value;
+        const n = currentData.name || "Aluno";
         
-        if(navigator.canShare&&navigator.canShare({files:[f]})){
-            try{await navigator.share({files:[f],title:'Feedback Consultoria',text:`Feedback de ${n}`});}catch(e){downloadFallback(b,f.name);}
-        }else{downloadFallback(b,f.name);}
+        const msg = `*Feedback Consultoria Benai*\n\n👤 Aluno: ${n}\n⭐ Nota: ${rating}/5\n🔥 Esforço (PSE): ${pse}/10\n💬 Comentário: ${c || 'Sem comentário.'}\n\n_Enviado via Benai App_`;
+        
+        // WhatsApp URL
+        const url = `https://wa.me/5541997222664?text=${encodeURIComponent(msg)}`;
+        window.open(url, '_blank');
     }
-    
-    function downloadFallback(b,n){const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=n;a.click();alert("Arquivo gerado! Envie para o Benai no WhatsApp.");}
     
     function adminTriggerRestore(){document.getElementById('adminRestoreFile').click();}
     function adminLoadFile(i){const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{try{const j=JSON.parse(e.target.result);if(j.data){Object.keys(j.data).forEach(u=>{const it=j.data[u],r=document.getElementById('r-'+u);if(r){if(it.done)r.classList.add('done');if(it.load)document.getElementById('load-'+u).value=it.load;}});if(j.feedback)alert(`📝 NOTA: ${j.feedback.rating}/5\n"${j.feedback.comment}"`);else alert("Dados restaurados!");}}catch(x){alert("Erro ao ler arquivo.");}};r.readAsText(f);}
