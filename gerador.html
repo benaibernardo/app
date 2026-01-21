@@ -82,8 +82,11 @@
 
         /* BLOCKS IN PREVIEW */
         .block-container { position: relative; margin-bottom: 10px; transition: 0.3s; }
-        .block-head { display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center; }
+        .block-head { margin-bottom: 5px; }
+        .block-head-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        
         .w-title { background: transparent; border: none; font-weight: 800; font-family: var(--font-num); color: var(--primary); font-size: 0.9rem; text-transform: uppercase; width: 100%; border-left: 4px solid var(--accent); padding-left: 10px; }
+        .w-details { width: 100%; background: transparent; border: none; font-size: 0.75rem; color: #64748b; padding-left: 14px; font-style: italic; }
         
         /* Drawer/Collapse Logic */
         .block-body-content { transition: max-height 0.3s ease-in-out, opacity 0.3s; overflow: hidden; max-height: 2000px; opacity: 1; }
@@ -93,10 +96,12 @@
         .biset-cont { border: 2px dashed var(--c-bi); background: #f0f9ff; border-radius: 16px; padding: 30px 10px 10px 10px; position: relative; }
         .biset-cont::before { content: 'BI-SET'; position: absolute; top: 0; left: 0; background: var(--c-bi); color: white; font-size: 0.65rem; font-weight: 800; padding: 4px 12px; border-bottom-right-radius: 12px; }
         .biset-cont .w-title { display: none; }
+        .biset-cont .w-details { display: none; }
         
         .triset-cont { border: 2px dashed var(--c-tri); background: #fdf4ff; border-radius: 16px; padding: 30px 10px 10px 10px; position: relative; }
         .triset-cont::before { content: 'TRI-SET'; position: absolute; top: 0; left: 0; background: var(--c-tri); color: white; font-size: 0.65rem; font-weight: 800; padding: 4px 12px; border-bottom-right-radius: 12px; }
         .triset-cont .w-title { display: none; }
+        .triset-cont .w-details { display: none; }
 
         .active-block { ring: 2px solid var(--accent); border-radius: 12px; }
 
@@ -377,7 +382,7 @@
             start: today,
             end: nextMonth.toISOString().split('T')[0],
             logic: ["Foco na execução perfeita.", "Respeite o tempo de descanso."],
-            blocks: [{ id: Date.now(), name: "Bloco Principal", type: "Normal", items: [] }],
+            blocks: [{ id: Date.now(), name: "Bloco Principal", details: "", type: "Normal", items: [] }],
             cloudId: null
         };
 
@@ -544,11 +549,14 @@
 
             bDiv.innerHTML = `
                 <div class="block-head">
-                    <input class="w-title" value="${block.name}" onchange="updateBlockName(${bIdx}, this.value)">
-                    <div style="display:flex; gap:5px;">
-                        <i class="fas fa-eye" style="color:var(--accent); cursor:pointer; padding:5px;" onclick="toggleBlock('${block.id}')" title="Minimizar"></i>
-                        <i class="fas fa-trash" style="color:var(--danger); cursor:pointer; padding:5px;" onclick="deleteBlock(${bIdx})"></i>
+                    <div class="block-head-top">
+                        <input class="w-title" value="${block.name}" onchange="updateBlockName(${bIdx}, this.value)">
+                        <div style="display:flex; gap:5px;">
+                            <i class="fas fa-eye" style="color:var(--accent); cursor:pointer; padding:5px;" onclick="toggleBlock('${block.id}')" title="Minimizar"></i>
+                            <i class="fas fa-trash" style="color:var(--danger); cursor:pointer; padding:5px;" onclick="deleteBlock(${bIdx})"></i>
+                        </div>
                     </div>
+                    <input class="w-details" value="${block.details || ''}" placeholder="Detalhes do bloco (opcional)" onchange="updateBlockDetails(${bIdx}, this.value)">
                 </div>
                 <div class="block-body-content">${itemsHTML}</div>
             `;
@@ -621,7 +629,7 @@
         let name = "Bloco " + (currentStudent.blocks.length + 1);
         if(type === 'BiSet') name = "Bi-Set";
         if(type === 'TriSet') name = "Tri-Set";
-        currentStudent.blocks.push({ id: Date.now(), name: name, type: type, items: [] });
+        currentStudent.blocks.push({ id: Date.now(), name: name, details: "", type: type, items: [] });
         saveData();
         renderBlocks();
         setTimeout(() => {
@@ -637,6 +645,8 @@
     }
 
     function updateBlockName(bIdx, val) { currentStudent.blocks[bIdx].name = val; saveData(); }
+    function updateBlockDetails(bIdx, val) { currentStudent.blocks[bIdx].details = val; saveData(); }
+    
     function moveItem(bIdx, iIdx, dir) {
         const items = currentStudent.blocks[bIdx].items;
         if (iIdx + dir < 0 || iIdx + dir >= items.length) return;
@@ -826,7 +836,7 @@
                 <div style="display:flex; justify-content:space-between; padding:6px; border-bottom:1px solid #eee; align-items:center;">
                     <div style="width:45%;">
                         <div style="font-weight:bold; color:#1e293b;">${i.name}</div>
-                        ${i.link ? '<div style="color:#00A8E8; font-size:8px;">[VÍDEO DISPONÍVEL NO APP]</div>' : ''}
+                        ${i.link ? `<a href="${i.link}" style="color:#00A8E8; font-size:9px; text-decoration:none;" target="_blank">► VER VÍDEO</a>` : ''}
                     </div>
                     <div style="width:15%; text-align:center;">${i.sets}x ${i.reps}</div>
                     <div style="width:15%; text-align:center;">${i.rest}</div>
@@ -840,7 +850,14 @@
                     <span>${b.name}</span>
                     <span style="opacity:0.8; font-size:10px;">${b.type}</span>
                 </div>
-                <div style="padding:10px;">${items}</div>
+                ${b.details ? `<div style="background:#f8fafc; color:#64748b; padding:5px 15px; font-size:10px; border-bottom:1px solid #eee; font-style:italic;">${b.details}</div>` : ''}
+                <div style="padding:10px; background:#f9fafb; font-size:9px; font-weight:800; color:#94a3b8; text-transform:uppercase; display:flex; justify-content:space-between;">
+                    <div style="width:45%">Exercício</div>
+                    <div style="width:15%; text-align:center;">Séries/Reps</div>
+                    <div style="width:15%; text-align:center;">Intervalo</div>
+                    <div style="width:25%; text-align:right;">Obs/Método</div>
+                </div>
+                <div style="padding:0 10px 10px;">${items}</div>
             </div>`;
         });
 
@@ -864,7 +881,7 @@
                         <div style="font-size:11px;">${logicHTML}</div>
                     </div>
                     <div>
-                        <h3 style="background:#00A8E8; color:white; padding:5px 10px; font-size:12px; border-radius:4px; margin-top:0;">PILARES (${currentStudent.methodology})</h3>
+                        <h3 style="background:#00A8E8; color:white; padding:5px 10px; font-size:12px; border-radius:4px; margin-top:0;">PILARES DO TREINAMENTO</h3>
                         ${pillarsHTML}
                     </div>
                 </div>
