@@ -627,14 +627,21 @@
             // Converts old name field to split fields
             let modified = false;
             db.students.forEach(s => {
+                // Ensure gender default
+                if(!s.gender) { s.gender = 'M'; modified = true; }
+                
+                // MIGRATION SAFEGUARD: Don't delete 'name' blindly.
                 if(s.name && !s.firstName) {
                     const parts = s.name.split(' ');
                     s.firstName = parts[0];
                     s.lastName = parts.slice(1).join(' ');
+                    if(!s.lastName) s.lastName = ""; // Prevent undefined
                     s.nickname = "";
-                    s.gender = "M"; // Default
-                    delete s.name;
-                    modified = true;
+                    // We DO NOT delete s.name immediately to be safe, or we can, but let's ensure it worked.
+                    if(s.firstName) {
+                        delete s.name; 
+                        modified = true;
+                    }
                 }
             });
             if(modified) saveDB();
@@ -642,8 +649,14 @@
 
         function getDisplayName(s) {
             if(!s) return "Desconhecido";
-            if(s.nickname) return `${s.nickname} ${s.lastName}`;
-            return `${s.firstName} ${s.lastName}`;
+            // 1. Priority: Nickname
+            if(s.nickname && s.nickname.trim() !== "") return `${s.nickname} ${s.lastName || ''}`.trim();
+            // 2. Priority: First + Last
+            if(s.firstName) return `${s.firstName} ${s.lastName || ''}`.trim();
+            // 3. Fallback: Old Name field (Crucial Fix)
+            if(s.name) return s.name;
+            
+            return "Sem Nome";
         }
 
         function renderAll() {
@@ -1067,7 +1080,7 @@
             
             list.forEach(c => {
                 const s = db.students.find(x => x.id === c.studentId);
-                const displayName = s ? getDisplayName(s) : c.studentName;
+                const displayName = getDisplayName(s);
                 const genderIcon = s && s.gender === 'F' ? '<i class="fa-solid fa-person-dress text-pink-400 mr-2"></i>' : '<i class="fa-solid fa-person text-blue-400 mr-2"></i>';
                 
                 // Grouping Logic
@@ -1194,8 +1207,8 @@
                 const s = db.students.find(x=>x.id===id);
                 document.getElementById('ms-title').innerText = "Editar Aluno";
                 document.getElementById('ms-id').value = s.id;
-                document.getElementById('ms-firstname').value = s.firstName;
-                document.getElementById('ms-lastname').value = s.lastName;
+                document.getElementById('ms-firstname').value = s.firstName || "";
+                document.getElementById('ms-lastname').value = s.lastName || "";
                 document.getElementById('ms-nickname').value = s.nickname || "";
                 document.getElementById('ms-gender').value = s.gender || "M";
                 document.getElementById('ms-obj').value = s.objective;
@@ -1256,8 +1269,8 @@
             document.getElementById('pf-obj').innerText = s.objective;
             document.getElementById('pf-plan').innerText = s.plan;
             
-            const initials = s.nickname ? s.nickname.slice(0,2) : s.firstName[0] + (s.lastName[0]||'');
-            document.getElementById('pf-avatar').innerText = initials;
+            const initials = s.nickname ? s.nickname.slice(0,2) : (s.firstName ? s.firstName[0] : '') + (s.lastName ? s.lastName[0] : '');
+            document.getElementById('pf-avatar').innerText = initials || '##';
             document.getElementById('pf-avatar').style.background = s.gender === 'F' ? 'linear-gradient(135deg, #ec4899, #db2777)' : 'linear-gradient(135deg, #00A89A, #05364F)';
             
             document.getElementById('pf-lim-list').innerHTML = s.limitations && s.limitations!=='NENHUMA' ? s.limitations.split(',').map(l=>`<li>${l}</li>`).join('') : '<li>Sem restrições</li>';
