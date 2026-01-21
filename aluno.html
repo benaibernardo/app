@@ -13,7 +13,7 @@
         :root {
             --primary: #001F5B; --primary-dark: #001640; 
             --accent: #00A8E8; --accent-dark: #007bb0;
-            --bg: #f8fafc; --surface: #ffffff;
+            --bg: #fdfdfd; --surface: #ffffff;
             --text: #1f2937; --text-muted: #64748b;
             --border: #e2e8f0;
             
@@ -24,7 +24,7 @@
         }
 
         [data-theme="dark"] {
-            --primary: #bae6fd; --primary-dark: #7dd3fc; /* Primary becomes text color in header */
+            --primary: #bae6fd; --primary-dark: #7dd3fc;
             --accent: #38bdf8;
             --bg: #0f172a; --surface: #1e293b;
             --text: #f1f5f9; --text-muted: #94a3b8;
@@ -37,7 +37,7 @@
         .container { max-width: 480px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; height: 100%; background: var(--bg); box-shadow: 0 0 20px rgba(0,0,0,0.05); }
 
         /* HEADER */
-        .header { background: #001F5B; padding: 25px 20px; flex-shrink: 0; border-bottom-left-radius: 24px; border-bottom-right-radius: 24px; box-shadow: 0 10px 30px -10px rgba(0,31,91,0.3); z-index: 10; display: flex; justify-content: space-between; align-items: flex-start; color: white; transition: background 0.3s; }
+        .header { background: #001F5B; padding: 20px; flex-shrink: 0; border-bottom-left-radius: 24px; border-bottom-right-radius: 24px; box-shadow: 0 10px 30px -10px rgba(0,31,91,0.3); z-index: 10; display: flex; justify-content: space-between; align-items: flex-start; color: white; transition: background 0.3s; }
         [data-theme="dark"] .header { background: #1e293b; box-shadow: none; border-bottom: 1px solid var(--border); }
 
         .h-info { flex: 1; padding-right: 15px; }
@@ -45,13 +45,13 @@
         .h-sub-brand { font-size:0.5rem; letter-spacing:1px; opacity:0.8; margin-bottom:10px; font-weight:600; text-transform:uppercase; color:#bae6fd; }
         [data-theme="dark"] .h-sub-brand { color: #94a3b8; }
 
-        .h-title { font-size: 1.6rem; font-weight: 800; font-family: var(--font-num); letter-spacing: -0.5px; line-height: 1.1; color: white; }
-        .h-sub { opacity: 0.8; font-size: 0.85rem; color: #bae6fd; font-weight: 500; margin-top: 2px; }
+        .h-title { font-size: 1.6rem; font-weight: 800; font-family: var(--font-num); letter-spacing: -0.5px; line-height: 1.1; color: white; margin-bottom:2px; }
+        .h-sub { opacity: 0.8; font-size: 0.85rem; color: #bae6fd; font-weight: 500; margin-bottom: 10px; }
         [data-theme="dark"] .h-sub { color: #94a3b8; }
         
-        .h-expire { display: inline-flex; align-items: center; gap: 6px; font-size: 0.75rem; font-weight: 700; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 8px; margin-top: 8px; color: #e2e8f0; backdrop-filter: blur(5px); }
-        .h-expire.warning { color: #fcd34d; background: rgba(245, 158, 11, 0.2); }
-        .h-expire.urgent { color: #fca5a5; background: rgba(239, 68, 68, 0.2); }
+        .h-dates { display: flex; gap: 8px; font-size: 0.65rem; font-weight: 700; color: white; opacity:0.9; }
+        .h-date-badge { background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 6px; display:flex; align-items:center; gap:4px; border:1px solid rgba(255,255,255,0.1); }
+        .h-date-badge.urgent { background: rgba(239, 68, 68, 0.3); border-color: rgba(239, 68, 68, 0.5); color:#fca5a5; }
         
         .h-actions { display: flex; gap: 8px; align-items: center; }
         .h-btn { width: 40px; height: 40px; border-radius: 12px; border: none; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; cursor: pointer; transition: 0.2s; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); text-decoration: none; }
@@ -64,14 +64,46 @@
         .tab-pane { display: none; animation: fade 0.3s; }
         .tab-pane.active { display: block; }
 
-        /* --- BLOCOS --- */
+        /* --- SOPHISTICATED TITLES --- */
+        .modern-title {
+            text-align: center;
+            font-family: var(--font-num);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.9rem;
+            color: var(--primary);
+            position: relative;
+            display: flex; align-items: center; justify-content: center; gap: 15px;
+            margin: 30px 0 20px;
+            opacity: 0.8;
+        }
+        [data-theme="dark"] .modern-title { color: var(--accent); opacity: 1; }
+        .modern-title::before, .modern-title::after {
+            content: ''; height: 1px; background: var(--border); flex: 1;
+        }
+
+        /* --- BLOCOS (COLLAPSIBLE) --- */
+        .section-header {
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; padding: 15px 5px;
+            border-bottom: 1px solid transparent;
+            transition: 0.3s;
+        }
+        .section-header:hover { opacity: 0.8; }
         .section-title {
             color: var(--primary); font-family: var(--font-num); 
             font-weight: 800; text-transform: uppercase; letter-spacing: 1px; 
-            font-size: 0.85rem; margin: 25px 0 15px 5px; padding-left: 10px;
+            font-size: 0.85rem; margin: 0; padding-left: 10px;
             border-left: 4px solid var(--accent);
         }
         [data-theme="dark"] .section-title { color: var(--text); }
+        
+        .toggle-icon { transition: transform 0.3s; color: var(--accent); }
+        .is-closed .toggle-icon { transform: rotate(-90deg); }
+        
+        .block-content-area { transition: max-height 0.4s ease-in-out, opacity 0.4s; max-height: 3000px; opacity: 1; overflow: hidden; }
+        .is-closed .block-content-area { max-height: 0; opacity: 0; }
 
         .biset-wrap { border: 2px dashed var(--c-bi); background: #f0f9ff; margin-bottom: 20px; border-radius: 16px; padding-top: 30px; position: relative; overflow: hidden; }
         [data-theme="dark"] .biset-wrap { background: rgba(0, 168, 232, 0.05); }
@@ -93,14 +125,12 @@
 
         .row.done { opacity: 0.5; filter: grayscale(100%); background: var(--bg) !important; border-left-color: var(--border) !important; }
         
-        /* Method Colors (Light Mode) */
         .row.m-Drop { border-left-color: var(--c-drop); background: #fef2f2; }
         .row.m-RNP { border-left-color: var(--c-rnp); background: #fff7ed; }
         .row.m-Iso { border-left-color: var(--c-iso); background: #ecfeff; }
         .row.m-Pyr { border-left-color: var(--c-pyr); background: #faf5ff; }
         .row.m-Normal { border-left-color: #cbd5e1; background: var(--surface); }
 
-        /* Method Colors (Dark Mode Overrides) */
         [data-theme="dark"] .row.m-Drop { background: rgba(239, 68, 68, 0.1); }
         [data-theme="dark"] .row.m-RNP { background: rgba(245, 158, 11, 0.1); }
         [data-theme="dark"] .row.m-Iso { background: rgba(6, 182, 212, 0.1); }
@@ -132,12 +162,11 @@
         .row.done .check-btn { background: var(--success); color: white; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); }
 
         /* Logic & Method Cards */
-        .logic-card { background: var(--surface); border-radius: 16px; padding: 20px; border: 1px solid var(--border); margin-bottom: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
-        .logic-title { font-weight: 800; color: var(--primary); margin-bottom: 15px; font-family: var(--font-num); font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
-        [data-theme="dark"] .logic-title { color: var(--accent); }
+        .logic-card { background: var(--surface); border-radius: 16px; padding: 20px; border: 1px solid var(--border); margin-bottom: 25px; }
+        
         .logic-item { display: flex; gap: 12px; margin-bottom: 12px; align-items: flex-start; }
-        .logic-icon { min-width: 24px; height: 24px; background: #dbeafe; color: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; margin-top: 2px; }
-        [data-theme="dark"] .logic-icon { background: rgba(56, 189, 248, 0.2); }
+        .logic-icon { min-width: 24px; height: 24px; background: #f1f5f9; color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; margin-top: 2px; }
+        [data-theme="dark"] .logic-icon { background: rgba(255,255,255,0.1); color:white; }
         .logic-text { color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; font-weight: 500; }
 
         .method-grid { display: flex; flex-direction: column; gap: 12px; }
@@ -148,11 +177,11 @@
         .mc-title { font-family: var(--font-num); font-weight: 800; font-size: 1rem; margin-bottom: 4px; color: var(--text); }
         .mc-text { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
         
-        .mc-danger { background: #fef2f2; border: 1px solid #fee2e2; } .mc-danger .mc-icon { background: var(--danger); }
-        .mc-blue { background: #eff6ff; border: 1px solid #dbeafe; } .mc-blue .mc-icon { background: var(--accent); }
-        /* Dark mode method overrides handled via general dark classes or specific if needed */
-        [data-theme="dark"] .mc-danger { background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); }
-        [data-theme="dark"] .mc-blue { background: rgba(56, 189, 248, 0.1); border-color: rgba(56, 189, 248, 0.2); }
+        /* Subtle/Sophisticated Card Colors */
+        .mc-danger { background: #f9fafb; border: 1px solid #e5e7eb; } .mc-danger .mc-icon { background: #e5e7eb; color: #64748b; }
+        .mc-blue { background: #f9fafb; border: 1px solid #e5e7eb; } .mc-blue .mc-icon { background: #e5e7eb; color: #64748b; }
+        [data-theme="dark"] .mc-danger { background: #1e293b; border-color: #334155; } [data-theme="dark"] .mc-danger .mc-icon { background: #334155; color: #94a3b8; }
+        [data-theme="dark"] .mc-blue { background: #1e293b; border-color: #334155; } [data-theme="dark"] .mc-blue .mc-icon { background: #334155; color: #94a3b8; }
 
         /* Feedback */
         .feedback-box { background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 30px 20px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.05); }
@@ -220,7 +249,10 @@
             <div class="h-sub-brand">CONSULTORIA DE TREINAMENTO</div>
             <div class="h-title" id="sName">Olá!</div>
             <div class="h-sub" id="sFocus">Carregando...</div>
-            <div id="h-expire" class="h-expire" style="display:none;"></div>
+            <div class="h-dates">
+                <div class="h-date-badge" id="date-start-badge"><i class="fa-solid fa-calendar"></i> Início: <span id="val-start">--/--</span></div>
+                <div class="h-date-badge" id="date-end-badge"><i class="fa-solid fa-hourglass-half"></i> Vence: <span id="val-end">--/--</span></div>
+            </div>
         </div>
         <div class="h-actions">
             <a href="https://wa.me/5541997222664" target="_blank" class="h-btn btn-wa" title="Falar com Benai">
@@ -247,14 +279,16 @@
     </div>
 
     <div id="tab-2" class="tab-pane content">
-        <div class="logic-card">
-            <div class="logic-title"><i class="fa-solid fa-bullseye"></i> Lógica do Treino</div>
-            <div id="logicTopics"></div>
+        <div style="margin-bottom:30px;">
+            <div class="modern-title"><i class="fa-solid fa-bullseye"></i> Lógica do Treino</div>
+            <div class="logic-card" id="logicTopics"></div>
         </div>
-        <div style="font-weight:900; color:var(--text-muted); font-size:0.75rem; margin: 30px 0 15px; letter-spacing:1px; text-align:center; text-transform:uppercase;">Pilares do Treinamento</div>
         
-        <div id="pillarsContainer" class="method-grid">
-            <!-- PILLARS RENDERED VIA JS -->
+        <div>
+            <div class="modern-title"><i class="fa-solid fa-layer-group"></i> Pilares do Método</div>
+            <div id="pillarsContainer" class="method-grid">
+                <!-- PILLARS RENDERED VIA JS -->
+            </div>
         </div>
     </div>
 
@@ -395,23 +429,32 @@
     }
 
     function processData(data, isOffline = false) {
+        // Handle Dates Display
+        const formatDate = (isoStr) => {
+            if(!isoStr) return '--/--';
+            const parts = isoStr.split('-');
+            return `${parts[2]}/${parts[1]}`;
+        }
+
+        const start = formatDate(data.startDate);
+        const end = formatDate(data.expiryDate);
+        
+        document.getElementById('val-start').innerText = start;
+        document.getElementById('val-end').innerText = end;
+
         if(data.expiryDate) {
             const now = new Date();
             const exp = new Date(data.expiryDate);
             const diffTime = exp - now;
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             
+            const badge = document.getElementById('date-end-badge');
             if(diffTime < 0) {
                 document.getElementById('blocked-ov').style.display = 'flex';
                 return;
+            } else if(diffDays <= 7) {
+                badge.classList.add('urgent');
             }
-
-            const expEl = document.getElementById('h-expire');
-            expEl.style.display = 'inline-flex';
-            expEl.innerHTML = `<i class="fa-solid fa-calendar-days"></i> Vence: ${exp.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'})} (${diffDays} dias)`;
-            
-            if(diffDays <= 7) expEl.classList.add('urgent');
-            else if(diffDays <= 15) expEl.classList.add('warning');
         }
 
         render(data);
@@ -430,20 +473,28 @@
         document.getElementById('sName').innerText = `Olá, ${data.name.split(' ')[0]}!`;
         document.getElementById('sFocus').innerText = data.focus;
         
+        // LOGIC RENDERING
         const logicContainer = document.getElementById('logicTopics');
         logicContainer.innerHTML = '';
-        const logicText = data.logic || "Siga o plano.";
-        const topics = logicText.split('\n').filter(t => t.trim() !== '');
-        topics.forEach(topic => { logicContainer.innerHTML += `<div class="logic-item"><div class="logic-icon"><i class="fa-solid fa-check"></i></div><div class="logic-text">${topic}</div></div>`; });
+        let topics = [];
+        if(typeof data.logic === 'string') topics = data.logic.split('\n').filter(t => t.trim() !== '');
+        else if(Array.isArray(data.logic)) topics = data.logic;
+        
+        if(topics.length === 0) topics = ["Foco na execução."];
+        
+        topics.forEach(topic => { 
+            logicContainer.innerHTML += `<div class="logic-item"><div class="logic-icon"><i class="fa-solid fa-check"></i></div><div class="logic-text">${topic}</div></div>`; 
+        });
 
+        // PILLARS RENDERING
         const methodology = data.methodology || 'Musculação';
         const pillars = PILLARS[methodology] || PILLARS['Musculação'];
         const pCont = document.getElementById('pillarsContainer');
         pCont.innerHTML = '';
         pillars.forEach(p => {
             pCont.innerHTML += `
-            <div class="method-card mc-${p.c}">
-                <div class="mc-icon"><i class="fa-solid fa-${p.i}"></i></div>
+            <div class="method-card mc-${p.c || 'blue'}">
+                <div class="mc-icon"><i class="fa-solid fa-${p.i || 'star'}"></i></div>
                 <div class="mc-content">
                     <div class="mc-title">${p.t}</div>
                     <div class="mc-text">${p.d}</div>
@@ -468,13 +519,28 @@
                 });
                 
                 let wrapper = '';
-                if(b.type === 'biset') wrapper = `<div class="biset-wrap"><div class="biset-lbl">BI-SET</div>${itemsHtml}</div>`;
-                else if(b.type === 'triset') wrapper = `<div class="triset-wrap"><div class="triset-lbl">TRI-SET</div>${itemsHtml}</div>`;
-                else wrapper = `<div class="normal-wrap"><div class="section-title">${b.name}</div>${itemsHtml}</div>`; 
+                // Collapsible logic wrapper
+                const collapseId = `block-${bIdx}`;
+                
+                // Add specific header for collapsible behavior
+                const header = `<div class="section-header" onclick="toggleBlock('${collapseId}')">
+                    <h3 class="section-title">${b.name}</h3>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </div>`;
+
+                if(b.type === 'biset') wrapper = `<div class="biset-wrap">${header}<div class="biset-lbl">BI-SET</div><div id="${collapseId}" class="block-content-area">${itemsHtml}</div></div>`;
+                else if(b.type === 'triset') wrapper = `<div class="triset-wrap">${header}<div class="triset-lbl">TRI-SET</div><div id="${collapseId}" class="block-content-area">${itemsHtml}</div></div>`;
+                else wrapper = `<div class="normal-wrap">${header}<div id="${collapseId}" class="block-content-area">${itemsHtml}</div></div>`; 
 
                 list.innerHTML += wrapper;
             });
         }
+    }
+
+    function toggleBlock(id) {
+        const content = document.getElementById(id);
+        const parent = content.parentElement;
+        parent.classList.toggle('is-closed');
     }
 
     function mkRow(bIdx, iIdx, item, showTimer = true) {
