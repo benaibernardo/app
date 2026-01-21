@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Benai Manager | Painel</title>
     
+    <!-- LIBRARIES -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -15,367 +16,290 @@
             --primary: #001F5B; --accent: #00A8E8; --bg: #f0f2f5;
             --surface: #ffffff; --border: #e2e8f0; --text: #1f2937;
             --success: #10b981; --danger: #ef4444; --warning: #f59e0b;
-            
             --c-drop: #ef4444; --c-rnp: #f59e0b; --c-iso: #06b6d4; 
-            --c-pyr: #8b5cf6; --c-fst: #ec4899; --c-bi: #00A8E8; --c-tri: #6366f1;
-            
+            --c-pyr: #8b5cf6; --c-bi: #00A8E8; --c-tri: #6366f1;
             --font-ui: 'Plus Jakarta Sans', sans-serif; --font-num: 'Outfit', sans-serif;
         }
         
         * { box-sizing: border-box; outline: none; font-family: var(--font-ui); }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        
+        /* 4-COLUMN GRID LAYOUT */
+        body { margin: 0; height: 100vh; display: grid; grid-template-columns: 260px 1fr 280px 280px; overflow: hidden; background: var(--bg); color: var(--text); font-size: 13px; }
 
-        body { margin: 0; height: 100vh; display: grid; grid-template-columns: 300px 1fr 320px; overflow: hidden; background: var(--bg); color: var(--text); font-size: 13px; }
-
-        /* SIDEBAR ESQUERDA */
+        /* SIDEBARS */
         .sidebar { background: var(--surface); display: flex; flex-direction: column; padding: 20px; border-right: 1px solid var(--border); border-left: 1px solid var(--border); z-index: 10; height: 100vh; overflow: hidden; }
-        .brand-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-shrink: 0; }
-        .brand { color: var(--primary); font-family: var(--font-num); font-weight: 900; font-size: 1.1rem; display: flex; flex-direction:column; line-height:1.1; letter-spacing:-0.5px; text-transform: uppercase;}
-        .brand span { font-size:0.6rem; color:var(--accent); letter-spacing:1px; font-weight:700; text-transform:uppercase; margin-top:2px; }
         
-        .cloud-pill { display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 20px; cursor: pointer; font-size: 0.75rem; font-weight: 700; color: #64748b; transition: 0.2s; }
-        .cloud-pill:hover { background: #e2e8f0; color: var(--primary); }
-        .cloud-dot { width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1; }
-        .cloud-dot.ok { background: var(--success); box-shadow: 0 0 5px var(--success); }
-        .cloud-dot.sync { background: var(--accent); animation: pulse 1s infinite; }
-        .cloud-dot.error { background: var(--danger); }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .brand { color: var(--primary); font-family: var(--font-num); font-weight: 900; font-size: 1.2rem; margin-bottom: 20px; display: flex; flex-direction: column; line-height: 1; }
+        .brand span { font-size: 0.6rem; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; }
 
-        .list-header { font-weight: 800; color: var(--text); font-size: 0.75rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; flex-shrink: 0; }
-        .list-scroll { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 5px; padding-bottom: 20px; }
+        /* LISTS */
+        .list-header { font-weight: 800; color: var(--text); font-size: 0.75rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 15px; }
+        .list-scroll { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-bottom: 20px; }
         
-        .item-card { padding: 10px; border-radius: 8px; border: 1px solid transparent; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; transition: 0.1s; }
-        .item-card:hover { background: white; border-color: var(--accent); box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateX(2px); }
-        
-        /* STUDENT CARD ENHANCED */
-        .student-item { padding: 12px; border-radius: 12px; cursor: pointer; border: 1px solid #e2e8f0; background: white; position: relative; transition:0.2s; display:flex; flex-direction:column; gap:6px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-        .student-item:hover { border-color: var(--accent); transform:translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .student-item.active { border-color: var(--primary); background: #f0f9ff; ring: 2px solid var(--primary); }
-        
-        .st-top { display:flex; justify-content:space-between; align-items:center; }
-        .st-name { font-weight: 800; color: var(--primary); font-size: 0.95rem; font-family:var(--font-num); }
-        .st-actions { display:flex; gap:8px; }
-        .st-act-btn { color:#cbd5e1; padding:4px; border-radius:4px; transition:0.2s; }
-        .st-act-btn:hover { color:var(--danger); background:#fee2e2; }
+        /* STUDENT CARD */
+        .student-item { padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: white; cursor: pointer; transition: 0.2s; position: relative; overflow: hidden; }
+        .student-item:hover { border-color: var(--accent); transform: translateX(2px); }
+        .student-item.active { background: #f0f9ff; border-color: var(--accent); border-left: 4px solid var(--accent); }
+        .st-name { font-weight: 700; color: var(--primary); display: block; font-family: var(--font-num); font-size: 0.95rem; }
+        .st-info { font-size: 0.7rem; color: #64748b; display: flex; justify-content: space-between; margin-top: 4px; position: relative; z-index: 2; }
+        .st-bar-bg { height: 4px; width: 100%; background: #f1f5f9; border-radius: 2px; margin-top: 6px; overflow: hidden; }
+        .st-bar-fill { height: 100%; background: var(--success); border-radius: 2px; transition: width 0.5s; }
 
-        .st-dates { font-size: 0.65rem; color: #64748b; display:flex; justify-content:space-between; font-weight:600; background:#f8fafc; padding:4px 8px; border-radius:6px; }
-        .progress-bar-bg { height:4px; width:100%; background:#e2e8f0; border-radius:2px; overflow:hidden; margin-top:2px; }
-        .progress-bar-fill { height:100%; border-radius:2px; transition: width 0.5s; }
+        .item-card { padding: 8px; border-radius: 8px; border: 1px solid transparent; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; font-size: 0.85rem; font-weight: 600; }
+        .item-card:hover { background: white; border-color: var(--border); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .item-actions { display:flex; gap:8px; opacity:0.5; transition:0.2s; }
+        .item-card:hover .item-actions { opacity:1; }
 
-        .btn { padding: 10px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.85rem; transition: 0.2s; }
-        .btn-pri { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(0,31,91,0.2); }
+        /* BUTTONS */
+        .btn { padding: 10px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.85rem; transition: 0.2s; width: 100%; }
+        .btn-pri { background: var(--primary); color: white; margin-bottom: 5px; }
         .btn-sec { background: white; border: 1px solid var(--border); color: var(--text); }
-        .btn:hover { transform: translateY(-1px); opacity: 0.9; }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
 
-        /* EDITOR CENTRAL */
-        .col-center { display: flex; flex-direction: column; background: #e2e8f0; height: 100vh; overflow: hidden; }
-        .toolbar { background: var(--surface); padding: 12px 20px; border-bottom: 1px solid var(--border); display: flex; gap: 10px; align-items: center; overflow-x: auto; white-space: nowrap; flex-shrink: 0; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
-        .toolbar-label { font-weight: 800; color: var(--primary); font-size: 0.7rem; margin-right: 5px; }
-        .chip { padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; cursor: pointer; border: 1px solid var(--border); background: white; color: #64748b; transition: 0.2s; display: flex; flex-direction: column; align-items: center; line-height: 1.1; min-width: 70px; }
-        .chip:hover { border-color: var(--accent); background: var(--accent); color: white; transform: translateY(-1px); }
+        /* TOOLBAR */
+        .toolbar { background: var(--surface); padding: 10px 20px; border-bottom: 1px solid var(--border); display: flex; gap: 8px; overflow-x: auto; white-space: nowrap; flex-shrink: 0; }
+        .chip { padding: 6px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; cursor: pointer; border: 1px solid var(--border); background: white; color: #64748b; transition: 0.2s; }
+        .chip:hover { transform: translateY(-1px); border-color: var(--accent); color: var(--accent); }
+        .chip.active { background: var(--accent); color: white; border-color: var(--accent); }
 
-        .canvas { flex: 1; overflow-y: auto; padding: 30px; display: flex; justify-content: center; align-items: flex-start; scroll-behavior: smooth; }
-        /* PREVIEW IDENTICAL TO ALUNO.HTML (BLUE THEME) */
-        .phone { width: 100%; max-width: 480px; background: white; border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); display: flex; flex-direction: column; min-height: 800px; border: 1px solid #cbd5e1; overflow: hidden; margin-bottom: 50px; position:relative; }
+        /* CENTER CANVAS */
+        .col-center { display: flex; flex-direction: column; background: #e2e8f0; height: 100vh; overflow: hidden; position: relative; }
+        .canvas { flex: 1; overflow-y: auto; padding: 40px; display: flex; justify-content: center; align-items: flex-start; }
         
-        .ph-header { background: var(--primary); padding: 25px 20px; color: white; border-bottom-left-radius: 24px; border-bottom-right-radius: 24px; z-index:5; box-shadow: 0 10px 30px -10px rgba(0, 31, 91, 0.4); }
-        .ph-brand { font-size: 0.65rem; letter-spacing: 2px; opacity: 0.7; text-transform: uppercase; margin-bottom: 4px; font-weight: 700; font-family: var(--font-num); color:var(--accent); }
-        .ph-sub-brand { font-size:0.5rem; letter-spacing:1px; opacity:0.8; margin-bottom:10px; font-weight:600; }
+        /* PHONE PREVIEW (MATCHING ALUNO.HTML) */
+        .phone { width: 100%; max-width: 480px; background: #fdfdfd; border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); display: flex; flex-direction: column; min-height: 800px; border: 1px solid #cbd5e1; overflow: hidden; margin-bottom: 50px; }
         
-        .ph-inp { background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.3); color: white; padding: 5px 0; width: 100%; font-weight: 800; font-family: var(--font-num); font-size: 1.6rem; transition: 0.2s; margin-bottom: 2px; }
-        .ph-inp::placeholder { color: rgba(255,255,255,0.5); }
-        .ph-inp:focus { border-bottom-color: var(--accent); outline: none; }
-        .ph-inp-sub { background: transparent; border: none; color: #bae6fd; font-size: 0.85rem; font-weight: 500; width: 100%; }
+        .ph-header { background: var(--primary); padding: 25px 20px; color: white; border-bottom-left-radius: 24px; border-bottom-right-radius: 24px; box-shadow: 0 10px 30px -10px rgba(0,31,91,0.3); z-index: 5; }
+        .ph-brand { font-size: 0.65rem; letter-spacing: 2px; opacity: 0.8; text-transform: uppercase; margin-bottom: 4px; font-weight: 700; font-family: var(--font-num); color: var(--accent); }
+        .ph-inp { background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.3); color: white; padding: 5px 0; width: 100%; font-weight: 800; font-family: var(--font-num); font-size: 1.6rem; margin-bottom: 2px; }
+        .ph-inp:focus { outline: none; border-color: var(--accent); }
+        .ph-inp-sub { background: transparent; border: none; color: #bae6fd; font-size: 0.9rem; width: 100%; font-weight: 500; margin-bottom: 10px; }
         
-        .ph-body { padding: 20px; background: #f8fafc; flex: 1; display: flex; flex-direction: column; gap: 15px; overflow-y:auto; }
+        .ph-dates { display: flex; gap: 8px; font-size: 0.65rem; font-weight: 700; color: white; opacity:0.9; }
+        .ph-date-badge { background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 6px; display:flex; align-items:center; gap:4px; border:1px solid rgba(255,255,255,0.1); }
 
-        .normal-wrap { background: transparent; border: none; margin-bottom: 15px; transition: 0.2s; }
-        .normal-wrap .block-head { background: transparent; padding: 0 0 5px 5px; border-bottom: 1px solid #e2e8f0; margin-bottom: 10px; }
-        .w-title { background: transparent; border: none; font-weight: 800; font-family:var(--font-num); color: var(--primary); font-size: 0.85rem; text-transform: uppercase; width: 100%; border-left: 4px solid var(--accent); padding-left: 10px; }
+        .ph-body { padding: 20px; flex: 1; background: #fdfdfd; display: flex; flex-direction: column; gap: 15px; overflow-y: auto; }
 
-        .biset-cont { border: 2px dashed var(--c-bi); background: #f0f9ff; border-radius: 16px; margin-bottom: 15px; overflow:hidden; transition: 0.2s; position:relative; padding-top:25px; }
-        .biset-cont .block-head { position:absolute; top:0; left:0; background:var(--c-bi); color:white; padding: 2px 10px; border-bottom-right-radius:10px; font-size:0.6rem; font-weight:800; width:auto; border:none; }
-        .biset-cont .block-body { padding: 10px; }
-        /* Hide inputs in special blocks for cleaner preview, user edits via logic */
-        .biset-cont .w-title, .triset-cont .w-title { display:none; }
-
-        .triset-cont { border: 2px dashed var(--c-tri); background: #fdf4ff; border-radius: 16px; margin-bottom: 15px; overflow:hidden; transition: 0.2s; position:relative; padding-top:25px; }
-        .triset-cont .block-head { position:absolute; top:0; left:0; background:var(--c-tri); color:white; padding: 2px 10px; border-bottom-right-radius:10px; font-size:0.6rem; font-weight:800; width:auto; border:none; }
-        .triset-cont .block-body { padding: 10px; }
-
-        .active-block { box-shadow: 0 0 0 2px var(--accent); }
-        .block-head { display: flex; justify-content: space-between; align-items: center; gap:10px; }
-        /* Move actions outside for cleaner preview */
-        .blk-actions { position:absolute; right:5px; top:-25px; display:flex; gap:2px; background:white; padding:2px; border-radius:4px; border:1px solid #e2e8f0; opacity:0; transition:0.2s; }
-        .block-container:hover .blk-actions { opacity:1; top:5px; z-index:10; }
-        .block-container { position:relative; }
+        /* BLOCKS IN PREVIEW */
+        .block-container { position: relative; margin-bottom: 10px; transition: 0.3s; }
+        .block-head { display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center; }
+        .w-title { background: transparent; border: none; font-weight: 800; font-family: var(--font-num); color: var(--primary); font-size: 0.9rem; text-transform: uppercase; width: 100%; border-left: 4px solid var(--accent); padding-left: 10px; }
         
-        .blk-btn { width:20px; height:20px; border-radius:4px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#64748b; font-size:0.6rem; }
-        .blk-btn:hover { background:#f1f5f9; color:var(--primary); }
+        /* Drawer/Collapse Logic */
+        .block-body-content { transition: max-height 0.3s ease-in-out, opacity 0.3s; overflow: hidden; max-height: 2000px; opacity: 1; }
+        .block-container.collapsed .block-body-content { max-height: 0; opacity: 0; }
+        .block-container.collapsed .w-title { opacity: 0.5; }
 
-        .ex-row { padding: 12px; border: 1px solid #e2e8f0; background: white; border-radius: 12px; position: relative; margin-bottom: 10px; border-left-width: 4px; border-left-color: #cbd5e1; cursor: pointer; transition: 0.2s; }
-        .ex-row.selected { border: 2px solid var(--accent); background: #f0f9ff; }
-        .ex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .ex-name { font-weight: 700; font-size: 1rem; color: #1e293b; font-family: var(--font-num); }
+        .biset-cont { border: 2px dashed var(--c-bi); background: #f0f9ff; border-radius: 16px; padding: 30px 10px 10px 10px; position: relative; }
+        .biset-cont::before { content: 'BI-SET'; position: absolute; top: 0; left: 0; background: var(--c-bi); color: white; font-size: 0.65rem; font-weight: 800; padding: 4px 12px; border-bottom-right-radius: 12px; }
+        .biset-cont .w-title { display: none; }
         
-        .method-tabs { display: flex; gap: 4px; margin-bottom: 10px; background: #f1f5f9; padding: 3px; border-radius: 8px; overflow-x: auto; }
-        .m-tab { padding: 4px 10px; border-radius: 6px; font-size: 0.65rem; font-weight: 700; border: none; background: transparent; color: #64748b; cursor: pointer; white-space: nowrap; transition: 0.1s; }
-        .m-tab:hover { background: rgba(255,255,255,0.5); }
-        .m-tab.active { background: white; color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .triset-cont { border: 2px dashed var(--c-tri); background: #fdf4ff; border-radius: 16px; padding: 30px 10px 10px 10px; position: relative; }
+        .triset-cont::before { content: 'TRI-SET'; position: absolute; top: 0; left: 0; background: var(--c-tri); color: white; font-size: 0.65rem; font-weight: 800; padding: 4px 12px; border-bottom-right-radius: 12px; }
+        .triset-cont .w-title { display: none; }
 
-        .pills-edit { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; align-items: flex-end; }
-        .pill-group { display: flex; flex-direction: column; align-items: flex-start; }
-        .pill-lbl { font-size: 0.6rem; color: #94a3b8; font-weight: 800; text-transform: uppercase; margin-bottom: 2px; letter-spacing: 0.5px; }
-        .pill-inp { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px; font-size: 0.85rem; font-weight: 700; color: var(--primary); width: 60px; text-align: center; font-family: var(--font-num); }
-        .obs-inp { width: 100%; border: none; background: #fffbeb; padding: 8px; font-size: 0.8rem; color: #b45309; border-radius: 6px; border-left:3px solid #f59e0b; }
+        .active-block { ring: 2px solid var(--accent); border-radius: 12px; }
 
-        .row-actions { position: absolute; top: 5px; right: 5px; display: flex; gap: 2px; opacity:0; transition:0.2s; background:white; border-radius:6px; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
-        .ex-row:hover .row-actions { opacity:1; }
-        .act-btn { width: 20px; height: 20px; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #cbd5e1; transition: 0.2s; }
-        .act-btn:hover { background: #f1f5f9; color: var(--danger); }
-
-        /* SIDEBAR DIREITA */
-        .logic-list { display: flex; flex-direction: column; gap: 8px; }
-        .logic-item { display: flex; gap: 5px; }
-        .logic-inp { flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.85rem; font-family:var(--font-ui); background: white; }
-        .logic-del { color: var(--danger); cursor: pointer; padding: 8px; display: flex; align-items: center; justify-content: center; width: 30px; }
-        .search-inp { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.9rem; margin-bottom: 10px; }
-        .cat-select { width: 100%; padding: 8px; border-radius: 8px; border: 1px solid var(--border); font-size: 0.85rem; margin-bottom: 10px; background: white; }
-        .cat-dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:5px; }
-
-        .multi-btn-area { display: flex; flex-direction: column; gap: 10px; margin-top: auto; padding-top: 15px; border-top: 1px solid var(--border); }
-        .btn-cloud-new { width: 100%; height: 45px; background: var(--accent); color: white; border-radius: 10px; font-weight: 700; font-size: 0.9rem; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
-        .btn-cloud-upd { width: 100%; height: 45px; background: var(--success); color: white; border-radius: 10px; font-weight: 700; font-size: 0.9rem; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
-        .btn-offline { width: 100%; height: 40px; background: white; color: #64748b; border: 1px dashed #cbd5e1; border-radius: 10px; font-weight: 700; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
-
-        /* MODAIS */
-        .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:2000; align-items:center; justify-content:center; backdrop-filter:blur(3px); }
-        .modal-box { background:white; width:90%; max-width:400px; padding:25px; border-radius:20px; box-shadow:0 20px 50px rgba(0,0,0,0.2); }
-        .modal-h { font-size: 1.2rem; font-weight: 800; color: var(--primary); margin-bottom: 15px; font-family: var(--font-num); text-align:center; }
-        .sync-btn { width: 100%; padding: 15px; border: 1px solid #e2e8f0; border-radius: 12px; background: white; display: flex; align-items: center; gap: 15px; margin-bottom: 10px; cursor: pointer; text-align: left; transition: 0.2s; }
-        .sync-btn:hover { border-color: var(--accent); background: #f0f9ff; }
+        /* EXERCISE ROW IN PREVIEW */
+        .ex-row { background: white; border: 1px solid var(--border); padding: 15px; border-radius: 14px; margin-bottom: 10px; border-left: 4px solid #cbd5e1; position: relative; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .ex-row:hover { border-color: var(--accent); }
         
-        /* CUSTOM CONFIRM MODAL */
-        #modal-confirm { z-index: 2100; }
-        .confirm-msg { text-align:center; color:#64748b; margin-bottom:20px; font-size:0.9rem; }
-        .confirm-btns { display:flex; gap:10px; }
-        
-        /* TOAST */
-        .toast { position:fixed; top:20px; right:20px; background:white; padding:15px 25px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.1); border-left:5px solid var(--success); display:flex; align-items:center; gap:10px; transform:translateX(150%); transition:transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index:3000; }
-        .toast.show { transform:translateX(0); }
-        .toast-icon { color:var(--success); font-size:1.2rem; }
-        .toast-msg { font-weight:700; color:var(--primary); font-size:0.9rem; }
+        .ex-row.m-Drop { border-left-color: var(--c-drop); background: #fef2f2; }
+        .ex-row.m-RNP { border-left-color: var(--c-rnp); background: #fff7ed; }
+        .ex-row.m-Iso { border-left-color: var(--c-iso); background: #ecfeff; }
+        .ex-row.m-Pyr { border-left-color: var(--c-pyr); background: #faf5ff; }
 
-        /* PDF PRINT LAYOUT (HIDDEN) */
-        #print-area { display: none; padding: 40px; font-family: sans-serif; background:white; color:black; }
+        .ex-name { font-weight: 700; font-size: 1rem; display: block; margin-bottom: 8px; color: #1e293b; font-family: var(--font-num); display: flex; align-items: center; gap: 6px; }
+        .ex-name i { color: #ef4444; font-size: 1.1rem; }
+        
+        .pills { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+        .pill-wrap { display: flex; flex-direction: column; }
+        .pill-inp { width: 50px; text-align: center; border: 1px solid var(--border); border-radius: 8px; padding: 4px; font-size: 0.8rem; font-weight: 700; color: #475569; font-family: var(--font-num); }
+        .pill-lbl { font-size: 0.6rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 2px; }
+        .obs-inp { width: 100%; border: none; background: #fffbeb; font-size: 0.8rem; padding: 8px; margin-top: 5px; border-radius: 8px; color: #b45309; border-left: 3px solid #f59e0b; }
+
+        .row-actions { position: absolute; top: -10px; right: 10px; display: none; background: white; padding: 4px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; z-index: 10; }
+        .ex-row:hover .row-actions { display: flex; gap: 5px; }
+        .icon-btn { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 6px; cursor: pointer; color: #64748b; background: #f1f5f9; transition: 0.2s; }
+        .icon-btn:hover { background: var(--primary); color: white; }
+        .icon-btn.del:hover { background: var(--danger); }
+
+        /* INPUTS RIGHT */
+        .search-inp { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; font-family: var(--font-ui); }
+        .cat-select { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; background: white; font-weight: 700; color: var(--primary); }
+
+        .logic-item { display: flex; gap: 5px; margin-bottom: 5px; }
+        .logic-inp { flex: 1; padding: 8px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.8rem; }
+
+        .cloud-status { padding: 5px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; gap: 5px; cursor: pointer; background: #f1f5f9; width: fit-content; margin-bottom: 10px; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1; }
+        .dot.ok { background: var(--success); }
+        .dot.err { background: var(--danger); }
+
+        /* MODAL */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+        .modal-box { background: white; padding: 25px; border-radius: 16px; width: 90%; max-width: 400px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
+        
+        #toast { position: fixed; top: 20px; right: 20px; background: var(--success); color: white; padding: 10px 20px; border-radius: 8px; font-weight: 700; transform: translateX(150%); transition: 0.3s; z-index: 2000; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        #toast.show { transform: translateX(0); }
+        
+        /* Print Area */
+        #print-area { display: none; }
     </style>
 </head>
 <body>
 
-<script>
-    (function() {
-        if(window.location.hostname !== 'localhost' && window.location.protocol !== 'file:') {
-            const type = sessionStorage.getItem("benai_access_type");
-            if (type === "master" || type === "guest" || sessionStorage.getItem("benai_access_granted") === "true") return;
-        }
-    })();
-</script>
-
 <!-- TOAST -->
-<div id="toast" class="toast">
-    <i class="fas fa-check-circle toast-icon"></i>
-    <span class="toast-msg" id="toast-text">Sucesso!</span>
-</div>
+<div id="toast">Ação realizada!</div>
 
-<!-- MODAL CONFIRM -->
-<div id="modal-confirm" class="modal">
+<!-- MODAL EXERCICIO (ADD/EDIT) -->
+<div id="modal-ex" class="modal">
     <div class="modal-box">
-        <div class="modal-h" id="confirm-title">Tem certeza?</div>
-        <p class="confirm-msg" id="confirm-msg">Essa ação não pode ser desfeita.</p>
-        <div class="confirm-btns">
-            <button class="btn btn-sec" style="flex:1" onclick="closeConfirm(false)">Cancelar</button>
-            <button class="btn btn-pri" style="flex:1; background:var(--danger);" id="confirm-yes-btn">Confirmar</button>
+        <h3 style="margin-top:0; color:var(--primary); font-weight:800; font-family:var(--font-num);" id="modalExTitle">Gerenciar Exercício</h3>
+        <input type="hidden" id="exEditBlockIdx">
+        <input type="hidden" id="exEditItemIdx">
+        <input type="hidden" id="exEditLibId"> <!-- NEW for Library Edit -->
+        
+        <label class="list-header">Nome do Exercício</label>
+        <input id="exName" class="search-inp" placeholder="Ex: Supino Reto">
+        
+        <label class="list-header">Link do Vídeo (YouTube)</label>
+        <input id="exLink" class="search-inp" placeholder="https://...">
+        
+        <!-- Shown when adding new OR editing library item -->
+        <div id="libOptions">
+            <label class="list-header">Categoria</label>
+            <select id="exCat" class="cat-select"></select>
+            <label class="list-header">Tipo</label>
+            <select id="exType" class="cat-select">
+                <option value="Musculação">Musculação</option>
+                <option value="Calistenia">Calistenia</option>
+            </select>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:15px;">
+            <button class="btn btn-pri" onclick="confirmExSave()">Salvar</button>
+            <button class="btn btn-sec" onclick="closeExModal()">Cancelar</button>
         </div>
     </div>
 </div>
 
-<div class="sidebar col-left">
-    <div class="brand-area">
-        <div class="brand">BENAI BERNARDO <span>CONSULTORIA DE TREINAMENTO</span></div>
-        <div class="cloud-pill" onclick="openModal('sync')">
-            <i class="fa-solid fa-cloud"></i> DADOS
-            <div id="cloudIndicator" class="cloud-dot"></div>
+<!-- MODAL CLOUD -->
+<div id="modal-cloud" class="modal">
+    <div class="modal-box">
+        <h3 style="margin-top:0; color:var(--primary); font-weight:800;">Configurar Nuvem</h3>
+        <p style="font-size:0.8rem; color:#64748b; margin-bottom:10px;">Insira seu Token do GitHub para salvar/carregar dados.</p>
+        <input id="ghToken" type="password" class="search-inp" placeholder="ghp_...">
+        <div style="display:flex; gap:5px;">
+            <button class="btn btn-pri" onclick="saveToken()">Salvar Token</button>
+            <button class="btn btn-sec" onclick="downloadCloud()">Baixar Dados</button>
         </div>
+        <button class="btn btn-sec" style="margin-top:5px; border:none; color:var(--danger);" onclick="document.getElementById('modal-cloud').style.display='none'">Fechar</button>
     </div>
-    <button class="btn btn-pri" style="width:100%; margin-bottom:5px;" onclick="createNewWorkout()"><i class="fas fa-user-plus"></i> Novo Aluno</button>
-    <button class="btn btn-sec" style="width:100%; margin-bottom:15px; font-size:0.75rem;" onclick="generateDemoStudent()"><i class="fas fa-magic"></i> Gerar Demo</button>
+</div>
+
+<!-- COLUMN 1: ALUNOS -->
+<div class="sidebar">
+    <div class="brand">BENAI BERNARDO <span>Manager</span></div>
     
-    <input class="search-inp" placeholder="Buscar aluno..." onkeyup="filterStudents(this.value)">
-    <div class="list-header">Alunos Ativos</div><div class="list-scroll" id="studentList"></div>
+    <div class="cloud-status" onclick="document.getElementById('modal-cloud').style.display='flex'">
+        <div id="stDot" class="dot"></div> <span id="stText">Offline</span>
+    </div>
+
+    <button class="btn btn-pri" onclick="createStudent()">+ Novo Aluno</button>
+    
+    <input class="search-inp" placeholder="Filtrar aluno..." onkeyup="renderStudents(this.value)">
+    <div class="list-header">Lista de Alunos</div>
+    <div class="list-scroll" id="studentList"></div>
 </div>
 
+<!-- COLUMN 2: PHONE -->
 <div class="col-center">
     <div class="toolbar">
-        <span class="toolbar-label">APLICAR:</span>
-        <div class="chip" onclick="applyPreset('3','15','60s')">Padrão 3x15</div>
+        <span style="font-weight:800; color:var(--primary); font-size:0.7rem;">PRESETS:</span>
+        <div class="chip" onclick="applyPreset('3','15','60s')">Padrão</div>
         <div class="chip" onclick="applyPreset('4','10','60s')">Hipertrofia</div>
         <div class="chip" onclick="applyPreset('3','20','45s')">Metabólico</div>
         <div class="chip" onclick="applyPreset('5','5','180s')">Força</div>
         <div class="chip" onclick="applyPreset('3','30','30s')">RML</div>
-        <div class="chip" onclick="applyPreset('3','Falha','60s')">Falha</div>
     </div>
 
     <div class="canvas">
         <div class="phone">
             <div class="ph-header">
                 <div class="ph-brand">BENAI BERNARDO</div>
-                <div class="ph-sub-brand">CONSULTORIA DE TREINAMENTO</div>
-                <input class="ph-inp" id="sName" placeholder="Nome do Aluno" onchange="saveCurrent()" onclick="event.stopPropagation()">
-                <input class="ph-inp-sub" id="sFocus" placeholder="Objetivo Principal" onchange="saveCurrent()" onclick="event.stopPropagation()">
-            </div>
-
-            <div class="ph-body">
-                <div id="blocksContainer"></div>
-                <div style="display:flex; gap:5px; flex-wrap:wrap; margin-top:10px;">
-                    <button class="btn btn-sec" style="flex:1; border-style:dashed;" onclick="addBlock('Normal')">+ Simples</button>
-                    <button class="btn btn-sec" style="flex:1; border-style:dashed; color:var(--c-bi); border-color:var(--c-bi);" onclick="addBlock('BiSet')">+ Bi-Set</button>
-                    <button class="btn btn-sec" style="flex:1; border-style:dashed; color:var(--c-tri); border-color:var(--c-tri);" onclick="addBlock('TriSet')">+ Tri-Set</button>
+                <input id="sName" class="ph-inp" placeholder="Nome do Aluno" oninput="updateCurrent()">
+                <input id="sFocus" class="ph-inp-sub" placeholder="Objetivo Principal" oninput="updateCurrent()">
+                <div class="ph-dates">
+                    <div class="ph-date-badge"><i class="fas fa-calendar"></i> <span id="lblStart">--/--</span></div>
+                    <div class="ph-date-badge"><i class="fas fa-hourglass"></i> <span id="lblEnd">--/--</span></div>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
-
-<div class="sidebar col-right">
-    <div class="list-header" style="color:var(--primary); display:flex; align-items:center; gap:5px;">
-        <i class="fa-solid fa-list-check"></i> Configurações
-    </div>
-    
-    <div style="margin-bottom:10px;">
-        <label class="list-header" style="font-size:0.65rem; color:#94a3b8; margin-bottom:2px;">TIPO DE METODOLOGIA</label>
-        <select class="cat-select" id="methodSelect" onchange="saveCurrent()" style="font-weight:700; color:var(--primary); margin-bottom:10px;">
-            <option value="Musculação">Musculação (Padrão)</option>
-            <option value="Calistenia">Calistenia (Bodyweight)</option>
-        </select>
-
-        <label class="list-header" style="font-size:0.65rem; color:#94a3b8; margin-bottom:2px;">VALIDADE DO TREINO</label>
-        <div style="display:flex; gap:5px; margin-bottom:10px;">
-            <input class="search-inp" type="number" id="expiryDays" value="30" onchange="updateExpiryDate()" style="margin:0; width:60px; text-align:center;">
-            <div style="flex:1; display:flex; align-items:center; font-size:0.75rem; color:#64748b; background:white; padding:0 10px; border-radius:8px; border:1px solid var(--border);">
-                Vence: <span id="expiryDisplay" style="margin-left:5px; font-weight:700; color:var(--primary);">--/--</span>
+            <div class="ph-body" id="workoutBlocks">
+                <!-- BLOCKS RENDER HERE -->
+            </div>
+            <div style="padding: 10px; display:flex; gap:5px;">
+                <button class="btn btn-sec" onclick="addBlock('Normal')">+ Bloco</button>
+                <button class="btn btn-sec" onclick="addBlock('BiSet')">+ Bi-Set</button>
+                <button class="btn btn-sec" onclick="addBlock('TriSet')">+ Tri-Set</button>
             </div>
         </div>
-
-        <div class="list-header">Lógica do Treino</div>
-        <div id="logicContainer" class="logic-list"></div>
-        <button class="btn btn-sec" style="width:100%; margin-top:10px; padding:8px; font-size:0.8rem; background:white;" onclick="addLogicTopic()">+ Adicionar Tópico</button>
-    </div>
-
-    <div style="width:100%; height:1px; background:var(--border); margin-bottom:20px; margin-top:20px;"></div>
-
-    <div class="list-header">Biblioteca</div>
-    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:10px;">
-        <div style="display:flex; gap:5px;">
-             <input class="search-inp" id="searchLib" placeholder="Buscar..." onkeyup="renderLib()" style="margin:0;">
-             <button class="btn btn-pri" style="width:40px;" onclick="openExModal()"><i class="fas fa-plus"></i></button>
-        </div>
-        <!-- FILTERS -->
-        <div style="display:flex; gap:5px;">
-            <select class="cat-select" id="typeFilter" onchange="renderLib()" style="margin:0; width:50%; font-weight:700;">
-                <option value="Todos">Todos</option>
-                <option value="Musculação">Musculação</option>
-                <option value="Calistenia">Calistenia</option>
-            </select>
-            <select class="cat-select" id="catFilter" onchange="renderLib()" style="margin:0; width:50%;"></select>
-        </div>
-    </div>
-
-    <div class="list-scroll" id="libList"></div>
-
-    <div class="multi-btn-area">
-        <button class="btn-cloud-new" id="btn-cloud-new" onclick="saveToCloud('new')">
-            <i class="fas fa-link"></i> <span>Criar Novo Link</span>
-        </button>
-        <button class="btn-cloud-upd" id="btn-cloud-upd" onclick="saveToCloud('update')">
-            <i class="fas fa-rotate"></i> <span>Atualizar Existente</span>
-        </button>
-        <div style="display:flex; gap:5px;">
-            <button class="btn-offline" style="flex:1" onclick="generateOfflineLink()"><i class="fas fa-qrcode"></i> Offline</button>
-            <button class="btn-offline" style="flex:1; border-color:#0ea5e9; color:#0ea5e9;" onclick="generatePDF()"><i class="fas fa-file-pdf"></i> PDF</button>
-        </div>
     </div>
 </div>
 
-<!-- HIDDEN PRINT AREA -->
-<div id="print-area"></div>
-
-<div id="modal-ex" class="modal">
-    <div class="modal-box">
-        <div class="modal-h">Exercício</div>
-        <input type="hidden" id="exId">
-        <label class="list-header">Nome</label><input class="search-inp" id="exName">
-        
-        <label class="list-header">Tipo</label>
-        <select class="cat-select" id="exType" style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid var(--border);">
+<!-- COLUMN 3: SETTINGS -->
+<div class="sidebar">
+    <div class="list-header" style="margin-top:0;">Configurações do Treino</div>
+    <div style="background:white; padding:10px; border-radius:8px; border:1px solid var(--border); margin-bottom:10px;">
+        <label class="pill-lbl">Metodologia</label>
+        <select id="sMethod" class="cat-select" style="margin-bottom:10px; width:100%;" onchange="updateCurrent()">
             <option value="Musculação">Musculação</option>
             <option value="Calistenia">Calistenia</option>
         </select>
         
-        <label class="list-header">Categoria</label><select class="cat-select" id="exCat" style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid var(--border);"></select>
-        <label class="list-header">Link Vídeo (Opcional)</label><input class="search-inp" id="exLink" placeholder="YouTube URL...">
-        <div style="display:flex; gap:10px; margin-top:15px;">
-            <button class="btn btn-sec" style="flex:1" onclick="closeModal('ex')">Cancelar</button>
-            <button class="btn btn-pri" style="flex:1" onclick="saveEx()">Salvar</button>
+        <label class="pill-lbl">Início</label>
+        <input type="date" id="dStart" class="search-inp" style="margin-bottom:5px;" onchange="updateCurrent()">
+        <label class="pill-lbl">Vencimento</label>
+        <input type="date" id="dEnd" class="search-inp" style="margin-bottom:0;" onchange="updateCurrent()">
+    </div>
+
+    <div class="list-header">Lógica do Treino</div>
+    <div id="logicList" style="margin-bottom:20px;"></div>
+    <button class="btn btn-sec" onclick="addLogic()">+ Frase</button>
+
+    <div style="margin-top:auto; padding-top:20px; border-top:1px solid var(--border); display:flex; flex-direction:column; gap:8px;">
+        <button class="btn btn-pri" style="background:var(--accent);" onclick="generateLink('new')"><i class="fas fa-link"></i> Criar Link</button>
+        <button class="btn btn-pri" style="background:var(--success);" onclick="generateLink('update')"><i class="fas fa-sync"></i> Atualizar Link</button>
+        <div style="display:flex; gap:5px;">
+            <button class="btn btn-sec" onclick="generateOffline()"><i class="fas fa-qrcode"></i> Offline</button>
+            <button class="btn btn-sec" onclick="printPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
         </div>
     </div>
 </div>
 
-<div id="modal-sync" class="modal">
-    <div class="modal-box">
-        <div class="modal-h">Central de Dados</div>
-        
-        <label class="list-header">Token do GitHub</label>
-        <input class="search-inp" id="ghTokenInp" type="password" placeholder="ghp_..." style="margin-bottom:20px;">
-        
-        <div class="list-header" style="color:var(--accent);">Nuvem (Consultoria)</div>
-        <button class="sync-btn" onclick="forceDownload()">
-            <i class="fa-solid fa-cloud-arrow-down" style="color:var(--accent); font-size:1.2rem;"></i>
-            <div>
-                <div style="font-weight:700; color:var(--primary);">Baixar da Nuvem</div>
-                <div style="font-size:0.75rem; color:#64748b;">Puxar dados do GitHub (Sync)</div>
-            </div>
-        </button>
-
-        <div class="list-header" style="color:#64748b; margin-top:15px;">Backup Local</div>
-        <button class="sync-btn" onclick="exportData()">
-            <i class="fa-solid fa-download" style="color:var(--text); font-size:1.2rem;"></i>
-            <div><div style="font-weight:700;">Baixar JSON</div><div style="font-size:0.75rem; color:#64748b;">Salvar arquivo no PC</div></div>
-        </button>
-        <button class="sync-btn" onclick="document.getElementById('importFile').click()">
-            <i class="fa-solid fa-upload" style="color:var(--text); font-size:1.2rem;"></i>
-            <div><div style="font-weight:700;">Restaurar JSON</div><div style="font-size:0.75rem; color:#64748b;">Carregar arquivo do PC</div></div>
-        </button>
-        
-        <div style="display:flex; gap:10px; margin-top:20px;">
-            <button class="btn btn-pri" style="flex:1" onclick="saveTokenAndClose()">Salvar Token</button>
-            <button class="btn btn-sec" style="flex:1" onclick="closeModal('sync')">Fechar</button>
-        </div>
-        <div style="text-align:center; margin-top:15px;"><span style="color:var(--danger); cursor:pointer; font-size:0.8rem; font-weight:700;" onclick="hardReset()">Resetar Tudo</span></div>
+<!-- COLUMN 4: LIBRARY (NEW) -->
+<div class="sidebar" style="background:#f8fafc;">
+    <div class="list-header" style="margin-top:0;">Biblioteca de Exercícios</div>
+    <div style="display:flex; gap:5px;">
+        <input id="libSearch" class="search-inp" placeholder="Buscar..." onkeyup="renderLib()">
+        <button class="btn btn-pri" style="width:40px;" onclick="openExModal(null, null)">+</button>
     </div>
+    <select id="libCat" class="cat-select" onchange="renderLib()"></select>
+    
+    <div class="list-scroll" id="libList"></div>
 </div>
-<input type="file" id="importFile" hidden onchange="importData(this)">
+
+<div id="print-area"></div>
 
 <script>
-    const KEY_LIB = 'benai_coach_lib_main';
-    const KEY_STU = 'benai_coach_stu_main';
-    const KEY_TOKEN = 'benai_coach_gh_token';
+    // --- DATA & STATE ---
+    const DB_KEY = 'benai_data_v3';
+    const TOKEN_KEY = 'benai_gh_token';
     const GIST_DESC = 'BENAI_CONSULTANCY_DB';
-
+    
     const PILLARS = {
         'Musculação': [
-            {t:"1. Dor Boa vs. Dor Ruim", d:"Queimação muscular é sinal verde. Pontada aguda na articulação é SINAL VERMELHO. Pare e ajuste."},
+            {t:"1. Dor Boa vs. Dor Ruim", d:"Queimação muscular é sinal verde. Pontada aguda na articulação é SINAL VERMELHO."},
             {t:"2. Não vire um Baiacu", d:"Não prenda o ar ficando roxo! Solte o ar (assopre a vela) quando fizer a força."},
             {t:"3. Postura de Super-herói", d:"Estufe o peito e trave o abdômen. Essa armadura protege sua coluna."},
             {t:"4. Quem manda é você", d:"Não deixe o peso despencar. Desça em câmera lenta (3 seg) e suba com explosão."},
@@ -392,535 +316,568 @@
         ]
     };
 
-    let appData = { library: [], students: [], categories: ["Peito","Costas","Pernas","Ombros","Bíceps","Tríceps","Core","Mobilidade","Cardio"] };
-    let currentWorkout = null;
-    let activeExerciseId = null; 
-    let gistId = null;
-    let confirmCallback = null;
-    const catColors = { 'Peito':'#ef4444', 'Costas':'#3b82f6', 'Pernas':'#eab308', 'Ombros':'#f97316', 'Bíceps':'#a855f7', 'Tríceps':'#ec4899', 'Core':'#10b981', 'Mobilidade':'#06b6d4', 'Cardio':'#6366f1' };
+    let appData = { students: [], library: [] };
+    let currentStudent = null;
+    let categories = ["Peito", "Costas", "Pernas", "Ombros", "Bíceps", "Tríceps", "Core", "Mobilidade", "Cardio"];
+    let collapsedBlocks = {}; // Track UI state locally
 
-    init();
+    // --- INITIALIZATION ---
+    window.onload = function() {
+        const saved = localStorage.getItem(DB_KEY);
+        if (saved) appData = JSON.parse(saved);
 
-    async function init() {
-        appData.library = JSON.parse(localStorage.getItem(KEY_LIB)) || [];
-        appData.students = JSON.parse(localStorage.getItem(KEY_STU)) || [];
-        
-        if(appData.library.length < 5) populateInitialLibrary();
+        if (!appData.library || appData.library.length === 0) initLibrary();
+        if (!appData.students) appData.students = [];
 
-        const t = localStorage.getItem(KEY_TOKEN);
-        if(t) document.getElementById('ghTokenInp').value = t;
-
-        populateCats(); renderLib(); renderStudentList();
-        
-        // AUTO LOAD DEMO IF EMPTY
-        if(appData.students.length === 0) {
-            generateDemoStudent();
-        } else {
-            loadStudent(appData.students[0].id);
+        const token = localStorage.getItem(TOKEN_KEY);
+        if(token) {
+            document.getElementById('ghToken').value = token;
+            document.getElementById('stText').innerText = "Online";
+            document.getElementById('stDot').className = "dot ok";
         }
 
-        await syncCloudInit();
-    }
+        const catSel = document.getElementById('libCat');
+        const exCat = document.getElementById('exCat');
+        catSel.innerHTML = '<option value="">Todas</option>';
+        categories.forEach(c => {
+            catSel.add(new Option(c, c));
+            exCat.add(new Option(c, c));
+        });
 
-    function populateInitialLibrary() {
-        const items = [
-            {n:"Supino Reto Barra", c:"Peito", t:"Musculação", l:"https://youtube.com/watch?v=xyz"}, {n:"Supino Inclinado Halter", c:"Peito", t:"Musculação"}, {n:"Crossover", c:"Peito", t:"Musculação"}, {n:"Flexão de Braço", c:"Peito", t:"Calistenia", l:"https://youtube.com"}, {n:"Flexão Diamante", c:"Peito", t:"Calistenia"}, {n:"Dips (Paralelas)", c:"Peito", t:"Calistenia"},
-            {n:"Puxada Alta", c:"Costas", t:"Musculação"}, {n:"Remada Baixa", c:"Costas", t:"Musculação"}, {n:"Remada Curvada", c:"Costas", t:"Musculação"}, {n:"Barra Fixa (Pull-up)", c:"Costas", t:"Calistenia", l:"https://youtube.com"}, {n:"Barra Australiana", c:"Costas", t:"Calistenia"}, {n:"Chin-up", c:"Costas", t:"Calistenia"},
-            {n:"Agachamento Livre", c:"Pernas", t:"Musculação"}, {n:"Leg Press 45", c:"Pernas", t:"Musculação"}, {n:"Cadeira Extensora", c:"Pernas", t:"Musculação"}, {n:"Stiff", c:"Pernas", t:"Musculação"}, {n:"Agachamento Livre (Air Squat)", c:"Pernas", t:"Calistenia"}, {n:"Afundo (Lunge)", c:"Pernas", t:"Calistenia"}, {n:"Pistol Squat", c:"Pernas", t:"Calistenia"}, {n:"Panturrilha em Pé", c:"Pernas", t:"Calistenia"},
-            {n:"Desenvolvimento Halter", c:"Ombros", t:"Musculação"}, {n:"Elevação Lateral", c:"Ombros", t:"Musculação"}, {n:"Elevação Frontal", c:"Ombros", t:"Musculação"}, {n:"Pike Push-up", c:"Ombros", t:"Calistenia"}, {n:"Handstand Hold", c:"Ombros", t:"Calistenia"},
-            {n:"Rosca Direta Barra", c:"Bíceps", t:"Musculação"}, {n:"Rosca Martelo", c:"Bíceps", t:"Musculação"}, {n:"Tríceps Corda", c:"Tríceps", t:"Musculação"}, {n:"Tríceps Testa", c:"Tríceps", t:"Musculação"}, {n:"Tríceps Banco", c:"Tríceps", t:"Calistenia"},
-            {n:"Abdominal Supra", c:"Core", t:"Calistenia"}, {n:"Prancha Isométrica", c:"Core", t:"Calistenia"}, {n:"Elevação de Pernas", c:"Core", t:"Calistenia"}, {n:"Russian Twist", c:"Core", t:"Calistenia"}, {n:"L-Sit Hold", c:"Core", t:"Calistenia"},
-            {n:"Esteira", c:"Cardio", t:"Musculação"}, {n:"Elíptico", c:"Cardio", t:"Musculação"}, {n:"Burpees", c:"Cardio", t:"Calistenia"}, {n:"Polichinelos", c:"Cardio", t:"Calistenia"}, {n:"Mountain Climbers", c:"Cardio", t:"Calistenia"}
+        renderLib();
+        renderStudents();
+
+        if (appData.students.length > 0) loadStudent(appData.students[0].id);
+        else createStudent();
+    };
+
+    function initLibrary() {
+        appData.library = [
+            {id:1, name:"Supino Reto", cat:"Peito", type:"Musculação", link:""},
+            {id:2, name:"Flexão de Braço", cat:"Peito", type:"Calistenia", link:""},
+            {id:3, name:"Agachamento Livre", cat:"Pernas", type:"Musculação", link:""},
+            {id:4, name:"Puxada Alta", cat:"Costas", type:"Musculação", link:""},
+            {id:5, name:"Burpees", cat:"Cardio", type:"Calistenia", link:""}
         ];
-        items.forEach(i => appData.library.push({id:Date.now()+Math.random(), name:i.n, cat:i.c, type:i.t||"Musculação", link:i.l||""}));
         saveData();
     }
 
-    function generateDemoStudent() {
-        const startDate = new Date();
-        const expiryDate = new Date(Date.now() + 30*24*60*60*1000);
+    // --- CORE FUNCTIONS ---
+
+    function createStudent() {
+        const id = Date.now().toString();
+        const today = new Date().toISOString().split('T')[0];
+        const nextMonth = new Date(); nextMonth.setDate(nextMonth.getDate() + 30);
         
-        const demo = {
-            id: Date.now(),
-            cloudId: null,
-            name: "Pedro Calistenia",
-            focus: "Domínio Corporal e Força",
-            methodology: "Calistenia",
-            startDate: startDate.toISOString(),
-            expiryDate: expiryDate.toISOString(),
-            logicList: [
-                "Foco total na qualidade do movimento.",
-                "Não roube nas repetições, amplitude completa.",
-                "Descanse 2-3 min entre séries de força.",
-                "Mantenha o core (abdômen) contraído o tempo todo."
-            ],
-            blocks: [
-                {
-                    id: 1, type: "Normal", name: "Mobilidade e Aquecimento",
-                    items: [
-                        {name: "Polichinelos", sets: "2", reps: "50", rest: "30s", obs: "Aqueça bem as articulações", method: "Normal", link: ""},
-                        {name: "Prancha Isométrica", sets: "2", reps: "30", rest: "30s", obs: "Ativação do Core", method: "Iso", link: ""}
-                    ]
-                },
-                {
-                    id: 2, type: "Normal", name: "Força Principal",
-                    items: [
-                        {name: "Barra Fixa (Pull-up)", sets: "4", reps: "8", rest: "90s", obs: "Queixo acima da barra", method: "Normal", link: "https://youtube.com"},
-                        {name: "Dips (Paralelas)", sets: "4", reps: "10", rest: "90s", obs: "Cotovelos para trás", method: "Normal", link: "https://youtube.com"}
-                    ]
-                },
-                {
-                    id: 3, type: "BiSet", name: "Finalização",
-                    items: [
-                        {name: "Flexão de Braço", sets: "3", reps: "12", rest: "0s", obs: "Peito no chão", method: "Normal", link: ""},
-                        {name: "Abdominal Supra", sets: "3", reps: "20", rest: "60s", obs: "Contração máxima", method: "Normal", link: ""}
-                    ]
-                }
-            ]
+        const newS = {
+            id: id,
+            name: "Novo Aluno",
+            focus: "",
+            methodology: "Musculação",
+            start: today,
+            end: nextMonth.toISOString().split('T')[0],
+            logic: ["Foco na execução perfeita.", "Respeite o tempo de descanso."],
+            blocks: [{ id: Date.now(), name: "Bloco Principal", type: "Normal", items: [] }],
+            cloudId: null
         };
-        appData.students.push(demo);
+
+        appData.students.unshift(newS);
         saveData();
-        renderStudentList();
-        loadStudent(demo.id); // IMPORTANT: Load immediately
-        showToast("Aluno Demo Criado!");
+        renderStudents();
+        loadStudent(id);
+        
+        document.getElementById('sName').value = "";
+        document.getElementById('sName').focus();
     }
 
-    // ... (rest of functions: saveData, showToast, showConfirm, closeConfirm, delStudent, delBlock, syncCloudInit, forceDownload, pushToCloudDB, saveTokenAndClose, etc. remain the same) ...
+    function loadStudent(id) {
+        currentStudent = appData.students.find(s => s.id === id);
+        if (!currentStudent) return;
+
+        document.getElementById('sName').value = currentStudent.name;
+        document.getElementById('sFocus').value = currentStudent.focus || "";
+        document.getElementById('sMethod').value = currentStudent.methodology || "Musculação";
+        document.getElementById('dStart').value = currentStudent.start;
+        document.getElementById('dEnd').value = currentStudent.end;
+        
+        collapsedBlocks = {}; // Reset collapsed state
+        updateDatesDisplay();
+        renderLogicList();
+        renderBlocks();
+        
+        document.querySelectorAll('.student-item').forEach(el => el.classList.remove('active'));
+        const activeItem = document.getElementById(`st-${id}`);
+        if(activeItem) activeItem.classList.add('active');
+    }
+
+    function updateCurrent() {
+        if (!currentStudent) return;
+        currentStudent.name = document.getElementById('sName').value || "Novo Aluno";
+        currentStudent.focus = document.getElementById('sFocus').value;
+        currentStudent.methodology = document.getElementById('sMethod').value;
+        currentStudent.start = document.getElementById('dStart').value;
+        currentStudent.end = document.getElementById('dEnd').value;
+        
+        saveData();
+        const stEl = document.querySelector(`#st-${currentStudent.id} .st-name`);
+        if(stEl) stEl.innerText = currentStudent.name;
+        updateDatesDisplay();
+        renderStudents(document.querySelector('.search-inp').value || "");
+    }
+
+    function updateDatesDisplay() {
+        const s = document.getElementById('dStart').value.split('-');
+        const e = document.getElementById('dEnd').value.split('-');
+        document.getElementById('lblStart').innerText = `${s[2]}/${s[1]}`;
+        document.getElementById('lblEnd').innerText = `${e[2]}/${e[1]}`;
+    }
+
     function saveData() {
-        localStorage.setItem(KEY_LIB, JSON.stringify(appData.library));
-        localStorage.setItem(KEY_STU, JSON.stringify(appData.students));
+        localStorage.setItem(DB_KEY, JSON.stringify(appData));
     }
 
-    function showToast(msg) {
-        const t = document.getElementById('toast');
-        document.getElementById('toast-text').innerText = msg;
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 3000);
-    }
+    // --- RENDERERS ---
 
-    function showConfirm(title, msg, callback) {
-        document.getElementById('confirm-title').innerText = title;
-        document.getElementById('confirm-msg').innerText = msg;
-        confirmCallback = callback;
-        document.getElementById('modal-confirm').style.display = 'flex';
-        document.getElementById('confirm-yes-btn').onclick = () => {
-            if(confirmCallback) confirmCallback();
-            closeConfirm();
-        };
-    }
-
-    function closeConfirm() {
-        document.getElementById('modal-confirm').style.display = 'none';
-        confirmCallback = null;
-    }
-
-    function delStudent(id, e) {
-        e.stopPropagation();
-        showConfirm("Excluir Aluno?", "Todos os dados desse treino serão perdidos permanentemente.", () => {
-            appData.students = appData.students.filter(s => s.id !== id);
-            saveData();
-            if (currentWorkout && currentWorkout.id === id) createNewWorkout();
-            renderStudentList();
-            showToast("Aluno excluído com sucesso.");
-        });
-    }
-
-    function delBlock(id) {
-        showConfirm("Excluir Bloco?", "Os exercícios deste bloco serão removidos.", () => {
-            currentWorkout.blocks = currentWorkout.blocks.filter(b => b.id !== id);
-            activeExerciseId = null;
-            saveCurrent();
-            renderBuilder();
-            showToast("Bloco removido.");
-        });
-    }
-
-    function updateCloudStatus(st) { const el = document.getElementById('cloudIndicator'); if(el) el.className = 'cloud-dot ' + st; }
-    
-    async function syncCloudInit() {
-        const token = localStorage.getItem(KEY_TOKEN);
-        if(!token) return updateCloudStatus('error');
-        updateCloudStatus('sync');
-        try {
-            if(!gistId) {
-                const s = await fetch('https://api.github.com/gists', { headers: { 'Authorization': `token ${token}` } });
-                const g = await s.json();
-                const f = g.find(x => x.description === GIST_DESC);
-                if(f) gistId = f.id;
-            }
-            if(gistId) updateCloudStatus('ok');
-            else updateCloudStatus('ok'); 
-        } catch(e) { updateCloudStatus('error'); }
-    }
-
-    async function forceDownload() {
-        const token = localStorage.getItem(KEY_TOKEN);
-        if(!token) return alert("Salve o token primeiro.");
-        try {
-            updateCloudStatus('sync');
-            if(!gistId) await syncCloudInit();
-            if(gistId) {
-                const r = await fetch(`https://api.github.com/gists/${gistId}`, { headers: { 'Authorization': `token ${token}` } });
-                const j = await r.json();
-                if(j.files["gerador_data.json"]) {
-                    const cloudDB = JSON.parse(j.files["gerador_data.json"].content);
-                    appData = cloudDB;
-                    saveData();
-                    showToast("Dados baixados da nuvem!");
-                    setTimeout(() => location.reload(), 1000);
-                } else { alert("Arquivo ainda não existe na nuvem."); }
-            } else { alert("Gist não encontrado. Salve algo primeiro."); }
-            updateCloudStatus('ok');
-        } catch(e) { alert("Erro ao baixar: " + e.message); updateCloudStatus('error'); }
-    }
-
-    async function pushToCloudDB() {
-        const token = localStorage.getItem(KEY_TOKEN);
-        if(!token) return;
-        updateCloudStatus('sync');
-        try {
-            let url = 'https://api.github.com/gists'; let method = 'POST';
-            if(gistId) { url += '/' + gistId; method = 'PATCH'; }
-            const payload = { description: GIST_DESC, public: false, files: { "gerador_data.json": { content: JSON.stringify(appData) } } };
-            const res = await fetch(url, { method: method, headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-            const json = await res.json();
-            if(json.id) gistId = json.id;
-            updateCloudStatus('ok');
-        } catch(e) { updateCloudStatus('error'); }
-    }
-
-    function saveTokenAndClose() {
-        const t = document.getElementById('ghTokenInp').value;
-        if(t) { localStorage.setItem(KEY_TOKEN, t); showToast("Token Salvo!"); syncCloudInit(); closeModal('sync'); }
-    }
-
-    // --- PDF GENERATION (VISUAL UPDATE) ---
-    function generatePDF() {
-        if(!currentWorkout) return alert("Nenhum treino carregado.");
-        const area = document.getElementById('print-area');
+    function renderStudents(filter = "") {
+        const list = document.getElementById('studentList');
+        list.innerHTML = "";
         
-        const start = currentWorkout.startDate ? new Date(currentWorkout.startDate).toLocaleDateString('pt-BR') : '--/--';
-        const end = currentWorkout.expiryDate ? new Date(currentWorkout.expiryDate).toLocaleDateString('pt-BR') : '--/--';
-        
-        const logicItems = (currentWorkout.logicList||[]).map(l => `<div style="margin-bottom:5px; display:flex; align-items:flex-start;"><span style="color:#00A89A; margin-right:8px; font-weight:bold;">•</span> ${l}</div>`).join('');
-        
-        const meth = currentWorkout.methodology || 'Musculação';
-        const pillars = PILLARS[meth] || PILLARS['Musculação'];
-        const pillarsHTML = pillars.map(p => `
-            <div style="background:#f8fafc; padding:8px; border-radius:6px; margin-bottom:5px; border:1px solid #e2e8f0; font-size:10px;">
-                <div style="font-weight:800; color:#001F5B; margin-bottom:2px;">${p.t}</div>
-                <div style="color:#64748b; line-height:1.2;">${p.d}</div>
-            </div>
-        `).join('');
-
-        let workoutHTML = '';
-        currentWorkout.blocks.forEach(b => {
-            let items = '';
+        appData.students.filter(s => s.name.toLowerCase().includes(filter.toLowerCase())).forEach(s => {
+            const div = document.createElement('div');
+            div.className = "student-item";
+            div.id = `st-${s.id}`;
+            div.onclick = () => loadStudent(s.id);
             
-            b.items.forEach((i, idx) => {
-                let linkIcon = (i.link && i.link.length > 5) ? '<span style="color:#ef4444; font-size:8px; font-weight:800; margin-left:3px;">[VÍDEO]</span>' : '';
-                
-                // Determine styling based on method
-                let rowStyle = 'border-bottom:1px solid #eee; background:white;';
-                let leftBorder = '4px solid #cbd5e1';
-                
-                if (i.method === 'Drop') { rowStyle = 'background:#fef2f2; border-bottom:1px solid #fee2e2;'; leftBorder = '4px solid #ef4444'; }
-                if (i.method === 'RNP') { rowStyle = 'background:#fff7ed; border-bottom:1px solid #ffedd5;'; leftBorder = '4px solid #f59e0b'; }
-                if (i.method === 'Iso') { rowStyle = 'background:#ecfeff; border-bottom:1px solid #cffafe;'; leftBorder = '4px solid #06b6d4'; }
-                
-                // If inside BiSet or TriSet, remove individual left border and make transparent
-                if(b.type === 'biset' || b.type === 'triset') {
-                    leftBorder = 'none';
-                    rowStyle = 'border-bottom:1px dashed #cbd5e1; background:transparent;';
-                    if(idx === b.items.length -1) rowStyle = 'background:transparent;';
-                }
+            let pct = 0;
+            let color = 'var(--success)';
+            if(s.start && s.end) {
+                const total = new Date(s.end) - new Date(s.start);
+                const elapsed = new Date() - new Date(s.start);
+                pct = Math.min(100, Math.max(0, (elapsed/total)*100));
+                if(pct > 75) color = 'var(--danger)'; else if (pct > 50) color = 'var(--warning)';
+            }
 
-                items += `
-                <div style="display:flex; justify-content:space-between; padding:8px 5px; align-items:center; ${rowStyle} border-left:${leftBorder}; margin-bottom:2px;">
-                    <div style="font-weight:700; color:#1e293b; width:45%;">${i.name} ${linkIcon}</div>
-                    <div style="font-size:10px; color:#475569; width:15%; text-align:center;">${i.sets}x ${i.reps}</div>
-                    <div style="font-size:10px; color:#475569; width:15%; text-align:center;">${i.rest}</div>
-                    <div style="font-size:9px; color:#64748b; width:25%; text-align:right; font-weight:600;">${i.method} ${i.obs?'<br><span style="color:#d97706; font-size:8px;">'+i.obs+'</span>':''}</div>
+            div.innerHTML = `
+                <span class="st-name">${s.name}</span>
+                <div class="st-info">
+                    <span>${formatDate(s.end)}</span>
+                    <i class="fas fa-trash" style="color:#cbd5e1;" onclick="deleteStudent(event, '${s.id}')"></i>
+                </div>
+                <div class="st-bar-bg"><div class="st-bar-fill" style="width:${pct}%; background:${color}"></div></div>
+            `;
+            list.appendChild(div);
+        });
+        
+        if (currentStudent) {
+            const activeItem = document.getElementById(`st-${currentStudent.id}`);
+            if(activeItem) activeItem.classList.add('active');
+        }
+    }
+
+    function renderLogicList() {
+        const div = document.getElementById('logicList');
+        div.innerHTML = "";
+        (currentStudent.logic || []).forEach((t, i) => {
+            div.innerHTML += `
+            <div class="logic-item">
+                <input class="logic-inp" value="${t}" onchange="updateLogic(${i}, this.value)">
+                <i class="fas fa-trash" style="color:var(--danger); cursor:pointer; padding:5px;" onclick="delLogic(${i})"></i>
+            </div>`;
+        });
+    }
+
+    function renderBlocks() {
+        const container = document.getElementById('workoutBlocks');
+        container.innerHTML = "";
+        
+        if (!currentStudent || !currentStudent.blocks) return;
+
+        currentStudent.blocks.forEach((block, bIdx) => {
+            if(!block.id) block.id = Date.now() + bIdx; // Ensure ID
+            const isCollapsed = collapsedBlocks[block.id];
+            
+            const bDiv = document.createElement('div');
+            let cls = "block-container";
+            if (isCollapsed) cls += " collapsed";
+            if (block.type === 'BiSet') cls += " biset-cont";
+            if (block.type === 'TriSet') cls += " triset-cont";
+            bDiv.className = cls;
+
+            let itemsHTML = "";
+            block.items.forEach((item, iIdx) => {
+                let methodClass = "";
+                if(item.method === 'Drop') methodClass = 'm-Drop';
+                if(item.method === 'RNP') methodClass = 'm-RNP';
+                if(item.method === 'Iso') methodClass = 'm-Iso';
+                if(item.method === 'Pyr') methodClass = 'm-Pyr';
+
+                const linkIcon = item.link ? `<i class="fas fa-play-circle" title="Tem vídeo"></i>` : '';
+
+                itemsHTML += `
+                <div class="ex-row ${methodClass}">
+                    <span class="ex-name">${item.name} ${linkIcon}</span>
+                    
+                    <div class="pills">
+                        <div class="pill-wrap"><span class="pill-lbl">Sets</span><input class="pill-inp" value="${item.sets}" onchange="updateItem(${bIdx}, ${iIdx}, 'sets', this.value)"></div>
+                        <div class="pill-wrap"><span class="pill-lbl">Reps</span><input class="pill-inp" value="${item.reps}" onchange="updateItem(${bIdx}, ${iIdx}, 'reps', this.value)"></div>
+                        <div class="pill-wrap"><span class="pill-lbl">Desc</span><input class="pill-inp" value="${item.rest}" onchange="updateItem(${bIdx}, ${iIdx}, 'rest', this.value)"></div>
+                        <div class="pill-wrap">
+                            <span class="pill-lbl">Método</span>
+                            <select class="pill-inp" style="width:70px;" onchange="updateItem(${bIdx}, ${iIdx}, 'method', this.value)">
+                                <option value="Normal" ${item.method==='Normal'?'selected':''}>Normal</option>
+                                <option value="Drop" ${item.method==='Drop'?'selected':''}>Drop</option>
+                                <option value="RNP" ${item.method==='RNP'?'selected':''}>RNP</option>
+                                <option value="Iso" ${item.method==='Iso'?'selected':''}>Iso</option>
+                                <option value="Pyr" ${item.method==='Pyr'?'selected':''}>Pyr</option>
+                            </select>
+                        </div>
+                    </div>
+                    <input class="obs-inp" value="${item.obs||''}" placeholder="Obs..." onchange="updateItem(${bIdx}, ${iIdx}, 'obs', this.value)">
+                    <div class="row-actions">
+                        <div class="icon-btn" onclick="openExModal(${bIdx}, ${iIdx})"><i class="fas fa-pencil"></i></div>
+                        <div class="icon-btn" onclick="moveItem(${bIdx}, ${iIdx}, -1)"><i class="fas fa-arrow-up"></i></div>
+                        <div class="icon-btn" onclick="moveItem(${bIdx}, ${iIdx}, 1)"><i class="fas fa-arrow-down"></i></div>
+                        <div class="icon-btn del" onclick="deleteItem(${bIdx}, ${iIdx})"><i class="fas fa-trash"></i></div>
+                    </div>
                 </div>`;
             });
 
-            // Container Styling for Bi/Tri Sets
-            let containerStyle = 'margin-bottom:20px; break-inside:avoid;';
-            let titleStyle = 'background:#001F5B; color:white; padding:8px 10px; font-weight:800; text-transform:uppercase; font-size:12px; border-radius:4px; margin-bottom:5px; box-shadow:0 2px 5px rgba(0,0,0,0.1);';
-            
-            if(b.type === 'biset') {
-                containerStyle += 'border:2px dashed #00A8E8; background:#f0f9ff; border-radius:8px; padding:10px; position:relative; padding-top:25px;';
-                titleStyle = 'position:absolute; top:0; left:0; background:#00A8E8; color:white; padding:2px 10px; font-size:10px; border-bottom-right-radius:8px; width:auto; margin:0;';
-            } else if (b.type === 'triset') {
-                containerStyle += 'border:2px dashed #6366f1; background:#fdf4ff; border-radius:8px; padding:10px; position:relative; padding-top:25px;';
-                titleStyle = 'position:absolute; top:0; left:0; background:#6366f1; color:white; padding:2px 10px; font-size:10px; border-bottom-right-radius:8px; width:auto; margin:0;';
-            }
-
-            workoutHTML += `
-            <div style="${containerStyle}">
-                <div style="${titleStyle}">
-                    <span>${b.name}</span>
-                    ${(b.type!=='biset' && b.type!=='triset') ? '<span style="opacity:0.7; font-size:10px; float:right;">'+b.type+'</span>' : ''}
+            bDiv.innerHTML = `
+                <div class="block-head">
+                    <input class="w-title" value="${block.name}" onchange="updateBlockName(${bIdx}, this.value)">
+                    <div style="display:flex; gap:5px;">
+                        <i class="fas fa-eye" style="color:var(--accent); cursor:pointer; padding:5px;" onclick="toggleBlock('${block.id}')" title="Minimizar"></i>
+                        <i class="fas fa-trash" style="color:var(--danger); cursor:pointer; padding:5px;" onclick="deleteBlock(${bIdx})"></i>
+                    </div>
                 </div>
-                <div style="padding:0;">${items}</div>
+                <div class="block-body-content">${itemsHTML}</div>
+            `;
+            container.appendChild(bDiv);
+        });
+    }
+
+    function toggleBlock(id) {
+        collapsedBlocks[id] = !collapsedBlocks[id];
+        renderBlocks();
+    }
+
+    function renderLib() {
+        const list = document.getElementById('libList');
+        const term = document.getElementById('libSearch').value.toLowerCase();
+        const cat = document.getElementById('libCat').value;
+        list.innerHTML = "";
+        
+        appData.library.filter(x => 
+            x.name.toLowerCase().includes(term) && 
+            (cat === "" || x.cat === cat)
+        ).forEach(x => {
+            const div = document.createElement('div');
+            div.className = "item-card";
+            div.innerHTML = `
+            <div style="flex:1" onclick="addItem(${x.id})">
+                <span>${x.name}</span>
+            </div>
+            <div class="item-actions">
+                <i class="fas fa-pencil" style="color:#cbd5e1; font-size:0.7rem; cursor:pointer;" onclick="editLibItem(${x.id})"></i>
+                <i class="fas fa-plus-circle" style="color:var(--success); font-size:1rem; cursor:pointer;" onclick="addItem(${x.id})"></i>
+            </div>`;
+            list.appendChild(div);
+        });
+    }
+
+    // --- ACTIONS ---
+
+    function addItem(libId) {
+        const ex = appData.library.find(x => x.id === libId);
+        if (!ex) return;
+        
+        if (!currentStudent) { createStudent(); }
+        let block = currentStudent.blocks[currentStudent.blocks.length - 1];
+        if (!block) { addBlock('Normal'); block = currentStudent.blocks[0]; }
+
+        block.items.push({
+            name: ex.name,
+            link: ex.link || '',
+            sets: '3',
+            reps: '12',
+            rest: '60s',
+            obs: '',
+            method: 'Normal'
+        });
+        
+        saveData();
+        renderBlocks();
+        // Expand if added to a collapsed block
+        if(collapsedBlocks[block.id]) { collapsedBlocks[block.id] = false; renderBlocks(); }
+        
+        setTimeout(() => {
+            const c = document.querySelector('.ph-body');
+            c.scrollTop = c.scrollHeight;
+        }, 50);
+    }
+
+    function addBlock(type) {
+        if (!currentStudent) return;
+        let name = "Bloco " + (currentStudent.blocks.length + 1);
+        if(type === 'BiSet') name = "Bi-Set";
+        if(type === 'TriSet') name = "Tri-Set";
+        currentStudent.blocks.push({ id: Date.now(), name: name, type: type, items: [] });
+        saveData();
+        renderBlocks();
+        setTimeout(() => {
+            const c = document.querySelector('.ph-body');
+            c.scrollTop = c.scrollHeight;
+        }, 50);
+    }
+
+    function updateItem(bIdx, iIdx, field, val) {
+        currentStudent.blocks[bIdx].items[iIdx][field] = val;
+        saveData();
+        if(field === 'method') renderBlocks(); // Re-render for color change
+    }
+
+    function updateBlockName(bIdx, val) { currentStudent.blocks[bIdx].name = val; saveData(); }
+    function moveItem(bIdx, iIdx, dir) {
+        const items = currentStudent.blocks[bIdx].items;
+        if (iIdx + dir < 0 || iIdx + dir >= items.length) return;
+        const temp = items[iIdx]; items[iIdx] = items[iIdx + dir]; items[iIdx + dir] = temp;
+        saveData(); renderBlocks();
+    }
+    function deleteItem(bIdx, iIdx) { currentStudent.blocks[bIdx].items.splice(iIdx, 1); saveData(); renderBlocks(); }
+    function deleteBlock(bIdx) { if(confirm("Apagar bloco?")) { currentStudent.blocks.splice(bIdx, 1); saveData(); renderBlocks(); } }
+    
+    function deleteStudent(e, id) {
+        e.stopPropagation();
+        if(confirm("Apagar aluno?")) {
+            appData.students = appData.students.filter(s => s.id !== id);
+            if (currentStudent && currentStudent.id === id) currentStudent = appData.students.length > 0 ? appData.students[0] : null;
+            saveData();
+            renderStudents();
+            if(currentStudent) loadStudent(currentStudent.id); else document.getElementById('workoutBlocks').innerHTML = "";
+        }
+    }
+
+    function addLogic() { if(!currentStudent.logic) currentStudent.logic=[]; currentStudent.logic.push(""); saveData(); renderLogicList(); }
+    function updateLogic(i, v) { currentStudent.logic[i] = v; saveData(); }
+    function delLogic(i) { currentStudent.logic.splice(i, 1); saveData(); renderLogicList(); }
+
+    function applyPreset(s,r,t) {
+        if(!currentStudent) return;
+        // Apply to last added exercise
+        let found = false;
+        for(let b=currentStudent.blocks.length-1; b>=0; b--) {
+            if(currentStudent.blocks[b].items.length > 0) {
+                const lastItem = currentStudent.blocks[b].items[currentStudent.blocks[b].items.length-1];
+                lastItem.sets = s; lastItem.reps = r; lastItem.rest = t;
+                found = true;
+                break;
+            }
+        }
+        if(found) { saveData(); renderBlocks(); showToast(`Preset Aplicado: ${s}x${r}`); }
+        else showToast("Adicione um exercício primeiro.");
+    }
+
+    // --- MODAL EXERCISE (EDIT/ADD) ---
+    function openExModal(bIdx, iIdx) {
+        document.getElementById('modal-ex').style.display = 'flex';
+        const isEditWorkoutItem = (bIdx !== null && iIdx !== null);
+        document.getElementById('libOptions').style.display = isEditWorkoutItem ? 'none' : 'block';
+        
+        // Reset hidden fields
+        document.getElementById('exEditBlockIdx').value = "";
+        document.getElementById('exEditItemIdx').value = "";
+        document.getElementById('exEditLibId').value = "";
+
+        if(isEditWorkoutItem) {
+            document.getElementById('modalExTitle').innerText = "Editar Item do Treino";
+            const item = currentStudent.blocks[bIdx].items[iIdx];
+            document.getElementById('exName').value = item.name;
+            document.getElementById('exLink').value = item.link || '';
+            document.getElementById('exEditBlockIdx').value = bIdx;
+            document.getElementById('exEditItemIdx').value = iIdx;
+        } else {
+            // Adding new to Library
+            document.getElementById('modalExTitle').innerText = "Adicionar à Biblioteca";
+            document.getElementById('exName').value = '';
+            document.getElementById('exLink').value = '';
+        }
+    }
+
+    function editLibItem(id) {
+        const item = appData.library.find(x => x.id === id);
+        if(!item) return;
+        document.getElementById('modal-ex').style.display = 'flex';
+        document.getElementById('libOptions').style.display = 'block';
+        document.getElementById('modalExTitle').innerText = "Editar na Biblioteca";
+        
+        document.getElementById('exName').value = item.name;
+        document.getElementById('exLink').value = item.link || '';
+        document.getElementById('exCat').value = item.cat;
+        document.getElementById('exType').value = item.type || 'Musculação';
+        document.getElementById('exEditLibId').value = id;
+    }
+
+    function closeExModal() { document.getElementById('modal-ex').style.display = 'none'; }
+
+    function confirmExSave() {
+        const name = document.getElementById('exName').value;
+        const link = document.getElementById('exLink').value;
+        const bIdx = document.getElementById('exEditBlockIdx').value;
+        const iIdx = document.getElementById('exEditItemIdx').value;
+        const libId = document.getElementById('exEditLibId').value;
+
+        if(!name) return alert("Nome obrigatório");
+
+        if(bIdx !== "") {
+            // Editing existing item in workout
+            currentStudent.blocks[bIdx].items[iIdx].name = name;
+            currentStudent.blocks[bIdx].items[iIdx].link = link;
+            saveData();
+            renderBlocks();
+        } else if (libId !== "") {
+            // Editing Library Item
+            const idx = appData.library.findIndex(x => x.id == libId);
+            if(idx > -1) {
+                appData.library[idx].name = name;
+                appData.library[idx].link = link;
+                appData.library[idx].cat = document.getElementById('exCat').value;
+                appData.library[idx].type = document.getElementById('exType').value;
+                saveData();
+                renderLib();
+            }
+        } else {
+            // Adding new to Library
+            const cat = document.getElementById('exCat').value;
+            const type = document.getElementById('exType').value;
+            appData.library.push({id: Date.now(), name, cat, type, link});
+            saveData();
+            renderLib();
+        }
+        closeExModal();
+    }
+
+    // --- CLOUD & PDF ---
+
+    async function generateLink(mode) {
+        if(!currentStudent) return alert("Nenhum aluno selecionado.");
+        const token = localStorage.getItem(TOKEN_KEY);
+        if(!token) return alert("Salve o Token do GitHub.");
+
+        const payload = {
+            name: currentStudent.name,
+            focus: currentStudent.focus,
+            methodology: currentStudent.methodology,
+            startDate: currentStudent.start,
+            expiryDate: currentStudent.end,
+            logic: currentStudent.logic.join('\n'), // Legacy compatibility
+            blocks: currentStudent.blocks
+        };
+
+        showToast("Salvando...");
+        try {
+            let url = 'https://api.github.com/gists';
+            let method = 'POST';
+            if (mode === 'update' && currentStudent.cloudId) { url += '/' + currentStudent.cloudId; method = 'PATCH'; }
+
+            const res = await fetch(url, { method: method, headers: {'Authorization': `token ${token}`, 'Content-Type': 'application/json'}, body: JSON.stringify({description: `Treino: ${currentStudent.name}`, public: false, files: {"treino.json": { content: JSON.stringify(payload) }}}) });
+            if (!res.ok) throw new Error("Erro na API");
+            const json = await res.json();
+            currentStudent.cloudId = json.id;
+            saveData();
+
+            if (mode === 'new') {
+                const link = `${window.location.origin}${window.location.pathname.replace('gerador.html','aluno.html')}?id=${json.id}`;
+                navigator.clipboard.writeText(link);
+                alert("Link criado e copiado!");
+                window.open(`https://tinyurl.com/create.php?url=${encodeURIComponent(link)}`, '_blank');
+            } else { alert("Atualizado!"); }
+        } catch (e) { alert("Erro ao conectar."); }
+    }
+
+    function generateOffline() {
+        if(!currentStudent) return;
+        const payload = { name: currentStudent.name, focus: currentStudent.focus, methodology: currentStudent.methodology, startDate: currentStudent.start, expiryDate: currentStudent.end, logic: currentStudent.logic.join('\n'), blocks: currentStudent.blocks };
+        const compressed = LZString.compressToEncodedURIComponent(JSON.stringify(payload));
+        const link = `${window.location.origin}${window.location.pathname.replace('gerador.html','aluno.html')}?data=${compressed}`;
+        navigator.clipboard.writeText(link);
+        alert("Link Offline Copiado!");
+    }
+
+    function saveToken() {
+        const t = document.getElementById('ghToken').value;
+        if(t) { localStorage.setItem(TOKEN_KEY, t); alert("Token Salvo!"); location.reload(); }
+    }
+
+    function printPDF() {
+        if(!currentStudent) return;
+        const area = document.getElementById('print-area');
+        const logicHTML = (currentStudent.logic||[]).map(l => `<div style="margin-bottom:5px;">• ${l}</div>`).join('');
+        const pillars = PILLARS[currentStudent.methodology] || PILLARS['Musculação'];
+        const pillarsHTML = pillars.map(p => `
+            <div style="background:#f0f9ff; padding:10px; border-radius:8px; margin-bottom:5px; border-left:4px solid #00A8E8; font-size:10px;">
+                <div style="font-weight:800; color:#001F5B; margin-bottom:2px;">${p.t}</div>
+                <div style="color:#555;">${p.d}</div>
+            </div>
+        `).join('');
+
+        let blocksHTML = '';
+        currentStudent.blocks.forEach(b => {
+            let items = b.items.map(i => `
+                <div style="display:flex; justify-content:space-between; padding:6px; border-bottom:1px solid #eee; align-items:center;">
+                    <div style="width:45%;">
+                        <div style="font-weight:bold; color:#1e293b;">${i.name}</div>
+                        ${i.link ? '<div style="color:#00A8E8; font-size:8px;">[VÍDEO DISPONÍVEL NO APP]</div>' : ''}
+                    </div>
+                    <div style="width:15%; text-align:center;">${i.sets}x ${i.reps}</div>
+                    <div style="width:15%; text-align:center;">${i.rest}</div>
+                    <div style="width:25%; text-align:right; color:#64748b; font-size:10px;">${i.method} ${i.obs ? `<br><span style="color:#d97706">${i.obs}</span>` : ''}</div>
+                </div>
+            `).join('');
+            
+            blocksHTML += `
+            <div style="margin-bottom:20px; break-inside:avoid; border:1px solid #eee; border-radius:8px; overflow:hidden;">
+                <div style="background:#001F5B; color:white; padding:8px 15px; font-weight:bold; font-size:12px; display:flex; justify-content:space-between;">
+                    <span>${b.name}</span>
+                    <span style="opacity:0.8; font-size:10px;">${b.type}</span>
+                </div>
+                <div style="padding:10px;">${items}</div>
             </div>`;
         });
 
         area.innerHTML = `
-            <div style="font-family:'Plus Jakarta Sans', sans-serif; padding:20px; color:#1e293b;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:3px solid #001F5B; padding-bottom:15px;">
+            <div style="font-family:sans-serif; padding:20px; color:#1e293b;">
+                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #001F5B; padding-bottom:15px; margin-bottom:20px;">
                     <div>
-                        <h1 style="font-size:24px; font-weight:900; color:#001F5B; margin:0; line-height:1;">BENAI BERNARDO</h1>
-                        <div style="font-size:10px; font-weight:700; letter-spacing:2px; color:#00A89A; text-transform:uppercase; margin-top:4px;">Consultoria de Treinamento</div>
+                        <h1 style="color:#001F5B; margin:0; font-size:24px; line-height:1;">BENAI BERNARDO</h1>
+                        <div style="color:#00A8E8; font-weight:bold; letter-spacing:2px; font-size:10px; margin-top:5px;">CONSULTORIA DE TREINAMENTO</div>
                     </div>
-                    <div style="text-align:right; font-size:10px; color:#64748b;">
-                        <div style="font-weight:bold;">Gerado em:</div>
-                        <div>${new Date().toLocaleDateString('pt-BR')}</div>
+                    <div style="text-align:right; font-size:10px;">
+                        <div>ALUNO: <b>${currentStudent.name}</b></div>
+                        <div>OBJETIVO: ${currentStudent.focus}</div>
+                        <div>VALIDADE: ${formatDate(currentStudent.end)}</div>
                     </div>
                 </div>
-
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:20px;">
-                    <div style="background:#f0f9ff; padding:15px; border-radius:10px; border:1px solid #bae6fd;">
-                        <div style="font-size:10px; font-weight:700; color:#00A89A; text-transform:uppercase;">Aluno</div>
-                        <div style="font-size:16px; font-weight:800; color:#001F5B;">${currentWorkout.name}</div>
-                        <div style="font-size:12px; color:#475569; margin-top:2px;">Foco: ${currentWorkout.focus}</div>
-                    </div>
-                    <div style="background:#fff; padding:15px; border-radius:10px; border:1px solid #e2e8f0;">
-                        <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:4px;">
-                            <span style="color:#64748b;">Início:</span> <strong>${start}</strong>
-                        </div>
-                        <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:4px;">
-                            <span style="color:#64748b;">Validade:</span> <strong style="color:#ef4444;">${end}</strong>
-                        </div>
-                        <div style="display:flex; justify-content:space-between; font-size:11px;">
-                            <span style="color:#64748b;">Metodologia:</span> <strong>${meth}</strong>
-                        </div>
-                    </div>
-                </div>
-
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:25px;">
+                
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:20px;">
                     <div>
-                        <h3 style="font-size:12px; font-weight:800; text-transform:uppercase; color:#001F5B; border-bottom:1px solid #e2e8f0; padding-bottom:5px; margin-bottom:10px;">Lógica do Treino</h3>
-                        <div style="font-size:11px; color:#334155;">${logicItems}</div>
+                        <h3 style="background:#001F5B; color:white; padding:5px 10px; font-size:12px; border-radius:4px; margin-top:0;">LÓGICA DO TREINO</h3>
+                        <div style="font-size:11px;">${logicHTML}</div>
                     </div>
                     <div>
-                        <h3 style="font-size:12px; font-weight:800; text-transform:uppercase; color:#001F5B; border-bottom:1px solid #e2e8f0; padding-bottom:5px; margin-bottom:10px;">Pilares do Método</h3>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:5px;">${pillarsHTML}</div>
+                        <h3 style="background:#00A8E8; color:white; padding:5px 10px; font-size:12px; border-radius:4px; margin-top:0;">PILARES (${currentStudent.methodology})</h3>
+                        ${pillarsHTML}
                     </div>
                 </div>
-
-                ${workoutHTML}
-
-                <!-- CLICKABLE FOOTER WHATSAPP -->
-                <a href="https://wa.me/5541997222664" style="text-decoration:none; display:block; margin-top:40px; text-align:center; padding:15px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px;">
-                    <div style="color:#166534; font-weight:800; font-size:12px;">FICOU COM DÚVIDA? FALE COMIGO NO WHATSAPP</div>
-                    <div style="color:#15803d; font-size:10px; margin-top:5px;">(Clique aqui ou chame 41 99722-2664)</div>
-                </a>
+                
+                ${blocksHTML}
             </div>
         `;
-
-        const opt = { margin: 5, filename: `Treino_${currentWorkout.name.replace(/\s/g,'_')}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
         area.style.display = 'block';
-        html2pdf().from(area).set(opt).save().then(() => { area.style.display = 'none'; });
+        html2pdf(area, { margin: 5, filename: `Treino_${currentStudent.name}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }).then(() => area.style.display = 'none');
     }
 
-    // ... (rest of functions remain same) ...
-    function updateExpiryDate() {
-        const days = parseInt(document.getElementById('expiryDays').value) || 30;
-        const d = new Date(); d.setDate(d.getDate() + days);
-        currentWorkout.expiryDate = d.toISOString();
-        if(!currentWorkout.startDate) currentWorkout.startDate = new Date().toISOString(); 
-        const display = d.toLocaleDateString('pt-BR', {day:'numeric', month:'numeric'});
-        document.getElementById('expiryDisplay').innerText = display;
-        saveCurrent();
-    }
-
-    function applyPreset(s, r, t) {
-        if(!activeExerciseId) return showToast("Selecione um exercício.");
-        const { blockId, itemIdx, subIdx } = activeExerciseId;
-        const b = getB(blockId);
-        let item = (subIdx !== null && b.items[itemIdx].data) ? b.items[itemIdx].data[subIdx] : b.items[itemIdx];
-        item.sets = s; item.reps = r; item.rest = t;
-        saveCurrent(); renderBuilder();
-        showToast("Aplicado: " + s + "x" + r);
-    }
-
-    function renderLogic() {
-        const c = document.getElementById('logicContainer'); c.innerHTML = '';
-        if(!currentWorkout.logicList) currentWorkout.logicList = [];
-        currentWorkout.logicList.forEach((txt, idx) => {
-            const row = document.createElement('div'); row.className = 'logic-item';
-            row.innerHTML = `<input class="logic-inp" value="${txt}" onchange="updLogic(${idx}, this.value)"><div class="logic-del" onclick="delLogic(${idx})"><i class="fas fa-trash"></i></div>`;
-            c.appendChild(row);
-        });
-    }
-    function addLogicTopic() { if(!currentWorkout.logicList) currentWorkout.logicList = []; currentWorkout.logicList.push(""); saveCurrent(); renderLogic(); }
-    function updLogic(idx, val) { currentWorkout.logicList[idx] = val; saveCurrent(); }
-    function delLogic(idx) { currentWorkout.logicList.splice(idx, 1); saveCurrent(); renderLogic(); }
-
-    function createNewWorkout() {
-        currentWorkout = { id: Date.now(), cloudId: null, name: '', focus: '', methodology: 'Musculação', logicList: [], blocks: [] };
-        
-        const now = new Date();
-        const end = new Date(); end.setDate(end.getDate() + 30);
-        currentWorkout.startDate = now.toISOString();
-        currentWorkout.expiryDate = end.toISOString();
-        
-        addBlock('Normal'); document.getElementById('sName').value = ''; document.getElementById('sFocus').value = '';
-        document.getElementById('methodSelect').value = 'Musculação';
-        document.getElementById('expiryDays').value = 30;
-        document.getElementById('expiryDisplay').innerText = end.toLocaleDateString('pt-BR', {day:'numeric', month:'numeric'});
-        
-        activeExerciseId = null; renderBuilder(); renderLogic();
-    }
-    function addBlock(type) {
-        if(!currentWorkout) createNewWorkout();
-        let name = 'Bloco Principal'; if(type==='BiSet') name = 'Bi-Set'; if(type==='TriSet') name = 'Tri-Set';
-        currentWorkout.blocks.push({ id: Date.now(), type: type, name: name, items: [] });
-        saveCurrent(); renderBuilder();
-    }
-    function saveCurrent() {
-        if(!currentWorkout) return;
-        currentWorkout.name = document.getElementById('sName').value;
-        currentWorkout.focus = document.getElementById('sFocus').value;
-        currentWorkout.methodology = document.getElementById('methodSelect').value;
-        if(currentWorkout.name.trim() !== "") {
-            const idx = appData.students.findIndex(s => s.id === currentWorkout.id);
-            if(idx >= 0) appData.students[idx] = currentWorkout; else appData.students.push(currentWorkout);
-            saveData(); renderStudentList();
-        }
-    }
-    function loadStudent(id) {
-        const s = appData.students.find(x => x.id === id);
-        if(s) { 
-            currentWorkout = JSON.parse(JSON.stringify(s)); 
-            if(!currentWorkout.logicList) currentWorkout.logicList = (currentWorkout.logic||'').split('\n').filter(x=>x); 
-            if(!currentWorkout.methodology) currentWorkout.methodology = "Musculação";
-            if(!currentWorkout.startDate) currentWorkout.startDate = new Date().toISOString();
-            if(!currentWorkout.expiryDate) {
-                const d = new Date(currentWorkout.startDate); d.setDate(d.getDate() + 30);
-                currentWorkout.expiryDate = d.toISOString();
-            }
-            
-            document.getElementById('methodSelect').value = currentWorkout.methodology;
-            document.getElementById('sName').value = currentWorkout.name; // IMPORTANT: Update input
-            document.getElementById('sFocus').value = currentWorkout.focus; // IMPORTANT: Update input
-            
-            const diffTime = Math.abs(new Date(currentWorkout.expiryDate) - new Date());
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-            document.getElementById('expiryDays').value = diffDays;
-            document.getElementById('expiryDisplay').innerText = new Date(currentWorkout.expiryDate).toLocaleDateString('pt-BR', {day:'numeric', month:'numeric'});
-
-            activeExerciseId = null; renderBuilder(); renderLogic(); 
-        }
-    }
-
-    function renderBuilder() {
-        const cont = document.getElementById('blocksContainer'); cont.innerHTML = '';
-        currentWorkout.blocks.forEach(blk => {
-            let cls = 'block-container';
-            if(blk.type === 'BiSet') cls += ' biset-cont'; else if(blk.type === 'TriSet') cls += ' triset-cont'; else cls += ' normal-wrap';
-            if(activeExerciseId && activeExerciseId.blockId === blk.id) cls += ' active-block';
-            const div = document.createElement('div'); div.className = cls;
-            let itemsHtml = blk.items.length === 0 ? `<div style="text-align:center; padding:20px; color:#94a3b8; font-size:0.8rem;">Toque num exercício da biblioteca</div>` : blk.items.map((it, idx) => renderRow(blk.id, idx, it, null)).join('');
-            div.innerHTML = `<div class="block-head"><input class="w-title" value="${blk.name}" placeholder="Nome do Bloco" onchange="updBlock(${blk.id}, this.value)"><div class="blk-actions"><div class="blk-btn" onclick="moveBlock(${blk.id}, -1)"><i class="fas fa-arrow-up"></i></div><div class="blk-btn" onclick="moveBlock(${blk.id}, 1)"><i class="fas fa-arrow-down"></i></div><div class="blk-btn" style="color:var(--danger)" onclick="delBlock(${blk.id})"><i class="fas fa-trash"></i></div></div></div><div class="block-body">${itemsHtml}</div>`;
-            div.onclick = (e) => { if(!e.target.closest('input') && !e.target.closest('button') && !e.target.closest('.m-tab') && !e.target.closest('.act-btn') && !e.target.closest('.blk-btn')) { if(activeExerciseId?.blockId !== blk.id) { activeExerciseId = { blockId: blk.id, itemIdx: null }; renderBuilder(); } } };
-            cont.appendChild(div);
-        });
-    }
-
-    function renderRow(bId, idx, item, sIdx) {
-        const isActive = activeExerciseId && activeExerciseId.blockId === bId && activeExerciseId.itemIdx === idx;
-        let lblReps="Reps", repsInputType="number", repsWidth="55px", showDrops=false;
-        if(item.method==='Drop'){ lblReps="Reps Max"; showDrops=true; }
-        if(item.method==='Iso') lblReps="Tempo(s)";
-        if(item.method==='Pyr'){ lblReps="Escada"; repsInputType="text"; repsWidth="80px"; }
-        
-        let methods = ['Normal', 'Drop', 'RNP', 'Iso', 'Pyr'];
-        let tabsHtml = `<div class="method-tabs">` + methods.map(m => `<button class="m-tab ${item.method===m?'active':''}" onclick="updItem(${bId}, ${idx}, 'method', '${m}'); event.stopPropagation();">${m}</button>`).join('') + `</div>`;
-        
-        let fieldsHtml = `<div class="pill-group"><span class="pill-lbl">SETS</span><input class="pill-inp" type="number" value="${item.sets}" onchange="updItem(${bId},${idx},'sets',this.value)" onclick="event.stopPropagation()"></div><div class="pill-group"><span class="pill-lbl">${lblReps.toUpperCase()}</span><input class="pill-inp" type="${repsInputType}" style="width:${repsWidth}" value="${item.reps}" onchange="updItem(${bId},${idx},'reps',this.value)" onclick="event.stopPropagation()"></div>`;
-        if(item.method==='Iso') fieldsHtml=`<div class="pill-group"><span class="pill-lbl">SETS</span><input class="pill-inp" type="number" value="${item.sets}" onchange="updItem(${bId},${idx},'sets',this.value)" onclick="event.stopPropagation()"></div><div class="pill-group"><span class="pill-lbl">ISO(s)</span><input class="pill-inp" type="number" value="${item.reps}" onchange="updItem(${bId},${idx},'reps',this.value)" onclick="event.stopPropagation()"></div>`;
-        if(item.method==='RNP') fieldsHtml+=`<div class="pill-group"><span class="pill-lbl">PAUSA</span><input class="pill-inp" type="number" value="${item.rnpRest||10}" onchange="updItem(${bId},${idx},'rnpRest',this.value)" onclick="event.stopPropagation()"></div>`;
-        if(showDrops) fieldsHtml+=`<div class="pill-group"><span class="pill-lbl">DROPS</span><input class="pill-inp" type="number" value="${item.drops||0}" onchange="updItem(${bId},${idx},'drops',this.value)" onclick="event.stopPropagation()"></div>`;
-
-        return `<div class="ex-row ${isActive?'selected':''}" data-method="${item.method}" onclick="selectExercise(${bId},${idx},null)"><div class="ex-header"><span class="ex-name">${item.name}</span></div>${tabsHtml}<div class="pills-edit">${fieldsHtml}<div class="pill-group pill-int"><span class="pill-lbl">INT FINAL</span><input class="pill-inp" type="text" value="${item.rest}" onchange="updItem(${bId},${idx},'rest',this.value)" onclick="event.stopPropagation()"></div></div><input class="obs-inp" value="${item.obs}" placeholder="Carga / Obs..." onchange="updItem(${bId},${idx},'obs',this.value)" onclick="event.stopPropagation()"><div class="row-actions"><div class="act-btn" onclick="moveItem(${bId},${idx},-1);event.stopPropagation();"><i class="fas fa-arrow-up"></i></div><div class="act-btn" onclick="moveItem(${bId},${idx},1);event.stopPropagation();"><i class="fas fa-arrow-down"></i></div><div class="act-btn" style="color:var(--danger);" onclick="delItem(${bId},${idx});event.stopPropagation();"><i class="fas fa-trash"></i></div></div></div>`;
-    }
-
-    function getB(id) { return currentWorkout.blocks.find(b=>b.id===id); }
-    function updBlock(id, val) { getB(id).name = val; saveCurrent(); }
-    function selectExercise(bId, idx, sIdx) { activeExerciseId = { blockId: bId, itemIdx: idx, subIdx: sIdx }; renderBuilder(); }
-    function moveBlock(id, dir) { const idx = currentWorkout.blocks.findIndex(b => b.id === id); if(idx + dir < 0 || idx + dir >= currentWorkout.blocks.length) return; const temp = currentWorkout.blocks[idx]; currentWorkout.blocks[idx] = currentWorkout.blocks[idx + dir]; currentWorkout.blocks[idx + dir] = temp; saveCurrent(); renderBuilder(); }
-    function addItem(ex){ if(!currentWorkout)createNewWorkout(); let t; if(activeExerciseId) t=activeExerciseId.blockId; else{ if(currentWorkout.blocks.length===0)addBlock('Normal'); t=currentWorkout.blocks[currentWorkout.blocks.length-1].id; } let b=getB(t); b.items.push({name:ex.name,link:ex.link||'',sets:'3',reps:'10',rest:'60s',obs:'',method:'Normal',drops:0,isoReps:1,rnpRest:10}); activeExerciseId={blockId:t,itemIdx:b.items.length-1,subIdx:null}; saveCurrent();renderBuilder(); const c=document.querySelector('.canvas');c.scrollTop=c.scrollHeight; }
-    function updItem(bId,idx,f,v){const b=getB(bId);b.items[idx][f]=v;saveCurrent();renderBuilder();}
-    function delItem(bId,idx){const b=getB(bId);b.items.splice(idx,1);activeExerciseId=null;saveCurrent();renderBuilder();}
-    function moveItem(bId,idx,d){const b=getB(bId);if(idx+d<0||idx+d>=b.items.length)return;const t=b.items[idx];b.items[idx+d];b.items[idx+d]=t;if(activeExerciseId&&activeExerciseId.blockId===bId&&activeExerciseId.itemIdx===idx)activeExerciseId.itemIdx+=d;saveCurrent();renderBuilder();}
-    
-    function renderLib(){
-        const l=document.getElementById('libList');
-        const t=document.getElementById('searchLib').value.toLowerCase();
-        const c=document.getElementById('catFilter').value;
-        const typeF = document.getElementById('typeFilter').value;
-        l.innerHTML='';
-        appData.library.filter(x=>{
-            const matchesText = x.name.toLowerCase().includes(t);
-            const matchesCat = c==='Todas'||x.cat===c;
-            const matchesType = typeF==='Todos' || (x.type && x.type === typeF);
-            return matchesText && matchesCat && matchesType;
-        }).forEach(x=>{const d=document.createElement('div');d.className='item-card';d.innerHTML=`<div style="font-weight:600;color:var(--text);font-size:0.85rem;"><span class="cat-dot" style="background:${catColors[x.cat]||'#999'}"></span> ${x.name} <span style="font-size:10px; opacity:0.6">(${x.type||'Musculação'})</span></div><div style="display:flex;gap:8px;"><i class="fas fa-pen" style="color:#cbd5e1;font-size:0.7rem;" onclick="editEx(${x.id},event)"></i><i class="fas fa-trash" style="color:#cbd5e1;font-size:0.7rem;" onclick="delEx(${x.id},event)"></i></div>`;d.onclick=(e)=>{if(e.target.tagName!=='I')addItem(x)};l.appendChild(d);});
-    }
-    
-    function filterStudents(v){
-        const l=document.getElementById('studentList');
-        l.innerHTML='';
-        appData.students.filter(s=>s.name.toLowerCase().includes(v.toLowerCase())).forEach(s=>{
-            let progress = 0;
-            let color = 'var(--success)';
-            let start = '--', end = '--';
-            if(s.startDate && s.expiryDate) {
-                const st = new Date(s.startDate).getTime();
-                const en = new Date(s.expiryDate).getTime();
-                const now = Date.now();
-                const total = en - st;
-                const elapsed = now - st;
-                if(total > 0) progress = Math.min(100, Math.max(0, (elapsed / total) * 100));
-                if(progress > 75) color = 'var(--danger)';
-                else if(progress > 50) color = 'var(--warning)';
-                start = new Date(s.startDate).toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
-                end = new Date(s.expiryDate).toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
-            }
-            const d=document.createElement('div');
-            d.className=`student-item ${currentWorkout&&s.id===currentWorkout.id?'active':''}`;
-            d.innerHTML=`<div class="st-top"><span class="st-name">${s.name}</span><div class="st-actions"><div class="st-act-btn" onclick="delStudent(${s.id},event)"><i class="fas fa-trash"></i></div></div></div><div class="st-dates"><span>${start}</span><i class="fas fa-arrow-right" style="font-size:8px; opacity:0.5; margin-top:2px;"></i><span>${end}</span></div><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${progress}%; background:${color}"></div></div>`;
-            d.onclick=()=>loadStudent(s.id);
-            l.appendChild(d);
-        });
-    }
-    
-    function populateCats(){const s=[document.getElementById('catFilter'),document.getElementById('exCat')];s[0].innerHTML='<option value="Todas">Todas</option>';s[1].innerHTML='';appData.categories.forEach(c=>{s[0].add(new Option(c,c));s[1].add(new Option(c,c));});}
-    function openExModal(){document.getElementById('exId').value='';document.getElementById('exName').value='';document.getElementById('exLink').value='';openModal('ex');}
-    function editEx(id,e){e.stopPropagation();const x=appData.library.find(z=>z.id===id);document.getElementById('exId').value=x.id;document.getElementById('exName').value=x.name;document.getElementById('exCat').value=x.cat;document.getElementById('exLink').value=x.link||'';document.getElementById('exType').value=x.type||'Musculação';openModal('ex');}
-    function saveEx(){const i=document.getElementById('exId').value,n=document.getElementById('exName').value,c=document.getElementById('exCat').value,l=document.getElementById('exLink').value, tp=document.getElementById('exType').value;if(!n)return;if(i){const x=appData.library.findIndex(z=>z.id==i);appData.library[x]={id:Number(i),name:n,cat:c,type:tp,link:l};}else appData.library.push({id:Date.now(),name:n,cat:c,type:tp,link:l});saveData();renderLib();closeModal('ex');}
-    function delEx(id,e){e.stopPropagation();if(confirm("Apagar?")){appData.library=appData.library.filter(x=>x.id!==id);saveData();renderLib();}}
-    function openModal(id){document.getElementById('modal-'+id).style.display='flex';}
-    function closeModal(id){document.getElementById('modal-'+id).style.display='none';}
-    
-    function exportData(){const d="data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(appData));const a=document.createElement('a');a.href=d;a.download="benai_consultoria_backup.json";a.click();}
-    function importData(i){const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{try{const j=JSON.parse(e.target.result);if(j.library)appData.library=j.library;if(j.students)appData.students=j.students;saveData();init();showToast("Dados restaurados!");}catch(x){alert("Erro");}};r.readAsText(f);}
-    
-    function generateOfflineLink(){
-        if(!currentWorkout.name) return alert("Preencha o nome!");
-        saveCurrent();
-        const l=(currentWorkout.logicList||[]).join('\n');
-        const m={name:currentWorkout.name,focus:currentWorkout.focus,logic:l,expiryDate: currentWorkout.expiryDate,startDate: currentWorkout.startDate,blocks:currentWorkout.blocks.map(b=>({name:b.name,type:b.type==='BiSet'?'biset':(b.type==='TriSet'?'triset':'block'),items:b.items.map(i=>({name:i.name,link:i.link,sets:i.sets,reps:i.reps,rest:i.rest,obs:i.obs,method:i.method,drops:i.drops,isoReps:i.isoReps,rnpRest:i.rnpRest}))}))};
-        const j=JSON.stringify(m);
-        const c=LZString.compressToEncodedURIComponent(j);
-        let p=window.location.href.split('?')[0]; p=p.substring(0,p.lastIndexOf('/')+1);
-        const u=`${p}aluno.html?data=${c}`;
-        navigator.clipboard.writeText(u).then(()=>showToast("Link offline copiado!"));
-    }
-    
-    function hardReset(){if(confirm("Apagar tudo?")){localStorage.clear(); location.reload();}}
+    function formatDate(iso) { if(!iso) return '--'; const p = iso.split('-'); return `${p[2]}/${p[1]}/${p[0]}`; }
+    function showToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
 </script>
 </body>
 </html>
