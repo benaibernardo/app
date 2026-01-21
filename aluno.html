@@ -120,14 +120,14 @@
         [data-theme="dark"] .triset-wrap { background: rgba(99, 102, 241, 0.05); }
         .triset-lbl { position: absolute; top: 0; left: 0; background: var(--c-tri); color: white; font-size: 0.65rem; font-weight: 800; padding: 4px 12px; border-bottom-right-radius: 12px; }
 
-        /* --- EXERCÍCIOS --- */
+        /* --- EXERCÍCIOS COMPACTOS --- */
         .row { 
-            padding: 15px; margin-bottom: 12px; 
-            border: 1px solid var(--border); border-radius: 14px; 
-            background: var(--surface); position: relative; border-left: 4px solid #cbd5e1; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02); transition: 0.2s; 
+            padding: 12px; margin-bottom: 8px; 
+            border: 1px solid var(--border); border-radius: 12px; 
+            background: var(--surface); position: relative; border-left: 3px solid #cbd5e1; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02); transition: 0.2s; 
         }
-        .biset-wrap .row, .triset-wrap .row { margin-bottom: 0; border: none; border-radius: 0; box-shadow: none; border-left: 4px solid transparent; border-bottom: 1px dashed var(--border); background: transparent; }
+        .biset-wrap .row, .triset-wrap .row { margin-bottom: 0; border: none; border-radius: 0; box-shadow: none; border-left: 3px solid transparent; border-bottom: 1px dashed var(--border); background: transparent; padding-left: 0; padding-right: 0; }
         .biset-wrap .row:last-child, .triset-wrap .row:last-child { border-bottom: none; }
 
         .row.done { opacity: 0.5; filter: grayscale(100%); background: var(--bg) !important; border-left-color: var(--border) !important; }
@@ -136,35 +136,31 @@
         .row.m-RNP { border-left-color: var(--c-rnp); background: #fff7ed; }
         .row.m-Iso { border-left-color: var(--c-iso); background: #ecfeff; }
         .row.m-Pyr { border-left-color: var(--c-pyr); background: #faf5ff; }
-        .row.m-Normal { border-left-color: #cbd5e1; background: var(--surface); }
-
         [data-theme="dark"] .row.m-Drop { background: rgba(239, 68, 68, 0.1); }
         [data-theme="dark"] .row.m-RNP { background: rgba(245, 158, 11, 0.1); }
         [data-theme="dark"] .row.m-Iso { background: rgba(6, 182, 212, 0.1); }
         [data-theme="dark"] .row.m-Pyr { background: rgba(139, 92, 246, 0.1); }
-        [data-theme="dark"] .row.m-Normal { background: var(--surface); }
 
-        .m-tag { font-size: 0.55rem; font-weight: 800; color: white; padding: 3px 8px; border-radius: 6px; display: inline-block; margin-bottom: 6px; text-transform: uppercase; }
-        .ex-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
+        .row-main { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .row-info { flex: 1; min-width: 0; }
         
-        .ex-title { font-size: 1rem; font-weight: 700; color: var(--text); line-height: 1.3; font-family: var(--font-num); text-decoration: none; flex: 1; display: inline-flex; align-items: center; gap: 8px; }
+        .ex-title { font-size: 0.95rem; font-weight: 700; color: var(--text); line-height: 1.2; font-family: var(--font-num); display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
         .ex-title.has-video { color: var(--accent); }
-        .yt-icon { color: #ef4444; font-size: 1.2rem; transition: transform 0.2s; filter: drop-shadow(0 2px 4px rgba(239, 68, 68, 0.2)); }
-        .ex-title:active { opacity: 0.8; }
+        .yt-icon { color: #ef4444; font-size: 1rem; }
 
-        .pills { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; align-items: center; }
-        .pill { background: rgba(255,255,255,0.7); padding: 5px 10px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; color: #475569; border: 1px solid #e2e8f0; font-family: var(--font-num); }
-        [data-theme="dark"] .pill { background: rgba(0,0,0,0.2); border-color: var(--border); color: var(--text-muted); }
+        .meta-line { display: flex; gap: 8px; align-items: center; font-size: 0.75rem; color: #64748b; font-weight: 600; flex-wrap: wrap; }
+        [data-theme="dark"] .meta-line { color: #94a3b8; }
+        .meta-sep { width: 3px; height: 3px; background: #cbd5e1; border-radius: 50%; }
         
-        .pill.timer { margin-left: auto; border-color: var(--accent); color: var(--accent); background: rgba(0,168,232,0.05); cursor: pointer; display: flex; align-items: center; gap: 6px; }
+        .timer-btn { font-size: 0.75rem; color: var(--accent); cursor: pointer; display: flex; align-items: center; gap: 3px; font-weight: 700; padding: 2px 6px; background: rgba(0, 168, 232, 0.1); border-radius: 6px; }
+        
+        .obs-line { font-size: 0.7rem; color: #b45309; margin-top: 4px; display: flex; align-items: flex-start; gap: 4px; line-height: 1.3; }
+        [data-theme="dark"] .obs-line { color: #fbbf24; }
 
-        .obs { font-size: 0.8rem; color: #b45309; background: #fffbeb; padding: 10px; border-radius: 8px; margin-bottom: 12px; border-left: 3px solid #f59e0b; line-height: 1.4; word-wrap: break-word; }
-        [data-theme="dark"] .obs { background: rgba(245, 158, 11, 0.1); color: #fbbf24; }
-
-        .action-row { display: flex; gap: 10px; height: 42px; }
-        .load-inp { width: 60px; border: 1px solid var(--border); border-radius: 10px; padding: 0 5px; font-family: var(--font-num); font-weight: 700; color: var(--text); text-align: center; font-size: 1rem; transition: 0.2s; background: var(--surface); }
-        .load-inp:focus { border-color: var(--accent); outline: none; }
-        .check-btn { flex: 1; border-radius: 10px; border: none; background: #e2e8f0; color: #64748b; font-weight: 800; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+        .row-action { display: flex; flex-direction: column; gap: 5px; align-items: flex-end; justify-content: center; }
+        
+        .load-inp { width: 50px; border: 1px solid var(--border); border-radius: 8px; padding: 4px; font-family: var(--font-num); font-weight: 700; color: var(--text); text-align: center; font-size: 0.8rem; background: var(--surface); }
+        .check-btn { width: 36px; height: 36px; border-radius: 10px; border: none; background: #e2e8f0; color: #64748b; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
         [data-theme="dark"] .check-btn { background: #334155; color: #94a3b8; }
         .row.done .check-btn { background: var(--success); color: white; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); }
 
@@ -580,14 +576,13 @@
         const uid = `${bIdx}-${iIdx}`;
         const rest = parseInt(item.rest) || 60;
         
-        let methodClass = 'm-Normal', tag = '';
+        let methodClass = 'm-Normal';
         const m = (item.method || 'normal').toLowerCase();
 
-        if(m === 'drop') { methodClass = 'm-Drop'; tag = '<span class="m-tag" style="background:var(--c-drop)">DROP-SET</span>'; }
-        if(m === 'rnp' || m === 'rest') { methodClass = 'm-RNP'; tag = '<span class="m-tag" style="background:var(--c-rnp)">REST-PAUSE</span>'; }
-        if(m === 'iso') { methodClass = 'm-Iso'; tag = '<span class="m-tag" style="background:var(--c-iso)">ISOMETRIA</span>'; }
-        if(m === 'pyr') { methodClass = 'm-Pyr'; tag = '<span class="m-tag" style="background:var(--c-pyr)">PIRÂMIDE</span>'; }
-        if(m === 'fst7') { methodClass = 'm-FST7'; tag = '<span class="m-tag" style="background:var(--c-fst)">FST-7</span>'; }
+        if(m === 'drop') methodClass = 'm-Drop';
+        if(m === 'rnp' || m === 'rest') methodClass = 'm-RNP';
+        if(m === 'iso') methodClass = 'm-Iso';
+        if(m === 'pyr') methodClass = 'm-Pyr';
 
         let titleHtml = '';
         if(item.link && item.link.length > 5) {
@@ -596,35 +591,35 @@
             titleHtml = `<span class="ex-title">${item.name}</span>`;
         }
 
-        let sL="Sets", rL="Reps";
-        if(m === 'drop') { sL="Sets"; rL="R.Max"; }
-        if(m === 'iso') { rL="Iso"; }
-        if(m === 'pyr') { rL="Reps"; }
-
-        let pillsHtml = `<span class="pill">${item.sets} ${sL}</span>`;
+        // --- COMPACT META LOGIC ---
+        let sL="Séries", rL="Reps";
+        let metaHtml = `<span>${item.sets} ${sL}</span><div class="meta-sep"></div>`;
         
         if(m === 'iso') {
-            pillsHtml += `<span class="pill">${item.isoReps || 1}x</span>`;
-            pillsHtml += `<span class="pill mv-iso">${item.reps}s Iso</span>`;
+            metaHtml += `<span>${item.isoReps || 1}x ${item.reps}s Iso</span>`;
         } else {
-            pillsHtml += `<span class="pill">${item.reps} ${rL}</span>`;
-            if(m === 'drop' && item.drops) pillsHtml += `<span class="pill" style="color:var(--c-drop); border-color:var(--c-drop); background:white;">+${item.drops} Drops</span>`;
+            metaHtml += `<span>${item.reps} ${rL}</span>`;
+            if(m === 'drop' && item.drops) metaHtml += `<div class="meta-sep"></div><span style="color:#ef4444">+${item.drops} Drops</span>`;
             if((m === 'rnp' || m === 'rest')) {
                  let t = item.rnpRest || '10'; 
-                 pillsHtml += `<span class="pill" style="color:var(--c-rnp); border-color:var(--c-rnp); background:white;">+${t}s Pausa</span><span class="pill" style="color:var(--c-rnp); border-color:var(--c-rnp); background:white;">+ Falha</span>`;
+                 metaHtml += `<div class="meta-sep"></div><span style="color:#f59e0b">+${t}s Pausa</span>`;
             }
         }
 
-        if(showTimer) pillsHtml += `<span class="pill timer" onclick="openT(${rest})"><i class="fa-solid fa-stopwatch"></i> ${item.rest} <i class="fa-solid fa-hand-pointer" style="font-size:0.6rem; opacity:0.5"></i></span>`;
+        if(showTimer) metaHtml += `<div class="meta-sep"></div><span class="timer-btn" onclick="openT(${rest})"><i class="fa-solid fa-stopwatch"></i> ${item.rest}</span>`;
 
         return `
             <div class="row ${methodClass}" id="r-${uid}" data-name="${item.name}">
-                ${tag} <div class="ex-header">${titleHtml}</div>
-                <div class="pills">${pillsHtml}</div>
-                ${item.obs ? `<div class="obs">⚠️ ${item.obs}</div>` : ''}
-                <div class="action-row">
-                    <input type="number" id="load-${uid}" class="load-inp" placeholder="kg" onchange="saveLoad('${uid}', this.value)">
-                    <button class="check-btn" onclick="toggle('${uid}')"><i class="fa-solid fa-check-circle"></i> FEITO</button>
+                <div class="row-main">
+                    <div class="row-info">
+                        ${titleHtml}
+                        <div class="meta-line">${metaHtml}</div>
+                        ${item.obs ? `<div class="obs-line"><i class="fa-solid fa-circle-info"></i> ${item.obs}</div>` : ''}
+                    </div>
+                    <div class="row-action">
+                        <input type="number" id="load-${uid}" class="load-inp" placeholder="kg" onchange="saveLoad('${uid}', this.value)">
+                        <button class="check-btn" onclick="toggle('${uid}')"><i class="fa-solid fa-check"></i></button>
+                    </div>
                 </div>
             </div>
         `;
@@ -657,6 +652,12 @@
     
     function downloadPDF() {
         if(!currentData) return alert("Erro: Treino não carregado.");
+        
+        // Check for library
+        if(typeof html2pdf === 'undefined') {
+            return alert("⚠️ O download de PDF requer internet para carregar o gerador.\nConecte-se e recarregue a página.");
+        }
+
         const area = document.getElementById('print-area');
         
         const formatDate = (iso) => { if(!iso) return '--'; const p = iso.split('-'); return `${p[2]}/${p[1]}/${p[0]}`; }
@@ -701,12 +702,24 @@
             </div>`;
         });
 
+        // WEEKS CHECK HTML
+        let weeksHtml = '<div style="display:flex; gap:10px; margin-top:20px; justify-content:center;">';
+        for(let i=1; i<=4; i++) {
+            weeksHtml += `
+            <div style="border:1px dashed #cbd5e1; padding:10px; border-radius:8px; text-align:center; min-width:60px;">
+                <div style="width:20px; height:20px; border:2px solid #001F5B; margin:0 auto 5px auto;"></div>
+                <div style="font-size:8px; color:#64748b; font-weight:bold;">SEM ${i}</div>
+            </div>`;
+        }
+        weeksHtml += '</div>';
+
         area.innerHTML = `
             <div style="font-family:sans-serif; padding:20px; color:#1e293b;">
                 <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #001F5B; padding-bottom:15px; margin-bottom:20px;">
                     <div>
                         <h1 style="color:#001F5B; margin:0; font-size:24px; line-height:1;">BENAI BERNARDO</h1>
                         <div style="color:#00A8E8; font-weight:bold; letter-spacing:2px; font-size:10px; margin-top:5px;">CONSULTORIA DE TREINAMENTO</div>
+                        <a href="https://wa.me/5541997222664" target="_blank" style="display:inline-block; margin-top:10px; background:#25D366; color:white; padding:5px 10px; border-radius:4px; text-decoration:none; font-size:10px; font-weight:bold;">WHATSAPP: (41) 99722-2664</a>
                     </div>
                     <div style="text-align:right; font-size:10px;">
                         <div>ALUNO: <b>${currentData.name}</b></div>
@@ -727,6 +740,11 @@
                 </div>
                 
                 ${blocksHTML}
+                
+                <div style="margin-top:30px; border-top:1px solid #eee; padding-top:20px;">
+                    <h4 style="text-align:center; color:#001F5B; font-size:12px; text-transform:uppercase; margin-bottom:10px;">Controle de Frequência</h4>
+                    ${weeksHtml}
+                </div>
             </div>
         `;
         area.style.display = 'block';
