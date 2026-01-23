@@ -46,6 +46,16 @@
         .modal { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); display: none; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(4px); }
         .dark .modal { background: rgba(0, 0, 0, 0.7); }
         
+        /* CLOUD SHIELD (BLOCKING OVERLAY) */
+        #cloud-shield {
+            position: fixed; inset: 0; z-index: 9999;
+            background: #0f172a; color: white;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.5s ease;
+        }
+        .shield-spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top-color: #0ea5e9; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
         /* Z-INDEX FIX FOR NESTED MODALS */
         #modalCats { z-index: 200; } 
         
@@ -67,6 +77,13 @@
     </style>
 </head>
 <body class="pb-20">
+
+    <!-- CLOUD SHIELD (Load Blocker) -->
+    <div id="cloud-shield">
+        <div class="shield-spinner"></div>
+        <h2 class="text-xl font-bold font-sans tracking-widest uppercase">Sincronizando</h2>
+        <p class="text-xs text-slate-400 mt-2">Buscando versão mais recente...</p>
+    </div>
 
     <!-- HEADER -->
     <header class="glass-header px-6 py-4 flex justify-between items-center">
@@ -419,30 +436,79 @@
                 {id:11, name:'Netflix (Repasse)', jar:'essen'},
                 {id:12, name:'Repasse/Terceiros', jar:'essen'}
             ],
-            transactions: []
+            transactions: [],
+            lastUpdated: 0
         };
 
         let currentType = 'out';
         let viewDate = new Date();
         let chartInstance = null;
 
-        // INIT
+        // INIT (CLOUD SHIELD LOGIC)
         window.onload = async () => {
             lucide.createIcons();
             initTheme();
-            loadLocal();
             
-            const globalToken = localStorage.getItem(TOKEN_KEY);
-            if(globalToken && !db.gistId) {
-                await syncData(true);
+            const shield = document.getElementById('cloud-shield');
+            const hasToken = localStorage.getItem(TOKEN_KEY);
+            let loadedFromCloud = false;
+
+            if (hasToken) {
+                try {
+                    // Tenta forçar o download da nuvem antes de liberar a tela
+                    loadedFromCloud = await forceCloudLoad();
+                } catch (e) {
+                    console.error("Shield Error", e);
+                }
+            } else {
+                // Se não tem token, carrega local
+                loadLocal();
             }
+
+            // Garante estrutura correta
+            migrateData();
             
+            // Remove o escudo com fade out
+            shield.style.opacity = '0';
+            setTimeout(() => shield.style.display = 'none', 500);
+
+            // Toast de status
+            if (loadedFromCloud) toast('Nuvem Sincronizada (Prioridade Máxima)');
+            else if (hasToken) toast('Offline: Usando Cache Local');
+
             updateDateDisplay();
             renderAll();
-            
-            // Setup Filter Dropdown
             updateFilterCats();
         };
+
+        async function forceCloudLoad() {
+            const token = localStorage.getItem(TOKEN_KEY);
+            if (!token) return false;
+            
+            const headers = { 'Authorization': `token ${token}` };
+            try {
+                const res = await fetch('https://api.github.com/gists', { headers });
+                if (!res.ok) return false;
+                
+                const gists = await res.json();
+                const found = gists.find(g => g.description === GIST_DESC);
+                
+                if (found) {
+                    db.gistId = found.id;
+                    const r = await fetch(found.url, { headers });
+                    const data = await r.json();
+                    
+                    if (data.files['finance_v5.json']) {
+                        const cloudData = JSON.parse(data.files['finance_v5.json'].content);
+                        // AQUI ESTÁ A MÁGICA: SOBRESCREVE LOCAL SEMPRE QUE A NUVEM EXISTIR
+                        db = cloudData;
+                        localStorage.setItem(DB_KEY, JSON.stringify(db));
+                        return true;
+                    }
+                }
+            } catch (e) { return false; }
+            return false;
+        }
 
         function changeMonth(dir) {
             viewDate.setMonth(viewDate.getMonth() + dir);
@@ -489,17 +555,19 @@
         function loadLocal() {
             const saved = localStorage.getItem(DB_KEY);
             if(saved) db = JSON.parse(saved);
-            
-            // Migrations
+        }
+
+        function migrateData() {
+            if(!db.config) db.config = {};
             if(!db.config.jars) db.config.jars = DEFAULT_JARS;
             if(!db.config.fixedCosts) db.config.fixedCosts = [];
-            if(!db.config.debts) db.config.debts = []; // Multi-debt array
-            
-            // Remove 'give' if exists for user
+            if(!db.config.debts) db.config.debts = []; 
+            if(!db.lastUpdated) db.lastUpdated = Date.now();
             db.config.jars = db.config.jars.filter(j => j.id !== 'give');
         }
 
         function saveLocal() {
+            db.lastUpdated = Date.now(); // TIMESTAMP DE SEGURANÇA
             localStorage.setItem(DB_KEY, JSON.stringify(db));
             renderAll();
         }
@@ -517,11 +585,6 @@
         function renderSummary() {
             const currentMonth = viewDate.toISOString().slice(0, 7); 
             
-            // 1. Bank Balance (REAL - Includes Third Party)
-            // Need to sum ALL time for real balance usually, but let's stick to Monthly View for simplicity or All time?
-            // Usually balance is cumulative. For this view, let's show Month Cashflow for simplicity, OR calculated balance if tracking opening.
-            // Let's stick to Month Cashflow to avoid complex reconciliation issues without a 'wallet' system.
-            
             const allIn = db.transactions
                 .filter(t => t.date.startsWith(currentMonth) && t.type === 'in')
                 .reduce((acc, t) => acc + t.val, 0);
@@ -530,7 +593,6 @@
                 .filter(t => t.date.startsWith(currentMonth) && t.type === 'out')
                 .reduce((acc, t) => acc + t.val, 0);
             
-            // 2. Personal Budget (Excludes Third Party)
             const myIncome = db.transactions
                 .filter(t => t.date.startsWith(currentMonth) && t.type === 'in' && !t.thirdParty)
                 .reduce((acc, t) => acc + t.val, 0);
@@ -539,10 +601,7 @@
                 .filter(t => t.date.startsWith(currentMonth) && t.type === 'out' && !t.thirdParty)
                 .reduce((acc, t) => acc + t.val, 0);
             
-            // Display Bank Balance as Net Flow of Month (Real)
             const netBank = allIn - allOut; 
-            // NOTE: If you wanted Total Balance, we'd need a starting balance. For now, let's show Net Flow or Total In/Out?
-            // User requested "Saldo Liquido" -> Let's show Net Flow of Month (Result)
             document.getElementById('dispBankBalance').innerText = fmtMoney(netBank);
             if(netBank < 0) document.getElementById('dispBankBalance').className = "text-2xl font-bold text-rose-500 font-mono mt-1";
             else document.getElementById('dispBankBalance').className = "text-2xl font-bold text-blue-600 dark:text-blue-400 font-mono mt-1";
@@ -562,11 +621,6 @@
                 list.innerHTML = '<div class="text-center text-xs text-slate-400 italic">Nenhuma dívida cadastrada.</div>';
             } else {
                 db.config.debts.forEach(d => {
-                    // Calculate paid amount for THIS specific debt
-                    // We need to link transactions to debt IDs. For now, let's use Name Matching or new ID field.
-                    // Let's use simple Name Matching if available, or just global sum if not.
-                    // BETTER: Use `t.debtId` if added in transaction.
-                    
                     const paid = db.transactions
                         .filter(t => t.type === 'out' && t.debtId === d.id)
                         .reduce((acc, t) => acc + t.val, 0);
@@ -604,7 +658,6 @@
             db.config.jars.forEach(jar => {
                 let limit = jar.limitVal || (estimatedIncome * jar.perc) / 100;
                 
-                // SPENT: Only Personal Transactions (thirdParty = false)
                 const spent = db.transactions
                     .filter(t => t.date.startsWith(currentMonth) && t.type === 'out' && !t.thirdParty)
                     .filter(t => {
@@ -1016,7 +1069,7 @@
             saveLocal();
             closeModal('modalTx');
             toast('Movimentação Registrada!');
-            syncData(false); 
+            syncData(true); 
         }
 
         function editTx(id) {
@@ -1049,7 +1102,7 @@
                 db.transactions = db.transactions.filter(t => t.id !== id);
                 saveLocal();
                 toast('Registro Excluído');
-                syncData(false);
+                syncData(true);
             }
         }
 
