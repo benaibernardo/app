@@ -65,6 +65,11 @@
         .toggle-checkbox:checked { right: 0; border-color: #0ea5e9; }
         .toggle-checkbox:checked + .toggle-label { background-color: #0ea5e9; }
         
+        /* SYNC INDICATOR DOT */
+        .sync-dot { width: 8px; height: 8px; border-radius: 50%; position: absolute; top: 8px; right: 8px; }
+        .sync-dot.active { background-color: #10b981; box-shadow: 0 0 5px #10b981; }
+        .sync-dot.inactive { background-color: #94a3b8; }
+        
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         
         /* JAR COLORS */
@@ -97,7 +102,10 @@
         <div class="flex gap-2">
             <button onclick="toggleLocalTheme()" class="p-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-500 dark:text-slate-300 hover:text-sky-500 transition"><i id="themeIcon" data-lucide="moon" class="w-5 h-5"></i></button>
             <button onclick="openConfig()" class="p-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-500 dark:text-slate-300 hover:text-sky-500 transition"><i data-lucide="settings" class="w-5 h-5"></i></button>
-            <button onclick="syncData()" class="p-2 bg-sky-50 dark:bg-sky-900/30 border border-sky-200 dark:border-sky-800 rounded-lg text-sky-500 dark:text-sky-400 hover:bg-sky-100 dark:hover:bg-sky-900/50 transition"><i data-lucide="cloud" class="w-5 h-5"></i></button>
+            <button onclick="openCloudModal()" class="p-2 bg-sky-50 dark:bg-sky-900/30 border border-sky-200 dark:border-sky-800 rounded-lg text-sky-500 dark:text-sky-400 hover:bg-sky-100 dark:hover:bg-sky-900/50 transition relative">
+                <i data-lucide="cloud" class="w-5 h-5"></i>
+                <div id="cloudStatusDot" class="sync-dot inactive"></div>
+            </button>
         </div>
     </header>
 
@@ -202,10 +210,14 @@
                 </div>
                 
                 <!-- Expanded Filters -->
-                <div id="filterPanel" class="hidden grid grid-cols-1 md:grid-cols-3 gap-3 mb-3 animate-fade-in">
+                <div id="filterPanel" class="hidden grid grid-cols-1 md:grid-cols-4 gap-3 mb-3 animate-fade-in">
                     <input type="text" id="filterText" placeholder="Buscar (Local, Desc)..." class="input-std text-xs" onkeyup="renderTransactions()">
                     <select id="filterCat" class="input-std text-xs" onchange="renderTransactions()">
                         <option value="">Todas Categorias</option>
+                    </select>
+                    <!-- NEW DATE FILTER -->
+                    <select id="filterDate" class="input-std text-xs" onchange="renderTransactions()">
+                        <option value="">Todas as Datas</option>
                     </select>
                     <div class="flex items-center gap-2">
                         <input type="checkbox" id="filterHideThirdParty" class="w-4 h-4 rounded border-slate-300" onchange="renderTransactions()" checked>
@@ -221,6 +233,41 @@
 
     </main>
 
+    <!-- MODAL CLOUD & BACKUP (NEW) -->
+    <div id="modalCloud" class="modal">
+        <div class="modal-content max-w-sm text-center">
+            <div class="flex justify-end mb-2">
+                <button onclick="closeModal('modalCloud')"><i data-lucide="x" class="w-5 h-5 text-slate-400"></i></button>
+            </div>
+            <div class="w-16 h-16 bg-sky-100 dark:bg-sky-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="cloud" class="w-8 h-8 text-sky-600 dark:text-sky-400"></i>
+            </div>
+            <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-1">Central de Dados</h3>
+            <p class="text-xs text-slate-500 mb-6">Sincronização & Segurança</p>
+            
+            <div class="space-y-4">
+                <div class="text-left">
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Token GitHub (Acesso Direto)</label>
+                    <div class="flex gap-2">
+                        <input type="password" id="manualToken" class="input-std text-xs" placeholder="ghp_...">
+                        <button onclick="saveLocalToken()" class="p-2 bg-emerald-500 text-white rounded-lg"><i data-lucide="save" class="w-4 h-4"></i></button>
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-200 dark:border-slate-700 my-4"></div>
+
+                <button onclick="backupData()" class="w-full py-3 rounded-xl bg-slate-800 dark:bg-slate-700 text-white font-bold text-xs flex justify-center gap-2 hover:bg-slate-700 transition">
+                    <i data-lucide="download"></i> FAZER BACKUP (JSON)
+                </button>
+                
+                <label class="w-full py-3 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 text-slate-500 font-bold text-xs cursor-pointer flex justify-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                    <i data-lucide="upload"></i> RESTAURAR BACKUP
+                    <input type="file" id="fileIn" hidden onchange="restoreData(this)">
+                </label>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL CONFIG (SMART CALC & DEBTS) -->
     <div id="modalConfig" class="modal">
         <div class="modal-content max-w-lg">
@@ -230,53 +277,27 @@
             </div>
             
             <div class="space-y-6 max-h-[70vh] overflow-y-auto pr-2">
-                
-                <!-- SECTION 1: SMART CALC -->
+                <!-- Smart Calc Section -->
                 <div class="space-y-3">
                     <h4 class="text-xs font-bold text-sky-600 dark:text-sky-400 uppercase border-b border-slate-200 dark:border-slate-700 pb-1">Orçamento Inteligente</h4>
-                    
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Renda Mensal Estimada</label>
-                        <input type="text" id="cfgIncome" class="input-std font-mono text-lg font-bold" oninput="maskMoney(this)" placeholder="R$ 0,00">
-                    </div>
-
+                    <div><label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Renda Mensal Estimada</label><input type="text" id="cfgIncome" class="input-std font-mono text-lg font-bold" oninput="maskMoney(this)" placeholder="R$ 0,00"></div>
                     <div>
                         <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Gastos Fixos (Obrigatórios)</label>
                         <div id="fixedList" class="space-y-2 mb-2"></div>
-                        <div class="flex gap-2">
-                            <input id="newFixedName" class="input-std text-xs" placeholder="Nome (Ex: Aluguel)">
-                            <input id="newFixedVal" class="input-std text-xs font-mono w-24" placeholder="R$ 0,00" oninput="maskMoney(this)">
-                            <button onclick="addFixedCost()" class="p-2 bg-slate-200 dark:bg-slate-700 rounded-lg"><i data-lucide="plus" class="w-3 h-3"></i></button>
-                        </div>
+                        <div class="flex gap-2"><input id="newFixedName" class="input-std text-xs" placeholder="Nome (Ex: Aluguel)"><input id="newFixedVal" class="input-std text-xs font-mono w-24" placeholder="R$ 0,00" oninput="maskMoney(this)"><button onclick="addFixedCost()" class="p-2 bg-slate-200 dark:bg-slate-700 rounded-lg"><i data-lucide="plus" class="w-3 h-3"></i></button></div>
                     </div>
-
-                    <div class="grid grid-cols-3 gap-2 mt-2">
-                        <button onclick="applyPreset('conservative')" class="py-2 text-[10px] font-bold bg-emerald-100 text-emerald-700 rounded hover:bg-emerald-200">Conservador</button>
-                        <button onclick="applyPreset('balanced')" class="py-2 text-[10px] font-bold bg-blue-100 text-blue-700 rounded hover:bg-blue-200">Equilibrado</button>
-                        <button onclick="applyPreset('aggressive')" class="py-2 text-[10px] font-bold bg-rose-100 text-rose-700 rounded hover:bg-rose-200">Agressivo (Econ)</button>
-                    </div>
-                    
+                    <div class="grid grid-cols-3 gap-2 mt-2"><button onclick="applyPreset('conservative')" class="py-2 text-[10px] font-bold bg-emerald-100 text-emerald-700 rounded hover:bg-emerald-200">Conservador</button><button onclick="applyPreset('balanced')" class="py-2 text-[10px] font-bold bg-blue-100 text-blue-700 rounded hover:bg-blue-200">Equilibrado</button><button onclick="applyPreset('aggressive')" class="py-2 text-[10px] font-bold bg-rose-100 text-rose-700 rounded hover:bg-rose-200">Agressivo (Econ)</button></div>
                     <button onclick="runSmartCalc()" class="w-full py-2 bg-sky-600 text-white font-bold rounded-lg text-xs hover:bg-sky-500">RECALCULAR POTES</button>
-                    
-                    <div id="jarSliders" class="space-y-3 mt-2 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg">
-                        <!-- SLIDERS RENDERED JS -->
-                    </div>
+                    <div id="jarSliders" class="space-y-3 mt-2 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg"></div>
                 </div>
-
-                <!-- SECTION 2: DEBTS -->
+                <!-- Debts Section -->
                 <div class="space-y-3 pt-4">
                     <h4 class="text-xs font-bold text-rose-600 dark:text-rose-400 uppercase border-b border-slate-200 dark:border-slate-700 pb-1">Gestão de Dívidas</h4>
                     <p class="text-[10px] text-slate-500">Cadastre suas dívidas para abatimento no Sniper.</p>
                     <div id="cfgDebtList" class="space-y-2"></div>
-                    <div class="flex gap-2">
-                        <input id="newDebtName" class="input-std text-xs" placeholder="Nome (Ex: C6)">
-                        <input id="newDebtVal" class="input-std text-xs font-mono w-24" placeholder="Total" oninput="maskMoney(this)">
-                        <button onclick="addDebtConfig()" class="p-2 bg-rose-100 dark:bg-rose-900/30 text-rose-600 rounded-lg hover:bg-rose-200"><i data-lucide="plus" class="w-3 h-3"></i></button>
-                    </div>
+                    <div class="flex gap-2"><input id="newDebtName" class="input-std text-xs" placeholder="Nome (Ex: C6)"><input id="newDebtVal" class="input-std text-xs font-mono w-24" placeholder="Total" oninput="maskMoney(this)"><button onclick="addDebtConfig()" class="p-2 bg-rose-100 dark:bg-rose-900/30 text-rose-600 rounded-lg hover:bg-rose-200"><i data-lucide="plus" class="w-3 h-3"></i></button></div>
                 </div>
-
             </div>
-            
             <button onclick="saveConfig()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl shadow-lg transition mt-4">SALVAR TUDO</button>
         </div>
     </div>
@@ -284,15 +305,8 @@
     <!-- MODAL CATEGORIES -->
     <div id="modalCats" class="modal">
         <div class="modal-content">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold text-slate-800 dark:text-white">Gerenciar Categorias</h3>
-                <button onclick="closeModal('modalCats')"><i data-lucide="x" class="w-5 h-5"></i></button>
-            </div>
-            <div class="flex gap-2 mb-4">
-                <input id="newCatName" class="input-std" placeholder="Nome (Ex: Uber)">
-                <select id="newCatJar" class="input-std w-40"></select>
-                <button onclick="addNewCategory()" class="bg-emerald-500 text-white p-2 rounded-lg"><i data-lucide="plus" class="w-5 h-5"></i></button>
-            </div>
+            <div class="flex justify-between items-center mb-4"><h3 class="text-lg font-bold text-slate-800 dark:text-white">Gerenciar Categorias</h3><button onclick="closeModal('modalCats')"><i data-lucide="x" class="w-5 h-5"></i></button></div>
+            <div class="flex gap-2 mb-4"><input id="newCatName" class="input-std" placeholder="Nome (Ex: Uber)"><select id="newCatJar" class="input-std w-40"></select><button onclick="addNewCategory()" class="bg-emerald-500 text-white p-2 rounded-lg"><i data-lucide="plus" class="w-5 h-5"></i></button></div>
             <div id="catList" class="max-h-60 overflow-y-auto space-y-2"></div>
         </div>
     </div>
@@ -300,10 +314,7 @@
     <!-- MODAL INFO -->
     <div id="modalInfo" class="modal">
         <div class="modal-content">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold text-slate-800 dark:text-white" id="infoTitle">Titulo</h3>
-                <button onclick="closeModal('modalInfo')"><i data-lucide="x" class="w-5 h-5"></i></button>
-            </div>
+            <div class="flex justify-between items-center mb-4"><h3 class="text-lg font-bold text-slate-800 dark:text-white" id="infoTitle">Titulo</h3><button onclick="closeModal('modalInfo')"><i data-lucide="x" class="w-5 h-5"></i></button></div>
             <p id="infoText" class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed"></p>
         </div>
     </div>
@@ -326,26 +337,25 @@
                 </div>
 
                 <!-- DESCRIPTION & LOCAL -->
+                <div><label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">O que?</label><input id="txDesc" class="input-std" placeholder="Ex: Almoço" required></div>
+                <div><label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Onde? (Local)</label><input id="txLocal" class="input-std" placeholder="Ex: Restaurante X"></div>
+
+                <!-- FORM OF PAYMENT (NEW) -->
                 <div>
-                    <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">O que?</label>
-                    <input id="txDesc" class="input-std" placeholder="Ex: Almoço" required>
-                </div>
-                
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Onde? (Local)</label>
-                    <input id="txLocal" class="input-std" placeholder="Ex: Restaurante X">
+                    <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Forma de Pagamento</label>
+                    <select id="txMethod" class="input-std">
+                        <option value="pix">Pix</option>
+                        <option value="debit">Débito</option>
+                        <option value="credit">Crédito</option>
+                        <option value="cash">Dinheiro</option>
+                        <option value="transfer">Transferência</option>
+                    </select>
                 </div>
 
                 <!-- VALOR / DATA -->
                 <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Valor</label>
-                        <input id="txVal" class="input-std font-mono text-lg" placeholder="R$ 0,00" oninput="maskMoney(this)" required>
-                    </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Data</label>
-                        <input type="date" id="txDate" class="input-std" required>
-                    </div>
+                    <div><label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Valor</label><input id="txVal" class="input-std font-mono text-lg" placeholder="R$ 0,00" oninput="maskMoney(this)" required></div>
+                    <div><label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Data</label><input type="date" id="txDate" class="input-std" required></div>
                 </div>
 
                 <!-- AREA DINAMICA: CATEGORIA (OUT) OU FONTE (IN) -->
@@ -355,48 +365,24 @@
                         <select id="txCat" class="input-std flex-1" onchange="checkDebtOption()"></select>
                         <button type="button" onclick="openCatManager()" class="p-2 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-sky-500 hover:border-sky-400 transition" title="Criar Nova Categoria"><i data-lucide="plus" class="w-5 h-5"></i></button>
                     </div>
-                    
-                    <!-- Debt Selector (Only if Category is Debt) -->
-                    <div id="debtSelector" class="hidden mt-2 bg-rose-50 dark:bg-rose-900/20 p-2 rounded border border-rose-100 dark:border-rose-800">
-                        <label class="block text-[9px] font-bold text-rose-600 uppercase mb-1">Qual dívida está pagando?</label>
-                        <select id="txDebtItem" class="input-std text-xs h-8 py-0"></select>
-                    </div>
-
-                    <div id="jarPreview" class="mt-2 text-xs font-bold text-slate-400 flex items-center gap-2 hidden">
-                        <span>Sai do Pote:</span> <span id="jarPreviewTag" class="px-2 py-1 rounded text-white bg-slate-500">...</span>
-                    </div>
+                    <!-- Debt Selector -->
+                    <div id="debtSelector" class="hidden mt-2 bg-rose-50 dark:bg-rose-900/20 p-2 rounded border border-rose-100 dark:border-rose-800"><label class="block text-[9px] font-bold text-rose-600 uppercase mb-1">Qual dívida está pagando?</label><select id="txDebtItem" class="input-std text-xs h-8 py-0"></select></div>
+                    <div id="jarPreview" class="mt-2 text-xs font-bold text-slate-400 flex items-center gap-2 hidden"><span>Sai do Pote:</span> <span id="jarPreviewTag" class="px-2 py-1 rounded text-white bg-slate-500">...</span></div>
                 </div>
 
                 <div id="divSource" class="hidden">
                     <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Fonte de Renda</label>
-                    <select id="txSource" class="input-std">
-                        <option value="Salário">Salário</option>
-                        <option value="Consultoria">Consultoria</option>
-                        <option value="Venda">Venda</option>
-                        <option value="Investimentos">Investimentos</option>
-                        <option value="Repasse (Terceiros)">Repasse (Terceiros)</option>
-                        <option value="Resgate (Caixinha)">Resgate (Caixinha)</option>
-                        <option value="Outros">Outros</option>
-                    </select>
+                    <select id="txSource" class="input-std"><option value="Salário">Salário</option><option value="Consultoria">Consultoria</option><option value="Venda">Venda</option><option value="Investimentos">Investimentos</option><option value="Repasse (Terceiros)">Repasse (Terceiros)</option><option value="Resgate (Caixinha)">Resgate (Caixinha)</option><option value="Outros">Outros</option></select>
                 </div>
 
                 <!-- TERCEIROS TOGGLE -->
                 <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-100 dark:border-slate-700">
-                    <div>
-                        <div class="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase">Movimentação de Terceiros</div>
-                        <div class="text-[9px] text-slate-400">Ignorar nos gráficos de gastos e potes.</div>
-                    </div>
-                    <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-                        <input type="checkbox" id="txThirdParty" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-slate-300"/>
-                        <label for="txThirdParty" class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-300 cursor-pointer"></label>
-                    </div>
+                    <div><div class="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase">Movimentação de Terceiros</div><div class="text-[9px] text-slate-400">Ignorar nos gráficos de gastos e potes.</div></div>
+                    <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in"><input type="checkbox" id="txThirdParty" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-slate-300"/><label for="txThirdParty" class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-300 cursor-pointer"></label></div>
                 </div>
 
                 <!-- DETALHES -->
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Detalhes / Notas</label>
-                    <textarea id="txNotes" class="input-std" rows="2" placeholder="Ex: Parcela 2/10, Reunião de negócios..."></textarea>
-                </div>
+                <div><label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Detalhes / Notas</label><textarea id="txNotes" class="input-std" rows="2" placeholder="Ex: Parcela 2/10, Reunião de negócios..."></textarea></div>
 
                 <button type="submit" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-bold py-3 rounded-xl shadow-lg transition mt-2">CONFIRMAR LANÇAMENTO</button>
             </form>
@@ -454,6 +440,8 @@
             let loadedFromCloud = false;
 
             if (hasToken) {
+                document.getElementById('manualToken').value = hasToken;
+                updateSyncUI(true);
                 try {
                     // Tenta forçar o download da nuvem antes de liberar a tela
                     loadedFromCloud = await forceCloudLoad();
@@ -463,6 +451,7 @@
             } else {
                 // Se não tem token, carrega local
                 loadLocal();
+                updateSyncUI(false);
             }
 
             // Garante estrutura correta
@@ -480,6 +469,12 @@
             renderAll();
             updateFilterCats();
         };
+
+        function updateSyncUI(isActive) {
+            const dot = document.getElementById('cloudStatusDot');
+            if(isActive) dot.className = "sync-dot active";
+            else dot.className = "sync-dot inactive";
+        }
 
         async function forceCloudLoad() {
             const token = localStorage.getItem(TOKEN_KEY);
@@ -708,9 +703,22 @@
             const list = document.getElementById('txList');
             const search = document.getElementById('filterText') ? document.getElementById('filterText').value.toLowerCase() : '';
             const filterCat = document.getElementById('filterCat') ? document.getElementById('filterCat').value : '';
+            const filterDate = document.getElementById('filterDate') ? document.getElementById('filterDate').value : '';
             const hideThirdParty = document.getElementById('filterHideThirdParty') ? document.getElementById('filterHideThirdParty').checked : false;
             
             const currentMonth = viewDate.toISOString().slice(0, 7);
+            
+            // Populate Date Filter
+            const dateSel = document.getElementById('filterDate');
+            if (dateSel && dateSel.options.length <= 1) { // Only refill if empty or just "All"
+                const dates = [...new Set(db.transactions.filter(t => t.date.startsWith(currentMonth)).map(t => t.date))].sort().reverse();
+                dateSel.innerHTML = '<option value="">Todas as Datas</option>';
+                dates.forEach(d => {
+                    const [y, m, day] = d.split('-');
+                    dateSel.add(new Option(`${day}/${m}`, d));
+                });
+            }
+
             list.innerHTML = '';
 
             let filtered = db.transactions.filter(t => t.date.startsWith(currentMonth));
@@ -718,6 +726,7 @@
             // Apply Filters
             if(hideThirdParty) filtered = filtered.filter(t => !t.thirdParty);
             if(filterCat) filtered = filtered.filter(t => t.cat === filterCat);
+            if(filterDate) filtered = filtered.filter(t => t.date === filterDate);
             if(search) {
                 filtered = filtered.filter(t => 
                     (t.desc && t.desc.toLowerCase().includes(search)) || 
@@ -755,6 +764,18 @@
                     const d = (db.config.debts || []).find(x=>x.id===t.debtId);
                     if(d) badges += `<span class="ml-2 text-[9px] bg-rose-100 dark:bg-rose-900/30 px-1 rounded text-rose-500">Dívida: ${d.name}</span>`;
                 }
+                
+                // Payment Method Badge
+                if(t.method) {
+                    let mColor = "bg-slate-100 text-slate-500";
+                    let mIcon = "credit-card";
+                    if(t.method === 'pix') { mColor = "bg-emerald-100 text-emerald-600"; mIcon="zap"; }
+                    if(t.method === 'credit') { mColor = "bg-purple-100 text-purple-600"; mIcon="credit-card"; }
+                    if(t.method === 'debit') { mColor = "bg-blue-100 text-blue-600"; mIcon="credit-card"; }
+                    if(t.method === 'cash') { mColor = "bg-amber-100 text-amber-600"; mIcon="banknote"; }
+                    
+                    badges += `<span class="ml-2 text-[9px] ${mColor} px-1.5 py-0.5 rounded flex items-center gap-1 inline-flex"><i data-lucide="${mIcon}" class="w-2 h-2"></i> ${t.method.toUpperCase()}</span>`;
+                }
 
                 const location = t.local ? `<div class="flex items-center gap-1 text-[10px] text-slate-500"><i data-lucide="map-pin" class="w-3 h-3"></i> ${t.local}</div>` : '';
 
@@ -766,7 +787,7 @@
                             <i data-lucide="${isOut ? 'arrow-up-right' : 'arrow-down-left'}" class="w-5 h-5"></i>
                         </div>
                         <div>
-                            <div class="text-sm font-bold text-slate-800 dark:text-white flex items-center">${t.desc} ${badges}</div>
+                            <div class="text-sm font-bold text-slate-800 dark:text-white flex items-center flex-wrap gap-1">${t.desc} ${badges}</div>
                             ${location}
                             <div class="text-xs text-slate-500 flex items-center mt-0.5">
                                 ${subLabel}
@@ -947,6 +968,7 @@
             document.getElementById('txId').value = '';
             document.getElementById('txDate').value = new Date().toISOString().split('T')[0];
             document.getElementById('mTxTitle').innerText = "Nova Movimentação";
+            document.getElementById('txMethod').value = 'pix'; // default
             setTxType('out');
             checkDebtOption();
             openModal('modalTx');
@@ -1040,6 +1062,7 @@
             const val = parseMoney(document.getElementById('txVal').value);
             const date = document.getElementById('txDate').value;
             const thirdParty = document.getElementById('txThirdParty').checked;
+            const method = document.getElementById('txMethod').value;
             
             let cat = "";
             let source = "";
@@ -1056,7 +1079,7 @@
             const tx = {
                 id: id ? parseInt(id) : Date.now(),
                 type: currentType,
-                desc, local, notes, val, date, cat, source, thirdParty, debtId
+                desc, local, notes, val, date, cat, source, thirdParty, debtId, method
             };
 
             if(id) {
@@ -1065,6 +1088,9 @@
             } else {
                 db.transactions.push(tx);
             }
+
+            // Invalidate Date filter options to force reload
+            document.getElementById('filterDate').innerHTML = '<option value="">Todas as Datas</option>';
 
             saveLocal();
             closeModal('modalTx');
@@ -1083,6 +1109,7 @@
             document.getElementById('txVal').value = fmtMoney(t.val);
             document.getElementById('txDate').value = t.date;
             document.getElementById('txThirdParty').checked = !!t.thirdParty;
+            document.getElementById('txMethod').value = t.method || 'pix';
             setTxType(t.type);
             
             if(t.type === 'out') {
@@ -1100,10 +1127,63 @@
         function delTx(id) {
             if(confirm("Excluir registro?")) {
                 db.transactions = db.transactions.filter(t => t.id !== id);
+                // Invalidate date filter
+                document.getElementById('filterDate').innerHTML = '<option value="">Todas as Datas</option>';
                 saveLocal();
                 toast('Registro Excluído');
                 syncData(true);
             }
+        }
+
+        // --- CLOUD MODAL FUNCTIONS ---
+        function openCloudModal() {
+            document.getElementById('manualToken').value = localStorage.getItem(TOKEN_KEY) || '';
+            openModal('modalCloud');
+        }
+
+        function saveLocalToken() {
+            const t = document.getElementById('manualToken').value.trim();
+            if(t) {
+                localStorage.setItem(TOKEN_KEY, t);
+                updateSyncUI(true);
+                toast('Token Salvo! Tentando sincronizar...');
+                syncData(true);
+            }
+        }
+
+        function backupData() {
+            const dataStr = JSON.stringify(db, null, 2);
+            const blob = new Blob([dataStr], {type: "application/json"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `finance_backup_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            toast('Backup baixado!');
+        }
+
+        function restoreData(input) {
+            const file = input.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const json = JSON.parse(e.target.result);
+                    if(confirm("Isso substituirá todos os dados atuais. Continuar?")) {
+                        db = json;
+                        db.lastUpdated = Date.now();
+                        saveLocal();
+                        toast('Dados restaurados com sucesso!');
+                        setTimeout(() => location.reload(), 1000);
+                    }
+                } catch(err) {
+                    alert("Erro ao ler arquivo JSON.");
+                }
+            };
+            reader.readAsText(file);
         }
 
         // --- CATEGORY MANAGER REUSED ---
