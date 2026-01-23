@@ -215,7 +215,7 @@
         <div style="margin-bottom:10px;">
             <label class="list-header">Token Global</label>
             <input id="ghToken" type="password" class="search-inp" placeholder="ghp_...">
-            <button class="btn btn-pri" onclick="saveToken()">Salvar Token</button>
+            <button class="btn btn-pri" onclick="saveToken()">Salvar e Baixar</button>
         </div>
 
         <div style="border-top:1px solid var(--border); padding-top:15px; margin-top:10px; display:flex; gap:5px; flex-direction:column;">
@@ -939,7 +939,33 @@
     }
 
     // --- CLOUD/BACKUP ---
-    function saveToken() { const t = document.getElementById('ghToken').value.trim(); if(t) { localStorage.setItem(TOKEN_KEY, t); updateSyncUI(true); showToast('Token Salvo! Sincronizando...'); syncData(true); } }
+    async function saveToken() { 
+        const t = document.getElementById('ghToken').value.trim(); 
+        if(t) { 
+            localStorage.setItem(TOKEN_KEY, t); 
+            updateSyncUI(true); 
+            showToast('Token Salvo! Buscando na Nuvem...'); 
+            // CRITICAL FIX: PULL FIRST, THEN SYNC
+            try {
+                const loaded = await forceCloudLoad();
+                if(loaded) {
+                    if(confirm("Dados encontrados na nuvem! Deseja carregar agora e substituir o que está na tela?")) {
+                        location.reload();
+                    } else {
+                        // User chose NOT to load, so we push current state (risky but intentional)
+                        syncData(true);
+                    }
+                } else {
+                    // Nothing found, safe to push current state
+                    syncData(true);
+                }
+            } catch(e) {
+                console.error(e);
+                syncData(true);
+            }
+        } 
+    }
+    
     function backupData() { const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(appData,null,2)],{type:"application/json"})); a.download=`manager_backup_${new Date().toISOString().split('T')[0]}.json`; document.body.appendChild(a); a.click(); document.body.removeChild(a); showToast('Backup baixado!'); }
     function restoreData(input) {
         const file = input.files[0]; if(!file) return;
