@@ -13,167 +13,344 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* --- CONFIGURAÇÕES GERAIS --- */
+        /* --- CONFIGURAÇÕES GERAIS E ANIMAÇÕES --- */
         :root {
             --primary: #05364F;     /* Azul Prime */
+            --primary-dark: #022030;
             --secondary: #00A89A;   /* Verde Acqua */
+            --secondary-glow: rgba(0, 168, 154, 0.6);
             --accent: #C5A059;      /* Dourado Prime */
-            --dark-bg: #0f172a;     /* Fundo Profundo */
-            --card-bg: #ffffff;
+            --accent-light: #e6c885;
+            --dark-bg: #0f172a;     
+            --card-glass: rgba(255, 255, 255, 0.92);
+            --glass-border: rgba(255, 255, 255, 0.6);
         }
 
-        body { font-family: 'Inter', sans-serif; background-color: var(--dark-bg); color: #1e293b; overflow-x: hidden; background-image: radial-gradient(at top right, #1e293b 0%, #0f172a 100%); min-height: 100vh; }
+        /* Fundo Animado 'Deep Ocean' */
+        @keyframes oceanMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            color: #1e293b; 
+            overflow-x: hidden; 
+            min-height: 100vh;
+            background: linear-gradient(-45deg, #0f172a, #05364F, #022030, #134e4a);
+            background-size: 400% 400%;
+            animation: oceanMove 15s ease infinite;
+        }
+
         h1, h2, h3, h4, .font-heading { font-family: 'Outfit', sans-serif; }
 
-        /* --- GATEKEEPER --- */
-        #gatekeeper { position: fixed; inset: 0; z-index: 99999; background: #020617; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .pin-input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; letter-spacing: 2px; font-size: 1.2rem; text-align: center; padding: 1rem; border-radius: 1rem; width: 100%; outline: none; transition: 0.3s; }
-        .pin-input:focus { border-color: var(--secondary); box-shadow: 0 0 20px rgba(0, 168, 154, 0.2); background: rgba(255,255,255,0.1); }
-        .pin-input::placeholder { color: rgba(255,255,255,0.3); font-size: 0.9rem; letter-spacing: 1px; }
+        /* Scrollbar Moderna */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+        ::-webkit-scrollbar-thumb { background: var(--secondary); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #008f83; }
+
+        /* --- GATEKEEPER (Login) --- */
+        #gatekeeper { 
+            position: fixed; inset: 0; z-index: 99999; 
+            background: radial-gradient(circle at center, #05364F 0%, #020617 100%);
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+        }
+        
+        /* Partículas sutis no Gatekeeper */
+        .bubble { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.05); animation: floatUp 10s infinite linear; bottom: -20px; }
+        @keyframes floatUp { 0% { transform: translateY(0) scale(1); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateY(-100vh) scale(1.5); opacity: 0; } }
+
+        .pin-input { 
+            background: rgba(255,255,255,0.03); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            color: white; letter-spacing: 4px; font-size: 1.1rem; 
+            text-align: center; padding: 1.2rem; border-radius: 1rem; width: 100%; 
+            outline: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(5px);
+        }
+        .pin-input:focus { 
+            border-color: var(--secondary); 
+            box-shadow: 0 0 25px var(--secondary-glow); 
+            background: rgba(255,255,255,0.08); 
+            transform: scale(1.02);
+        }
+        .pin-input::placeholder { color: rgba(255,255,255,0.2); font-size: 0.8rem; letter-spacing: 1px; }
 
         /* --- HEADER & NAV --- */
         .glass-header {
-            background: rgba(5, 54, 79, 0.95);
-            backdrop-filter: blur(12px);
+            background: rgba(5, 54, 79, 0.8);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             position: sticky; top: 0; z-index: 50;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
         }
 
-        .nav-scroller { background: rgba(255,255,255,0.98); border-bottom: 1px solid #e2e8f0; position: sticky; top: 70px; z-index: 40; }
-        .tab-btn { position: relative; padding: 1rem 1.2rem; color: #64748b; font-weight: 600; font-size: 0.85rem; transition: all 0.3s; cursor: pointer; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
-        .tab-btn:hover { color: var(--primary); background: #f8fafc; }
-        .tab-btn.active { color: var(--primary); font-weight: 800; }
-        .tab-btn.active::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: var(--secondary); border-radius: 3px 3px 0 0; }
+        .nav-scroller { 
+            background: rgba(255,255,255,0.85); 
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.3); 
+            position: sticky; top: 70px; z-index: 40; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .tab-btn { 
+            position: relative; padding: 1rem 1.2rem; 
+            color: #64748b; font-weight: 600; font-size: 0.85rem; 
+            transition: all 0.3s; cursor: pointer; display: flex; 
+            align-items: center; gap: 8px; white-space: nowrap; 
+            border-radius: 8px; margin: 4px 0;
+        }
+        .tab-btn:hover { color: var(--primary); background: rgba(5, 54, 79, 0.05); }
+        .tab-btn.active { color: var(--primary); font-weight: 800; background: rgba(5, 54, 79, 0.08); }
+        .tab-btn.active::after { 
+            content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); 
+            width: 20px; height: 3px; background: var(--secondary); border-radius: 3px; 
+            transition: width 0.3s;
+        }
+        .tab-btn.active:hover::after { width: 80%; }
 
-        /* --- CARDS & UI --- */
+        /* --- CARDS & UI (GLASSMORPHISM) --- */
         .card-prime {
-            background: white;
+            background: var(--card-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-radius: 1.5rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(255,255,255,0.5);
+            box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--glass-border);
             overflow: hidden;
-            transition: transform 0.2s;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s;
+        }
+        .card-prime:hover {
+            box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.15);
         }
         
-        .section-title { font-size: 1.5rem; font-weight: 800; color: white; display: flex; items-center; gap: 0.5rem; margin-bottom: 1.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        /* Títulos com Sombra Suave */
+        .section-title { 
+            font-size: 1.5rem; font-weight: 800; color: white; 
+            display: flex; items-center; gap: 0.5rem; margin-bottom: 1.5rem; 
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2); 
+        }
 
-        /* --- INPUTS --- */
+        /* --- INPUTS MODERNOS --- */
         .input-prime {
-            width: 100%; padding: 0.75rem 1rem;
-            background: #f8fafc; border: 1px solid #e2e8f0;
-            border-radius: 0.75rem; color: #0f172a; font-weight: 600;
-            transition: all 0.2s;
+            width: 100%; padding: 0.8rem 1rem;
+            background: #f1f5f9; border: 2px solid transparent;
+            border-radius: 0.8rem; color: #0f172a; font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
         }
-        .input-prime:focus { background: white; border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(0, 168, 154, 0.1); outline: none; }
+        .input-prime:hover { background: #e2e8f0; }
+        .input-prime:focus { 
+            background: white; 
+            border-color: var(--secondary); 
+            box-shadow: 0 0 0 4px rgba(0, 168, 154, 0.15); 
+            outline: none; 
+        }
         
-        /* Custom Date Input Wrapper */
         .date-wrapper { position: relative; display: flex; align-items: center; }
-        .date-icon { position: absolute; left: 12px; pointer-events: none; color: var(--accent); z-index: 10; }
-        .input-date-custom { padding-left: 40px; }
+        .date-icon { position: absolute; left: 12px; pointer-events: none; color: var(--accent); z-index: 10; filter: drop-shadow(0 2px 2px rgba(197, 160, 89, 0.3)); }
+        .input-date-custom { padding-left: 40px; transition: all 0.3s; }
+        .input-date-custom:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.2); }
 
-        /* Searchable Dropdown */
+        /* Search Dropdown - Efeito Flutuante */
         .search-select-wrapper { position: relative; }
         .search-results {
-            position: absolute; top: 100%; left: 0; right: 0;
-            background: white; border: 1px solid #e2e8f0; border-radius: 0.75rem;
-            max-height: 200px; overflow-y: auto; z-index: 50;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            display: none; margin-top: 4px;
+            position: absolute; top: 110%; left: 0; right: 0;
+            background: rgba(255, 255, 255, 0.98); 
+            backdrop-filter: blur(10px);
+            border: 1px solid #e2e8f0; border-radius: 1rem;
+            max-height: 250px; overflow-y: auto; z-index: 50;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            display: none; transform-origin: top;
+            animation: menuDrop 0.2s ease-out;
         }
-        .search-result-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; font-weight: 600; color: #05364F; display: flex; justify-content: space-between; align-items: center; }
-        .search-result-item:hover { background: #f0f9ff; color: var(--secondary); }
-        .search-result-item i { margin-right: 8px; }
+        @keyframes menuDrop { from { opacity: 0; transform: scaleY(0.8); } to { opacity: 1; transform: scaleY(1); } }
+        
+        .search-result-item { padding: 12px 15px; cursor: pointer; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; font-weight: 600; color: #05364F; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
+        .search-result-item:hover { background: #f0f9ff; color: var(--secondary); padding-left: 20px; }
 
         /* --- AGENDA TABLE & DRAWER --- */
-        .agenda-row { border-bottom: 1px solid #f1f5f9; transition: all 0.2s; cursor: pointer; position: relative; }
-        .agenda-row:hover { background-color: #f8fafc; }
-        .agenda-time { font-family: 'Outfit', sans-serif; font-weight: 700; color: var(--primary); font-size: 1.1rem; }
-        .agenda-workout { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 2px 8px; border-radius: 4px; background: rgba(0, 168, 154, 0.1); color: #00796b; display: inline-block; }
+        /* Table Row Hover Lift */
+        .agenda-row { border-bottom: 1px solid #f1f5f9; transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); cursor: pointer; position: relative; }
+        .agenda-row:hover { background-color: #f8fafc; transform: scale(1.005); box-shadow: 0 4px 15px rgba(0,0,0,0.05); z-index: 10; border-radius: 8px; border-bottom: 1px solid transparent; }
         
-        /* PRIME KIDS STYLE */
-        .row-kids { background: linear-gradient(90deg, #fff7ed 0%, #fffbeb 100%); border-left: 4px solid #f97316; }
-        .row-kids .agenda-time { color: #ea580c; }
-        .row-kids:hover { background: #fff2e0; }
+        .agenda-time { font-family: 'Outfit', sans-serif; font-weight: 800; color: var(--primary); font-size: 1.1rem; }
+        .agenda-workout { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; padding: 4px 10px; border-radius: 6px; background: rgba(0, 168, 154, 0.1); color: #00796b; display: inline-block; box-shadow: 0 2px 5px rgba(0, 168, 154, 0.1); }
+        
+        /* PRIME KIDS STYLE (14H) - Animado */
+        @keyframes rainbow { 
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .kids-badge { 
+            font-family:'Outfit', sans-serif; font-weight:900; 
+            background: linear-gradient(270deg, #FF6B6B, #4ECDC4, #FFE66D, #FF6B6B); 
+            background-size: 300% 300%;
+            animation: rainbow 4s ease infinite;
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent; 
+            text-shadow: 0px 2px 10px rgba(255, 107, 107, 0.3); 
+            font-size:0.8rem; letter-spacing:1px; 
+        }
+        .row-kids { background: linear-gradient(90deg, #fff5f9 0%, #fff 100%); border-left: 4px solid #ec4899; }
+        .row-kids:hover { background: #ffeef6; transform: scale(1.01); box-shadow: 0 5px 15px rgba(236, 72, 153, 0.15); }
 
-        .drawer-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-in-out, opacity 0.4s; opacity: 0; background: #f8fafc; }
+        .drawer-content { max-height: 0; overflow: hidden; transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s; opacity: 0; background: #f8fafc; box-shadow: inset 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
         .drawer-content.open { max-height: 600px; opacity: 1; border-bottom: 1px solid #e2e8f0; }
 
         /* Time Separator */
-        .time-separator-row td { padding: 0; border: none; }
         .time-separator {
             display: flex; align-items: center; justify-content: center;
             padding: 1rem 0 0.5rem 0;
-            background: linear-gradient(to bottom, transparent, rgba(248, 250, 252, 0.5));
         }
         .time-pill {
-            background: #f1f5f9; color: var(--accent);
-            padding: 4px 16px; border-radius: 20px;
-            font-size: 0.75rem; font-weight: 800;
+            background: white; color: var(--accent);
+            padding: 6px 20px; border-radius: 30px;
+            font-size: 0.75rem; font-weight: 900; letter-spacing: 1px;
             border: 1px solid #e2e8f0;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
-        .time-line { height: 1px; flex-grow: 1; background: #e2e8f0; margin: 0 10px; }
+        .time-line { height: 1px; flex-grow: 1; background: linear-gradient(90deg, transparent, #e2e8f0, transparent); margin: 0 15px; }
 
-        /* --- ANIMATIONS --- */
-        @keyframes slideInUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .fade-in-up { animation: slideInUp 0.5s ease-out forwards; }
+        /* --- ANIMATIONS (Fade In Up Staggered) --- */
+        @keyframes slideInUp { 
+            from { transform: translateY(20px); opacity: 0; } 
+            to { transform: translateY(0); opacity: 1; } 
+        }
+        .fade-in-up { animation: slideInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         
-        /* --- BUTTONS --- */
-        .btn-gold { background: linear-gradient(135deg, #C5A059 0%, #D4AF37 100%); color: white; box-shadow: 0 4px 15px rgba(197, 160, 89, 0.4); }
-        .btn-gold:hover { filter: brightness(110%); transform: translateY(-1px); }
+        /* --- BUTTONS GLOW --- */
+        .btn-gold { 
+            background: linear-gradient(135deg, #C5A059 0%, #D4AF37 100%); 
+            color: white; 
+            box-shadow: 0 4px 15px rgba(197, 160, 89, 0.4); 
+            position: relative; overflow: hidden;
+        }
+        .btn-gold::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: 0.5s;
+        }
+        .btn-gold:hover::before { left: 100%; }
+        .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(197, 160, 89, 0.6); }
         
+        /* Confirm Button Special */
+        #ci-btn-submit {
+            background-size: 200% auto;
+            background-image: linear-gradient(to right, #00A89A 0%, #05364F 51%, #00A89A 100%);
+            transition: 0.5s;
+        }
+        #ci-btn-submit:hover { background-position: right center; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 168, 154, 0.3); }
+
         /* --- MODALS --- */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(8px); z-index: 100; display: none; align-items: center; justify-content: center; padding: 1rem; }
-        .modal-card { background: white; width: 100%; max-width: 500px; border-radius: 1.5rem; padding: 2rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); animation: slideInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .modal-overlay { 
+            position: fixed; inset: 0; background: rgba(2, 6, 23, 0.85); 
+            backdrop-filter: blur(8px); z-index: 100; 
+            display: none; align-items: center; justify-content: center; padding: 1rem; 
+            animation: fadeIn 0.3s ease-out;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .modal-card { 
+            background: white; width: 100%; max-width: 500px; 
+            border-radius: 1.5rem; padding: 2rem; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
+            animation: modalSlide 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+        @keyframes modalSlide { from { transform: translateY(40px) scale(0.95); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
 
-        /* --- DATA STATUS --- */
-        .status-pill { display: flex; align-items: center; gap: 6px; padding: 4px 12px; background: rgba(255,255,255,0.1); border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); font-size: 0.75rem; color: white; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        .status-pill:hover { background: rgba(255,255,255,0.2); }
+        /* --- DATA STATUS PULSE --- */
+        .status-pill { display: flex; align-items: center; gap: 6px; padding: 6px 14px; background: rgba(255,255,255,0.1); border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); font-size: 0.75rem; color: white; font-weight: 600; cursor: pointer; transition: 0.2s; backdrop-filter: blur(4px); }
+        .status-pill:hover { background: rgba(255,255,255,0.2); transform: scale(1.05); }
         .dot { width: 8px; height: 8px; border-radius: 50%; }
-        .dot.online { background: #34d399; box-shadow: 0 0 8px #34d399; }
+        .dot.online { background: #34d399; box-shadow: 0 0 10px #34d399; animation: pulseGreen 2s infinite; }
         .dot.offline { background: #94a3b8; }
         .dot.sync { background: #38bdf8; animation: pulse 1s infinite; }
-        @keyframes pulse { 50% { opacity: 0.5; } }
+        @keyframes pulseGreen { 0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(52, 211, 153, 0); } 100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); } }
+
+        /* Custom Dropdown for Time Filter */
+        .custom-dropdown-content {
+            display: none; position: absolute; top: 120%; right: 0; 
+            background: white; border: 1px solid #e2e8f0; 
+            border-radius: 12px; padding: 15px; 
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15); 
+            z-index: 60; width: 220px; max-height: 300px; overflow-y: auto;
+            transform-origin: top right;
+        }
+        .custom-dropdown-content.show { display: block; animation: menuDrop 0.2s ease-out; }
+        .cb-item { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .cb-item:hover { background: #f8fafc; transform: translateX(2px); }
+        .cb-item input { accent-color: var(--secondary); width: 18px; height: 18px; }
+        
+        /* --- FREQUENCY VISUALS --- */
+        .week-grid-box { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 5px; }
+        .wg-box-item { 
+            min-width: 65px; flex: 1; padding: 10px 8px; border-radius: 10px; 
+            border: 1px solid #e2e8f0; text-align: center; background: white; 
+            transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        .wg-box-item:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
+        .wg-box-item .day-lbl { font-size: 0.65rem; font-weight: 900; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px; }
+        .wg-box-item .val-lbl { font-size: 0.75rem; font-weight: 800; color: #cbd5e1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .wg-box-item.present { background: #f0fdfa; border-color: #5eead4; border-bottom: 3px solid var(--secondary); }
+        .wg-box-item.present .val-lbl { color: var(--secondary); }
+        .wg-box-item.absent { background: #fef2f2; border-color: #fca5a5; border-bottom: 3px solid #ef4444; }
+        .wg-box-item.absent .val-lbl { color: #ef4444; }
+
+        /* Vertical List Style */
+        .week-list-vertical { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; }
+        .wl-item { 
+            display: flex; align-items: center; justify-content: space-between; 
+            padding: 12px 15px; border-radius: 12px; background: white; 
+            border: 1px solid #e2e8f0; font-size: 0.85rem; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03); transition: 0.2s;
+        }
+        .wl-item:hover { transform: scale(1.02); }
+        .wl-item.present { border-left: 5px solid var(--secondary); }
+        .wl-item.absent { border-left: 5px solid #ef4444; background: #fff5f5; }
+        .wl-item.future { border-left: 5px solid #cbd5e1; opacity: 0.6; }
+        
+        .wl-date { font-weight: 800; color: #05364F; display: flex; flex-direction: column; }
+        .wl-date span { font-size: 0.65rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; }
+        .wl-workout { font-weight: 800; color: #64748b; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; }
+        .wl-item.present .wl-workout { color: var(--secondary); }
+        .wl-item.absent .wl-workout { color: #ef4444; }
 
         /* Profile Week Grid matches Agenda style */
         .pf-grid-item { flex: 1; min-width: 80px; padding: 10px; border-radius: 12px; border: 1px solid #e2e8f0; text-align: center; transition: all 0.3s; background: white; }
         .pf-grid-item.active { border-left: 4px solid var(--secondary); box-shadow: 0 2px 8px rgba(0,168,154,0.1); background: #f0fdfa; }
-
-        /* Custom Dropdown for Time Filter */
-        .custom-dropdown-content {
-            display: none; position: absolute; top: 100%; right: 0; 
-            background: white; border: 1px solid #e2e8f0; 
-            border-radius: 12px; padding: 10px; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
-            z-index: 60; width: 220px; max-height: 300px; overflow-y: auto;
-        }
-        .custom-dropdown-content.show { display: block; animation: slideInUp 0.2s ease-out; }
-        .cb-item { display: flex; align-items: center; gap: 8px; padding: 6px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
-        .cb-item:hover { background: #f1f5f9; }
-        .cb-item input { accent-color: var(--secondary); width: 16px; height: 16px; }
-        .cb-item label { font-size: 0.85rem; font-weight: 600; color: #05364F; flex: 1; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <!-- GATEKEEPER -->
     <div id="gatekeeper">
-        <div class="text-center w-full max-w-[280px]">
-            <div class="w-20 h-20 bg-gradient-to-br from-[#C5A059] to-[#b8860b] rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-yellow-900/50">
-                <i class="fa-solid fa-dumbbell text-4xl text-white"></i>
+        <!-- Floating Bubbles for Visual Dazzle -->
+        <div class="bubble" style="width: 60px; height: 60px; left: 10%; animation-duration: 8s; opacity: 0.1;"></div>
+        <div class="bubble" style="width: 40px; height: 40px; left: 30%; animation-duration: 12s; opacity: 0.15;"></div>
+        <div class="bubble" style="width: 80px; height: 80px; left: 70%; animation-duration: 15s; opacity: 0.05;"></div>
+        <div class="bubble" style="width: 50px; height: 50px; left: 90%; animation-duration: 10s; opacity: 0.1;"></div>
+
+        <div class="text-center w-full max-w-[280px] z-10">
+            <div class="w-24 h-24 bg-gradient-to-br from-[#C5A059] to-[#b8860b] rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-yellow-900/50 transform rotate-6 hover:rotate-0 transition-all duration-500 cursor-pointer">
+                <i class="fa-solid fa-dumbbell text-5xl text-white drop-shadow-md"></i>
             </div>
-            <h1 class="text-2xl font-bold text-white mb-2 font-heading tracking-tight">PRIME <span class="text-[#C5A059]">ACQUAFIT</span></h1>
-            <p class="text-slate-400 mb-8 text-[10px] uppercase tracking-widest">Área Restrita</p>
+            <h1 class="text-3xl font-black text-white mb-2 font-heading tracking-tight drop-shadow-lg">PRIME <span class="text-[#C5A059]">ACQUAFIT</span></h1>
+            <p class="text-slate-400 mb-10 text-[11px] uppercase tracking-[0.3em] font-bold">Área Restrita</p>
             
-            <div class="flex flex-col gap-3">
+            <div class="flex flex-col gap-4">
                 <input type="text" id="userInput" class="pin-input text-sm font-bold uppercase" placeholder="USUÁRIO" autocomplete="off">
                 <input type="password" id="passInput" class="pin-input" placeholder="SENHA" onkeyup="if(event.key==='Enter') attemptLogin()">
-                <button onclick="attemptLogin()" class="mt-2 bg-[#C5A059] text-white font-bold py-3.5 rounded-xl hover:bg-[#b8860b] transition shadow-lg shadow-yellow-900/40 tracking-widest text-sm w-full">
+                <button onclick="attemptLogin()" class="mt-4 btn-gold py-4 rounded-2xl font-bold tracking-widest text-xs w-full shadow-xl">
                     ACESSAR SISTEMA
                 </button>
             </div>
-            <div id="loginError" class="text-red-500 mt-4 font-bold text-xs h-5"></div>
+            <div id="loginError" class="text-red-400 mt-6 font-bold text-xs h-5 tracking-wide"></div>
         </div>
     </div>
 
@@ -184,12 +361,12 @@
         <header class="glass-header">
             <div class="max-w-7xl mx-auto px-4 h-[70px] flex justify-between items-center">
                 <div class="flex items-center gap-4">
-                    <a href="index.html" class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition border border-white/10">
+                    <a href="index.html" class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition border border-white/10 hover:scale-105 active:scale-95">
                         <i data-lucide="arrow-left" class="w-5 h-5"></i>
                     </a>
                     <div>
-                        <h1 class="text-lg font-bold text-white leading-none font-heading tracking-tight">PRIME <span class="text-[#00A89A]">ACQUAFIT</span></h1>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Gestão de Alunos</p>
+                        <h1 class="text-lg font-bold text-white leading-none font-heading tracking-tight drop-shadow">PRIME <span class="text-[#00A89A]">ACQUAFIT</span></h1>
+                        <p class="text-[10px] text-slate-300 font-bold uppercase tracking-widest mt-0.5 opacity-80">Gestão de Alunos</p>
                     </div>
                 </div>
                 <button onclick="openCloudModal()" class="status-pill">
@@ -218,59 +395,53 @@
                     <!-- LEFT COLUMN: CHECKIN FORM -->
                     <div class="lg:col-span-4 space-y-6 lg:sticky lg:top-[90px] h-fit z-10">
                         <div class="card-prime">
-                            <div class="bg-[#05364F] px-6 py-4 flex justify-between items-center border-b border-[#084566]">
+                            <div class="bg-gradient-to-r from-[#05364F] to-[#084566] px-6 py-5 flex justify-between items-center border-b border-[#084566]">
                                 <h2 class="text-white font-bold flex items-center gap-2 text-sm uppercase tracking-wide">
                                     <i data-lucide="check-circle-2" class="w-5 h-5 text-[#00A89A]"></i> 
                                     <span id="form-title">Novo Check-in</span>
                                 </h2>
-                                <span id="live-clock" class="text-[#C5A059] font-mono font-bold text-sm">00:00</span>
+                                <span id="live-clock" class="text-[#C5A059] font-mono font-bold text-sm bg-white/10 px-3 py-1 rounded-lg border border-white/10 shadow-sm">00:00</span>
                             </div>
                             
-                            <form onsubmit="handleCheckin(event)" class="p-6 space-y-4 relative">
+                            <form onsubmit="handleCheckin(event)" class="p-6 space-y-5 relative">
                                 <input type="hidden" id="ci-edit-id" value="">
                                 <input type="hidden" id="ci-student-id" value="">
                                 
-                                <div id="edit-indicator" class="hidden absolute top-0 left-0 right-0 bg-yellow-100 text-yellow-800 text-xs font-bold px-6 py-1 flex justify-between items-center">
+                                <div id="edit-indicator" class="hidden absolute top-0 left-0 right-0 bg-amber-100 text-amber-800 text-xs font-bold px-6 py-2 flex justify-between items-center shadow-inner">
                                     <span><i class="fa-solid fa-pencil mr-1"></i> Editando Registro</span>
-                                    <button type="button" onclick="cancelEdit()" class="text-yellow-900 underline">Cancelar</button>
+                                    <button type="button" onclick="cancelEdit()" class="text-amber-900 underline hover:text-amber-700">Cancelar</button>
                                 </div>
 
                                 <div class="grid grid-cols-2 gap-4 pt-2">
                                     <div>
-                                        <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Data</label>
+                                        <label class="text-[10px] font-bold text-slate-500 uppercase mb-1.5 block tracking-wide">Data</label>
                                         <input type="date" id="ci-date" class="input-prime text-sm" required>
                                     </div>
                                     <div>
-                                        <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Horário</label>
+                                        <label class="text-[10px] font-bold text-slate-500 uppercase mb-1.5 block tracking-wide">Horário</label>
                                         <select id="ci-time" class="input-prime text-sm"></select>
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Aluno</label>
+                                    <label class="text-[10px] font-bold text-slate-500 uppercase mb-1.5 block tracking-wide">Aluno</label>
                                     <div class="flex gap-2">
                                         <!-- Searchable Input -->
                                         <div class="search-select-wrapper w-full">
                                             <input type="text" id="ci-search-input" class="input-prime text-sm" placeholder="Digite para buscar..." autocomplete="off" onkeyup="filterStudentSearch()" onfocus="filterStudentSearch()">
                                             <div id="ci-search-results" class="search-results"></div>
                                         </div>
-                                        <button type="button" onclick="openStudentModal(null, true)" class="bg-[#00A89A] text-white px-3 rounded-xl hover:bg-teal-600 transition shadow-lg shadow-teal-500/30">
+                                        <button type="button" onclick="openStudentModal(null, true)" class="bg-[#00A89A] text-white px-3.5 rounded-xl hover:bg-teal-600 transition shadow-lg shadow-teal-500/30 hover:shadow-teal-500/50 hover:-translate-y-0.5 active:translate-y-0">
                                             <i data-lucide="plus" class="w-5 h-5"></i>
                                         </button>
                                     </div>
-                                    <!-- LAST WORKOUT INFO (CHECK-IN) -->
-                                    <div id="last-workout-box" class="hidden mt-2 p-3 bg-slate-50 border border-slate-200 rounded-lg flex justify-between items-center">
-                                        <div>
-                                            <div class="text-[10px] font-bold text-slate-400 uppercase">Último Treino</div>
-                                            <div id="lw-date" class="text-xs font-bold text-[#05364F]">--/--/--</div>
-                                        </div>
-                                        <div id="lw-type" class="bg-[#00A89A] text-white text-[10px] font-bold px-2 py-1 rounded uppercase">
-                                            -
-                                        </div>
-                                    </div>
+                                    
+                                    <!-- WEEK STATS VISUAL (LIST VERTICAL) -->
+                                    <div id="ci-week-stats" class="hidden"></div>
+
                                     <!-- ALERT BOX -->
-                                    <div id="ci-alert" class="hidden mt-3 bg-red-50 border border-red-100 rounded-lg p-3 flex gap-3 items-start animate-pulse">
-                                        <i data-lucide="alert-triangle" class="w-5 h-5 text-red-500 shrink-0"></i>
+                                    <div id="ci-alert" class="hidden mt-4 bg-red-50 border border-red-100 rounded-xl p-4 flex gap-3 items-start animate-pulse shadow-sm">
+                                        <i data-lucide="alert-triangle" class="w-5 h-5 text-red-500 shrink-0 mt-0.5"></i>
                                         <div>
                                             <div class="text-[10px] font-bold text-red-500 uppercase mb-0.5">Atenção - Restrições</div>
                                             <p id="ci-alert-text" class="text-xs font-bold text-red-800 leading-tight"></p>
@@ -280,9 +451,9 @@
 
                                 <div class="grid grid-cols-2 gap-4">
                                     <div>
-                                        <div class="flex justify-between items-center mb-1">
-                                            <label class="text-[10px] font-bold text-slate-400 uppercase block">Treino</label>
-                                            <button type="button" onclick="openWorkoutModal()" class="text-[10px] font-bold text-[#00A89A] hover:underline">GERENCIAR</button>
+                                        <div class="flex justify-between items-center mb-1.5">
+                                            <label class="text-[10px] font-bold text-slate-500 uppercase block tracking-wide">Treino</label>
+                                            <button type="button" onclick="openWorkoutModal()" class="text-[10px] font-bold text-[#00A89A] hover:underline hover:text-teal-700 transition">GERENCIAR</button>
                                         </div>
                                         <select id="ci-workout" class="input-prime text-sm" onchange="toggleCustom(this.value)">
                                             <!-- Preenchido via JS -->
@@ -290,26 +461,29 @@
                                         <input id="ci-custom" type="text" class="hidden mt-2 input-prime text-sm border-[#00A89A]" placeholder="Digite o treino...">
                                     </div>
                                     <div>
-                                        <div class="flex justify-between items-center mb-1">
-                                            <label class="text-[10px] font-bold text-slate-400 uppercase block">Responsável</label>
-                                            <button type="button" onclick="openProfModal()" class="text-[10px] font-bold text-[#00A89A] hover:underline">GERENCIAR</button>
+                                        <div class="flex justify-between items-center mb-1.5">
+                                            <label class="text-[10px] font-bold text-slate-500 uppercase block tracking-wide">Responsável</label>
+                                            <button type="button" onclick="openProfModal()" class="text-[10px] font-bold text-[#00A89A] hover:underline hover:text-teal-700 transition">GERENCIAR</button>
                                         </div>
                                         <select id="ci-prof" class="input-prime text-sm"></select>
                                     </div>
                                 </div>
 
-                                <button type="submit" id="ci-btn-submit" class="w-full py-3.5 bg-gradient-to-r from-[#00A89A] to-[#008f83] hover:from-[#009689] hover:to-[#007f74] text-white font-bold rounded-xl shadow-lg shadow-teal-500/30 transition transform active:scale-95 flex justify-center items-center gap-2 mt-4 text-sm uppercase tracking-wider">
+                                <button type="submit" id="ci-btn-submit" class="w-full py-4 text-white font-bold rounded-xl shadow-xl transition flex justify-center items-center gap-2 mt-4 text-sm uppercase tracking-widest border border-white/10">
                                     <i data-lucide="check" class="w-5 h-5"></i> Confirmar
                                 </button>
                             </form>
                         </div>
 
                         <!-- STATS CARD -->
-                        <div class="card-prime bg-gradient-to-br from-[#05364F] to-[#022030] text-white p-6 border-none">
-                            <h3 class="text-xs font-bold text-[#C5A059] uppercase tracking-widest mb-6 pb-2 border-b border-white/10">Resumo do Dia</h3>
-                            <div class="grid grid-cols-2 gap-y-6 gap-x-4">
-                                <div><div class="text-[10px] text-slate-400 font-bold uppercase mb-1">Total Alunos</div><div class="text-3xl font-heading font-bold" id="st-total">0</div></div>
-                                <div><div class="text-[10px] text-slate-400 font-bold uppercase mb-1">Novos</div><div class="text-3xl font-heading font-bold text-[#00A89A]" id="st-new">0</div></div>
+                        <div class="card-prime bg-gradient-to-br from-[#05364F] to-[#021824] text-white p-6 border-none relative overflow-hidden">
+                            <!-- Background pattern -->
+                            <div class="absolute top-0 right-0 p-4 opacity-10"><i class="fa-solid fa-chart-line text-6xl"></i></div>
+                            
+                            <h3 class="text-xs font-bold text-[#C5A059] uppercase tracking-widest mb-6 pb-2 border-b border-white/10 relative z-10">Resumo do Dia</h3>
+                            <div class="grid grid-cols-2 gap-y-6 gap-x-4 relative z-10">
+                                <div><div class="text-[10px] text-slate-400 font-bold uppercase mb-1">Total Alunos</div><div class="text-3xl font-heading font-bold drop-shadow-md" id="st-total">0</div></div>
+                                <div><div class="text-[10px] text-slate-400 font-bold uppercase mb-1">Novos</div><div class="text-3xl font-heading font-bold text-[#00A89A] drop-shadow-md" id="st-new">0</div></div>
                                 <div><div class="text-[10px] text-slate-400 font-bold uppercase mb-1">Pico</div><div class="text-lg font-bold text-[#C5A059]" id="st-peak">-</div></div>
                                 <div><div class="text-[10px] text-slate-400 font-bold uppercase mb-1">Pop</div><div class="text-sm font-bold text-slate-200 truncate" id="st-pop">-</div></div>
                             </div>
@@ -319,44 +493,47 @@
                     <!-- RIGHT COLUMN: AGENDA -->
                     <div class="lg:col-span-8">
                         <div class="card-prime h-full flex flex-col">
-                            <div class="p-5 border-b border-slate-100 flex flex-wrap gap-4 justify-between items-center bg-slate-50">
+                            <div class="p-5 border-b border-slate-100 flex flex-wrap gap-4 justify-between items-center bg-white/50">
                                 <h2 class="text-xl font-heading font-bold text-[#05364F] flex items-center gap-2">
-                                    <i data-lucide="calendar-days" class="w-5 h-5 text-[#C5A059]"></i> Agenda
+                                    <i data-lucide="calendar-days" class="w-6 h-6 text-[#C5A059]"></i> Agenda
                                 </h2>
                                 <div class="flex gap-2 items-center">
                                     <!-- WRAPPER COM ÍCONE DO CALENDÁRIO -->
                                     <div class="date-wrapper">
                                         <i data-lucide="calendar" class="date-icon w-4 h-4"></i>
-                                        <input type="date" id="ag-date" class="bg-white border border-slate-200 rounded-lg py-2 pr-3 text-sm font-bold text-[#05364F] outline-none focus:border-[#00A89A] input-date-custom" onchange="renderAgenda()">
+                                        <input type="date" id="ag-date" class="bg-white border border-slate-200 rounded-lg py-2 pr-3 text-sm font-bold text-[#05364F] outline-none focus:border-[#00A89A] input-date-custom hover:bg-slate-50 transition" onchange="renderAgenda()">
                                     </div>
                                     
-                                    <div class="flex items-center gap-2 bg-slate-50 px-2 py-1.5 rounded-lg border border-slate-200">
-                                        <input type="checkbox" id="ag-full-month" onchange="renderAgenda()" class="w-4 h-4 accent-[#00A89A]">
-                                        <label for="ag-full-month" class="text-xs font-bold text-slate-500 cursor-pointer">Ver Mês</label>
+                                    <div class="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 transition cursor-pointer" onclick="document.getElementById('ag-full-month').click()">
+                                        <input type="checkbox" id="ag-full-month" onchange="renderAgenda()" class="w-4 h-4 accent-[#00A89A] cursor-pointer">
+                                        <label for="ag-full-month" class="text-xs font-bold text-slate-500 cursor-pointer select-none">Ver Mês</label>
                                     </div>
 
                                     <!-- Novo Dropdown Multi-select -->
                                     <div class="relative">
-                                        <button onclick="toggleTimeDropdown()" id="btn-time-filter" class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm font-bold text-[#05364F] hover:border-[#00A89A] flex items-center gap-2">
+                                        <button onclick="toggleTimeDropdown()" id="btn-time-filter" class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm font-bold text-[#05364F] hover:border-[#00A89A] hover:bg-slate-50 transition flex items-center gap-2">
                                             <span>Todos Horários</span>
                                             <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i>
                                         </button>
                                         <div id="time-dropdown-content" class="custom-dropdown-content">
                                             <div class="flex justify-between border-b pb-2 mb-2">
                                                 <span class="text-xs font-bold text-slate-400">Filtrar Horários</span>
-                                                <span onclick="clearTimeFilter()" class="text-xs font-bold text-[#00A89A] cursor-pointer">Limpar</span>
+                                                <span onclick="clearTimeFilter()" class="text-xs font-bold text-[#00A89A] cursor-pointer hover:underline">Limpar</span>
                                             </div>
                                             <div id="time-checkboxes" class="space-y-1"></div>
                                         </div>
                                     </div>
 
-                                    <input type="text" id="ag-search" placeholder="Buscar aluno..." class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm font-bold outline-none focus:border-[#00A89A] w-32" onkeyup="renderAgenda()">
+                                    <div class="relative">
+                                        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
+                                        <input type="text" id="ag-search" placeholder="Buscar..." class="bg-white border border-slate-200 rounded-lg py-2 pl-9 pr-3 text-sm font-bold outline-none focus:border-[#00A89A] w-32 focus:w-48 transition-all" onkeyup="renderAgenda()">
+                                    </div>
                                 </div>
                             </div>
                             
-                            <div class="flex-grow overflow-x-auto">
+                            <div class="flex-grow overflow-x-auto custom-scrollbar">
                                 <table class="w-full text-left text-sm border-collapse">
-                                    <thead class="bg-[#05364F] text-white text-[10px] uppercase font-bold tracking-wider">
+                                    <thead class="bg-[#f8fafc] text-[#64748b] text-[10px] uppercase font-bold tracking-wider border-b border-slate-200">
                                         <tr>
                                             <th class="px-6 py-4 w-28 text-center">Horário</th>
                                             <th class="px-6 py-4">Aluno</th>
@@ -380,10 +557,10 @@
                         <h2 class="section-title text-[#05364F] mb-0 !text-[#05364F] !text-shadow-none">Base de Alunos</h2>
                         <div class="flex gap-3">
                             <input type="text" id="stu-search" placeholder="Buscar aluno..." class="input-prime w-64" onkeyup="renderStudentsTable()">
-                            <button onclick="openStudentModal()" class="btn-gold px-4 py-2 rounded-xl font-bold text-sm flex items-center gap-2"><i data-lucide="plus" class="w-4 h-4"></i> Novo</button>
+                            <button onclick="openStudentModal()" class="btn-gold px-6 py-2 rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg"><i data-lucide="plus" class="w-4 h-4"></i> Novo</button>
                         </div>
                     </div>
-                    <div class="overflow-x-auto rounded-xl border border-slate-100">
+                    <div class="overflow-x-auto rounded-xl border border-slate-100 shadow-sm">
                         <table class="w-full text-sm text-left">
                             <thead class="bg-slate-50 text-slate-500 uppercase text-xs font-bold border-b border-slate-200">
                                 <tr>
@@ -403,13 +580,13 @@
             <!-- VIEW: REPORTS -->
             <section id="view-reports" class="view-section hidden fade-in-up space-y-6">
                 <!-- Filter Header -->
-                <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
+                <div class="flex justify-between items-center card-prime p-4 !shadow-sm">
                     <h2 class="text-xl font-heading font-bold text-[#05364F] flex items-center gap-2">
                         <i data-lucide="pie-chart" class="w-5 h-5 text-[#C5A059]"></i> Inteligência
                     </h2>
                     <div class="flex items-center gap-3">
                         <label class="text-xs font-bold text-slate-400 uppercase">Período:</label>
-                        <select id="report-period" onchange="renderReports()" class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm font-bold text-[#05364F] outline-none focus:border-[#00A89A]">
+                        <select id="report-period" onchange="renderReports()" class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm font-bold text-[#05364F] outline-none focus:border-[#00A89A] transition cursor-pointer hover:bg-slate-100">
                             <!-- Options generated dynamically -->
                         </select>
                     </div>
@@ -417,8 +594,8 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="card-prime p-6">
-                        <h3 class="text-sm font-bold text-[#05364F] mb-4 flex items-center gap-2"><i data-lucide="bar-chart-2" class="w-4 h-4 text-[#00A89A]"></i> Timeline de Check-ins</h3>
-                        <div class="h-64"><canvas id="chart1"></canvas></div>
+                        <h3 class="text-sm font-bold text-[#05364F] mb-4 flex items-center gap-2"><i data-lucide="bar-chart-2" class="w-4 h-4 text-[#00A89A]"></i> Fluxo por Dia da Semana (Total)</h3>
+                        <div class="h-64"><canvas id="chart-dow"></canvas></div>
                     </div>
                     <div class="card-prime p-6">
                         <h3 class="text-sm font-bold text-[#05364F] mb-4 flex items-center gap-2"><i data-lucide="pie-chart" class="w-4 h-4 text-[#00A89A]"></i> Distribuição de Treinos</h3>
@@ -431,8 +608,8 @@
                          <div class="h-64"><canvas id="chart3"></canvas></div>
                      </div>
                      <div class="card-prime p-6">
-                         <h3 class="text-sm font-bold text-[#05364F] mb-4 flex items-center gap-2"><i data-lucide="users" class="w-4 h-4 text-[#00A89A]"></i> Alunos Ativos no Período</h3>
-                         <div class="h-64 relative flex justify-center"><canvas id="chart4"></canvas></div>
+                         <h3 class="text-sm font-bold text-[#05364F] mb-4 flex items-center gap-2"><i data-lucide="bar-chart-2" class="w-4 h-4 text-[#00A89A]"></i> Timeline de Check-ins</h3>
+                         <div class="h-64 relative flex justify-center"><canvas id="chart1"></canvas></div>
                      </div>
                 </div>
             </section>
@@ -462,41 +639,36 @@
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Apelido (Opcional)</label>
-                        <input type="text" id="ms-nickname" class="input-prime">
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Gênero</label>
-                        <select id="ms-gender" class="input-prime">
-                            <option value="M">Masculino</option>
-                            <option value="F">Feminino</option>
-                        </select>
-                    </div>
+                <!-- GENDER ONLY ROW -->
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Gênero</label>
+                    <select id="ms-gender" class="input-prime">
+                        <option value="M">Masculino</option>
+                        <option value="F">Feminino</option>
+                    </select>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4"><div><label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Objetivo</label><input type="text" id="ms-obj" class="input-prime"></div><div><label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Plano</label><input type="text" id="ms-plan" class="input-prime"></div></div>
-                <div><label class="text-[10px] font-bold text-red-400 uppercase mb-1 block">Limitações / Lesões</label><textarea id="ms-lim" rows="2" class="w-full p-3 rounded-xl border border-red-200 bg-red-50 text-red-900 font-medium text-sm"></textarea></div>
-                <div><label class="text-[10px] font-bold text-blue-400 uppercase mb-1 block">Observações Gerais</label><textarea id="ms-obs" rows="2" class="w-full p-3 rounded-xl border border-blue-200 bg-blue-50 text-slate-700 text-sm"></textarea></div>
-                <button type="submit" class="w-full py-3 bg-[#05364F] text-white font-bold rounded-xl hover:bg-[#032435] transition">SALVAR DADOS</button>
+                <div><label class="text-[10px] font-bold text-red-400 uppercase mb-1 block">Limitações / Lesões</label><textarea id="ms-lim" rows="2" class="w-full p-3 rounded-xl border border-red-200 bg-red-50 text-red-900 font-medium text-sm focus:border-red-400 outline-none"></textarea></div>
+                <div><label class="text-[10px] font-bold text-blue-400 uppercase mb-1 block">Observações Gerais</label><textarea id="ms-obs" rows="2" class="w-full p-3 rounded-xl border border-blue-200 bg-blue-50 text-slate-700 text-sm focus:border-blue-400 outline-none"></textarea></div>
+                <button type="submit" class="w-full py-3 bg-[#05364F] text-white font-bold rounded-xl hover:bg-[#032435] transition shadow-lg">SALVAR DADOS</button>
             </form>
         </div>
     </div>
 
     <!-- MODAL PROFILE -->
     <div id="profile-modal" class="modal-overlay">
-        <div class="bg-white w-full max-w-4xl h-[90vh] rounded-2xl flex flex-col overflow-hidden animate-[slideInUp_0.3s_ease-out]">
-            <div class="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-white">
+        <div class="bg-white w-full max-w-4xl h-[90vh] rounded-2xl flex flex-col overflow-hidden animate-[modalSlide_0.4s_cubic-bezier(0.16,1,0.3,1)] shadow-2xl">
+            <div class="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-white/80 backdrop-blur-sm sticky top-0 z-10">
                 <div class="flex items-center gap-5">
-                    <div id="pf-avatar" class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#00A89A] to-[#05364F] text-white flex items-center justify-center text-xl font-bold shadow-lg"></div>
+                    <div id="pf-avatar" class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#00A89A] to-[#05364F] text-white flex items-center justify-center text-xl font-bold shadow-lg transform hover:scale-105 transition"></div>
                     <div><h2 id="pf-name" class="text-2xl font-black text-[#05364F] font-heading leading-tight">NOME</h2><p class="text-xs font-bold text-[#C5A059] uppercase tracking-wider mt-1"><span id="pf-obj">OBJETIVO</span> • <span id="pf-plan">PLANO</span></p></div>
                 </div>
                 <div class="flex items-center gap-2">
                     <button id="pf-btn-edit" class="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition">
                         <i data-lucide="edit" class="w-4 h-4"></i> Editar Dados
                     </button>
-                    <button onclick="document.getElementById('profile-modal').style.display='none'" class="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center"><i data-lucide="x" class="w-5 h-5 text-slate-500"></i></button>
+                    <button onclick="document.getElementById('profile-modal').style.display='none'" class="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center transition"><i data-lucide="x" class="w-5 h-5 text-slate-500"></i></button>
                 </div>
             </div>
             <div class="p-8 overflow-y-auto space-y-8 bg-slate-50/50 flex-grow">
@@ -519,26 +691,36 @@
     <!-- MODAL CLOUD & PROF (Minimal) -->
     <div id="modal-cloud" class="modal-overlay">
         <div class="modal-card text-center">
-            <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="database" class="w-8 h-8 text-[#00A89A]"></i></div>
+            <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce"><i data-lucide="database" class="w-8 h-8 text-[#00A89A]"></i></div>
             <h3 class="text-xl font-bold text-[#05364F] mb-1 font-heading">Central de Dados</h3>
             <p class="text-sm text-slate-400 mb-6">Sincronização & Backup</p>
             <div class="space-y-3">
-                <input type="password" id="manualToken" placeholder="Token GitHub" class="w-full p-3 rounded-xl border border-slate-200 text-sm mb-2 text-center">
-                <button onclick="saveManualToken()" class="w-full py-2 text-xs font-bold text-slate-500 bg-slate-50 rounded-lg hover:bg-slate-100">SALVAR TOKEN</button>
+                <input type="password" id="manualToken" placeholder="Token GitHub" class="w-full p-3 rounded-xl border border-slate-200 text-sm mb-2 text-center input-prime">
+                <div class="flex gap-2">
+                    <button onclick="saveManualToken()" class="flex-1 py-2 text-xs font-bold text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition">SALVAR</button>
+                    <button onclick="removeToken()" class="flex-1 py-2 text-xs font-bold text-red-500 bg-red-50 rounded-lg hover:bg-red-100 transition">DESCONECTAR</button>
+                </div>
                 <div class="h-px bg-slate-100 my-4"></div>
-                <button onclick="forceSync()" class="w-full py-3 rounded-xl bg-[#00A89A] text-white font-bold hover:bg-teal-600 flex justify-center gap-2"><i data-lucide="cloud-download" class="w-4 h-4"></i> BAIXAR</button>
-                <button onclick="backupData()" class="w-full py-3 rounded-xl bg-[#05364F] text-white font-bold hover:bg-[#032435] flex justify-center gap-2"><i data-lucide="download" class="w-4 h-4"></i> BACKUP</button>
-                <label class="w-full py-3 rounded-xl border-2 border-slate-200 text-slate-600 font-bold hover:bg-slate-50 cursor-pointer flex justify-center gap-2"><i data-lucide="upload" class="w-4 h-4"></i> RESTAURAR <input type="file" id="fileIn" hidden onchange="restoreData(this)"></label>
+                <button onclick="forceSync()" class="w-full py-3 rounded-xl bg-[#00A89A] text-white font-bold hover:bg-teal-600 flex justify-center gap-2 transition hover:-translate-y-1 shadow-md"><i data-lucide="cloud-download" class="w-4 h-4"></i> BAIXAR</button>
+                <button onclick="backupData()" class="w-full py-3 rounded-xl bg-[#05364F] text-white font-bold hover:bg-[#032435] flex justify-center gap-2 transition hover:-translate-y-1 shadow-md"><i data-lucide="download" class="w-4 h-4"></i> BACKUP</button>
+                <label class="w-full py-3 rounded-xl border-2 border-slate-200 text-slate-600 font-bold hover:bg-slate-50 cursor-pointer flex justify-center gap-2 transition"><i data-lucide="upload" class="w-4 h-4"></i> RESTAURAR <input type="file" id="fileIn" hidden onchange="restoreData(this)"></label>
             </div>
-            <button onclick="document.getElementById('modal-cloud').style.display='none'" class="mt-6 text-xs font-bold text-slate-400">FECHAR</button>
+            <button onclick="document.getElementById('modal-cloud').style.display='none'" class="mt-6 text-xs font-bold text-slate-400 hover:text-slate-600">FECHAR</button>
         </div>
     </div>
 
     <!-- MODAL PROFESSOR -->
     <div id="prof-modal" class="modal-overlay">
         <div class="modal-card max-w-sm">
-             <div class="flex justify-between items-center mb-4"><h3 class="font-bold text-[#05364F]">Equipe</h3><button onclick="closeProfModal()"><i data-lucide="x" class="w-5 h-5"></i></button></div>
-             <div class="flex gap-2 mb-4"><input type="text" id="new-prof-name" class="input-prime py-2 text-sm" placeholder="Nome"><button onclick="addProfessor()" class="bg-[#00A89A] text-white px-3 rounded-lg"><i data-lucide="plus" class="w-4 h-4"></i></button></div>
+             <div class="flex justify-between items-center mb-4"><h3 class="font-bold text-[#05364F]">Equipe</h3><button onclick="closeProfModal()"><i data-lucide="x" class="w-5 h-5 hover:scale-110 transition"></i></button></div>
+             <div class="flex gap-2 mb-4">
+                 <input type="text" id="new-prof-name" class="input-prime py-2 text-sm flex-1" placeholder="Nome">
+                 <select id="new-prof-role" class="input-prime py-2 text-sm w-32">
+                     <option value="EST">Estagiário</option>
+                     <option value="PRO">Professor</option>
+                 </select>
+                 <button onclick="addProfessor()" class="bg-[#00A89A] text-white px-3 rounded-lg hover:bg-teal-600 transition"><i data-lucide="plus" class="w-4 h-4"></i></button>
+             </div>
              <ul id="prof-list" class="space-y-2 max-h-60 overflow-y-auto"></ul>
         </div>
     </div>
@@ -546,8 +728,8 @@
     <!-- MODAL WORKOUT MANAGER (NOVO) -->
     <div id="workout-modal" class="modal-overlay">
         <div class="modal-card max-w-sm">
-             <div class="flex justify-between items-center mb-4"><h3 class="font-bold text-[#05364F]">Gerenciar Treinos</h3><button onclick="closeWorkoutModal()"><i data-lucide="x" class="w-5 h-5"></i></button></div>
-             <div class="flex gap-2 mb-4"><input type="text" id="new-workout-name" class="input-prime py-2 text-sm" placeholder="Nome do Treino"><button onclick="addWorkout()" class="bg-[#00A89A] text-white px-3 rounded-lg"><i data-lucide="plus" class="w-4 h-4"></i></button></div>
+             <div class="flex justify-between items-center mb-4"><h3 class="font-bold text-[#05364F]">Gerenciar Treinos</h3><button onclick="closeWorkoutModal()"><i data-lucide="x" class="w-5 h-5 hover:scale-110 transition"></i></button></div>
+             <div class="flex gap-2 mb-4"><input type="text" id="new-workout-name" class="input-prime py-2 text-sm" placeholder="Nome do Treino"><button onclick="addWorkout()" class="bg-[#00A89A] text-white px-3 rounded-lg hover:bg-teal-600 transition"><i data-lucide="plus" class="w-4 h-4"></i></button></div>
              <ul id="workout-list" class="space-y-2 max-h-60 overflow-y-auto"></ul>
         </div>
     </div>
@@ -567,19 +749,33 @@
         let gistId = null;
         let selectedHours = new Set(); // For multi-select filter
         
-        const INITIAL_PROFS = ['BENAI', 'JUAN', 'THUR', 'LUANA', 'BENJAMIN'];
+        const INITIAL_PROFS = [
+            {name: 'BENJAMIN', role: 'PRO'}, 
+            {name: 'JUAN', role: 'PRO'}, 
+            {name: 'LUANA', role: 'PRO'}, 
+            {name: 'BENAI', role: 'EST'}, 
+            {name: 'MATHEUS', role: 'EST'},
+            {name: 'MURILO', role: 'EST'}
+        ];
         const INITIAL_WORKOUTS = ["QUADRICEPS","POSTERIOR/GLÚTEO","PEITO/TRÍCEPS/OMBRO","COSTAS/BÍCEPS/ANTEBRAÇO","FULL BODY","MMSS","MMII","CORE","AERÓBICO","AVALIAÇÃO"];
         const INITIAL_STUDENTS = [
              {"id":"1","firstName":"NILTON","lastName":"FLORIANO","nickname":"","gender":"M","objective":"GANHAR MASSA","limitations":"HERNIA INGUINAL","notes":"GOSTA DE FAZER BURPEES AO FINAL DA AULA","plan":"3X"},
             {"id":"2","firstName":"LINDAMIR","lastName":"FLORIANO","nickname":"MIME","gender":"F","objective":"EMAGRECIMENTO","limitations":"NENHUMA","notes":"","plan":"3X"},
         ];
 
+        // COMMON GENDER INDICATORS (Exceptions & Suffixes)
+        const FEMALE_NAMES = ['alice','ana','beatriz','bianca','camila','carolina','clara','daniela','eduarda','elena','elisa','fernanda','gabriela','helena','isabela','julia','larissa','laura','leticia','luana','luiza','manuela','maria','mariana','melissa','natalia','nicole','olivia','rafaela','rebeca','sarah','sophia','valentina','vitoria','yasmin','amanda','bruna','jessica','juliana','marcela','priscila','renata','vanessa','talita','lindamir','simone','ivone','solange'];
+        
         async function init() {
             // 1. Fix Date (Timezone safe)
             const today = new Date();
             const offset = today.getTimezoneOffset();
             const todayLocal = new Date(today.getTime() - (offset*60*1000)).toISOString().split('T')[0];
-            document.getElementById('ag-date').value = todayLocal;
+            const dateEl = document.getElementById('ag-date');
+            const ciDateEl = document.getElementById('ci-date');
+            
+            if(dateEl) dateEl.value = todayLocal;
+            if(ciDateEl) ciDateEl.value = todayLocal;
             
             // 2. Auth & Token Check
             const t = localStorage.getItem(TOKEN_KEY);
@@ -596,19 +792,25 @@
             // 4. Setup UI
             lucide.createIcons();
             setTab('daily');
-            setupTimeDropdown(); // Setup checkboxes
-            setInterval(() => document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}), 1000);
+            setupTimeDropdown(); 
+            setupReportFilter(); // Ensures report dropdown is populated
+            setInterval(() => {
+                const el = document.getElementById('live-clock');
+                if(el) el.innerText = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+            }, 1000);
             
             Chart.defaults.font.family = "'Inter', sans-serif";
             Chart.defaults.color = '#94a3b8';
             Chart.defaults.scale.grid.color = 'rgba(255,255,255,0.05)';
             
-            setupReportFilter();
-            
-            // Populate time select options for Check-in form (Standard Select)
+            // Initial Time Populate if not already
             const tEl = document.getElementById('ci-time');
-            if(tEl.options.length === 0) {
-                 for(let h=6; h<=21; h++) tEl.add(new Option(`${h}:00`, `${h}H`));
+            if(tEl && tEl.options.length === 0) {
+                 for(let h=6; h<=21; h++) {
+                     const opt = new Option(`${h}:00`, `${h}H`);
+                     if(h === new Date().getHours()) opt.selected = true;
+                     tEl.add(opt);
+                 }
             }
         }
 
@@ -624,38 +826,48 @@
         }
 
         function migrateData() {
-            // Converts old name field to split fields
             let modified = false;
+            
+            // 1. Convert String Professors to Objects
+            if (db.professors.length > 0 && typeof db.professors[0] === 'string') {
+                db.professors = db.professors.map(name => {
+                    let role = 'EST'; // Default
+                    if(['BENJAMIN','JUAN','LUANA'].includes(name.toUpperCase())) role = 'PRO';
+                    return { name, role };
+                });
+                modified = true;
+            }
+
+            // 2. Auto Correct Genders & Split Names
             db.students.forEach(s => {
-                // Ensure gender default
-                if(!s.gender) { s.gender = 'M'; modified = true; }
-                
-                // MIGRATION SAFEGUARD: Don't delete 'name' blindly.
                 if(s.name && !s.firstName) {
                     const parts = s.name.split(' ');
                     s.firstName = parts[0];
                     s.lastName = parts.slice(1).join(' ');
-                    if(!s.lastName) s.lastName = ""; // Prevent undefined
-                    s.nickname = "";
-                    // We DO NOT delete s.name immediately to be safe, or we can, but let's ensure it worked.
-                    if(s.firstName) {
-                        delete s.name; 
-                        modified = true;
-                    }
+                    if(!s.lastName) s.lastName = ""; 
+                    delete s.name; 
+                    modified = true;
+                }
+                if (s.firstName) {
+                    const inferred = inferGender(s.firstName);
+                    if (s.gender !== inferred) { s.gender = inferred; modified = true; }
                 }
             });
+
             if(modified) saveDB();
+        }
+
+        function inferGender(name) {
+            const n = name.toLowerCase().trim();
+            if (FEMALE_NAMES.includes(n)) return 'F';
+            if (n.endsWith('a') || n.endsWith('elly') || n.endsWith('ele') || n.endsWith('ine')) return 'F';
+            return 'M';
         }
 
         function getDisplayName(s) {
             if(!s) return "Desconhecido";
-            // 1. Priority: Nickname
-            if(s.nickname && s.nickname.trim() !== "") return `${s.nickname} ${s.lastName || ''}`.trim();
-            // 2. Priority: First + Last
             if(s.firstName) return `${s.firstName} ${s.lastName || ''}`.trim();
-            // 3. Fallback: Old Name field (Crucial Fix)
-            if(s.name) return s.name;
-            
+            if(s.name) return s.name; // Legacy fallback
             return "Sem Nome";
         }
 
@@ -678,11 +890,7 @@
             const pass = document.getElementById('passInput').value.trim();
             const err = document.getElementById('loginError');
 
-            // Logic: Master PIN bypasses User check, OR Staff credentials
-            const isMaster = pass === MASTER_PIN;
-            const isStaff = user === STAFF_USER && pass === STAFF_PASS;
-
-            if (isMaster || isStaff) {
+            if (pass === MASTER_PIN || (user === STAFF_USER && pass === STAFF_PASS)) {
                 sessionStorage.setItem("benai_auth", "true");
                 unlockApp();
             } else {
@@ -727,6 +935,8 @@
             // Clear search input
             document.getElementById('ci-search-input').value = "";
             document.getElementById('ci-student-id').value = "";
+            document.getElementById('ci-week-stats').innerHTML = ""; 
+            document.getElementById('ci-week-stats').classList.add('hidden');
             
             const tEl = document.getElementById('ci-time'); 
             const currentTimeVal = tEl.value;
@@ -738,9 +948,26 @@
             }
             if(currentTimeVal) tEl.value = currentTimeVal;
 
+            // Populate Profs (Grouped) with Icons
             const pEl = document.getElementById('ci-prof'); 
             pEl.innerHTML = '';
-            db.professors.forEach(p => pEl.innerHTML += `<option>${p}</option>`);
+            
+            // Fallback if migration missed or array is empty
+            if(!db.professors || db.professors.length === 0) db.professors = INITIAL_PROFS;
+
+            const profs = db.professors.filter(p => p.role === 'PRO').sort((a,b) => a.name.localeCompare(b.name));
+            const ests = db.professors.filter(p => p.role === 'EST').sort((a,b) => a.name.localeCompare(b.name));
+            
+            if(profs.length > 0) {
+                const grp = document.createElement('optgroup'); grp.label = "PROFESSORES";
+                profs.forEach(p => grp.appendChild(new Option(`🎓 ${p.name}`, p.name)));
+                pEl.appendChild(grp);
+            }
+            if(ests.length > 0) {
+                const grp = document.createElement('optgroup'); grp.label = "ESTAGIÁRIOS";
+                ests.forEach(p => grp.appendChild(new Option(`📝 ${p.name}`, p.name)));
+                pEl.appendChild(grp);
+            }
             
             renderWorkoutsSelect();
         }
@@ -784,7 +1011,6 @@
             handleStudentSelection(s.id);
         }
 
-        // Hide search results on outside click
         document.addEventListener('click', function(e) {
             const wrapper = document.querySelector('.search-select-wrapper');
             if (wrapper && !wrapper.contains(e.target)) {
@@ -795,6 +1021,7 @@
         // --- TIME FILTER LOGIC (MULTI-SELECT) ---
         function setupTimeDropdown() {
             const container = document.getElementById('time-checkboxes');
+            if(!container) return;
             container.innerHTML = '';
             for(let h=6; h<=21; h++) {
                 const val = `${h}H`;
@@ -813,22 +1040,15 @@
 
         function toggleTimeSelection(val) {
             const cb = document.getElementById(`cb-${val}`);
-            if(event.target.tagName !== 'INPUT') {
-                 cb.checked = !cb.checked;
-            }
-
-            if(cb.checked) selectedHours.add(val);
-            else selectedHours.delete(val);
-
-            updateTimeButtonLabel();
-            renderAgenda();
+            if(event.target.tagName !== 'INPUT') cb.checked = !cb.checked;
+            if(cb.checked) selectedHours.add(val); else selectedHours.delete(val);
+            updateTimeButtonLabel(); renderAgenda();
         }
 
         function clearTimeFilter() {
             selectedHours.clear();
             document.querySelectorAll('#time-checkboxes input').forEach(c => c.checked = false);
-            updateTimeButtonLabel();
-            renderAgenda();
+            updateTimeButtonLabel(); renderAgenda();
         }
 
         function updateTimeButtonLabel() {
@@ -844,76 +1064,42 @@
             const current = wEl.value;
             wEl.innerHTML = '';
             if(!db.workouts) db.workouts = INITIAL_WORKOUTS;
-            
             db.workouts.forEach(w => wEl.add(new Option(w, w)));
             wEl.add(new Option('OUTRO...', 'OUTRO'));
-            
             if(current) wEl.value = current;
         }
 
         function openWorkoutModal() { document.getElementById('workout-modal').style.display='flex'; renderWorkoutListUI(); }
         function closeWorkoutModal() { document.getElementById('workout-modal').style.display='none'; renderWorkoutsSelect(); }
-        
         function renderWorkoutListUI() {
             const l = document.getElementById('workout-list'); l.innerHTML = '';
             db.workouts.forEach((w, i) => {
-                l.innerHTML += `
-                <li class="flex justify-between items-center p-3 bg-slate-50 text-sm font-bold text-[#05364F] rounded-lg">
-                    <span>${w}</span>
-                    <div class="flex gap-2">
-                        <i data-lucide="pencil" onclick="editWorkout(${i})" class="w-4 h-4 text-blue-400 cursor-pointer hover:text-blue-600"></i>
-                        <i data-lucide="trash" onclick="deleteWorkout(${i})" class="w-4 h-4 text-red-400 cursor-pointer hover:text-red-600"></i>
-                    </div>
-                </li>`;
+                l.innerHTML += `<li class="flex justify-between items-center p-3 bg-slate-50 text-sm font-bold text-[#05364F] rounded-lg"><span>${w}</span><div class="flex gap-2"><i data-lucide="pencil" onclick="editWorkout(${i})" class="w-4 h-4 text-blue-400 cursor-pointer hover:text-blue-600"></i><i data-lucide="trash" onclick="deleteWorkout(${i})" class="w-4 h-4 text-red-400 cursor-pointer hover:text-red-600"></i></div></li>`;
             });
             lucide.createIcons();
         }
-
         function addWorkout() {
             const n = document.getElementById('new-workout-name').value.toUpperCase().trim();
-            if(n && !db.workouts.includes(n)) {
-                db.workouts.push(n);
-                saveDB();
-                renderWorkoutListUI();
-                document.getElementById('new-workout-name').value = '';
-            }
+            if(n && !db.workouts.includes(n)) { db.workouts.push(n); saveDB(); renderWorkoutListUI(); document.getElementById('new-workout-name').value = ''; }
         }
-
         function editWorkout(index) {
             const oldName = db.workouts[index];
-            const newName = prompt("Novo nome para o treino:", oldName);
+            const newName = prompt("Novo nome para o treino (Alterará histórico):", oldName);
             if(newName && newName.toUpperCase().trim() !== oldName) {
                 const cleanName = newName.toUpperCase().trim();
                 db.workouts[index] = cleanName;
-                
-                // Update history
                 let count = 0;
-                db.checkins.forEach(c => {
-                    if(c.workout === oldName) {
-                        c.workout = cleanName;
-                        count++;
-                    }
-                });
-                
-                saveDB();
-                renderWorkoutListUI();
-                toast(`${count} registros atualizados.`);
+                db.checkins.forEach(c => { if(c.workout === oldName) { c.workout = cleanName; count++; } });
+                saveDB(); renderWorkoutListUI(); toast(`${count} registros atualizados.`);
             }
         }
-
-        function deleteWorkout(index) {
-            if(confirm('Excluir este tipo de treino?')) {
-                db.workouts.splice(index, 1);
-                saveDB();
-                renderWorkoutListUI();
-            }
-        }
-
+        function deleteWorkout(index) { if(confirm('Excluir este tipo de treino?')) { db.workouts.splice(index, 1); saveDB(); renderWorkoutListUI(); } }
 
         function handleStudentSelection(id) {
             if(!id) {
-                document.getElementById('last-workout-box').classList.add('hidden');
                 document.getElementById('ci-alert').classList.add('hidden');
+                document.getElementById('ci-week-stats').innerHTML = "";
+                document.getElementById('ci-week-stats').classList.add('hidden');
                 return;
             }
 
@@ -927,16 +1113,59 @@
                 document.getElementById('ci-alert').classList.add('hidden'); 
             }
 
-            // History
-            const history = db.checkins.filter(c => c.studentId === id).sort((a,b) => b.isoDate.localeCompare(a.isoDate));
-            if(history.length > 0) {
-                const last = history[0];
-                document.getElementById('lw-date').innerText = last.isoDate.split('-').reverse().slice(0,2).join('/');
-                document.getElementById('lw-type').innerText = last.workout;
-                document.getElementById('last-workout-box').classList.remove('hidden');
-            } else {
-                document.getElementById('last-workout-box').classList.add('hidden');
-            }
+            // --- WEEKLY FREQUENCY VISUAL (Vertical List) ---
+            renderWeeklyFrequency(id, 'ci-week-stats', 'list');
+            document.getElementById('ci-week-stats').classList.remove('hidden');
+        }
+
+        // RENDER WEEKLY FREQUENCY - Supports 'grid' (Agenda Box) and 'list' (Check-in Vertical)
+        function renderWeeklyFrequency(studentId, containerId, mode) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = "";
+            
+            if(mode === 'list') container.className = "week-list-vertical";
+            else container.className = "week-grid-box";
+
+            // Calculate Start of Current Week (Monday)
+            const today = new Date();
+            const dayOfWeek = today.getDay(); // 0-6
+            const diffToMon = (dayOfWeek === 0 ? -6 : 1) - dayOfWeek;
+            const monday = new Date(today);
+            monday.setDate(today.getDate() + diffToMon);
+            const todayISO = today.toISOString().split('T')[0];
+
+            const daysMap = ['SEG','TER','QUA','QUI','SEX','SÁB'];
+
+            daysMap.forEach((label, i) => {
+                const d = new Date(monday);
+                d.setDate(monday.getDate() + i);
+                const isoDate = d.toISOString().split('T')[0];
+                const displayDate = `${d.getDate()}/${d.getMonth()+1}`;
+                
+                // Find checkin
+                const checkin = db.checkins.find(c => c.studentId === studentId && c.isoDate === isoDate);
+                
+                let statusClass = "future"; 
+                let workoutLabel = "---";
+                if (checkin) { statusClass = "present"; workoutLabel = checkin.workout; }
+                else if (isoDate < todayISO) { statusClass = "absent"; workoutLabel = "FALTOU"; }
+                
+                if (mode === 'list') {
+                    // VERTICAL LIST FOR CHECK-IN PLAYER
+                    container.innerHTML += `
+                    <div class="wl-item ${statusClass}">
+                        <div class="wl-date">${displayDate} <span>${label}</span></div>
+                        <div class="wl-workout">${workoutLabel}</div>
+                    </div>`;
+                } else {
+                    // GRID BOX FOR AGENDA DRAWER
+                    container.innerHTML += `
+                    <div class="wg-box-item ${statusClass}">
+                        <div class="day-lbl">${label} ${d.getDate()}</div>
+                        <div class="val-lbl" title="${workoutLabel}">${workoutLabel}</div>
+                    </div>`;
+                }
+            });
         }
 
         // --- CHECKIN LOGIC ---
@@ -954,12 +1183,16 @@
             if(duplicate) return alert('Check-in já existe.');
 
             let wk = document.getElementById('ci-workout').value;
-            if(wk === 'OUTRO') wk = document.getElementById('ci-custom').value.toUpperCase() || 'PERSONALIZADO';
+            if(wk === 'OUTRO') {
+                const customWk = document.getElementById('ci-custom').value.toUpperCase().trim();
+                wk = customWk || 'PERSONALIZADO';
+                if(customWk && !db.workouts.includes(customWk)) db.workouts.push(customWk);
+            }
             
             const s = db.students.find(x=>x.id===sId);
             const data = {
                 studentId: sId,
-                studentName: getDisplayName(s), // Legacy support if needed, but display handles it now
+                studentName: getDisplayName(s),
                 isoDate: sDate,
                 time: sTime,
                 workout: wk,
@@ -973,10 +1206,7 @@
                 db.checkins.push({ id: Date.now().toString(), ...data });
             }
 
-            saveDB();
-            cancelEdit();
-            renderAgenda();
-            toast('Salvo!');
+            saveDB(); cancelEdit(); renderAgenda(); toast('Salvo!');
         }
 
         function openEditCheckin(e, id) {
@@ -1013,7 +1243,8 @@
             renderWorkoutsSelect();
             document.getElementById('ci-custom').classList.add('hidden');
             document.getElementById('ci-alert').classList.add('hidden');
-            document.getElementById('last-workout-box').classList.add('hidden');
+            document.getElementById('ci-week-stats').innerHTML = ""; 
+            document.getElementById('ci-week-stats').classList.add('hidden');
             document.getElementById('form-title').innerText = "Novo Check-in";
             document.getElementById('edit-indicator').classList.add('hidden');
         }
@@ -1022,8 +1253,7 @@
             e.stopPropagation();
             if(confirm('Apagar registro?')) {
                 db.checkins = db.checkins.filter(x => String(x.id) !== String(id));
-                saveDB();
-                renderAgenda();
+                saveDB(); renderAgenda();
             }
         }
 
@@ -1036,25 +1266,18 @@
             let list = [];
 
             if (fullMonth) {
-                // Filter by YYYY-MM
-                const yearMonth = dt.substring(0, 7); // e.g., "2023-10"
+                const yearMonth = dt.substring(0, 7); 
                 list = db.checkins.filter(c => {
                     const isSameMonth = c.isoDate.startsWith(yearMonth);
-                    // Exclude Sundays (0)
                     const dayOfWeek = new Date(c.isoDate + 'T00:00:00').getDay();
                     return isSameMonth && dayOfWeek !== 0;
                 });
             } else {
-                // Filter by exact date
                 list = db.checkins.filter(c => c.isoDate === dt);
             }
             
-            // Multi-select Time logic
-            if(selectedHours.size > 0) {
-                list = list.filter(c => selectedHours.has(c.time));
-            }
+            if(selectedHours.size > 0) list = list.filter(c => selectedHours.has(c.time));
             
-            // Name search filter
             if(term) {
                 list = list.filter(c => {
                     const s = db.students.find(x => x.id === c.studentId);
@@ -1063,7 +1286,6 @@
                 });
             }
             
-            // Sort: Date then Time
             list.sort((a,b) => {
                 if(a.isoDate !== b.isoDate) return a.isoDate.localeCompare(b.isoDate);
                 return parseInt(a.time) - parseInt(b.time);
@@ -1072,47 +1294,51 @@
             const tb = document.getElementById('agenda-body'); tb.innerHTML = '';
             
             if(list.length === 0) {
-                tb.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-slate-400 italic">Nenhum registro.</td></tr>';
+                tb.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-slate-400 italic">Nenhum registro encontrado.</td></tr>';
                 return;
             }
 
-            let lastGroup = null; // Can be Time or Date depending on view
+            let lastGroup = null; 
             
             list.forEach(c => {
                 const s = db.students.find(x => x.id === c.studentId);
                 const displayName = getDisplayName(s);
-                const genderIcon = s && s.gender === 'F' ? '<i class="fa-solid fa-person-dress text-pink-400 mr-2"></i>' : '<i class="fa-solid fa-person text-blue-400 mr-2"></i>';
+                const genderIcon = s && s.gender === 'F' ? '<i class="fa-solid fa-person-dress text-pink-400 mr-2 text-lg"></i>' : '<i class="fa-solid fa-person text-blue-400 mr-2 text-lg"></i>';
                 
-                // Grouping Logic
                 let groupKey = fullMonth ? c.isoDate : c.time;
                 let displayGroup = fullMonth ? c.isoDate.split('-').reverse().slice(0,2).join('/') : c.time;
 
                 if(groupKey !== lastGroup) {
-                    tb.innerHTML += `<tr class="time-separator-row"><td colspan="5"><div class="time-separator"><div class="time-line"></div><div class="time-pill">${displayGroup}</div><div class="time-line"></div></div></td></tr>`;
+                    tb.innerHTML += `<tr class="time-separator-row"><td colspan="5"><div class="time-separator fade-in-up"><div class="time-line"></div><div class="time-pill">${displayGroup}</div><div class="time-line"></div></div></td></tr>`;
                     lastGroup = groupKey;
                 }
                 
-                // Kids Style (14H)
-                let rowClass = "agenda-row";
-                if(c.time === '14H') rowClass += " row-kids";
+                // Prime KIDS Check
+                let rowClass = "agenda-row fade-in-up";
+                let isKids = c.time === '14H';
+                if(isKids) rowClass += " row-kids";
 
                 let timeCell = c.time;
-                if (fullMonth) timeCell = `${c.time}`; // In monthly view, cell shows time
+                if(isKids) timeCell = '<span class="kids-badge">PRIME KIDS</span>'; 
+                if (fullMonth && !isKids) timeCell = `${c.time}`;
+
+                const drawerId = `drawer-${c.id}`;
+                const gridId = `wg-agenda-${c.id}`;
 
                 tb.innerHTML += `
-                <tr class="${rowClass}" onclick="toggleDrawer('${c.id}', '${c.studentId}')">
-                    <td class="px-6 py-4 text-center border-r border-slate-200 agenda-time bg-slate-50/50 text-slate-600">${timeCell}</td>
-                    <td class="px-6 py-4 font-bold text-[#05364F] bg-white/50">${genderIcon}${displayName}</td>
-                    <td class="px-6 py-4 bg-teal-50/30 border-l border-teal-100"><span class="agenda-workout">${c.workout}</span></td>
-                    <td class="px-6 py-4 text-center font-bold text-xs text-slate-500 bg-amber-50/30 border-l border-amber-100">${c.prof}</td>
-                    <td class="px-6 py-4 text-center flex justify-center gap-3 bg-white/50 border-l border-slate-100">
-                        <button onclick="openEditCheckin(event, '${c.id}')" class="text-blue-400 hover:text-blue-600 p-1"><i data-lucide="pencil" class="w-4 h-4"></i></button>
-                        <button onclick="removeCheckin(event, '${c.id}')" class="text-red-300 hover:text-red-500 p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                <tr class="${rowClass}" onclick="toggleDrawer('${c.id}', '${c.studentId}', '${gridId}')">
+                    <td class="px-6 py-4 text-center border-r border-slate-200 agenda-time bg-slate-50/30 text-slate-600">${timeCell}</td>
+                    <td class="px-6 py-4 font-bold text-[#05364F] bg-white/20">${genderIcon}${displayName}</td>
+                    <td class="px-6 py-4 bg-teal-50/10 border-l border-teal-100"><span class="agenda-workout">${c.workout}</span></td>
+                    <td class="px-6 py-4 text-center font-bold text-xs text-slate-500 bg-amber-50/10 border-l border-amber-100">${c.prof}</td>
+                    <td class="px-6 py-4 text-center flex justify-center gap-3 bg-white/30 border-l border-slate-100">
+                        <button onclick="openEditCheckin(event, '${c.id}')" class="text-blue-400 hover:text-blue-600 p-2 hover:bg-blue-50 rounded-full transition"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+                        <button onclick="removeCheckin(event, '${c.id}')" class="text-red-300 hover:text-red-500 p-2 hover:bg-red-50 rounded-full transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                     </td>
                 </tr>
                 <tr>
                     <td colspan="5" class="p-0 border-0">
-                        <div id="drawer-${c.id}" class="drawer-content"></div>
+                        <div id="${drawerId}" class="drawer-content"></div>
                     </td>
                 </tr>`;
             });
@@ -1120,47 +1346,31 @@
             updateStats();
         }
 
-        function toggleDrawer(cid, sid) {
+        function toggleDrawer(cid, sid, gridId) {
             const drawer = document.getElementById(`drawer-${cid}`);
             const isOpen = drawer.classList.contains('open');
             document.querySelectorAll('.drawer-content').forEach(d => d.classList.remove('open'));
             
             if(!isOpen) {
                 const s = db.students.find(x => x.id === sid);
-                const history = db.checkins.filter(c => c.studentId === sid);
                 
-                const today = new Date(); const d = today.getDate()-today.getDay()+(today.getDay()===0?-6:1); const mon = new Date(today.setDate(d));
-                let weekHTML = '<div class="flex gap-2 overflow-x-auto pb-2">';
-                ['SEG','TER','QUA','QUI','SEX','SÁB'].forEach((day,i)=>{ 
-                    let dt = new Date(mon); dt.setDate(mon.getDate()+i); 
-                    const iso = dt.toISOString().split('T')[0];
-                    const chk = history.find(k=>k.isoDate===iso);
-                    weekHTML += `
-                    <div class="flex-1 min-w-[70px] p-2 rounded-xl border text-center ${chk?'bg-teal-50 border-teal-200':'bg-white border-slate-200'}">
-                        <div class="text-[9px] font-bold uppercase opacity-60 mb-1">${day}</div>
-                        <div class="text-[8px] font-bold uppercase truncate ${chk?'text-[#00A89A]':'text-slate-300'}">${chk ? chk.workout : '--'}</div>
-                    </div>`; 
-                });
-                weekHTML += '</div>';
-
                 let alertsHTML = '';
-                if(s && s.limitations && s.limitations !== 'NENHUMA') {
-                    alertsHTML += `<div class="bg-red-50 p-3 rounded-xl border border-red-100 flex gap-2 items-start mb-2"><i data-lucide="alert-triangle" class="w-4 h-4 text-red-500 shrink-0 mt-0.5"></i><div class="text-xs text-red-800 font-bold leading-tight">${s.limitations}</div></div>`;
-                }
-                if(s && s.notes) {
-                    alertsHTML += `<div class="bg-blue-50 p-3 rounded-xl border border-blue-100 flex gap-2 items-start"><i data-lucide="info" class="w-4 h-4 text-blue-500 shrink-0 mt-0.5"></i><div class="text-xs text-blue-800 font-medium leading-tight">${s.notes}</div></div>`;
-                }
+                if(s && s.limitations && s.limitations !== 'NENHUMA') alertsHTML += `<div class="bg-red-50 p-4 rounded-xl border border-red-100 flex gap-2 items-start mb-2"><i data-lucide="alert-triangle" class="w-5 h-5 text-red-500 shrink-0 mt-0.5"></i><div class="text-xs text-red-800 font-bold leading-tight">${s.limitations}</div></div>`;
+                if(s && s.notes) alertsHTML += `<div class="bg-blue-50 p-4 rounded-xl border border-blue-100 flex gap-2 items-start"><i data-lucide="info" class="w-5 h-5 text-blue-500 shrink-0 mt-0.5"></i><div class="text-xs text-blue-800 font-medium leading-tight">${s.notes}</div></div>`;
 
                 drawer.innerHTML = `
-                <div class="p-4 bg-slate-50 border-t border-slate-100">
-                    <h4 class="text-[10px] font-bold text-slate-400 uppercase mb-2">Histórico da Semana</h4>
-                    ${weekHTML}
+                <div class="p-6 bg-slate-50/80 border-t border-slate-100 backdrop-blur-sm">
+                    <h4 class="text-[10px] font-bold text-slate-400 uppercase mb-3 tracking-widest">Histórico da Semana</h4>
+                    <div id="${gridId}"></div>
                     <div class="mt-4">${alertsHTML}</div>
-                    <div class="flex gap-3 mt-4">
-                        <button onclick="openProfile('${sid}')" class="flex-1 py-2.5 bg-[#05364F] text-white rounded-xl text-xs font-bold hover:bg-[#032435]">VER PERFIL COMPLETO</button>
-                        <button onclick="openStudentModal('${sid}')" class="flex-1 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-100">EDITAR DADOS</button>
+                    <div class="flex gap-3 mt-6">
+                        <button onclick="openProfile('${sid}')" class="flex-1 py-3 bg-[#05364F] text-white rounded-xl text-xs font-bold hover:bg-[#032435] transition shadow-md">VER PERFIL COMPLETO</button>
+                        <button onclick="openStudentModal('${sid}')" class="flex-1 py-3 bg-white border border-slate-200 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-100 transition shadow-sm">EDITAR DADOS</button>
                     </div>
                 </div>`;
+                
+                // RENDER GRID IN DRAWER
+                renderWeeklyFrequency(sid, gridId, 'grid');
                 
                 lucide.createIcons();
                 drawer.classList.add('open');
@@ -1173,17 +1383,17 @@
             const tb = document.getElementById('stu-body'); tb.innerHTML = '';
             
             db.students.filter(s => getDisplayName(s).toLowerCase().includes(term)).sort((a,b)=>getDisplayName(a).localeCompare(getDisplayName(b))).forEach(s => {
-                const icon = s.gender === 'F' ? '<i class="fa-solid fa-person-dress text-pink-400 mr-2"></i>' : '<i class="fa-solid fa-person text-blue-400 mr-2"></i>';
+                const icon = s.gender === 'F' ? '<i class="fa-solid fa-person-dress text-pink-400 mr-2 text-lg"></i>' : '<i class="fa-solid fa-person text-blue-400 mr-2 text-lg"></i>';
                 
                 tb.innerHTML += `
-                <tr class="hover:bg-slate-50 border-b border-slate-100 cursor-pointer" onclick="if(!event.target.closest('button')) openProfile('${s.id}')">
+                <tr class="hover:bg-slate-50 border-b border-slate-100 cursor-pointer transition" onclick="if(!event.target.closest('button')) openProfile('${s.id}')">
                     <td class="px-6 py-4 font-bold text-[#05364F]">${icon}${getDisplayName(s)}</td>
                     <td class="px-6 py-4 text-xs font-bold text-[#00A89A] uppercase">${s.objective}</td>
                     <td class="px-6 py-4 text-xs font-bold text-purple-600 uppercase">${s.plan || '-'}</td>
-                    <td class="px-6 py-4">${s.limitations!=='NENHUMA'?'<span class="text-red-500 font-bold text-xs flex gap-1 items-center"><i data-lucide="alert-triangle" class="w-3 h-3"></i> Restrição</span>':'<span class="text-[#C5A059] font-bold text-xs flex gap-1 items-center"><i data-lucide="check" class="w-3 h-3"></i> Regular</span>'}</td>
+                    <td class="px-6 py-4">${s.limitations!=='NENHUMA'?'<span class="text-red-500 font-bold text-xs flex gap-1 items-center bg-red-50 px-2 py-1 rounded-full w-fit"><i data-lucide="alert-triangle" class="w-3 h-3"></i> Restrição</span>':'<span class="text-[#C5A059] font-bold text-xs flex gap-1 items-center bg-amber-50 px-2 py-1 rounded-full w-fit"><i data-lucide="check" class="w-3 h-3"></i> Regular</span>'}</td>
                     <td class="px-6 py-4 text-right">
-                        <button onclick="openStudentModal('${s.id}')" class="p-2 text-blue-400 hover:bg-blue-50 rounded"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
-                        <button onclick="deleteStudent('${s.id}')" class="p-2 text-red-400 hover:bg-red-50 rounded"><i data-lucide="trash" class="w-4 h-4"></i></button>
+                        <button onclick="openStudentModal('${s.id}')" class="p-2 text-blue-400 hover:bg-blue-50 rounded-lg transition"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                        <button onclick="deleteStudent('${s.id}')" class="p-2 text-red-400 hover:bg-red-50 rounded-lg transition"><i data-lucide="trash" class="w-4 h-4"></i></button>
                     </td>
                 </tr>`;
             });
@@ -1194,9 +1404,7 @@
             if(confirm('Tem certeza? Isso apagará o histórico deste aluno.')) {
                 db.students = db.students.filter(x => x.id !== id);
                 db.checkins = db.checkins.filter(x => x.studentId !== id);
-                saveDB();
-                renderStudentsTable();
-                toast('Aluno Excluído');
+                saveDB(); renderStudentsTable(); toast('Aluno Excluído');
             }
         }
 
@@ -1209,7 +1417,6 @@
                 document.getElementById('ms-id').value = s.id;
                 document.getElementById('ms-firstname').value = s.firstName || "";
                 document.getElementById('ms-lastname').value = s.lastName || "";
-                document.getElementById('ms-nickname').value = s.nickname || "";
                 document.getElementById('ms-gender').value = s.gender || "M";
                 document.getElementById('ms-obj').value = s.objective;
                 document.getElementById('ms-plan').value = s.plan;
@@ -1227,13 +1434,10 @@
             const id = document.getElementById('ms-id').value;
             const firstName = document.getElementById('ms-firstname').value.toUpperCase().trim();
             const lastName = document.getElementById('ms-lastname').value.toUpperCase().trim();
-            
             if(!lastName) return alert("Sobrenome é obrigatório");
 
             const data = {
-                firstName: firstName,
-                lastName: lastName,
-                nickname: document.getElementById('ms-nickname').value.toUpperCase().trim(),
+                firstName: firstName, lastName: lastName,
                 gender: document.getElementById('ms-gender').value,
                 objective: document.getElementById('ms-obj').value.toUpperCase(),
                 plan: document.getElementById('ms-plan').value,
@@ -1251,13 +1455,40 @@
             
             if(document.getElementById('ms-quick-add').value === 'true') {
                 setupCheckinForm();
-                // Select newly created student
                 const s = db.students.find(x => x.id === newId);
                 document.getElementById('ci-search-input').value = getDisplayName(s);
                 document.getElementById('ci-student-id').value = newId;
                 handleStudentSelection(newId);
             }
             toast('Salvo');
+        }
+
+        // --- PROF MANAGER ---
+        function closeProfModal() { document.getElementById('prof-modal').style.display='none'; setupCheckinForm(); }
+        function openProfModal() { document.getElementById('prof-modal').style.display='flex'; renderProfList(); }
+        
+        function renderProfList(){ 
+            const l=document.getElementById('prof-list'); l.innerHTML=''; 
+            // Sort by Role then Name
+            const list = [...db.professors].sort((a,b) => {
+                if(a.role !== b.role) return a.role === 'PRO' ? -1 : 1;
+                return a.name.localeCompare(b.name);
+            });
+
+            list.forEach((p,i)=> {
+                const badge = p.role === 'PRO' ? '<span class="bg-blue-100 text-blue-700 text-[9px] px-1 rounded font-bold">PROF</span>' : '<span class="bg-slate-200 text-slate-500 text-[9px] px-1 rounded font-bold">EST</span>';
+                l.innerHTML+=`<li class="flex justify-between p-3 bg-slate-50 text-sm font-bold text-[#05364F] rounded-lg"><span>${badge} ${p.name}</span> <i data-lucide="trash" onclick="deleteProf('${p.name}')" class="w-4 h-4 text-red-400 cursor-pointer"></i></li>`;
+            });
+            lucide.createIcons(); 
+        }
+        
+        function addProfessor(){ 
+            const n=document.getElementById('new-prof-name').value.toUpperCase(); 
+            const r=document.getElementById('new-prof-role').value;
+            if(n){ db.professors.push({name: n, role: r}); saveDB(); renderProfList(); document.getElementById('new-prof-name').value=''; }
+        }
+        function deleteProf(name) {
+            if(confirm('Excluir?')) { db.professors = db.professors.filter(p => p.name !== name); saveDB(); renderProfList(); }
         }
 
         // --- PROFILE ---
@@ -1269,25 +1500,14 @@
             document.getElementById('pf-obj').innerText = s.objective;
             document.getElementById('pf-plan').innerText = s.plan;
             
-            const initials = s.nickname ? s.nickname.slice(0,2) : (s.firstName ? s.firstName[0] : '') + (s.lastName ? s.lastName[0] : '');
+            const initials = (s.firstName ? s.firstName[0] : '') + (s.lastName ? s.lastName[0] : '');
             document.getElementById('pf-avatar').innerText = initials || '##';
             document.getElementById('pf-avatar').style.background = s.gender === 'F' ? 'linear-gradient(135deg, #ec4899, #db2777)' : 'linear-gradient(135deg, #00A89A, #05364F)';
             
             document.getElementById('pf-lim-list').innerHTML = s.limitations && s.limitations!=='NENHUMA' ? s.limitations.split(',').map(l=>`<li>${l}</li>`).join('') : '<li>Sem restrições</li>';
             document.getElementById('pf-obs-list').innerHTML = s.notes ? s.notes.split('\n').map(n=>`<li>${n}</li>`).join('') : '<li>Sem observações</li>';
 
-            const wg = document.getElementById('pf-week-grid'); wg.innerHTML = '';
-            const today = new Date(); const d = today.getDate()-today.getDay()+(today.getDay()===0?-6:1); const mon = new Date(today.setDate(d));
-            ['SEG','TER','QUA','QUI','SEX','SÁB'].forEach((day,i)=>{ 
-                let dt = new Date(mon); dt.setDate(mon.getDate()+i); 
-                const chk = h.find(k=>k.isoDate===dt.toISOString().split('T')[0]); 
-                wg.innerHTML += `
-                <div class="pf-grid-item ${chk?'active':''}">
-                    <div class="text-[9px] font-bold uppercase opacity-70">${day}</div>
-                    <div class="text-xs font-black my-1 text-[#05364F]">${dt.getDate()}</div>
-                    <div class="text-[8px] font-bold uppercase truncate text-[#00A89A]">${chk ? chk.workout : '--'}</div>
-                </div>`; 
-            });
+            renderWeeklyFrequency(id, 'pf-week-grid', 'grid');
 
             document.getElementById('pf-btn-edit').onclick = () => { document.getElementById('profile-modal').style.display='none'; openStudentModal(id); };
 
@@ -1307,21 +1527,16 @@
         // --- REPORTS ---
         function setupReportFilter() {
             const select = document.getElementById('report-period');
+            if(!select) return;
             select.innerHTML = '<option value="global">Global (Todo Tempo)</option>';
             const currentYear = new Date().getFullYear();
-            
             for(let i=0; i<12; i++) {
-                // Month is 0-indexed (0=Jan, 11=Dec)
                 const d = new Date(currentYear, i, 1);
-                // To display future months, we just iterate 0 to 11.
-                // The value will be "2026-01", "2026-02", etc.
                 const year = d.getFullYear();
                 const month = String(d.getMonth() + 1).padStart(2, '0');
                 const val = `${year}-${month}`;
-                
                 const label = d.toLocaleString('pt-BR', {month:'long', year:'numeric'});
                 const capLabel = label.charAt(0).toUpperCase() + label.slice(1);
-                
                 select.add(new Option(capLabel, val));
             }
         }
@@ -1350,15 +1565,26 @@
 
             const ctx2 = document.getElementById('chart2').getContext('2d'); if(charts.c2) charts.c2.destroy();
             const wMap={}; data.forEach(c=>{ wMap[c.workout]=(wMap[c.workout]||0)+1 });
-            charts.c2=new Chart(ctx2, {type:'doughnut', data:{labels:Object.keys(wMap), datasets:[{data:Object.values(wMap), backgroundColor:['#05364F','#00C9B7','#C5A059','#38BDF8','#F43F5E'], borderWidth:0}]}, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'right', labels:{boxWidth:12}}}}});
+            const palette = ['#05364F', '#C5A059', '#00A89A', '#ef4444', '#8b5cf6', '#ec4899', '#f97316', '#3b82f6'];
+            charts.c2=new Chart(ctx2, {type:'doughnut', data:{labels:Object.keys(wMap), datasets:[{data:Object.values(wMap), backgroundColor:palette, borderWidth:0}]}, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'right', labels:{boxWidth:12}}}}});
 
             const ctx3=document.getElementById('chart3').getContext('2d'); if(charts.c3) charts.c3.destroy();
             const hMap={}; data.forEach(c=>{ hMap[c.time]=(hMap[c.time]||0)+1 });
             charts.c3=new Chart(ctx3, {type:'line', data:{labels:Object.keys(hMap).sort((a,b)=>parseInt(a)-parseInt(b)), datasets:[{label:'Fluxo', data:Object.values(hMap), borderColor:'#C5A059', backgroundColor:'rgba(197, 160, 89, 0.1)', fill:true, tension:0.4}]}, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}}}});
 
-            const ctx4=document.getElementById('chart4').getContext('2d'); if(charts.c4) charts.c4.destroy();
-            const active = new Set(data.map(c => c.studentId)).size;
-            charts.c4=new Chart(ctx4, {type:'pie', data:{labels:['Ativos','Inativos'], datasets:[{data:[active, db.students.length-active], backgroundColor:['#00C9B7','#1e293b'], borderWidth:0}]}, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom'}}}});
+            // Chart DOW (Day of Week)
+            const ctxDow = document.getElementById('chart-dow').getContext('2d'); if(charts.dow) charts.dow.destroy();
+            const daysCount = [0,0,0,0,0,0,0]; // Sun-Sat
+            data.forEach(c => { const d = new Date(c.isoDate + 'T12:00:00'); daysCount[d.getDay()]++; });
+            const dowLabels = ['Seg','Ter','Qua','Qui','Sex','Sáb'];
+            const dowData = [daysCount[1], daysCount[2], daysCount[3], daysCount[4], daysCount[5], daysCount[6]];
+            const dowColors = ['#00A89A','#00A89A','#00A89A','#00A89A','#00A89A', '#C5A059']; 
+
+            charts.dow = new Chart(ctxDow, {
+                type: 'bar', 
+                data: {labels: dowLabels, datasets: [{data: dowData, backgroundColor: dowColors, borderRadius: 6}]},
+                options: {responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}}}
+            });
         }
 
         function updateStats() {
@@ -1373,14 +1599,19 @@
         function toast(msg) { const t=document.getElementById('toast'); document.getElementById('toast-msg').innerText=msg; t.style.transform='translateX(0)'; setTimeout(()=>t.style.transform='translateX(150%)', 3000); }
         function toggleCustom(val) { document.getElementById('ci-custom').classList.toggle('hidden', val !== 'OUTRO'); }
         function openCloudModal() { document.getElementById('modal-cloud').style.display='flex'; }
-        function closeProfModal() { document.getElementById('prof-modal').style.display='none'; setupCheckinForm(); }
-        function openProfModal() { document.getElementById('prof-modal').style.display='flex'; renderProfList(); }
-        function renderProfList(){ const l=document.getElementById('prof-list'); l.innerHTML=''; db.professors.forEach((p,i)=>l.innerHTML+=`<li class="flex justify-between p-3 bg-slate-50 text-sm font-bold text-[#05364F] rounded-lg">${p} <i data-lucide="trash" onclick="if(confirm('Excluir?')){db.professors.splice(${i},1);saveDB();renderProfList()}" class="w-4 h-4 text-red-400 cursor-pointer"></i></li>`); lucide.createIcons(); }
-        function addProfessor(){ const n=document.getElementById('new-prof-name').value.toUpperCase(); if(n){ db.professors.push(n); saveDB(); renderProfList(); document.getElementById('new-prof-name').value=''; }}
+        
         function backupData() { const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(db)],{type:"application/json"})); a.download=`prime_backup.json`; a.click(); }
         function restoreData(i) { const r=new FileReader(); r.onload=e=>{ try{ db=JSON.parse(e.target.result); saveDB(); location.reload(); }catch{alert('Erro');} }; r.readAsText(i.files[0]); }
         function forceSync() { syncCloud().then(() => { renderAll(); toast('Sincronizado'); }); }
         function saveManualToken() { const t = document.getElementById('manualToken').value.trim(); if(t) { localStorage.setItem(TOKEN_KEY, t); toast('Token Salvo'); syncCloud(); } }
+        function removeToken() { 
+            if(confirm("Deseja desconectar? O sistema ficará offline.")) {
+                localStorage.removeItem(TOKEN_KEY);
+                document.getElementById('manualToken').value = '';
+                updateCloudStatus('offline');
+                toast('Desconectado! Modo Teste/Offline.');
+            }
+        }
 
         function updateCloudStatus(st) { 
             const dot = document.getElementById('statusDot'); if(!dot) return;
