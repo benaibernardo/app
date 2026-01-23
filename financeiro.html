@@ -87,7 +87,7 @@
     <div id="cloud-shield">
         <div class="shield-spinner"></div>
         <h2 class="text-xl font-bold font-sans tracking-widest uppercase">Sincronizando</h2>
-        <p class="text-xs text-slate-400 mt-2">Buscando versão mais recente...</p>
+        <p class="text-xs text-slate-400 mt-2" id="shield-msg">Buscando versão mais recente...</p>
     </div>
 
     <!-- HEADER -->
@@ -393,11 +393,16 @@
     <div id="toast" class="fixed top-5 right-5 bg-emerald-500 text-white px-4 py-2 rounded-lg font-bold shadow-xl transform translate-x-full transition-transform duration-300 z-[200]">Salvo com sucesso!</div>
 
     <script>
-        // CONFIG & STATE
-        const DB_KEY = 'benai_fin_v6'; 
+        // --- MASTER CONFIG (FIXED) ---
+        const DB_KEY = 'BENAI_FINANCE_MASTER'; // Definitive Key
         const TOKEN_KEY = 'BENAI_GLOBAL_TOKEN'; 
         const GIST_DESC = 'BENAI_FINANCE_DB';
+        const GIST_FILENAME = 'finance_master.json';
         
+        // MIGRATION CANDIDATES
+        const OLD_DB_KEYS = ['benai_fin_v6', 'benai_fin_v5', 'finance_db_v1', 'benai_fin_v4'];
+        const OLD_GIST_FILES = ['finance_v5.json', 'finance.json', 'finance_db_v1.json'];
+
         const DEFAULT_JARS = [
             { id: 'essen', name: 'Necessidades (55%)', perc: 55, color: 'j-essen', icon: 'home', desc: 'Sobrevivência: Aluguel, contas, mercado. Cobre seus Custos Fixos.' },
             { id: 'free', name: 'Lib. Financeira (15%)', perc: 15, color: 'j-free', icon: 'trending-up', desc: 'Investimentos.' },
@@ -430,7 +435,7 @@
         let viewDate = new Date();
         let chartInstance = null;
 
-        // INIT (CLOUD SHIELD LOGIC)
+        // INIT
         window.onload = async () => {
             lucide.createIcons();
             initTheme();
@@ -443,37 +448,83 @@
                 document.getElementById('manualToken').value = hasToken;
                 updateSyncUI(true);
                 try {
-                    // Tenta forçar o download da nuvem antes de liberar a tela
+                    // Try cloud load with migration support
                     loadedFromCloud = await forceCloudLoad();
                 } catch (e) {
                     console.error("Shield Error", e);
                 }
-            } else {
-                // Se não tem token, carrega local
+            }
+            
+            if(!loadedFromCloud) {
+                // If cloud failed or no token, try local load with migration support
                 loadLocal();
                 updateSyncUI(false);
             }
 
-            // Garante estrutura correta
-            migrateData();
+            // Ensure data structure is sound
+            sanitizeData(db);
             
-            // Remove o escudo com fade out
+            // Fade out shield
             shield.style.opacity = '0';
             setTimeout(() => shield.style.display = 'none', 500);
 
-            // Toast de status
-            if (loadedFromCloud) toast('Nuvem Sincronizada (Prioridade Máxima)');
-            else if (hasToken) toast('Offline: Usando Cache Local');
+            if (loadedFromCloud) toast('Nuvem Sincronizada (Dados Mestre)');
+            else if (hasToken) toast('Offline (Usando cache local)');
 
             updateDateDisplay();
             renderAll();
             updateFilterCats();
         };
 
-        function updateSyncUI(isActive) {
-            const dot = document.getElementById('cloudStatusDot');
-            if(isActive) dot.className = "sync-dot active";
-            else dot.className = "sync-dot inactive";
+        // --- MIGRATION & DATA HANDLING ---
+
+        function sanitizeData(data) {
+            // Guarantees the structure supports new features without breaking
+            if(!data.transactions) data.transactions = [];
+            
+            // Fix transactions
+            data.transactions.forEach(t => {
+                if(!t.method) t.method = 'pix'; // Default payment for old entries
+                if(!t.date) t.date = new Date().toISOString().split('T')[0];
+                if(t.date.includes('/')) { // Fix DD/MM/YYYY to YYYY-MM-DD
+                    const [d, m, y] = t.date.split('/');
+                    t.date = `${y}-${m}-${d}`;
+                }
+                if(!t.id) t.id = Date.now() + Math.random();
+            });
+
+            // Fix config
+            if(!data.config) data.config = {};
+            if(!data.config.jars) data.config.jars = DEFAULT_JARS;
+            
+            return data;
+        }
+
+        function loadLocal() {
+            // 1. Try Master Key
+            const saved = localStorage.getItem(DB_KEY);
+            if(saved) {
+                try {
+                    db = JSON.parse(saved);
+                    return;
+                } catch(e) { console.error("Corrupt Master DB", e); }
+            }
+
+            // 2. Try Old Keys (Migration)
+            for(const key of OLD_DB_KEYS) {
+                const oldData = localStorage.getItem(key);
+                if(oldData) {
+                    try {
+                        console.log(`Migrating from ${key}...`);
+                        const parsed = JSON.parse(oldData);
+                        db = sanitizeData(parsed);
+                        db.lastUpdated = Date.now();
+                        localStorage.setItem(DB_KEY, JSON.stringify(db)); // Save to Master
+                        toast("Dados antigos recuperados localmente!");
+                        return;
+                    } catch(e) { console.error(`Failed to migrate ${key}`, e); }
+                }
+            }
         }
 
         async function forceCloudLoad() {
@@ -493,16 +544,85 @@
                     const r = await fetch(found.url, { headers });
                     const data = await r.json();
                     
-                    if (data.files['finance_v5.json']) {
-                        const cloudData = JSON.parse(data.files['finance_v5.json'].content);
-                        // AQUI ESTÁ A MÁGICA: SOBRESCREVE LOCAL SEMPRE QUE A NUVEM EXISTIR
-                        db = cloudData;
+                    // 1. Look for Master File
+                    if (data.files[GIST_FILENAME]) {
+                        const cloudData = JSON.parse(data.files[GIST_FILENAME].content);
+                        db = sanitizeData(cloudData);
                         localStorage.setItem(DB_KEY, JSON.stringify(db));
                         return true;
                     }
+
+                    // 2. Look for Old Files (Migration)
+                    for(const oldFile of OLD_GIST_FILES) {
+                        if(data.files[oldFile]) {
+                            console.log(`Migrating from cloud file: ${oldFile}`);
+                            const oldContent = JSON.parse(data.files[oldFile].content);
+                            db = sanitizeData(oldContent);
+                            db.lastUpdated = Date.now();
+                            localStorage.setItem(DB_KEY, JSON.stringify(db)); // Save local master
+                            
+                            // Trigger async save to create Master File in cloud
+                            syncData(true); 
+                            toast("Dados antigos recuperados da nuvem!");
+                            return true;
+                        }
+                    }
                 }
-            } catch (e) { return false; }
+            } catch (e) { console.error("Cloud Error", e); return false; }
             return false;
+        }
+
+        async function syncData(silent = false) {
+            const token = localStorage.getItem(TOKEN_KEY);
+            if(!token) {
+                if(!silent) alert("Configure o Token Global.");
+                return;
+            }
+            
+            // Ensure local DB is updated before sending
+            localStorage.setItem(DB_KEY, JSON.stringify(db));
+
+            const headers = { 'Authorization': `token ${token}` };
+            try {
+                if(!silent) toast('Sincronizando...');
+                
+                if(!db.gistId) {
+                    // Search for Gist ID again if lost
+                    const res = await fetch('https://api.github.com/gists', { headers });
+                    const gists = await res.json();
+                    const found = gists.find(g => g.description === GIST_DESC);
+                    if(found) db.gistId = found.id;
+                }
+
+                if(db.gistId) {
+                    // Create payload with NEW filename
+                    const filesPayload = {};
+                    filesPayload[GIST_FILENAME] = { content: JSON.stringify(db) };
+                    
+                    // Optional: Nullify old files to delete them? 
+                    // No, let's keep them for safety for now.
+
+                    const body = JSON.stringify({
+                        description: GIST_DESC,
+                        public: false,
+                        files: filesPayload
+                    });
+
+                    let url = `https://api.github.com/gists/${db.gistId}`;
+                    await fetch(url, { method: 'PATCH', headers, body });
+                    if(!silent) toast('Dados Salvos na Nuvem!');
+                }
+            } catch(e) {
+                console.error(e);
+                if(!silent) alert("Erro de sincronização.");
+            }
+        }
+
+        // --- UI HELPERS ---
+        function updateSyncUI(isActive) {
+            const dot = document.getElementById('cloudStatusDot');
+            if(isActive) dot.className = "sync-dot active";
+            else dot.className = "sync-dot inactive";
         }
 
         function changeMonth(dir) {
@@ -547,22 +667,8 @@
             lucide.createIcons();
         }
 
-        function loadLocal() {
-            const saved = localStorage.getItem(DB_KEY);
-            if(saved) db = JSON.parse(saved);
-        }
-
-        function migrateData() {
-            if(!db.config) db.config = {};
-            if(!db.config.jars) db.config.jars = DEFAULT_JARS;
-            if(!db.config.fixedCosts) db.config.fixedCosts = [];
-            if(!db.config.debts) db.config.debts = []; 
-            if(!db.lastUpdated) db.lastUpdated = Date.now();
-            db.config.jars = db.config.jars.filter(j => j.id !== 'give');
-        }
-
         function saveLocal() {
-            db.lastUpdated = Date.now(); // TIMESTAMP DE SEGURANÇA
+            db.lastUpdated = Date.now();
             localStorage.setItem(DB_KEY, JSON.stringify(db));
             renderAll();
         }
@@ -710,7 +816,7 @@
             
             // Populate Date Filter
             const dateSel = document.getElementById('filterDate');
-            if (dateSel && dateSel.options.length <= 1) { // Only refill if empty or just "All"
+            if (dateSel && dateSel.options.length <= 1) { 
                 const dates = [...new Set(db.transactions.filter(t => t.date.startsWith(currentMonth)).map(t => t.date))].sort().reverse();
                 dateSel.innerHTML = '<option value="">Todas as Datas</option>';
                 dates.forEach(d => {
@@ -746,12 +852,8 @@
                 let iconColor = isOut ? 'text-rose-500' : 'text-emerald-500';
                 
                 let subLabel = "";
-                let jarName = "Geral";
                 
                 if(isOut) {
-                    const catObj = db.categories.find(c => c.name === t.cat);
-                    const jarObj = catObj ? db.config.jars.find(j => j.id === catObj.jar) : null;
-                    jarName = jarObj ? jarObj.name.split(' ')[0] : 'Outros';
                     subLabel = `<span class="text-rose-400 font-bold">${t.cat}</span>`;
                 } else {
                     subLabel = `<span class="text-emerald-400 font-bold">${t.source || 'Entrada'}</span>`;
@@ -813,18 +915,13 @@
         function renderDailyChart() {
             const ctx = document.getElementById('dailyChart');
             if(!ctx) return;
-            
-            // Destroy old if exists
             if(chartInstance) chartInstance.destroy();
 
             const currentMonth = viewDate.toISOString().slice(0, 7);
             const daysInMonth = new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 0).getDate();
-            
             const labels = [];
             const data = [];
             
-            // Only calc for existing transactions to avoid empty chart
-            // Or better: show all days 1-31
             for(let i=1; i<=daysInMonth; i++) labels.push(i);
             
             labels.forEach(d => {
@@ -859,86 +956,46 @@
         }
 
         // --- FILTERS ---
-        function toggleFilters() {
-            document.getElementById('filterPanel').classList.toggle('hidden');
-        }
-        
+        function toggleFilters() { document.getElementById('filterPanel').classList.toggle('hidden'); }
         function updateFilterCats() {
             const sel = document.getElementById('filterCat');
             sel.innerHTML = '<option value="">Todas Categorias</option>';
-            db.categories.forEach(c => {
-                sel.add(new Option(c.name, c.name));
-            });
+            db.categories.forEach(c => { sel.add(new Option(c.name, c.name)); });
         }
 
-        // --- SMART CALC CONFIG ---
+        // --- CONFIG ---
         function openConfig() {
             document.getElementById('cfgIncome').value = fmtMoney(db.config.income);
-            renderFixedList();
-            renderSliders();
-            renderDebtConfigList();
+            renderFixedList(); renderSliders(); renderDebtConfigList();
             openModal('modalConfig');
         }
-
-        // ... Existing Smart Calc logic (addFixedCost, etc) remains similar ...
-        // ... Adding Debt List Config Logic ...
-
         function renderDebtConfigList() {
-            const div = document.getElementById('cfgDebtList');
-            div.innerHTML = '';
+            const div = document.getElementById('cfgDebtList'); div.innerHTML = '';
             (db.config.debts || []).forEach((d, i) => {
-                div.innerHTML += `
-                <div class="flex justify-between items-center text-xs p-2 bg-white dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700">
-                    <span class="text-slate-700 dark:text-slate-300 font-bold">${d.name}</span>
-                    <div class="flex items-center gap-2">
-                        <span class="font-mono text-slate-500">${fmtMoney(d.val)}</span>
-                        <i data-lucide="trash" class="w-3 h-3 text-rose-400 cursor-pointer" onclick="removeDebtConfig(${i})"></i>
-                    </div>
-                </div>`;
+                div.innerHTML += `<div class="flex justify-between items-center text-xs p-2 bg-white dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700"><span class="text-slate-700 dark:text-slate-300 font-bold">${d.name}</span><div class="flex items-center gap-2"><span class="font-mono text-slate-500">${fmtMoney(d.val)}</span><i data-lucide="trash" class="w-3 h-3 text-rose-400 cursor-pointer" onclick="removeDebtConfig(${i})"></i></div></div>`;
             });
             lucide.createIcons();
         }
-
         function addDebtConfig() {
             const n = document.getElementById('newDebtName').value;
             const v = parseMoney(document.getElementById('newDebtVal').value);
             if(n && v) {
                 if(!db.config.debts) db.config.debts = [];
                 db.config.debts.push({ id: Date.now().toString(), name: n, val: v });
-                document.getElementById('newDebtName').value = '';
-                document.getElementById('newDebtVal').value = '';
-                renderDebtConfigList();
+                document.getElementById('newDebtName').value = ''; document.getElementById('newDebtVal').value = ''; renderDebtConfigList();
             }
         }
         function removeDebtConfig(i) { db.config.debts.splice(i,1); renderDebtConfigList(); }
-
-        // Presets
         function applyPreset(type) {
             const income = parseMoney(document.getElementById('cfgIncome').value) || 1000;
-            const fixed = (db.config.fixedCosts || []).reduce((a,b)=>a+b.val,0);
-            const remaining = Math.max(0, income - fixed); // Essentials is Fixed+Buffer usually, but let's stick to %
-            
-            // Logic: Base % on Total Income
-            // Conservative: 55 Ess / 15 Free / 15 Long / 5 Edu / 10 Play
-            // Balanced: 50 Ess / 20 Free / 20 Long / 5 Edu / 5 Play
-            // Aggressive: 40 Ess / 30 Free / 20 Long / 5 Edu / 5 Play
-            
             let p = { essen:55, free:15, long:15, edu:5, play:10 };
             if(type==='balanced') p = { essen:50, free:20, long:20, edu:5, play:5 };
             if(type==='aggressive') p = { essen:40, free:30, long:20, edu:5, play:5 };
-
-            db.config.jars.forEach(j => {
-                j.perc = p[j.id];
-                j.limitVal = (income * j.perc) / 100;
-            });
-            
+            db.config.jars.forEach(j => { j.perc = p[j.id]; j.limitVal = (income * j.perc) / 100; });
             renderSliders();
         }
-
-        // Reusing existing logic for fixed costs and sliders...
         function renderFixedList() {
-            const div = document.getElementById('fixedList');
-            div.innerHTML = '';
+            const div = document.getElementById('fixedList'); div.innerHTML = '';
             (db.config.fixedCosts || []).forEach((c, i) => {
                 div.innerHTML += `<div class="flex justify-between items-center text-xs p-2 bg-white dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700"><span class="text-slate-700 dark:text-slate-300 font-bold">${c.name}</span><div class="flex items-center gap-2"><span class="font-mono text-slate-500">${fmtMoney(c.val)}</span><i data-lucide="trash" class="w-3 h-3 text-rose-400 cursor-pointer" onclick="removeFixed(${i})"></i></div></div>`;
             });
@@ -946,7 +1003,7 @@
         }
         function addFixedCost() { const n = document.getElementById('newFixedName').value; const v = parseMoney(document.getElementById('newFixedVal').value); if(n && v) { db.config.fixedCosts.push({name: n, val: v}); document.getElementById('newFixedName').value = ''; document.getElementById('newFixedVal').value = ''; renderFixedList(); }}
         function removeFixed(i) { db.config.fixedCosts.splice(i,1); renderFixedList(); }
-        function runSmartCalc() { applyPreset('conservative'); } // Default or custom logic
+        function runSmartCalc() { applyPreset('conservative'); } 
         function renderSliders() {
             const div = document.getElementById('jarSliders'); div.innerHTML = '';
             const inc = parseMoney(document.getElementById('cfgIncome').value);
@@ -955,91 +1012,65 @@
                 div.innerHTML += `<div><div class="flex justify-between text-[10px] font-bold text-slate-500 dark:text-slate-300 mb-1"><span>${jar.name}</span><span class="text-sky-500">${fmtMoney(val)} (${Math.round(jar.perc)}%)</span></div><div class="w-full h-1 bg-slate-200 dark:bg-slate-700 rounded-lg overflow-hidden"><div class="h-full bg-sky-500" style="width:${jar.perc}%"></div></div></div>`;
             });
         }
-        function saveConfig() {
-            db.config.income = parseMoney(document.getElementById('cfgIncome').value);
-            saveLocal();
-            closeModal('modalConfig');
-            toast('Configurações Salvas!');
-        }
+        function saveConfig() { db.config.income = parseMoney(document.getElementById('cfgIncome').value); saveLocal(); closeModal('modalConfig'); toast('Configurações Salvas!'); }
 
-        // --- TRANSACTION MODAL ---
+        // --- TX LOGIC ---
         function openTransactionModal() {
             document.getElementById('txForm').reset();
             document.getElementById('txId').value = '';
             document.getElementById('txDate').value = new Date().toISOString().split('T')[0];
             document.getElementById('mTxTitle').innerText = "Nova Movimentação";
-            document.getElementById('txMethod').value = 'pix'; // default
+            document.getElementById('txMethod').value = 'pix';
             setTxType('out');
             checkDebtOption();
             openModal('modalTx');
         }
-
         function checkDebtOption() {
             const cat = document.getElementById('txCat').value;
             const div = document.getElementById('debtSelector');
             const sel = document.getElementById('txDebtItem');
-            
-            // Logic: Show debt selector if category implies debt
             if(cat.toLowerCase().includes('dívida') || cat.toLowerCase().includes('amortização')) {
                 div.classList.remove('hidden');
                 sel.innerHTML = '<option value="">(Opcional) Selecione a Dívida</option>';
                 (db.config.debts || []).forEach(d => sel.add(new Option(d.name, d.id)));
-            } else {
-                div.classList.add('hidden');
-                sel.value = "";
-            }
-            updateJarPreview(); // Keep logic
+            } else { div.classList.add('hidden'); sel.value = ""; }
+            updateJarPreview();
         }
-
-        // ... Reuse setTxType, updateCategorySelect, updateJarPreview from previous ...
         function setTxType(type) {
             currentType = type;
             const btnIn = document.getElementById('btnTypeIn');
             const btnOut = document.getElementById('btnTypeOut');
             const divCat = document.getElementById('divCategory');
             const divSrc = document.getElementById('divSource');
-            
             if(type === 'in') {
                 btnIn.className = "py-3 rounded-xl border border-emerald-500 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold text-sm transition flex justify-center items-center gap-2 ring-2 ring-emerald-500 ring-offset-2 dark:ring-offset-slate-800";
                 btnOut.className = "py-3 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 font-bold text-sm transition flex justify-center items-center gap-2 opacity-50";
-                divCat.style.display = 'none';
-                divSrc.style.display = 'block';
+                divCat.style.display = 'none'; divSrc.style.display = 'block';
             } else {
                 btnOut.className = "py-3 rounded-xl border border-rose-500 bg-rose-100 dark:bg-rose-500/20 text-rose-600 dark:text-rose-400 font-bold text-sm transition flex justify-center items-center gap-2 ring-2 ring-rose-500 ring-offset-2 dark:ring-offset-slate-800";
                 btnIn.className = "py-3 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 font-bold text-sm transition flex justify-center items-center gap-2 opacity-50";
-                divCat.style.display = 'block';
-                divSrc.style.display = 'none';
+                divCat.style.display = 'block'; divSrc.style.display = 'none';
                 updateCategorySelect();
             }
         }
-
         function updateCategorySelect() {
             const sel = document.getElementById('txCat');
             const currentVal = sel.value;
             sel.innerHTML = '';
-            
             db.config.jars.forEach(jar => {
-                const group = document.createElement('optgroup');
-                group.label = jar.name;
+                const group = document.createElement('optgroup'); group.label = jar.name;
                 const cats = db.categories.filter(c => c.jar === jar.id);
-                cats.forEach(c => {
-                    const opt = document.createElement('option');
-                    opt.value = c.name;
-                    opt.innerText = c.name;
-                    group.appendChild(opt);
-                });
+                cats.forEach(c => { const opt = document.createElement('option'); opt.value = c.name; opt.innerText = c.name; group.appendChild(opt); });
                 if(cats.length > 0) sel.appendChild(group);
             });
             if(currentVal) sel.value = currentVal;
             checkDebtOption();
         }
-
         function updateJarPreview() {
             const catName = document.getElementById('txCat').value;
             const cat = db.categories.find(c => c.name === catName);
             const preview = document.getElementById('jarPreview');
             const tag = document.getElementById('jarPreviewTag');
-            
             if(cat) {
                 const jar = db.config.jars.find(j => j.id === cat.jar);
                 if(jar) {
@@ -1048,11 +1079,8 @@
                     const colors = {'j-essen':'bg-blue-500', 'j-free':'bg-purple-500', 'j-edu':'bg-cyan-500', 'j-long':'bg-emerald-500', 'j-play':'bg-amber-500', 'j-give':'bg-pink-500'};
                     tag.className = `px-2 py-1 rounded text-white font-bold text-[10px] uppercase ${colors[jar.color]||'bg-slate-500'}`;
                 }
-            } else {
-                preview.classList.add('hidden');
-            }
+            } else { preview.classList.add('hidden'); }
         }
-
         function handleTxSubmit(e) {
             e.preventDefault();
             const id = document.getElementById('txId').value;
@@ -1063,45 +1091,23 @@
             const date = document.getElementById('txDate').value;
             const thirdParty = document.getElementById('txThirdParty').checked;
             const method = document.getElementById('txMethod').value;
-            
-            let cat = "";
-            let source = "";
-            let debtId = "";
-
+            let cat = ""; let source = ""; let debtId = "";
             if(currentType === 'out') {
                 cat = document.getElementById('txCat').value;
                 debtId = document.getElementById('txDebtItem').value;
                 if(!cat) return alert("Selecione uma Categoria");
-            } else {
-                source = document.getElementById('txSource').value;
-            }
-
-            const tx = {
-                id: id ? parseInt(id) : Date.now(),
-                type: currentType,
-                desc, local, notes, val, date, cat, source, thirdParty, debtId, method
-            };
-
-            if(id) {
-                const idx = db.transactions.findIndex(t => t.id == id);
-                if(idx > -1) db.transactions[idx] = tx;
-            } else {
-                db.transactions.push(tx);
-            }
-
-            // Invalidate Date filter options to force reload
+            } else { source = document.getElementById('txSource').value; }
+            const tx = { id: id ? parseInt(id) : Date.now(), type: currentType, desc, local, notes, val, date, cat, source, thirdParty, debtId, method };
+            if(id) { const idx = db.transactions.findIndex(t => t.id == id); if(idx > -1) db.transactions[idx] = tx; } else { db.transactions.push(tx); }
             document.getElementById('filterDate').innerHTML = '<option value="">Todas as Datas</option>';
-
             saveLocal();
+            // Trigger background cloud save to create master file if it doesn't exist
+            syncData(true);
             closeModal('modalTx');
             toast('Movimentação Registrada!');
-            syncData(true); 
         }
-
         function editTx(id) {
-            const t = db.transactions.find(x => x.id === id);
-            if(!t) return;
-            
+            const t = db.transactions.find(x => x.id === id); if(!t) return;
             document.getElementById('txId').value = t.id;
             document.getElementById('txDesc').value = t.desc;
             document.getElementById('txLocal').value = t.local || '';
@@ -1111,121 +1117,51 @@
             document.getElementById('txThirdParty').checked = !!t.thirdParty;
             document.getElementById('txMethod').value = t.method || 'pix';
             setTxType(t.type);
-            
             if(t.type === 'out') {
                 document.getElementById('txCat').value = t.cat;
                 checkDebtOption();
                 document.getElementById('txDebtItem').value = t.debtId || '';
-            } else {
-                document.getElementById('txSource').value = t.source;
-            }
-            
+            } else { document.getElementById('txSource').value = t.source; }
             document.getElementById('mTxTitle').innerText = "Editar Movimentação";
             openModal('modalTx');
         }
-
         function delTx(id) {
             if(confirm("Excluir registro?")) {
                 db.transactions = db.transactions.filter(t => t.id !== id);
-                // Invalidate date filter
                 document.getElementById('filterDate').innerHTML = '<option value="">Todas as Datas</option>';
                 saveLocal();
+                syncData(true);
                 toast('Registro Excluído');
-                syncData(true);
             }
         }
 
-        // --- CLOUD MODAL FUNCTIONS ---
-        function openCloudModal() {
-            document.getElementById('manualToken').value = localStorage.getItem(TOKEN_KEY) || '';
-            openModal('modalCloud');
-        }
-
-        function saveLocalToken() {
-            const t = document.getElementById('manualToken').value.trim();
-            if(t) {
-                localStorage.setItem(TOKEN_KEY, t);
-                updateSyncUI(true);
-                toast('Token Salvo! Tentando sincronizar...');
-                syncData(true);
-            }
-        }
-
-        function backupData() {
-            const dataStr = JSON.stringify(db, null, 2);
-            const blob = new Blob([dataStr], {type: "application/json"});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `finance_backup_${new Date().toISOString().split('T')[0]}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            toast('Backup baixado!');
-        }
-
+        // --- CLOUD/BACKUP ---
+        function openCloudModal() { document.getElementById('manualToken').value = localStorage.getItem(TOKEN_KEY) || ''; openModal('modalCloud'); }
+        function saveLocalToken() { const t = document.getElementById('manualToken').value.trim(); if(t) { localStorage.setItem(TOKEN_KEY, t); updateSyncUI(true); toast('Token Salvo! Sincronizando...'); syncData(true); } }
+        function backupData() { const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(db,null,2)],{type:"application/json"})); a.download=`finance_backup_${new Date().toISOString().split('T')[0]}.json`; document.body.appendChild(a); a.click(); document.body.removeChild(a); toast('Backup baixado!'); }
         function restoreData(input) {
-            const file = input.files[0];
-            if(!file) return;
+            const file = input.files[0]; if(!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
                     const json = JSON.parse(e.target.result);
-                    if(confirm("Isso substituirá todos os dados atuais. Continuar?")) {
-                        db = json;
-                        db.lastUpdated = Date.now();
+                    if(confirm("Substituir dados atuais?")) {
+                        db = sanitizeData(json); // Use Sanitizer here too
                         saveLocal();
-                        toast('Dados restaurados com sucesso!');
+                        syncData(true);
+                        toast('Restaurado!');
                         setTimeout(() => location.reload(), 1000);
                     }
-                } catch(err) {
-                    alert("Erro ao ler arquivo JSON.");
-                }
+                } catch(err) { alert("Erro JSON."); }
             };
             reader.readAsText(file);
         }
 
-        // --- CATEGORY MANAGER REUSED ---
+        // --- UTILS ---
         function openCatManager() { document.getElementById('modalCats').style.display = 'flex'; renderCatList(); const s = document.getElementById('newCatJar'); s.innerHTML = ''; db.config.jars.forEach(j => s.add(new Option(j.name, j.id))); }
         function renderCatList() { const div = document.getElementById('catList'); div.innerHTML = ''; db.categories.forEach((c, i) => { const jar = db.config.jars.find(j=>j.id===c.jar); div.innerHTML += `<div class="flex justify-between items-center p-2 bg-slate-50 dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700"><div><div class="font-bold text-sm text-slate-700 dark:text-slate-300">${c.name}</div><div class="text-[10px] text-slate-400">${jar ? jar.name : '?'}</div></div><i data-lucide="trash" class="w-4 h-4 text-rose-400 cursor-pointer" onclick="deleteCat(${i})"></i></div>`; }); lucide.createIcons(); }
         function addNewCategory() { const name = document.getElementById('newCatName').value; const jar = document.getElementById('newCatJar').value; if(name && jar) { db.categories.push({id:Date.now(), name, jar}); saveLocal(); renderCatList(); document.getElementById('newCatName').value = ''; updateCategorySelect(); updateFilterCats(); } }
         function deleteCat(i) { db.categories.splice(i,1); saveLocal(); renderCatList(); updateCategorySelect(); updateFilterCats(); }
-
-        // --- HELPERS ---
-        async function syncData(silent = false) {
-            const token = localStorage.getItem(TOKEN_KEY);
-            if(!token) {
-                if(!silent) alert("Configure o Token Global no menu principal do Benai App.");
-                return;
-            }
-            const headers = { 'Authorization': `token ${token}` };
-            try {
-                if(!silent) toast('Sincronizando...');
-                if(!db.gistId) {
-                    const res = await fetch('https://api.github.com/gists', { headers });
-                    const gists = await res.json();
-                    const found = gists.find(g => g.description === GIST_DESC);
-                    if(found) db.gistId = found.id;
-                }
-                if(db.gistId) {
-                    const body = JSON.stringify({
-                        description: GIST_DESC,
-                        public: false,
-                        files: { 'finance_v5.json': { content: JSON.stringify(db) } }
-                    });
-                    let url = 'https://api.github.com/gists';
-                    let method = 'POST';
-                    if(db.gistId) { url += `/${db.gistId}`; method = 'PATCH'; }
-                    await fetch(url, { method, headers, body });
-                    if(!silent) toast('Dados Salvos na Nuvem!');
-                }
-            } catch(e) {
-                console.error(e);
-                if(!silent) alert("Erro de sincronização.");
-            }
-        }
-
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         function showInfo(jarId) { const jar = db.config.jars.find(j => j.id === jarId); if(jar) { document.getElementById('infoTitle').innerText = jar.name; document.getElementById('infoText').innerText = jar.desc || "Sem descrição."; openModal('modalInfo'); } }
