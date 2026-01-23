@@ -362,11 +362,14 @@
                 <div id="divCategory">
                     <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Categoria (Define o Pote)</label>
                     <div class="flex gap-2">
-                        <select id="txCat" class="input-std flex-1" onchange="checkDebtOption()"></select>
+                        <select id="txCat" class="input-std flex-1" onchange="renderDebtOptions()"></select>
                         <button type="button" onclick="openCatManager()" class="p-2 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-sky-500 hover:border-sky-400 transition" title="Criar Nova Categoria"><i data-lucide="plus" class="w-5 h-5"></i></button>
                     </div>
-                    <!-- Debt Selector -->
-                    <div id="debtSelector" class="hidden mt-2 bg-rose-50 dark:bg-rose-900/20 p-2 rounded border border-rose-100 dark:border-rose-800"><label class="block text-[9px] font-bold text-rose-600 uppercase mb-1">Qual dívida está pagando?</label><select id="txDebtItem" class="input-std text-xs h-8 py-0"></select></div>
+                    <!-- Debt Selector Updated (Always Available if Debts Exist) -->
+                    <div id="debtSelector" class="hidden mt-2 bg-rose-50 dark:bg-rose-900/20 p-2 rounded border border-rose-100 dark:border-rose-800">
+                        <label class="block text-[9px] font-bold text-rose-600 uppercase mb-1">Abater do Sniper de Dívidas? (Opcional)</label>
+                        <select id="txDebtItem" class="input-std text-xs h-8 py-0"></select>
+                    </div>
                     <div id="jarPreview" class="mt-2 text-xs font-bold text-slate-400 flex items-center gap-2 hidden"><span>Sai do Pote:</span> <span id="jarPreviewTag" class="px-2 py-1 rounded text-white bg-slate-500">...</span></div>
                 </div>
 
@@ -1022,20 +1025,30 @@
             document.getElementById('mTxTitle').innerText = "Nova Movimentação";
             document.getElementById('txMethod').value = 'pix';
             setTxType('out');
-            checkDebtOption();
+            checkDebtOption(); // Ensure visibility logic runs
             openModal('modalTx');
         }
-        function checkDebtOption() {
-            const cat = document.getElementById('txCat').value;
+        function renderDebtOptions() {
+            // Updated logic: Always check if debts exist, regardless of category name
             const div = document.getElementById('debtSelector');
             const sel = document.getElementById('txDebtItem');
-            if(cat.toLowerCase().includes('dívida') || cat.toLowerCase().includes('amortização')) {
+            
+            if(db.config.debts && db.config.debts.length > 0) {
                 div.classList.remove('hidden');
-                sel.innerHTML = '<option value="">(Opcional) Selecione a Dívida</option>';
-                (db.config.debts || []).forEach(d => sel.add(new Option(d.name, d.id)));
-            } else { div.classList.add('hidden'); sel.value = ""; }
+                // Preserve value if editing, otherwise reset to empty
+                const currentVal = sel.value;
+                sel.innerHTML = '<option value="">(Opcional) Selecione para abater...</option>';
+                db.config.debts.forEach(d => sel.add(new Option(d.name, d.id)));
+                if(currentVal) sel.value = currentVal;
+            } else {
+                div.classList.add('hidden');
+                sel.value = "";
+            }
             updateJarPreview();
         }
+        // Alias for backward compatibility if needed, but we updated the HTML to call renderDebtOptions
+        function checkDebtOption() { renderDebtOptions(); }
+
         function setTxType(type) {
             currentType = type;
             const btnIn = document.getElementById('btnTypeIn');
@@ -1064,7 +1077,7 @@
                 if(cats.length > 0) sel.appendChild(group);
             });
             if(currentVal) sel.value = currentVal;
-            checkDebtOption();
+            renderDebtOptions(); // Trigger debt option check
         }
         function updateJarPreview() {
             const catName = document.getElementById('txCat').value;
@@ -1119,7 +1132,8 @@
             setTxType(t.type);
             if(t.type === 'out') {
                 document.getElementById('txCat').value = t.cat;
-                checkDebtOption();
+                // Important: Call renderDebtOptions first to populate the list
+                renderDebtOptions();
                 document.getElementById('txDebtItem').value = t.debtId || '';
             } else { document.getElementById('txSource').value = t.source; }
             document.getElementById('mTxTitle').innerText = "Editar Movimentação";
