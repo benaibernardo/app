@@ -148,11 +148,28 @@
         #toast { position: fixed; top: 20px; right: 20px; background: var(--success); color: white; padding: 10px 20px; border-radius: 8px; font-weight: 700; transform: translateX(150%); transition: 0.3s; z-index: 2000; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         #toast.show { transform: translateX(0); }
         
+        /* CLOUD SHIELD (BLOCKING OVERLAY) */
+        #cloud-shield {
+            position: fixed; inset: 0; z-index: 9999;
+            background: #0f172a; color: white;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.5s ease;
+        }
+        .shield-spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top-color: #0ea5e9; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
         /* Print Area */
         #print-area { display: none; }
     </style>
 </head>
 <body>
+
+<!-- CLOUD SHIELD (Load Blocker) -->
+<div id="cloud-shield">
+    <div class="shield-spinner"></div>
+    <h2 style="font-size:1.5rem; font-weight:800; font-family:var(--font-num); letter-spacing:2px; text-transform:uppercase;">Sincronizando</h2>
+    <p style="font-size:0.8rem; color:#94a3b8; margin-top:10px;">Buscando dados da nuvem...</p>
+</div>
 
 <!-- TOAST -->
 <div id="toast">Ação realizada!</div>
@@ -192,14 +209,21 @@
 <!-- MODAL CLOUD -->
 <div id="modal-cloud" class="modal">
     <div class="modal-box">
-        <h3 style="margin-top:0; color:var(--primary); font-weight:800;">Configurar Nuvem</h3>
-        <p style="font-size:0.8rem; color:#64748b; margin-bottom:10px;">Insira seu Token do GitHub para salvar/carregar dados.</p>
-        <input id="ghToken" type="password" class="search-inp" placeholder="ghp_...">
-        <div style="display:flex; gap:5px;">
+        <h3 style="margin-top:0; color:var(--primary); font-weight:800;">Central de Dados</h3>
+        <p style="font-size:0.8rem; color:#64748b; margin-bottom:10px;">Gerenciar Sincronização e Backup.</p>
+        
+        <div style="margin-bottom:10px;">
+            <label class="list-header">Token Global</label>
+            <input id="ghToken" type="password" class="search-inp" placeholder="ghp_...">
             <button class="btn btn-pri" onclick="saveToken()">Salvar Token</button>
-            <button class="btn btn-sec" onclick="downloadCloud()">Baixar Dados</button>
         </div>
-        <button class="btn btn-sec" style="margin-top:5px; border:none; color:var(--danger);" onclick="document.getElementById('modal-cloud').style.display='none'">Fechar</button>
+
+        <div style="border-top:1px solid var(--border); padding-top:15px; margin-top:10px; display:flex; gap:5px; flex-direction:column;">
+            <button class="btn btn-sec" style="background:#1e293b; color:white; border:none;" onclick="backupData()"><i class="fas fa-download"></i> Fazer Backup (JSON)</button>
+            <label class="btn btn-sec" style="cursor:pointer;"><i class="fas fa-upload"></i> Restaurar Backup <input type="file" id="fileIn" hidden onchange="restoreData(this)"></label>
+        </div>
+        
+        <button class="btn btn-sec" style="margin-top:10px; border:none; color:var(--danger);" onclick="document.getElementById('modal-cloud').style.display='none'">Fechar</button>
     </div>
 </div>
 
@@ -297,11 +321,15 @@
 <div id="print-area"></div>
 
 <script>
-    // --- DATA & STATE ---
-    const DB_KEY = 'benai_data_v3';
-    const TOKEN_KEY = 'benai_gh_token';
-    const GIST_DESC = 'BENAI_CONSULTANCY_DB';
+    // --- MASTER CONFIG (FIXED & STANDARDIZED) ---
+    const DB_KEY = 'BENAI_MANAGER_MASTER'; // Definitive Key
+    const TOKEN_KEY = 'BENAI_GLOBAL_TOKEN'; 
+    const GIST_DESC = 'BENAI_MANAGER_DB'; // Unique description for this app state
+    const GIST_FILENAME = 'manager_data.json';
     
+    // MIGRATION CANDIDATES
+    const OLD_DB_KEYS = ['benai_data_v3', 'benai_data_v2', 'benai_data_v1', 'benai_treinos'];
+
     const PILLARS = {
         'Musculação': [
             {t:"1. Dor Boa vs. Dor Ruim", d:"Queimação muscular é sinal verde. Pontada aguda na articulação é SINAL VERMELHO."},
@@ -321,33 +349,51 @@
         ]
     };
 
-    let appData = { students: [], library: [] };
+    let appData = { students: [], library: [], lastUpdated: 0 };
     let currentStudent = null;
     let categories = ["Peito", "Costas", "Pernas", "Ombros", "Bíceps", "Tríceps", "Core", "Mobilidade", "Cardio"];
     let collapsedBlocks = {}; // Track UI state locally
 
     // --- INITIALIZATION ---
-    window.onload = function() {
-        const saved = localStorage.getItem(DB_KEY);
-        if (saved) appData = JSON.parse(saved);
+    window.onload = async function() {
+        const shield = document.getElementById('cloud-shield');
+        const hasToken = localStorage.getItem(TOKEN_KEY);
+        let loadedFromCloud = false;
 
-        if (!appData.library || appData.library.length === 0) initLibrary();
-        if (!appData.students) appData.students = [];
-
-        const token = localStorage.getItem(TOKEN_KEY);
-        if(token) {
-            document.getElementById('ghToken').value = token;
-            document.getElementById('stText').innerText = "Online";
-            document.getElementById('stDot').className = "dot ok";
-        }
-
+        // Init UI
         const catSel = document.getElementById('libCat');
         const exCat = document.getElementById('exCat');
         catSel.innerHTML = '<option value="">Todas</option>';
+        exCat.innerHTML = '';
         categories.forEach(c => {
             catSel.add(new Option(c, c));
             exCat.add(new Option(c, c));
         });
+
+        if (hasToken) {
+            document.getElementById('ghToken').value = hasToken;
+            updateSyncUI(true);
+            try {
+                loadedFromCloud = await forceCloudLoad();
+            } catch (e) {
+                console.error("Shield Error", e);
+            }
+        }
+        
+        if(!loadedFromCloud) {
+            loadLocal();
+            updateSyncUI(false);
+        }
+
+        // Ensure data is robust
+        sanitizeData(appData);
+
+        // Fade out shield
+        shield.style.opacity = '0';
+        setTimeout(() => shield.style.display = 'none', 500);
+
+        if (loadedFromCloud) showToast('Nuvem Sincronizada (Dados Mestre)');
+        else if (hasToken) showToast('Offline (Usando cache local)');
 
         renderLib();
         renderStudents();
@@ -356,18 +402,148 @@
         else createStudent();
     };
 
-    function initLibrary() {
-        appData.library = [
+    function updateSyncUI(online) {
+        document.getElementById('stText').innerText = online ? "Online" : "Offline";
+        document.getElementById('stDot').className = online ? "dot ok" : "dot err";
+    }
+
+    // --- DATA HANDLING (MIGRATION & SYNC) ---
+
+    function sanitizeData(data) {
+        if(!data.students) data.students = [];
+        if(!data.library) data.library = [];
+        if(data.library.length === 0) initLibrary(data);
+        
+        // Ensure student fields
+        data.students.forEach(s => {
+            if(!s.blocks) s.blocks = [];
+            if(!s.logic) s.logic = [];
+        });
+        return data;
+    }
+
+    function initLibrary(data) {
+        data.library = [
             {id:1, name:"Supino Reto", cat:"Peito", type:"Musculação", link:""},
             {id:2, name:"Flexão de Braço", cat:"Peito", type:"Calistenia", link:""},
             {id:3, name:"Agachamento Livre", cat:"Pernas", type:"Musculação", link:""},
             {id:4, name:"Puxada Alta", cat:"Costas", type:"Musculação", link:""},
             {id:5, name:"Burpees", cat:"Cardio", type:"Calistenia", link:""}
         ];
-        saveData();
     }
 
-    // --- CORE FUNCTIONS ---
+    function loadLocal() {
+        // 1. Try Master Key
+        const saved = localStorage.getItem(DB_KEY);
+        if(saved) {
+            try {
+                appData = JSON.parse(saved);
+                return;
+            } catch(e) { console.error("Corrupt Master DB", e); }
+        }
+
+        // 2. Try Old Keys (Migration)
+        for(const key of OLD_DB_KEYS) {
+            const oldData = localStorage.getItem(key);
+            if(oldData) {
+                try {
+                    console.log(`Migrating from ${key}...`);
+                    const parsed = JSON.parse(oldData);
+                    appData = sanitizeData(parsed);
+                    appData.lastUpdated = Date.now();
+                    localStorage.setItem(DB_KEY, JSON.stringify(appData)); // Save to Master
+                    showToast("Dados antigos recuperados localmente!");
+                    return;
+                } catch(e) { console.error(`Failed to migrate ${key}`, e); }
+            }
+        }
+    }
+
+    async function forceCloudLoad() {
+        const token = localStorage.getItem(TOKEN_KEY);
+        if (!token) return false;
+        
+        const headers = { 'Authorization': `token ${token}` };
+        try {
+            const res = await fetch('https://api.github.com/gists', { headers });
+            if (!res.ok) return false;
+            
+            const gists = await res.json();
+            const found = gists.find(g => g.description === GIST_DESC);
+            
+            if (found) {
+                appData.gistId = found.id;
+                const r = await fetch(found.url, { headers });
+                const data = await r.json();
+                
+                if (data.files[GIST_FILENAME]) {
+                    const cloudData = JSON.parse(data.files[GIST_FILENAME].content);
+                    appData = sanitizeData(cloudData);
+                    localStorage.setItem(DB_KEY, JSON.stringify(appData));
+                    return true;
+                }
+            }
+        } catch (e) { console.error("Cloud Error", e); return false; }
+        return false;
+    }
+
+    async function syncData(silent = false) {
+        const token = localStorage.getItem(TOKEN_KEY);
+        if(!token) return;
+        
+        // Save Local First
+        localStorage.setItem(DB_KEY, JSON.stringify(appData));
+
+        const headers = { 'Authorization': `token ${token}` };
+        try {
+            if(!silent) showToast('Salvando na Nuvem...');
+            
+            if(!appData.gistId) {
+                // Check if Gist exists (if we lost ID but have token)
+                const res = await fetch('https://api.github.com/gists', { headers });
+                const gists = await res.json();
+                const found = gists.find(g => g.description === GIST_DESC);
+                if(found) appData.gistId = found.id;
+            }
+
+            // Create payload
+            const filesPayload = {};
+            filesPayload[GIST_FILENAME] = { content: JSON.stringify(appData) };
+            
+            const body = JSON.stringify({
+                description: GIST_DESC,
+                public: false,
+                files: filesPayload
+            });
+
+            // POST (New) or PATCH (Update)
+            let url = 'https://api.github.com/gists';
+            let method = 'POST';
+            if(appData.gistId) {
+                url += `/${appData.gistId}`;
+                method = 'PATCH';
+            }
+
+            const r = await fetch(url, { method, headers, body });
+            if(r.ok) {
+                const json = await r.json();
+                appData.gistId = json.id;
+                localStorage.setItem(DB_KEY, JSON.stringify(appData)); // Update local with Gist ID
+                if(!silent) showToast('Dados Salvos na Nuvem!');
+            }
+        } catch(e) {
+            console.error(e);
+            if(!silent) alert("Erro de sincronização.");
+        }
+    }
+
+    function saveData() {
+        appData.lastUpdated = Date.now();
+        localStorage.setItem(DB_KEY, JSON.stringify(appData));
+        syncData(true); // Background sync
+    }
+
+    // --- CORE APP LOGIC ---
 
     function createStudent() {
         const id = Date.now().toString();
@@ -435,10 +611,6 @@
         const e = document.getElementById('dEnd').value.split('-');
         document.getElementById('lblStart').innerText = `${s[2]}/${s[1]}`;
         document.getElementById('lblEnd').innerText = `${e[2]}/${e[1]}`;
-    }
-
-    function saveData() {
-        localStorage.setItem(DB_KEY, JSON.stringify(appData));
     }
 
     // --- RENDERERS ---
@@ -766,13 +938,35 @@
         closeExModal();
     }
 
-    // --- CLOUD & PDF ---
+    // --- CLOUD/BACKUP ---
+    function saveToken() { const t = document.getElementById('ghToken').value.trim(); if(t) { localStorage.setItem(TOKEN_KEY, t); updateSyncUI(true); showToast('Token Salvo! Sincronizando...'); syncData(true); } }
+    function backupData() { const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(appData,null,2)],{type:"application/json"})); a.download=`manager_backup_${new Date().toISOString().split('T')[0]}.json`; document.body.appendChild(a); a.click(); document.body.removeChild(a); showToast('Backup baixado!'); }
+    function restoreData(input) {
+        const file = input.files[0]; if(!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const json = JSON.parse(e.target.result);
+                if(confirm("Substituir dados atuais?")) {
+                    appData = sanitizeData(json);
+                    saveData(); // Will sync to cloud
+                    showToast('Restaurado!');
+                    setTimeout(() => location.reload(), 1000);
+                }
+            } catch(err) { alert("Erro JSON."); }
+        };
+        reader.readAsText(file);
+    }
+
+    // --- PDF & LINK ---
 
     async function generateLink(mode) {
         if(!currentStudent) return alert("Nenhum aluno selecionado.");
         const token = localStorage.getItem(TOKEN_KEY);
         if(!token) return alert("Salve o Token do GitHub.");
 
+        // NOTE: This creates/updates a SEPARATE file for the student (treino.json)
+        // It does NOT affect the Manager DB file.
         const payload = {
             name: currentStudent.name,
             focus: currentStudent.focus,
@@ -793,7 +987,7 @@
             if (!res.ok) throw new Error("Erro na API");
             const json = await res.json();
             currentStudent.cloudId = json.id;
-            saveData();
+            saveData(); // Save the new cloudId to manager DB
 
             if (mode === 'new') {
                 const link = `${window.location.origin}${window.location.pathname.replace('gerador.html','aluno.html')}?id=${json.id}`;
@@ -811,11 +1005,6 @@
         const link = `${window.location.origin}${window.location.pathname.replace('gerador.html','aluno.html')}?data=${compressed}`;
         navigator.clipboard.writeText(link);
         alert("Link Offline Copiado!");
-    }
-
-    function saveToken() {
-        const t = document.getElementById('ghToken').value;
-        if(t) { localStorage.setItem(TOKEN_KEY, t); alert("Token Salvo!"); location.reload(); }
     }
 
     function printPDF() {
