@@ -720,6 +720,12 @@
                 <div class="h-px bg-slate-100 my-4"></div>
                 <button onclick="backupData()" class="w-full py-3 rounded-xl bg-[#05364F] text-white font-bold hover:bg-[#032435] flex justify-center gap-2 transition hover:-translate-y-1 shadow-md"><i data-lucide="download" class="w-4 h-4"></i> FAZER BACKUP (JSON)</button>
                 <label class="w-full py-3 rounded-xl border-2 border-slate-200 text-slate-600 font-bold hover:bg-slate-50 cursor-pointer flex justify-center gap-2 transition"><i data-lucide="upload" class="w-4 h-4"></i> RESTAURAR BACKUP <input type="file" id="fileIn" hidden onchange="restoreData(this)"></label>
+                
+                <!-- BOTÃO DE RESGATE (NOVO) -->
+                <button onclick="manualRescue()" class="w-full py-3 rounded-xl bg-amber-100 text-amber-700 border border-amber-200 font-bold hover:bg-amber-200 flex justify-center gap-2 transition text-xs mt-4">
+                    <i data-lucide="life-buoy" class="w-4 h-4"></i> RESGATE DE EMERGÊNCIA
+                </button>
+                <p class="text-[10px] text-amber-600 mt-1">Use se os dados não aparecerem automaticamente.</p>
             </div>
             <button onclick="document.getElementById('modal-cloud').style.display='none'" class="mt-6 text-xs font-bold text-slate-400 hover:text-slate-600">FECHAR</button>
         </div>
@@ -803,7 +809,7 @@
                 } catch(e) { console.error("Cloud error", e); updateCloudStatus('error'); }
             }
 
-            // 3. Local Fallback
+            // 3. Local Fallback (SMART)
             if(!loadedFromCloud) {
                 loadLocal();
                 updateCloudStatus('offline');
@@ -821,7 +827,7 @@
             setTab('daily');
             setupTimeDropdown(); 
             setupReportFilter(); 
-            setupCheckinForm(); // Re-run to populate lists with loaded data
+            setupCheckinForm(); 
             
             // Clock
             setInterval(() => {
@@ -834,32 +840,70 @@
             Chart.defaults.scale.grid.color = 'rgba(255,255,255,0.05)';
         }
 
-        // --- DATA HANDLING ---
+        // --- DATA HANDLING (SMARTER LOAD) ---
         function loadLocal() {
+            let loaded = false;
             const saved = localStorage.getItem(DB_KEY);
+            
             if(saved) {
                 try {
-                    db = JSON.parse(saved);
-                    return;
+                    const parsed = JSON.parse(saved);
+                    // Only accept if it has actual data (not just defaults) or user modified it
+                    if(parsed.students && parsed.students.length > 0 && parsed.students[0].id !== "1") { 
+                        db = parsed;
+                        loaded = true;
+                    } else if (parsed.checkins && parsed.checkins.length > 0) {
+                        db = parsed;
+                        loaded = true;
+                    }
                 } catch(e) {}
             }
 
-            // Migration from Old Key
-            for(const key of OLD_DB_KEYS) {
-                const old = localStorage.getItem(key);
-                if(old) {
-                    try {
-                        console.log("Migrating from " + key);
-                        db = JSON.parse(old);
-                        migrateStructure(); // Ensure structure is correct
-                        localStorage.setItem(DB_KEY, JSON.stringify(db)); // Save to new key
-                        return;
-                    } catch(e) {}
+            if(!loaded) {
+                // FORCE MIGRATION SEARCH
+                for(const key of OLD_DB_KEYS) {
+                    const old = localStorage.getItem(key);
+                    if(old) {
+                        try {
+                            const parsedOld = JSON.parse(old);
+                            // Validate content
+                            if(parsedOld.students && parsedOld.students.length > 0) {
+                                console.log("Recovering from Legacy Key: " + key);
+                                db = parsedOld;
+                                migrateStructure();
+                                localStorage.setItem(DB_KEY, JSON.stringify(db)); 
+                                toast("Dados recuperados do cache antigo!");
+                                loaded = true;
+                                break;
+                            }
+                        } catch(e) {}
+                    }
                 }
             }
             
-            // Default
-            db = { students: INITIAL_STUDENTS, checkins: [], professors: INITIAL_PROFS, workouts: INITIAL_WORKOUTS };
+            if(!loaded) {
+                // Fallback to default ONLY if everything else failed
+                db = { students: INITIAL_STUDENTS, checkins: [], professors: INITIAL_PROFS, workouts: INITIAL_WORKOUTS };
+                // DON'T SAVE DEFAULT TO DB_KEY YET to avoid overwriting possibility on refresh
+            }
+        }
+
+        function manualRescue() {
+            // Function for the panic button
+            if(confirm("Isso tentará buscar dados antigos do navegador. Seus dados atuais não serão apagados, apenas mesclados/substituídos se encontrarmos backup. Continuar?")) {
+                const old = localStorage.getItem('prime_main_db');
+                if(old) {
+                    try {
+                        db = JSON.parse(old);
+                        migrateStructure();
+                        saveDB();
+                        alert("Sucesso! Dados recuperados da versão anterior.");
+                        location.reload();
+                    } catch(e) { alert("Erro ao ler dados antigos."); }
+                } else {
+                    alert("Nenhum dado antigo encontrado neste navegador.");
+                }
+            }
         }
 
         function migrateStructure() {
