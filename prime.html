@@ -784,7 +784,12 @@
             {"id":"2","firstName":"LINDAMIR","lastName":"FLORIANO","nickname":"MIME","gender":"F","objective":"EMAGRECIMENTO","limitations":"NENHUMA","notes":"","plan":"3X"},
         ];
 
-        const FEMALE_NAMES = ['alice','ana','beatriz','bianca','camila','carolina','clara','daniela','eduarda','elena','elisa','fernanda','gabriela','helena','isabela','julia','larissa','laura','leticia','luana','luiza','manuela','maria','mariana','melissa','natalia','nicole','olivia','rafaela','rebeca','sarah','sophia','valentina','vitoria','yasmin','amanda','bruna','jessica','juliana','marcela','priscila','renata','vanessa','talita','lindamir','simone','ivone','solange'];
+        // GENDER DATABASE (DEEP RESEARCH)
+        const MALE_EXCEPTIONS = ['luca','lucas','jean','gian','ryan','yan','kaue','caue','joshua','noah','elijah','sasa','zeca','juca','akira','mika','sasha','nicolas','nicolau','andrea','rene','michel','raigha','koda'];
+        const FEMALE_NAMES = [
+            'alice','ana','beatriz','bianca','camila','carolina','clara','daniela','eduarda','elena','elisa','fernanda','gabriela','helena','isabela','julia','larissa','laura','leticia','luana','luiza','manuela','maria','mariana','melissa','natalia','nicole','olivia','rafaela','rebeca','sarah','sophia','valentina','vitoria','yasmin','amanda','bruna','jessica','juliana','marcela','priscila','renata','vanessa','talita','lindamir','simone','ivone','solange',
+            'agatha','agnes','aide','alanis','alessandra','alexandra','aline','andressa','angelica','antonella','ariane','arlete','aurora','barbara','bernadete','betina','betania','brenda','brigite','carla','carmen','catarina','cecilia','celia','chloe','cibele','clarice','clarissa','cleide','cleo','consuelo','cristiane','cristina','daiane','dalila','damaris','debora','deise','denise','dirce','dolores','dora','doris','dulce','edite','elaine','elen','eliana','elizabeth','eloa','emanuelle','emilia','emily','ester','estela','eunice','eva','fabiana','fatima','franciele','francine','gabrielle','geni','giovana','giulia','gisele','glauce','graciela','guiomar','haydee','hebe','heloisa','ianca','iara','ilda','inaie','india','ines','ingrid','ione','iracema','irene','iris','isabel','isis','ivana','ivete','izabel','jaciara','janaina','janete','jaqueline','joana','joice','josiane','joyce','judite','jussara','karen','karina','katia','kelly','lais','lana','lara','lavinia','leia','leila','lenir','leonor','lidia','ligia','lilian','lis','livia','lorena','louise','luara','luciana','lucy','ludmila','lurdes','luzia','mabel','madalena','maisa','maite','malu','mara','marcia','margarida','mari','maribel','marilei','marilia','marina','marisa','marta','matilde','maya','mayara','mercedes','micaela','milena','mirela','miriam','moema','monica','monique','nair','nanci','naomi','nara','neide','neuza','nivea','noemi','norma','odete','olga','paloma','pamela','patricia','paula','penelope','pietra','poliana','rachel','raissa','raquel','regina','rita','roberta','rosa','rosana','rosangela','roseli','rosemary','ruth','sabrina','samanta','samara','sandra','selma','sheila','shirley','silvana','silvia','sofia','sonia','stefany','sueli','suzana','taina','tais','tamara','tania','tatiane','telma','teresa','thais','uidara','valeria','vania','vera','veronica','vivian','viviane','wanda','wilma','yara','yolanda','zilda','zuleide','zulmira', 'raquel', 'ester', 'ruth', 'lis', 'tais', 'iris', 'ines', 'lourdes', 'mirtes', 'gladis'
+        ];
         
         // --- INIT LOGIC (SECURITY PROTOCOL) ---
         async function init() {
@@ -795,6 +800,16 @@
             // 1. Setup UI
             if(hasToken) document.getElementById('manualToken').value = hasToken;
             
+            // Fix Date to Today (Local) & Set Agenda
+            const today = new Date();
+            const todayLocal = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+            
+            const dateEl = document.getElementById('ag-date');
+            const ciDateEl = document.getElementById('ci-date');
+            
+            if(dateEl) dateEl.value = todayLocal;
+            if(ciDateEl) ciDateEl.value = todayLocal;
+
             // 2. Cloud First
             if(hasToken) {
                 updateCloudStatus('syncing');
@@ -828,6 +843,9 @@
             setupTimeDropdown(); 
             setupReportFilter(); 
             setupCheckinForm(); 
+            
+            // Force Render Agenda with today's date
+            renderAgenda();
             
             // Clock
             setInterval(() => {
@@ -931,9 +949,16 @@
 
         // --- HELPERS ---
         function inferGender(name) {
-            const n = name.toLowerCase().trim();
+            if(!name) return 'M';
+            const parts = name.toLowerCase().trim().split(' ');
+            const n = parts[0]; // First name logic
+            
+            if (MALE_EXCEPTIONS.includes(n)) return 'M';
             if (FEMALE_NAMES.includes(n)) return 'F';
-            if (n.endsWith('a') || n.endsWith('elly') || n.endsWith('ele') || n.endsWith('ine')) return 'F';
+            
+            // Logic rules for unknown names
+            if (n.endsWith('a') || n.endsWith('elly') || n.endsWith('ele') || n.endsWith('ine') || n.endsWith('iz')) return 'F';
+            
             return 'M';
         }
 
@@ -990,8 +1015,8 @@
             // Ensure date is set even if switching tabs
             if(!document.getElementById('ci-date').value) {
                 const today = new Date();
-                const offset = today.getTimezoneOffset();
-                document.getElementById('ci-date').value = new Date(today.getTime() - (offset*60*1000)).toISOString().split('T')[0];
+                const todayLocal = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+                document.getElementById('ci-date').value = todayLocal;
             }
 
             // Clear search input
@@ -1039,6 +1064,14 @@
             const list = document.getElementById('ci-search-results');
             const term = input.value.toLowerCase();
             
+            // Clear logic if input is empty
+            if(!term) {
+                document.getElementById('ci-student-id').value = "";
+                handleStudentSelection(null); // Clear stats/alerts
+                list.style.display = 'none';
+                return;
+            }
+
             list.innerHTML = '';
             if(!term && document.activeElement !== input) {
                 list.style.display = 'none';
@@ -1055,7 +1088,8 @@
                 matches.forEach(s => {
                     const div = document.createElement('div');
                     div.className = 'search-result-item';
-                    const icon = s.gender === 'F' ? '<i class="fa-solid fa-person-dress text-pink-400"></i>' : '<i class="fa-solid fa-person text-blue-400"></i>';
+                    const sGender = s.gender || inferGender(s.firstName); // Ensure we use updated logic
+                    const icon = sGender === 'F' ? '<i class="fa-solid fa-person-dress text-pink-400"></i>' : '<i class="fa-solid fa-person text-blue-400"></i>';
                     div.innerHTML = `<span>${icon} ${getDisplayName(s)}</span>`;
                     div.onclick = () => selectStudentFromSearch(s);
                     list.appendChild(div);
@@ -1364,7 +1398,8 @@
             list.forEach(c => {
                 const s = db.students.find(x => x.id === c.studentId);
                 const displayName = getDisplayName(s);
-                const genderIcon = s && s.gender === 'F' ? '<i class="fa-solid fa-person-dress text-pink-400 mr-2 text-lg"></i>' : '<i class="fa-solid fa-person text-blue-400 mr-2 text-lg"></i>';
+                const sGender = s ? (s.gender || inferGender(s.firstName)) : 'M';
+                const genderIcon = sGender === 'F' ? '<i class="fa-solid fa-person-dress text-pink-400 mr-2 text-lg"></i>' : '<i class="fa-solid fa-person text-blue-400 mr-2 text-lg"></i>';
                 
                 let groupKey = fullMonth ? c.isoDate : c.time;
                 let displayGroup = fullMonth ? c.isoDate.split('-').reverse().slice(0,2).join('/') : c.time;
@@ -1444,7 +1479,8 @@
             const tb = document.getElementById('stu-body'); tb.innerHTML = '';
             
             db.students.filter(s => getDisplayName(s).toLowerCase().includes(term)).sort((a,b)=>getDisplayName(a).localeCompare(getDisplayName(b))).forEach(s => {
-                const icon = s.gender === 'F' ? '<i class="fa-solid fa-person-dress text-pink-400 mr-2 text-lg"></i>' : '<i class="fa-solid fa-person text-blue-400 mr-2 text-lg"></i>';
+                const sGender = s.gender || inferGender(s.firstName);
+                const icon = sGender === 'F' ? '<i class="fa-solid fa-person-dress text-pink-400 mr-2 text-lg"></i>' : '<i class="fa-solid fa-person text-blue-400 mr-2 text-lg"></i>';
                 
                 tb.innerHTML += `
                 <tr class="hover:bg-slate-50 border-b border-slate-100 cursor-pointer transition" onclick="if(!event.target.closest('button')) openProfile('${s.id}')">
@@ -1656,12 +1692,15 @@
         }
 
         // --- UTILS ---
+        function saveDB() { localStorage.setItem(DB_KEY, JSON.stringify(db)); pushCloud(); }
         function toast(msg) { const t=document.getElementById('toast'); document.getElementById('toast-msg').innerText=msg; t.style.transform='translateX(0)'; setTimeout(()=>t.style.transform='translateX(150%)', 3000); }
         function toggleCustom(val) { document.getElementById('ci-custom').classList.toggle('hidden', val !== 'OUTRO'); }
         function openCloudModal() { document.getElementById('modal-cloud').style.display='flex'; }
         
         function backupData() { const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(db)],{type:"application/json"})); a.download=`prime_backup.json`; a.click(); }
-        function saveManualToken() { const t = document.getElementById('manualToken').value.trim(); if(t) { localStorage.setItem(TOKEN_KEY, t); toast('Token Salvo'); init(); } }
+        function restoreData(i) { const r=new FileReader(); r.onload=e=>{ try{ db=JSON.parse(e.target.result); saveDB(); location.reload(); }catch{alert('Erro');} }; r.readAsText(i.files[0]); }
+        function forceSync() { syncCloud().then(() => { renderAll(); toast('Sincronizado'); }); }
+        function saveManualToken() { const t = document.getElementById('manualToken').value.trim(); if(t) { localStorage.setItem(TOKEN_KEY, t); toast('Token Salvo'); syncCloud(); } }
         function removeToken() { 
             if(confirm("Deseja desconectar? O sistema ficará offline.")) {
                 localStorage.removeItem(TOKEN_KEY);
@@ -1674,6 +1713,39 @@
         function updateCloudStatus(st) { 
             const dot = document.getElementById('statusDot'); if(!dot) return;
             if(st === 'ok') { dot.className = 'dot online'; } else if (st === 'syncing') { dot.className = 'dot sync'; } else { dot.className = 'dot offline'; }
+        }
+
+        async function syncCloud() {
+            const token = localStorage.getItem(TOKEN_KEY); 
+            if(!token) return updateCloudStatus('error'); 
+            updateCloudStatus('syncing');
+            try {
+                const s = await fetch('https://api.github.com/gists',{headers:{'Authorization':`token ${token}`}});
+                const g = await s.json();
+                const f = g.find(x=>x.description===GIST_DESC);
+                if(f) {
+                    gistId = f.id;
+                    const r = await fetch(`https://api.github.com/gists/${gistId}`,{headers:{'Authorization':`token ${token}`}});
+                    const j = await r.json();
+                    if(j.files["prime_db.json"]) {
+                        db = JSON.parse(j.files["prime_db.json"].content);
+                        localStorage.setItem(DB_KEY, JSON.stringify(db));
+                        renderAll(); // FORCE UI UPDATE AFTER LOAD
+                    }
+                }
+                updateCloudStatus('ok');
+            } catch(e) { console.error(e); updateCloudStatus('error'); }
+        }
+
+        async function pushCloud() {
+            const token = localStorage.getItem(TOKEN_KEY); if(!token) return; updateCloudStatus('syncing');
+            try {
+                let url = 'https://api.github.com/gists'; let method = 'POST'; 
+                if(gistId) { url += '/'+gistId; method = 'PATCH'; }
+                const body = JSON.stringify({description:GIST_DESC, public:false, files:{'prime_db.json':{content:JSON.stringify(db)}}});
+                await fetch(url, {method, headers:{'Authorization':`token ${token}`}, body});
+                updateCloudStatus('ok');
+            } catch(e) { updateCloudStatus('error'); }
         }
 
     </script>
