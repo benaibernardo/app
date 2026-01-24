@@ -63,7 +63,7 @@
 
         /* --- GATEKEEPER (Login) --- */
         #gatekeeper { 
-            position: fixed; inset: 0; z-index: 99990; 
+            position: fixed; inset: 0; z-index: 100000; 
             background: radial-gradient(circle at center, #05364F 0%, #020617 100%);
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
         }
@@ -183,13 +183,25 @@
         .search-result-item:hover { background: #f0f9ff; color: var(--secondary); padding-left: 20px; }
 
         /* --- AGENDA TABLE & DRAWER --- */
-        /* Table Row Hover Lift */
+        /* Header Azul Padronizado */
+        .agenda-thead {
+            background: linear-gradient(to right, #05364F, #084566);
+            color: white; text-transform: uppercase; font-size: 0.75rem; 
+            font-weight: 800; tracking-wider; border-bottom: 2px solid #00A89A;
+        }
+        .agenda-thead th { padding: 16px; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+
         .agenda-row { border-bottom: 1px solid #f1f5f9; transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); cursor: pointer; position: relative; }
         .agenda-row:hover { background-color: #f8fafc; transform: scale(1.005); box-shadow: 0 4px 15px rgba(0,0,0,0.05); z-index: 10; border-radius: 8px; border-bottom: 1px solid transparent; }
         
-        .agenda-time { font-family: 'Outfit', sans-serif; font-weight: 800; color: var(--primary); font-size: 1.1rem; }
+        /* Time Badge Refined */
+        .agenda-time { font-family: 'Outfit', sans-serif; font-weight: 800; color: var(--accent); font-size: 1.1rem; letter-spacing: -0.5px; }
+        .agenda-time-box { background: var(--primary); padding: 6px 12px; border-radius: 8px; color: var(--accent); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+
         .agenda-workout { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; padding: 4px 10px; border-radius: 6px; background: rgba(0, 168, 154, 0.1); color: #00796b; display: inline-block; box-shadow: 0 2px 5px rgba(0, 168, 154, 0.1); }
         
+        .prof-badge { font-size: 0.65rem; font-weight: 800; padding: 4px 8px; border-radius: 4px; color: white; display: inline-block; text-transform: uppercase; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+
         /* PRIME KIDS STYLE (14H) - Animado */
         @keyframes rainbow { 
             0% { background-position: 0% 50%; }
@@ -273,6 +285,9 @@
         }
         @keyframes modalSlide { from { transform: translateY(40px) scale(0.95); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
 
+        /* GATEKEEPER MODAL SPECIFIC (Z-Index + 1) */
+        #gk-config-modal { z-index: 100001; }
+
         /* --- DATA STATUS PULSE --- */
         .status-pill { display: flex; align-items: center; gap: 6px; padding: 6px 14px; background: rgba(255,255,255,0.1); border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); font-size: 0.75rem; color: white; font-weight: 600; cursor: pointer; transition: 0.2s; backdrop-filter: blur(4px); }
         .status-pill:hover { background: rgba(255,255,255,0.2); transform: scale(1.05); }
@@ -310,7 +325,7 @@
         .wg-box-item.present { background: #f0fdfa; border-color: #5eead4; border-bottom: 3px solid var(--secondary); }
         .wg-box-item.present .val-lbl { color: var(--secondary); }
         .wg-box-item.absent { background: #fef2f2; border-color: #fca5a5; border-bottom: 3px solid #ef4444; }
-        .wg-box-item.absent .val-lbl { color: #ef4444; }
+        .wg-box-item.absent .val-lbl { color: transparent; } /* Hidden Text */
 
         /* Vertical List Style */
         .week-list-vertical { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; }
@@ -329,7 +344,7 @@
         .wl-date span { font-size: 0.65rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; }
         .wl-workout { font-weight: 800; color: #64748b; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; }
         .wl-item.present .wl-workout { color: var(--secondary); }
-        .wl-item.absent .wl-workout { color: #ef4444; }
+        .wl-item.absent .wl-workout { color: transparent; }
 
         /* Profile Week Grid matches Agenda style */
         .pf-grid-item { flex: 1; min-width: 80px; padding: 10px; border-radius: 12px; border: 1px solid #e2e8f0; text-align: center; transition: all 0.3s; background: white; }
@@ -343,6 +358,42 @@
         <div class="shield-spinner"></div>
         <h2 class="text-xl font-bold font-heading tracking-widest uppercase">Sincronizando</h2>
         <p class="text-xs text-slate-400 mt-2">Buscando versão mais recente...</p>
+    </div>
+
+    <!-- GATEKEEPER CONFIG MODAL -->
+    <div id="gk-config-modal" class="modal-overlay" style="background: rgba(2,6,23,0.95);">
+        <div class="modal-card">
+            <div class="flex flex-col items-center mb-6">
+                <div class="w-16 h-16 bg-gradient-to-br from-[#00A89A] to-[#05364F] rounded-full flex items-center justify-center mb-4 shadow-lg">
+                    <i data-lucide="settings-2" class="w-8 h-8 text-white"></i>
+                </div>
+                <h3 class="text-xl font-heading font-bold text-[#05364F]">Configuração Inicial</h3>
+                <p class="text-xs text-slate-400 text-center px-4 mt-2">Gerencie o acesso à nuvem e backup antes de entrar.</p>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Token GitHub</label>
+                    <input type="password" id="gk-token" placeholder="ghp_..." class="input-prime text-center text-xs">
+                </div>
+                <button onclick="saveTokenFromGatekeeper()" class="w-full py-3 bg-[#05364F] text-white font-bold rounded-xl text-xs hover:bg-[#032435] transition flex justify-center items-center gap-2">
+                    <i data-lucide="save" class="w-4 h-4"></i> SALVAR E SINCRONIZAR
+                </button>
+                
+                <div class="h-px bg-slate-100 my-2"></div>
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="backupData()" class="py-3 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl text-xs hover:bg-slate-50 transition flex justify-center items-center gap-2">
+                        <i data-lucide="download" class="w-4 h-4"></i> BACKUP
+                    </button>
+                    <label class="py-3 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl text-xs hover:bg-slate-50 transition flex justify-center items-center gap-2 cursor-pointer">
+                        <i data-lucide="upload" class="w-4 h-4"></i> RESTAURAR
+                        <input type="file" hidden onchange="restoreData(this)">
+                    </label>
+                </div>
+            </div>
+            <button onclick="document.getElementById('gk-config-modal').style.display='none'" class="mt-6 text-xs font-bold text-slate-400 hover:text-red-400 w-full text-center">FECHAR</button>
+        </div>
     </div>
 
     <!-- GATEKEEPER -->
@@ -368,6 +419,11 @@
                 </button>
             </div>
             <div id="loginError" class="text-red-400 mt-6 font-bold text-xs h-5 tracking-wide"></div>
+            
+            <!-- NOVO BOTÃO DISCRETO -->
+            <button onclick="openGatekeeperConfig()" class="mx-auto w-8 h-8 rounded-full bg-white/5 hover:bg-white/20 flex items-center justify-center text-white/30 hover:text-white transition mt-4">
+                <i class="fa-solid fa-gear text-xs"></i>
+            </button>
         </div>
     </div>
 
@@ -432,7 +488,7 @@
                                 <div class="grid grid-cols-2 gap-4 pt-2">
                                     <div>
                                         <label class="text-[10px] font-bold text-slate-500 uppercase mb-1.5 block tracking-wide">Data</label>
-                                        <input type="date" id="ci-date" class="input-prime text-sm" required>
+                                        <input type="date" id="ci-date" class="input-prime text-sm" required onchange="handleDateChange(this.value)">
                                     </div>
                                     <div>
                                         <label class="text-[10px] font-bold text-slate-500 uppercase mb-1.5 block tracking-wide">Horário</label>
@@ -514,16 +570,17 @@
                                 <h2 class="text-xl font-heading font-bold text-[#05364F] flex items-center gap-2">
                                     <i data-lucide="calendar-days" class="w-6 h-6 text-[#C5A059]"></i> Agenda
                                 </h2>
-                                <div class="flex gap-2 items-center">
+                                <div class="flex gap-2 items-center flex-wrap">
                                     <!-- WRAPPER COM ÍCONE DO CALENDÁRIO -->
                                     <div class="date-wrapper">
                                         <i data-lucide="calendar" class="date-icon w-4 h-4"></i>
-                                        <input type="date" id="ag-date" class="bg-white border border-slate-200 rounded-lg py-2 pr-3 text-sm font-bold text-[#05364F] outline-none focus:border-[#00A89A] input-date-custom hover:bg-slate-50 transition" onchange="renderAgenda()">
+                                        <input type="date" id="ag-date" class="bg-white border border-slate-200 rounded-lg py-2 pr-3 text-sm font-bold text-[#05364F] outline-none focus:border-[#00A89A] input-date-custom hover:bg-slate-50 transition" onchange="document.getElementById('ag-month').value=''; renderAgenda()">
                                     </div>
                                     
-                                    <div class="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 transition cursor-pointer" onclick="document.getElementById('ag-full-month').click()">
-                                        <input type="checkbox" id="ag-full-month" onchange="renderAgenda()" class="w-4 h-4 accent-[#00A89A] cursor-pointer">
-                                        <label for="ag-full-month" class="text-xs font-bold text-slate-500 cursor-pointer select-none">Ver Mês</label>
+                                    <!-- Mês Picker (NEW) -->
+                                    <div class="date-wrapper">
+                                        <i data-lucide="calendar-range" class="date-icon w-4 h-4"></i>
+                                        <input type="month" id="ag-month" class="bg-white border border-slate-200 rounded-lg py-2 pr-3 text-sm font-bold text-[#05364F] outline-none focus:border-[#00A89A] input-date-custom hover:bg-slate-50 transition" onchange="document.getElementById('ag-date').value=''; renderAgenda()">
                                     </div>
 
                                     <!-- Novo Dropdown Multi-select -->
@@ -550,13 +607,13 @@
                             
                             <div class="flex-grow overflow-x-auto custom-scrollbar">
                                 <table class="w-full text-left text-sm border-collapse">
-                                    <thead class="bg-[#f8fafc] text-[#64748b] text-[10px] uppercase font-bold tracking-wider border-b border-slate-200">
+                                    <thead class="agenda-thead">
                                         <tr>
-                                            <th class="px-6 py-4 w-28 text-center">Horário</th>
-                                            <th class="px-6 py-4">Aluno</th>
-                                            <th class="px-6 py-4">Treino</th>
-                                            <th class="px-6 py-4 text-center">Resp.</th>
-                                            <th class="px-6 py-4 text-center w-24">Ações</th>
+                                            <th class="w-28 text-center">Horário</th>
+                                            <th>Aluno</th>
+                                            <th>Treino</th>
+                                            <th class="text-center">Resp.</th>
+                                            <th class="text-center w-24">Ações</th>
                                         </tr>
                                     </thead>
                                     <tbody id="agenda-body" class="bg-white"></tbody>
@@ -798,7 +855,10 @@
             let loadedFromCloud = false;
 
             // 1. Setup UI
-            if(hasToken) document.getElementById('manualToken').value = hasToken;
+            if(hasToken) {
+                document.getElementById('manualToken').value = hasToken;
+                document.getElementById('gk-token').value = hasToken;
+            }
             
             // Fix Date to Today (Local) & Set Agenda
             const today = new Date();
@@ -969,6 +1029,24 @@
             return "Sem Nome";
         }
 
+        function getProfColor(name) {
+            if(!name) return 'background: #94a3b8;';
+            const n = name.toUpperCase().trim();
+            if(n.includes('BENAI')) return 'background: #2563eb;'; // Blue
+            if(n.includes('JUAN')) return 'background: #7c3aed;'; // Purple
+            if(n.includes('LUANA')) return 'background: #db2777;'; // Pink
+            if(n.includes('MATHEUS')) return 'background: #059669;'; // Emerald
+            if(n.includes('MURILO')) return 'background: #d97706;'; // Amber
+            
+            // Hash for others
+            let hash = 0;
+            for (let i = 0; i < n.length; i++) {
+                hash = n.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const c = (hash & 0x00FFFFFF).toString(16).toUpperCase();
+            return `background: #${"00000".substring(0, 6 - c.length) + c};`;
+        }
+
         // AUTH
         function checkAuth() {
             if (sessionStorage.getItem("benai_auth") === "true") {
@@ -990,6 +1068,22 @@
                 err.innerText = "Credenciais Inválidas";
                 document.getElementById('passInput').value = "";
                 setTimeout(() => err.innerText = "", 2000);
+            }
+        }
+        
+        // --- NEW: TOKEN NO GATEKEEPER MODAL ---
+        function openGatekeeperConfig() {
+            document.getElementById('gk-config-modal').style.display = 'flex';
+            document.getElementById('gk-token').value = localStorage.getItem(TOKEN_KEY) || '';
+        }
+
+        function saveTokenFromGatekeeper() {
+            const t = document.getElementById('gk-token').value.trim();
+            if(t) {
+                localStorage.setItem(TOKEN_KEY, t);
+                init(); // Trigger sync logic
+                document.getElementById('gk-config-modal').style.display = 'none';
+                alert("Token salvo e sincronização iniciada!");
             }
         }
 
@@ -1017,6 +1111,9 @@
                 const today = new Date();
                 const todayLocal = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
                 document.getElementById('ci-date').value = todayLocal;
+                handleDateChange(todayLocal); // Set initial hours
+            } else {
+                handleDateChange(document.getElementById('ci-date').value);
             }
 
             // Clear search input
@@ -1025,16 +1122,6 @@
             document.getElementById('ci-week-stats').innerHTML = ""; 
             document.getElementById('ci-week-stats').classList.add('hidden');
             
-            const tEl = document.getElementById('ci-time'); 
-            const currentTimeVal = tEl.value;
-            tEl.innerHTML = '';
-            for(let h=6; h<=21; h++) { 
-                const opt = new Option(`${h}:00`, `${h}H`); 
-                if(!currentTimeVal && h === new Date().getHours()) opt.selected = true; 
-                tEl.add(opt); 
-            }
-            if(currentTimeVal) tEl.value = currentTimeVal;
-
             // Populate Profs (Grouped) with Icons
             const pEl = document.getElementById('ci-prof'); 
             pEl.innerHTML = '';
@@ -1056,6 +1143,42 @@
             }
             
             renderWorkoutsSelect();
+        }
+
+        // --- DATE & TIME LOGIC ---
+        function handleDateChange(dateStr) {
+            if(!dateStr) return;
+            const date = new Date(dateStr + 'T00:00:00'); // Force local time interpretation
+            const day = date.getDay(); // 0 = Sunday, 6 = Saturday
+            
+            const tEl = document.getElementById('ci-time');
+            const currentVal = tEl.value;
+            tEl.innerHTML = '';
+
+            if (day === 0) {
+                alert("Domingo não há expediente.");
+                document.getElementById('ci-date').value = "";
+                return;
+            }
+
+            let startH = 6;
+            let endH = 21;
+
+            if (day === 6) { // Saturday logic
+                startH = 8;
+                endH = 11;
+            }
+
+            for(let h=startH; h<=endH; h++) { 
+                const opt = new Option(`${h}:00`, `${h}H`); 
+                if(!currentVal && h === new Date().getHours()) opt.selected = true; 
+                tEl.add(opt); 
+            }
+            // Preserve value if valid
+            if(currentVal) {
+                const numVal = parseInt(currentVal);
+                if(numVal >= startH && numVal <= endH) tEl.value = currentVal;
+            }
         }
 
         // --- STUDENT SEARCH (AUTOCOMPLETE) ---
@@ -1159,7 +1282,11 @@
             const current = wEl.value;
             wEl.innerHTML = '';
             if(!db.workouts) db.workouts = INITIAL_WORKOUTS;
-            db.workouts.forEach(w => wEl.add(new Option(w, w)));
+            
+            // Sort Alphabetically
+            const sortedWorkouts = [...db.workouts].sort((a,b) => a.localeCompare(b));
+            
+            sortedWorkouts.forEach(w => wEl.add(new Option(w, w)));
             wEl.add(new Option('OUTRO...', 'OUTRO'));
             if(current) wEl.value = current;
         }
@@ -1168,8 +1295,10 @@
         function closeWorkoutModal() { document.getElementById('workout-modal').style.display='none'; renderWorkoutsSelect(); }
         function renderWorkoutListUI() {
             const l = document.getElementById('workout-list'); l.innerHTML = '';
-            db.workouts.forEach((w, i) => {
-                l.innerHTML += `<li class="flex justify-between items-center p-3 bg-slate-50 text-sm font-bold text-[#05364F] rounded-lg"><span>${w}</span><div class="flex gap-2"><i data-lucide="pencil" onclick="editWorkout(${i})" class="w-4 h-4 text-blue-400 cursor-pointer hover:text-blue-600"></i><i data-lucide="trash" onclick="deleteWorkout(${i})" class="w-4 h-4 text-red-400 cursor-pointer hover:text-red-600"></i></div></li>`;
+            [...db.workouts].sort().forEach((w, i) => {
+                // Find original index
+                const originalIdx = db.workouts.indexOf(w);
+                l.innerHTML += `<li class="flex justify-between items-center p-3 bg-slate-50 text-sm font-bold text-[#05364F] rounded-lg"><span>${w}</span><div class="flex gap-2"><i data-lucide="pencil" onclick="editWorkout(${originalIdx})" class="w-4 h-4 text-blue-400 cursor-pointer hover:text-blue-600"></i><i data-lucide="trash" onclick="deleteWorkout(${originalIdx})" class="w-4 h-4 text-red-400 cursor-pointer hover:text-red-600"></i></div></li>`;
             });
             lucide.createIcons();
         }
@@ -1243,7 +1372,7 @@
                 let statusClass = "future"; 
                 let workoutLabel = "---";
                 if (checkin) { statusClass = "present"; workoutLabel = checkin.workout; }
-                else if (isoDate < todayISO) { statusClass = "absent"; workoutLabel = "FALTOU"; }
+                else if (isoDate < todayISO) { statusClass = "absent"; workoutLabel = ""; } // Cleared Text
                 
                 if (mode === 'list') {
                     // VERTICAL LIST FOR CHECK-IN PLAYER
@@ -1257,7 +1386,7 @@
                     container.innerHTML += `
                     <div class="wg-box-item ${statusClass}">
                         <div class="day-lbl">${label} ${d.getDate()}</div>
-                        <div class="val-lbl" title="${workoutLabel}">${workoutLabel}</div>
+                        <div class="val-lbl" title="${workoutLabel}">${workoutLabel || '&nbsp;'}</div>
                     </div>`;
                 }
             });
@@ -1310,6 +1439,10 @@
             if(!item) return;
             document.getElementById('ci-edit-id').value = id;
             document.getElementById('ci-date').value = item.isoDate;
+            
+            // Handle day logic for time dropdown
+            handleDateChange(item.isoDate);
+            
             document.getElementById('ci-time').value = item.time;
             
             const s = db.students.find(x => x.id === item.studentId);
@@ -1355,22 +1488,23 @@
         // --- AGENDA & DRAWER ---
         function renderAgenda() {
             const dt = document.getElementById('ag-date').value;
-            const fullMonth = document.getElementById('ag-full-month').checked;
+            // REMOVED: const fullMonth = document.getElementById('ag-full-month').checked;
+            const specificMonth = document.getElementById('ag-month').value; // YYYY-MM
             const term = document.getElementById('ag-search').value.toLowerCase();
 
             let list = [];
 
-            if (fullMonth) {
-                const yearMonth = dt.substring(0, 7); 
-                list = db.checkins.filter(c => {
-                    const isSameMonth = c.isoDate.startsWith(yearMonth);
-                    const dayOfWeek = new Date(c.isoDate + 'T00:00:00').getDay();
-                    return isSameMonth && dayOfWeek !== 0;
-                });
+            if (specificMonth) {
+                // Priority to specific month selector
+                list = db.checkins.filter(c => c.isoDate.startsWith(specificMonth));
             } else {
+                // Day view
                 list = db.checkins.filter(c => c.isoDate === dt);
             }
             
+            // Apply Filters (Sunday remove logic if not filtered already)
+            list = list.filter(c => new Date(c.isoDate + 'T00:00:00').getDay() !== 0);
+
             if(selectedHours.size > 0) list = list.filter(c => selectedHours.has(c.time));
             
             if(term) {
@@ -1394,15 +1528,16 @@
             }
 
             let lastGroup = null; 
-            
+            const isMonthView = !!specificMonth; 
+
             list.forEach(c => {
                 const s = db.students.find(x => x.id === c.studentId);
                 const displayName = getDisplayName(s);
                 const sGender = s ? (s.gender || inferGender(s.firstName)) : 'M';
                 const genderIcon = sGender === 'F' ? '<i class="fa-solid fa-person-dress text-pink-400 mr-2 text-lg"></i>' : '<i class="fa-solid fa-person text-blue-400 mr-2 text-lg"></i>';
                 
-                let groupKey = fullMonth ? c.isoDate : c.time;
-                let displayGroup = fullMonth ? c.isoDate.split('-').reverse().slice(0,2).join('/') : c.time;
+                let groupKey = isMonthView ? c.isoDate : c.time;
+                let displayGroup = isMonthView ? c.isoDate.split('-').reverse().slice(0,2).join('/') : c.time;
 
                 if(groupKey !== lastGroup) {
                     tb.innerHTML += `<tr class="time-separator-row"><td colspan="5"><div class="time-separator fade-in-up"><div class="time-line"></div><div class="time-pill">${displayGroup}</div><div class="time-line"></div></div></td></tr>`;
@@ -1414,19 +1549,23 @@
                 let isKids = c.time === '14H';
                 if(isKids) rowClass += " row-kids";
 
-                let timeCell = c.time;
+                let timeCell = `<div class="agenda-time-box">${c.time}</div>`;
                 if(isKids) timeCell = '<span class="kids-badge">PRIME KIDS</span>'; 
-                if (fullMonth && !isKids) timeCell = `${c.time}`;
+                if (isMonthView && !isKids) timeCell = `${c.time}`;
 
                 const drawerId = `drawer-${c.id}`;
                 const gridId = `wg-agenda-${c.id}`;
+                
+                // PROF BADGE
+                const profColor = getProfColor(c.prof);
+                const profBadge = `<span class="prof-badge" style="${profColor}">${c.prof}</span>`;
 
                 tb.innerHTML += `
                 <tr class="${rowClass}" onclick="toggleDrawer('${c.id}', '${c.studentId}', '${gridId}')">
-                    <td class="px-6 py-4 text-center border-r border-slate-200 agenda-time bg-slate-50/30 text-slate-600">${timeCell}</td>
+                    <td class="px-6 py-4 text-center border-r border-slate-200 agenda-time bg-slate-50/30">${timeCell}</td>
                     <td class="px-6 py-4 font-bold text-[#05364F] bg-white/20">${genderIcon}${displayName}</td>
                     <td class="px-6 py-4 bg-teal-50/10 border-l border-teal-100"><span class="agenda-workout">${c.workout}</span></td>
-                    <td class="px-6 py-4 text-center font-bold text-xs text-slate-500 bg-amber-50/10 border-l border-amber-100">${c.prof}</td>
+                    <td class="px-6 py-4 text-center border-l border-slate-100">${profBadge}</td>
                     <td class="px-6 py-4 text-center flex justify-center gap-3 bg-white/30 border-l border-slate-100">
                         <button onclick="openEditCheckin(event, '${c.id}')" class="text-blue-400 hover:text-blue-600 p-2 hover:bg-blue-50 rounded-full transition"><i data-lucide="pencil" class="w-4 h-4"></i></button>
                         <button onclick="removeCheckin(event, '${c.id}')" class="text-red-300 hover:text-red-500 p-2 hover:bg-red-50 rounded-full transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
