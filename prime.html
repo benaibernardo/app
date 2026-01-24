@@ -51,19 +51,9 @@
         ::-webkit-scrollbar-thumb { background: var(--secondary); border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #008f83; }
 
-        /* --- CLOUD SHIELD (Load Blocker) --- */
-        #cloud-shield {
-            position: fixed; inset: 0; z-index: 99999;
-            background: #0f172a; color: white;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 0.5s ease;
-        }
-        .shield-spinner { width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.1); border-top-color: var(--secondary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
         /* --- GATEKEEPER (Login) --- */
         #gatekeeper { 
-            position: fixed; inset: 0; z-index: 99990; 
+            position: fixed; inset: 0; z-index: 99999; 
             background: radial-gradient(circle at center, #05364F 0%, #020617 100%);
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
         }
@@ -337,13 +327,6 @@
     </style>
 </head>
 <body>
-
-    <!-- CLOUD SHIELD (Load Blocker) -->
-    <div id="cloud-shield">
-        <div class="shield-spinner"></div>
-        <h2 class="text-xl font-bold font-heading tracking-widest uppercase">Sincronizando</h2>
-        <p class="text-xs text-slate-400 mt-2">Buscando versão mais recente...</p>
-    </div>
 
     <!-- GATEKEEPER -->
     <div id="gatekeeper">
@@ -718,14 +701,9 @@
                     <button onclick="removeToken()" class="flex-1 py-2 text-xs font-bold text-red-500 bg-red-50 rounded-lg hover:bg-red-100 transition">DESCONECTAR</button>
                 </div>
                 <div class="h-px bg-slate-100 my-4"></div>
-                <button onclick="backupData()" class="w-full py-3 rounded-xl bg-[#05364F] text-white font-bold hover:bg-[#032435] flex justify-center gap-2 transition hover:-translate-y-1 shadow-md"><i data-lucide="download" class="w-4 h-4"></i> FAZER BACKUP (JSON)</button>
-                <label class="w-full py-3 rounded-xl border-2 border-slate-200 text-slate-600 font-bold hover:bg-slate-50 cursor-pointer flex justify-center gap-2 transition"><i data-lucide="upload" class="w-4 h-4"></i> RESTAURAR BACKUP <input type="file" id="fileIn" hidden onchange="restoreData(this)"></label>
-                
-                <!-- BOTÃO DE RESGATE (NOVO) -->
-                <button onclick="manualRescue()" class="w-full py-3 rounded-xl bg-amber-100 text-amber-700 border border-amber-200 font-bold hover:bg-amber-200 flex justify-center gap-2 transition text-xs mt-4">
-                    <i data-lucide="life-buoy" class="w-4 h-4"></i> RESGATE DE EMERGÊNCIA
-                </button>
-                <p class="text-[10px] text-amber-600 mt-1">Use se os dados não aparecerem automaticamente.</p>
+                <button onclick="forceSync()" class="w-full py-3 rounded-xl bg-[#00A89A] text-white font-bold hover:bg-teal-600 flex justify-center gap-2 transition hover:-translate-y-1 shadow-md"><i data-lucide="cloud-download" class="w-4 h-4"></i> BAIXAR</button>
+                <button onclick="backupData()" class="w-full py-3 rounded-xl bg-[#05364F] text-white font-bold hover:bg-[#032435] flex justify-center gap-2 transition hover:-translate-y-1 shadow-md"><i data-lucide="download" class="w-4 h-4"></i> BACKUP</button>
+                <label class="w-full py-3 rounded-xl border-2 border-slate-200 text-slate-600 font-bold hover:bg-slate-50 cursor-pointer flex justify-center gap-2 transition"><i data-lucide="upload" class="w-4 h-4"></i> RESTAURAR <input type="file" id="fileIn" hidden onchange="restoreData(this)"></label>
             </div>
             <button onclick="document.getElementById('modal-cloud').style.display='none'" class="mt-6 text-xs font-bold text-slate-400 hover:text-slate-600">FECHAR</button>
         </div>
@@ -759,22 +737,17 @@
     <div id="toast" class="fixed bottom-6 right-6 bg-[#05364F] text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-4 z-[110] translate-x-[150%] transition-transform duration-300 border-l-4 border-[#C5A059]"><i data-lucide="check-circle" class="w-6 h-6 text-[#C5A059]"></i> <span id="toast-msg" class="font-bold"></span></div>
 
     <script>
-        // --- MASTER CONFIG (BENAI STANDARD PROTOCOL) ---
-        const DB_KEY = 'BENAI_PRIME_MASTER'; // Chave Mestra
-        const TOKEN_KEY = 'BENAI_GLOBAL_TOKEN'; // Token Global
+        const DB_KEY = 'prime_main_db'; 
+        const TOKEN_KEY = 'BENAI_GLOBAL_TOKEN'; 
         const GIST_DESC = 'BENAI_WORK_DB';
-        const GIST_FILENAME = 'prime_db.json';
-        
-        const OLD_DB_KEYS = ['prime_main_db']; // For migration
-
         const MASTER_PIN = "16359001";
         const STAFF_USER = "PRIME";
         const STAFF_PASS = "123";
         
-        let db = { students: [], checkins: [], professors: [], workouts: [], lastUpdated: 0 };
+        let db = { students: [], checkins: [], professors: [], workouts: [] };
         let charts = {}; 
         let gistId = null;
-        let selectedHours = new Set();
+        let selectedHours = new Set(); // For multi-select filter
         
         const INITIAL_PROFS = [
             {name: 'BENJAMIN', role: 'PRO'}, 
@@ -790,46 +763,37 @@
             {"id":"2","firstName":"LINDAMIR","lastName":"FLORIANO","nickname":"MIME","gender":"F","objective":"EMAGRECIMENTO","limitations":"NENHUMA","notes":"","plan":"3X"},
         ];
 
+        // COMMON GENDER INDICATORS (Exceptions & Suffixes)
         const FEMALE_NAMES = ['alice','ana','beatriz','bianca','camila','carolina','clara','daniela','eduarda','elena','elisa','fernanda','gabriela','helena','isabela','julia','larissa','laura','leticia','luana','luiza','manuela','maria','mariana','melissa','natalia','nicole','olivia','rafaela','rebeca','sarah','sophia','valentina','vitoria','yasmin','amanda','bruna','jessica','juliana','marcela','priscila','renata','vanessa','talita','lindamir','simone','ivone','solange'];
         
-        // --- INIT LOGIC (SECURITY PROTOCOL) ---
         async function init() {
-            const shield = document.getElementById('cloud-shield');
-            const hasToken = localStorage.getItem(TOKEN_KEY);
-            let loadedFromCloud = false;
-
-            // 1. Setup UI
-            if(hasToken) document.getElementById('manualToken').value = hasToken;
+            // 1. Fix Date (Timezone safe)
+            const today = new Date();
+            const offset = today.getTimezoneOffset();
+            const todayLocal = new Date(today.getTime() - (offset*60*1000)).toISOString().split('T')[0];
+            const dateEl = document.getElementById('ag-date');
+            const ciDateEl = document.getElementById('ci-date');
             
-            // 2. Cloud First
-            if(hasToken) {
-                updateCloudStatus('syncing');
-                try {
-                    loadedFromCloud = await forceCloudLoad();
-                } catch(e) { console.error("Cloud error", e); updateCloudStatus('error'); }
+            if(dateEl) dateEl.value = todayLocal;
+            if(ciDateEl) ciDateEl.value = todayLocal;
+            
+            // 2. Auth & Token Check
+            const t = localStorage.getItem(TOKEN_KEY);
+            if(t && document.getElementById('manualToken')) document.getElementById('manualToken').value = t;
+
+            // 3. TRY CLOUD FIRST (Blocking)
+            if(t) {
+                await syncCloud(); 
+            } else {
+                loadLocal(); 
+                renderAll();
             }
 
-            // 3. Local Fallback (SMART)
-            if(!loadedFromCloud) {
-                loadLocal();
-                updateCloudStatus('offline');
-            }
-
-            // 4. Close Shield
-            shield.style.opacity = '0';
-            setTimeout(() => shield.style.display = 'none', 500);
-
-            // 5. App Setup
-            if (loadedFromCloud) toast('Nuvem Sincronizada!');
-            else if (hasToken) toast('Offline (Usando cache)');
-
+            // 4. Setup UI
             lucide.createIcons();
             setTab('daily');
             setupTimeDropdown(); 
-            setupReportFilter(); 
-            setupCheckinForm(); 
-            
-            // Clock
+            setupReportFilter(); // Ensures report dropdown is populated
             setInterval(() => {
                 const el = document.getElementById('live-clock');
                 if(el) el.innerText = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
@@ -838,152 +802,61 @@
             Chart.defaults.font.family = "'Inter', sans-serif";
             Chart.defaults.color = '#94a3b8';
             Chart.defaults.scale.grid.color = 'rgba(255,255,255,0.05)';
+            
+            // Initial Time Populate if not already
+            const tEl = document.getElementById('ci-time');
+            if(tEl && tEl.options.length === 0) {
+                 for(let h=6; h<=21; h++) {
+                     const opt = new Option(`${h}:00`, `${h}H`);
+                     if(h === new Date().getHours()) opt.selected = true;
+                     tEl.add(opt);
+                 }
+            }
         }
 
-        // --- DATA HANDLING (SMARTER LOAD) ---
         function loadLocal() {
-            let loaded = false;
-            const saved = localStorage.getItem(DB_KEY);
-            
-            if(saved) {
-                try {
-                    const parsed = JSON.parse(saved);
-                    // Only accept if it has actual data (not just defaults) or user modified it
-                    if(parsed.students && parsed.students.length > 0 && parsed.students[0].id !== "1") { 
-                        db = parsed;
-                        loaded = true;
-                    } else if (parsed.checkins && parsed.checkins.length > 0) {
-                        db = parsed;
-                        loaded = true;
-                    }
-                } catch(e) {}
-            }
-
-            if(!loaded) {
-                // FORCE MIGRATION SEARCH
-                for(const key of OLD_DB_KEYS) {
-                    const old = localStorage.getItem(key);
-                    if(old) {
-                        try {
-                            const parsedOld = JSON.parse(old);
-                            // Validate content
-                            if(parsedOld.students && parsedOld.students.length > 0) {
-                                console.log("Recovering from Legacy Key: " + key);
-                                db = parsedOld;
-                                migrateStructure();
-                                localStorage.setItem(DB_KEY, JSON.stringify(db)); 
-                                toast("Dados recuperados do cache antigo!");
-                                loaded = true;
-                                break;
-                            }
-                        } catch(e) {}
-                    }
-                }
-            }
-            
-            if(!loaded) {
-                // Fallback to default ONLY if everything else failed
+            let saved = localStorage.getItem(DB_KEY);
+            if (saved) {
+                db = JSON.parse(saved);
+                if(!db.workouts || db.workouts.length === 0) db.workouts = INITIAL_WORKOUTS;
+                migrateData();
+            } else {
                 db = { students: INITIAL_STUDENTS, checkins: [], professors: INITIAL_PROFS, workouts: INITIAL_WORKOUTS };
-                // DON'T SAVE DEFAULT TO DB_KEY YET to avoid overwriting possibility on refresh
             }
         }
 
-        function manualRescue() {
-            // Function for the panic button
-            if(confirm("Isso tentará buscar dados antigos do navegador. Seus dados atuais não serão apagados, apenas mesclados/substituídos se encontrarmos backup. Continuar?")) {
-                const old = localStorage.getItem('prime_main_db');
-                if(old) {
-                    try {
-                        db = JSON.parse(old);
-                        migrateStructure();
-                        saveDB();
-                        alert("Sucesso! Dados recuperados da versão anterior.");
-                        location.reload();
-                    } catch(e) { alert("Erro ao ler dados antigos."); }
-                } else {
-                    alert("Nenhum dado antigo encontrado neste navegador.");
-                }
-            }
-        }
-
-        function migrateStructure() {
-            if(!db.professors || db.professors.length === 0) db.professors = INITIAL_PROFS;
-            if(!db.workouts || db.workouts.length === 0) db.workouts = INITIAL_WORKOUTS;
+        function migrateData() {
+            let modified = false;
             
-            // Fix string professors
+            // 1. Convert String Professors to Objects
             if (db.professors.length > 0 && typeof db.professors[0] === 'string') {
                 db.professors = db.professors.map(name => {
-                    let role = 'EST';
+                    let role = 'EST'; // Default
                     if(['BENJAMIN','JUAN','LUANA'].includes(name.toUpperCase())) role = 'PRO';
                     return { name, role };
                 });
+                modified = true;
             }
-        }
 
-        async function forceCloudLoad() {
-            const token = localStorage.getItem(TOKEN_KEY);
-            if (!token) return false;
-            
-            const headers = { 'Authorization': `token ${token}` };
-            try {
-                const res = await fetch('https://api.github.com/gists', { headers });
-                if (!res.ok) return false;
-                
-                const gists = await res.json();
-                const found = gists.find(g => g.description === GIST_DESC);
-                
-                if (found) {
-                    gistId = found.id;
-                    const r = await fetch(found.url, { headers });
-                    const data = await r.json();
-                    
-                    if (data.files[GIST_FILENAME]) {
-                        const cloudData = JSON.parse(data.files[GIST_FILENAME].content);
-                        db = cloudData;
-                        migrateStructure();
-                        localStorage.setItem(DB_KEY, JSON.stringify(db));
-                        return true;
-                    }
+            // 2. Auto Correct Genders & Split Names
+            db.students.forEach(s => {
+                if(s.name && !s.firstName) {
+                    const parts = s.name.split(' ');
+                    s.firstName = parts[0];
+                    s.lastName = parts.slice(1).join(' ');
+                    if(!s.lastName) s.lastName = ""; 
+                    delete s.name; 
+                    modified = true;
                 }
-            } catch (e) { console.error("Cloud Error", e); return false; }
-            return false;
-        }
-
-        async function saveDB() {
-            db.lastUpdated = Date.now();
-            localStorage.setItem(DB_KEY, JSON.stringify(db));
-            
-            // Sync logic
-            const token = localStorage.getItem(TOKEN_KEY);
-            if(token) {
-                updateCloudStatus('syncing');
-                try {
-                    // Check if Gist ID exists
-                    if(!gistId) {
-                         const s = await fetch('https://api.github.com/gists',{headers:{'Authorization':`token ${token}`}});
-                         const g = await s.json();
-                         const f = g.find(x=>x.description===GIST_DESC);
-                         if(f) gistId = f.id;
-                    }
-
-                    const filesPayload = {};
-                    filesPayload[GIST_FILENAME] = { content: JSON.stringify(db) };
-                    const body = JSON.stringify({ description: GIST_DESC, public: false, files: filesPayload });
-                    
-                    let url = 'https://api.github.com/gists';
-                    let method = 'POST';
-                    if(gistId) { url += '/' + gistId; method = 'PATCH'; }
-
-                    await fetch(url, { method, headers: {'Authorization': `token ${token}`}, body });
-                    updateCloudStatus('ok');
-                } catch(e) {
-                    console.error(e);
-                    updateCloudStatus('error');
+                if (s.firstName) {
+                    const inferred = inferGender(s.firstName);
+                    if (s.gender !== inferred) { s.gender = inferred; modified = true; }
                 }
-            }
+            });
+
+            if(modified) saveDB();
         }
 
-        // --- HELPERS ---
         function inferGender(name) {
             const n = name.toLowerCase().trim();
             if (FEMALE_NAMES.includes(n)) return 'F';
@@ -998,12 +871,17 @@
             return "Sem Nome";
         }
 
+        function renderAll() {
+            updateStats();
+            renderAgenda();
+            renderStudentsTable();
+            renderWorkoutsSelect();
+        }
+
         // AUTH
         function checkAuth() {
             if (sessionStorage.getItem("benai_auth") === "true") {
-                document.getElementById('gatekeeper').style.display = 'none';
-                document.getElementById('app-content').style.display = 'block';
-                init(); // Start Protocol
+                unlockApp();
             }
         }
 
@@ -1014,7 +892,7 @@
 
             if (pass === MASTER_PIN || (user === STAFF_USER && pass === STAFF_PASS)) {
                 sessionStorage.setItem("benai_auth", "true");
-                checkAuth();
+                unlockApp();
             } else {
                 err.innerText = "Credenciais Inválidas";
                 document.getElementById('passInput').value = "";
@@ -1022,7 +900,13 @@
             }
         }
 
-        checkAuth(); // Run on load
+        function unlockApp() {
+            document.getElementById('gatekeeper').style.display = 'none';
+            document.getElementById('app-content').style.display = 'block';
+            init();
+        }
+
+        checkAuth();
 
         function setTab(id) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
@@ -1068,7 +952,8 @@
             const pEl = document.getElementById('ci-prof'); 
             pEl.innerHTML = '';
             
-            if(!db.professors) db.professors = [];
+            // Fallback if migration missed or array is empty
+            if(!db.professors || db.professors.length === 0) db.professors = INITIAL_PROFS;
 
             const profs = db.professors.filter(p => p.role === 'PRO').sort((a,b) => a.name.localeCompare(b.name));
             const ests = db.professors.filter(p => p.role === 'EST').sort((a,b) => a.name.localeCompare(b.name));
@@ -1710,13 +1595,15 @@
         }
 
         // --- UTILS ---
+        function saveDB() { localStorage.setItem(DB_KEY, JSON.stringify(db)); pushCloud(); }
         function toast(msg) { const t=document.getElementById('toast'); document.getElementById('toast-msg').innerText=msg; t.style.transform='translateX(0)'; setTimeout(()=>t.style.transform='translateX(150%)', 3000); }
         function toggleCustom(val) { document.getElementById('ci-custom').classList.toggle('hidden', val !== 'OUTRO'); }
         function openCloudModal() { document.getElementById('modal-cloud').style.display='flex'; }
         
         function backupData() { const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(db)],{type:"application/json"})); a.download=`prime_backup.json`; a.click(); }
         function restoreData(i) { const r=new FileReader(); r.onload=e=>{ try{ db=JSON.parse(e.target.result); saveDB(); location.reload(); }catch{alert('Erro');} }; r.readAsText(i.files[0]); }
-        function saveManualToken() { const t = document.getElementById('manualToken').value.trim(); if(t) { localStorage.setItem(TOKEN_KEY, t); toast('Token Salvo'); init(); } }
+        function forceSync() { syncCloud().then(() => { renderAll(); toast('Sincronizado'); }); }
+        function saveManualToken() { const t = document.getElementById('manualToken').value.trim(); if(t) { localStorage.setItem(TOKEN_KEY, t); toast('Token Salvo'); syncCloud(); } }
         function removeToken() { 
             if(confirm("Deseja desconectar? O sistema ficará offline.")) {
                 localStorage.removeItem(TOKEN_KEY);
@@ -1729,6 +1616,39 @@
         function updateCloudStatus(st) { 
             const dot = document.getElementById('statusDot'); if(!dot) return;
             if(st === 'ok') { dot.className = 'dot online'; } else if (st === 'syncing') { dot.className = 'dot sync'; } else { dot.className = 'dot offline'; }
+        }
+
+        async function syncCloud() {
+            const token = localStorage.getItem(TOKEN_KEY); 
+            if(!token) return updateCloudStatus('error'); 
+            updateCloudStatus('syncing');
+            try {
+                const s = await fetch('https://api.github.com/gists',{headers:{'Authorization':`token ${token}`}});
+                const g = await s.json();
+                const f = g.find(x=>x.description===GIST_DESC);
+                if(f) {
+                    gistId = f.id;
+                    const r = await fetch(`https://api.github.com/gists/${gistId}`,{headers:{'Authorization':`token ${token}`}});
+                    const j = await r.json();
+                    if(j.files["prime_db.json"]) {
+                        db = JSON.parse(j.files["prime_db.json"].content);
+                        localStorage.setItem(DB_KEY, JSON.stringify(db));
+                        renderAll(); // FORCE UI UPDATE AFTER LOAD
+                    }
+                }
+                updateCloudStatus('ok');
+            } catch(e) { console.error(e); updateCloudStatus('error'); }
+        }
+
+        async function pushCloud() {
+            const token = localStorage.getItem(TOKEN_KEY); if(!token) return; updateCloudStatus('syncing');
+            try {
+                let url = 'https://api.github.com/gists'; let method = 'POST'; 
+                if(gistId) { url += '/'+gistId; method = 'PATCH'; }
+                const body = JSON.stringify({description:GIST_DESC, public:false, files:{'prime_db.json':{content:JSON.stringify(db)}}});
+                await fetch(url, {method, headers:{'Authorization':`token ${token}`}, body});
+                updateCloudStatus('ok');
+            } catch(e) { updateCloudStatus('error'); }
         }
 
     </script>
