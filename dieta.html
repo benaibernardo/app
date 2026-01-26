@@ -7,601 +7,948 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <script>
-        (function() {
-            // --- CONFIGURAÇÃO DA SENHA ---
-            const PIN_CORRETO = "16359001"; 
-            const type = sessionStorage.getItem("benai_access_type");
-            if (type === "master" || type === "guest" || sessionStorage.getItem("benai_access_granted") === "true") return;
-
-            document.write(`
-                <style>
-                    body { visibility: hidden; overflow: hidden; }
-                    #gatekeeper {
-                        visibility: visible; position: fixed; inset: 0;
-                        background: #0f172a; color: white; z-index: 99999;
-                        display: flex; flex-direction: column; align-items: center; justify-content: center;
-                        font-family: 'Outfit', sans-serif;
-                    }
-                    .pin-box { text-align: center; animation: fadeIn 0.5s ease; width: 90%; max-width: 350px; }
-                    .pin-inp { 
-                        padding: 15px; font-size: 1.5rem; text-align: center; 
-                        border-radius: 15px; border: 2px solid rgba(56, 189, 248, 0.3); outline: none; margin-top: 25px;
-                        background: rgba(255,255,255,0.05); color: white; letter-spacing: 4px; width: 100%;
-                        transition: 0.3s; 
-                    }
-                    .pin-inp:focus { border-color: #38bdf8; box-shadow: 0 0 20px rgba(56, 189, 248, 0.2); }
-                    .pin-msg { color: #f87171; margin-top: 15px; font-weight: 600; font-size: 0.9rem; height: 20px; }
-                    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-                </style>
-                <div id="gatekeeper">
-                    <div class="pin-box">
-                        <i class="fa-solid fa-shield-halved" style="font-size: 3rem; color: #38bdf8; margin-bottom: 15px;"></i>
-                        <h2 style="font-size: 1.5rem; letter-spacing: -1px;">Sistema Protegido</h2>
-                        <p style="opacity: 0.6; font-size: 0.85rem;">Insira o código de 8 dígitos</p>
-                        <input type="password" class="pin-inp" maxlength="8" placeholder="********" inputmode="numeric" autocomplete="off" onkeyup="verifyPin(this)">
-                        <div class="pin-msg" id="pin-error"></div>
-                    </div>
-                </div>
-            `);
-
-            window.verifyPin = function(el) {
-                if (el.value.length === 8) {
-                    if (el.value === PIN_CORRETO) {
-                        sessionStorage.setItem("benai_access_granted", "true");
-                        location.reload();
-                    } else {
-                        document.getElementById("pin-error").innerText = "Código Incorreto";
-                        el.value = "";
-                        if(navigator.vibrate) navigator.vibrate(200);
-                    }
-                }
-            };
-        })();
-    </script>
-
     <style>
         :root {
-            --bg: #fdfbf7; --card: #ffffff; --text: #334155;
-            --primary: #15803d; --accent: #22c55e; --border: #e2e8f0;
-            --danger: #ef4444; --success: #10b981;
-            --prot-bg: #eff6ff; --prot-text: #1d4ed8;
-            --carb-bg: #fff7ed; --carb-text: #c2410c;
-            --fat-bg: #fefce8;  --fat-text: #a16207;
-            --veg-bg: #f0fdf4;  --veg-text: #15803d;
-            --radius: 20px; --font: 'Plus Jakarta Sans', sans-serif; --font-num: 'Outfit', sans-serif;
-            --shadow: 0 8px 30px rgba(0,0,0,0.04);
+            /* Organic Fresh Theme */
+            --bg: #f8fafc; 
+            --card: #ffffff; 
+            --text: #334155;
+            --text-muted: #94a3b8;
+            
+            --primary: #16a34a; /* Green 600 */
+            --primary-light: #dcfce7;
+            
+            --accent: #ea580c; /* Orange 600 */
+            --accent-light: #ffedd5;
+            
+            --border: #e2e8f0;
+            --danger: #ef4444; 
+            
+            /* Food Type Colors */
+            --prot: #3b82f6; --prot-bg: #eff6ff;
+            --carb: #eab308; --carb-bg: #fefce8;
+            --fat: #f59e0b; --fat-bg: #fffbeb;
+            --veg: #22c55e; --veg-bg: #f0fdf4;
+            --fruit: #ec4899; --fruit-bg: #fdf2f8;
+            
+            --radius: 16px; 
+            --font: 'Plus Jakarta Sans', sans-serif; 
+            --font-num: 'Outfit', sans-serif;
+            --shadow: 0 2px 10px -2px rgba(0,0,0,0.05);
+        }
+
+        /* Dark Theme Overrides */
+        [data-theme="dark"] {
+            --bg: #020617; 
+            --card: #1e293b; 
+            --text: #f1f5f9;
+            --text-muted: #64748b;
+            
+            --primary: #4ade80; /* Green 400 */
+            --primary-light: rgba(22, 163, 74, 0.2);
+            
+            --accent: #fb923c; /* Orange 400 */
+            --accent-light: rgba(234, 88, 12, 0.2);
+            
+            --border: #334155;
+            --shadow: 0 10px 30px -5px rgba(0,0,0,0.3);
+            
+            --prot: #60a5fa; --prot-bg: rgba(59, 130, 246, 0.1);
+            --carb: #facc15; --carb-bg: rgba(234, 179, 8, 0.1);
+            --fat: #fbbf24; --fat-bg: rgba(245, 158, 11, 0.1);
+            --veg: #4ade80; --veg-bg: rgba(34, 197, 94, 0.1);
+            --fruit: #f472b6; --fruit-bg: rgba(236, 72, 153, 0.1);
         }
 
         * { margin:0; padding:0; box-sizing:border-box; font-family:var(--font); outline:none; -webkit-tap-highlight-color:transparent; }
-        body { background:var(--bg); color:var(--text); padding:20px 20px 100px 20px; font-size:14px; }
-        .container { max-width:600px; margin:0 auto; animation:fadeIn 0.5s ease; }
+        body { background:var(--bg); color:var(--text); padding:0; font-size:13px; transition: background 0.3s, color 0.3s; padding-bottom: 80px; }
+        
+        .container { max-width:600px; margin:0 auto; padding: 15px; animation:fadeIn 0.5s ease; }
 
         /* HEADER */
-        header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
-        .logo { font-size:1.4rem; font-weight:800; color:var(--primary); letter-spacing:-0.5px; display:flex; align-items:center; gap:10px; font-family:var(--font-num); }
-        .logo i { background:var(--prot-bg); color:var(--primary); padding:8px; border-radius:12px; font-size:1rem; }
+        header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; sticky: top; }
+        .logo { font-size:1.2rem; font-weight:800; color:var(--primary); letter-spacing:-0.5px; display:flex; align-items:center; gap:8px; font-family:var(--font-num); }
+        .logo i { background:var(--primary-light); color:var(--primary); padding:6px; border-radius:10px; font-size:0.9rem; }
         
-        .header-actions { display:flex; gap:10px; }
-        .action-btn { width:42px; height:42px; border-radius:12px; border:1px solid var(--border); background:var(--card); color:#64748b; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:0.2s; box-shadow:var(--shadow); position: relative; }
+        .header-actions { display:flex; gap:8px; }
+        .action-btn { width:38px; height:38px; border-radius:10px; border:1px solid var(--border); background:var(--card); color:var(--text); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:0.2s; box-shadow:var(--shadow); position: relative; }
         .action-btn:hover { color:var(--primary); border-color:var(--primary); transform:translateY(-2px); }
-        .action-btn.sync { color:var(--accent); background:rgba(34, 197, 94, 0.05); }
+        .action-btn.edit-active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 0 10px var(--primary-light); }
 
-        .cloud-dot { width: 8px; height: 8px; border-radius: 50%; background: #cbd5e1; position:absolute; top:8px; right:8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
-        .cloud-dot.ok { background: var(--success); }
-        .cloud-dot.error { background: var(--danger); }
-        .cloud-dot.sync { background: var(--accent); animation: pulse 1s infinite; }
+        /* TAB NAVIGATION */
+        .tabs { display: flex; background: var(--card); padding: 4px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 20px; box-shadow: var(--shadow); }
+        .tab-item { flex: 1; text-align: center; padding: 10px; border-radius: 10px; font-weight: 700; color: var(--text-muted); cursor: pointer; transition: 0.2s; font-size: 0.85rem; }
+        .tab-item.active { background: var(--primary); color: white; shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        [data-theme="dark"] .tab-item.active { color: #020617; }
 
-        /* VIEWS */
-        .view { display: none; }
-        .view.active { display: block; animation: fadeIn 0.3s ease; }
-
-        /* CARDS */
-        .meta-card { background:linear-gradient(135deg, #15803d 0%, #166534 100%); color:white; border-radius:24px; padding:25px; margin-bottom:25px; box-shadow:0 10px 25px rgba(21, 128, 61, 0.25); position:relative; overflow:hidden; }
-        .meta-lbl { font-size:0.85rem; opacity:0.9; font-weight:600; margin-bottom:5px; display:block; text-transform:uppercase; }
-        .meta-val { font-size:2.5rem; font-weight:800; line-height:1; font-family:var(--font-num); }
-        .meta-sub { display:flex; gap:15px; margin-top:15px; }
-        .tag-status { background:rgba(255,255,255,0.2); padding:6px 12px; border-radius:10px; font-weight:700; font-size:0.85rem; backdrop-filter:blur(5px); display:flex; align-items:center; gap:6px; }
-
-        .day-toggle { display:flex; background:white; padding:5px; border-radius:16px; margin-bottom:20px; border:1px solid var(--border); box-shadow:var(--shadow); }
-        .toggle-btn { flex:1; padding:12px; text-align:center; font-weight:700; color:#64748b; border-radius:12px; cursor:pointer; font-size:0.9rem; transition:0.2s; }
-        .toggle-btn.active { background:var(--primary); color:white; box-shadow:0 4px 10px rgba(21, 128, 61, 0.2); }
-
-        /* MEALS */
-        .meal-card { background:var(--card); border-radius:22px; margin-bottom:20px; box-shadow:var(--shadow); border:1px solid var(--border); overflow:hidden; }
-        .meal-head { padding:15px 20px; background:#f8fafc; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
-        .mh-left { display:flex; align-items:center; gap:10px; }
-        .meal-name { font-weight:800; color:#1e293b; font-size:1rem; }
-        .meal-time { font-weight:700; color:#64748b; font-size:0.8rem; background:white; padding:4px 10px; border-radius:8px; border:1px solid var(--border); font-family:var(--font-num); }
-
-        .food-item { padding:14px 20px; border-bottom:1px dashed #f1f5f9; display:flex; justify-content:space-between; align-items:center; }
-        .food-item:last-child { border:none; }
-        .fi-main { display:flex; align-items:center; gap:12px; }
-        .fi-icon { font-size:1.4rem; width:30px; text-align:center; }
-        .fi-info { display:flex; flex-direction:column; }
-        .fi-name { font-weight:700; color:#334155; font-size:0.95rem; }
-        .fi-macro { font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; opacity:0.6; }
-        .fi-actions { display:flex; align-items:center; gap:8px; }
-        .fi-qty { font-weight:800; padding:6px 12px; border-radius:10px; font-size:0.9rem; min-width:60px; text-align:center; font-family:var(--font-num); }
+        /* MEAL CARD */
+        .meal-card { background: var(--card); border-radius: 16px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 15px; box-shadow: var(--shadow); transition: 0.2s; position: relative; }
         
-        .prot .fi-qty { background:var(--prot-bg); color:var(--prot-text); }
-        .carb .fi-qty { background:var(--carb-bg); color:var(--carb-text); }
-        .fat .fi-qty { background:var(--fat-bg); color:var(--fat-text); }
-        .veg .fi-qty { background:var(--veg-bg); color:var(--veg-text); }
-
-        .btn-swap { width:32px; height:32px; border-radius:10px; background:white; border:1px solid var(--border); color:#94a3b8; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:0.2s; }
-        .btn-swap:hover { border-color:var(--accent); color:var(--accent); background:#f0fdf4; }
-
-        /* EVOLUTION */
-        .stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px; }
-        .stat-card { background:white; padding:15px; border-radius:18px; text-align:center; border:1px solid var(--border); box-shadow:var(--shadow); }
-        .stat-inp { width:100%; border:none; font-size:1.8rem; font-weight:800; text-align:center; color:var(--primary); background:transparent; font-family:var(--font-num); }
+        /* NEW MEAL HEADER DESIGN - COMPACT */
+        .meal-header { 
+            background: linear-gradient(to right, var(--bg), var(--card)); 
+            padding: 10px 15px; 
+            border-bottom: 1px solid var(--border); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        .meal-title { 
+            font-weight: 800; 
+            font-family: var(--font-num); 
+            font-size: 1rem; 
+            color: var(--primary); 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .meal-right { display: flex; align-items: center; gap: 8px; }
         
-        .json-box { width:100%; height:120px; background:#1e293b; color:#a5b4fc; border-radius:12px; padding:15px; font-family:monospace; font-size:0.85rem; border:none; margin-bottom:15px; resize:none; }
-        .btn-full { width:100%; padding:16px; background:var(--primary); color:white; border:none; border-radius:16px; font-weight:800; font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:10px; box-shadow:0 5px 15px rgba(21, 128, 61, 0.3); }
+        .meal-time { 
+            font-size: 0.85rem; 
+            font-weight: 800; 
+            color: var(--text); 
+            background: var(--primary-light); 
+            padding: 4px 10px; 
+            border-radius: 8px; 
+            border: 1px solid var(--border); 
+            font-family: var(--font-num);
+        }
+        [data-theme="dark"] .meal-time { color: var(--primary); }
+        
+        .meal-body { padding: 0; }
+
+        /* FOOD ITEM */
+        .food-row-container { border-bottom: 1px dashed var(--border); transition:0.2s; }
+        .food-row-container:last-child { border-bottom: none; }
+
+        .food-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; position: relative; cursor: pointer; transition: 0.2s; }
+        .food-row:hover { background: var(--bg); }
+        .food-row::before { content: ''; position: absolute; left: 0; top: 10px; bottom: 10px; width: 3px; border-radius: 0 3px 3px 0; background: var(--border); }
+        
+        /* Type Indicators */
+        .food-row.type-prot::before { background: var(--prot); }
+        .food-row.type-carb::before { background: var(--carb); }
+        .food-row.type-fat::before { background: var(--fat); }
+        .food-row.type-veg::before { background: var(--veg); }
+        .food-row.type-fruit::before { background: var(--fruit); }
+        .food-row.type-drink::before { background: #a16207; }
+
+        .food-info { flex: 1; margin-left: 8px; }
+        .food-name { font-weight: 700; font-size: 0.95rem; color: var(--text); margin-bottom: 2px; display: flex; align-items: center; gap: 6px; }
+        .food-icon { font-size: 0.9rem; opacity: 0.9; }
+        
+        /* Sub Trigger */
+        .sub-trigger { font-size: 0.65rem; color: var(--accent); background: var(--accent-light); padding: 2px 6px; border-radius: 4px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+        [data-theme="dark"] .sub-trigger { background: rgba(234, 88, 12, 0.2); }
+
+        .food-qty { font-family: var(--font-num); font-weight: 800; font-size: 0.95rem; color: var(--primary); background: var(--primary-light); padding: 4px 10px; border-radius: 8px; min-width: 65px; text-align: center; margin-left: 10px; }
+
+        /* DRAWER (Vertical List) */
+        .sub-drawer { 
+            max-height: 0; 
+            overflow: hidden; 
+            transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out; 
+            background: #fdfdfd; 
+            opacity: 0;
+        }
+        [data-theme="dark"] .sub-drawer { background: #151e2e; }
+        
+        .sub-drawer.open { max-height: 800px; opacity: 1; border-top: 1px solid var(--border); }
+        
+        .sub-content { 
+            padding: 12px 15px 12px 30px; 
+            font-size: 0.85rem; 
+            color: var(--text-muted); 
+            line-height: 1.6; /* Increased for vertical list readability */
+            border-left: 3px solid var(--accent);
+            background: linear-gradient(to right, var(--accent-light), transparent 20%);
+            margin: 5px 0 0 0;
+        }
+        [data-theme="dark"] .sub-content { background: linear-gradient(to right, rgba(234,88,12,0.1), transparent 20%); }
+
+        /* EDIT MODE STYLES */
+        .edit-controls { display: none; gap: 5px; margin-left: 5px; }
+        body.editing .edit-controls { display: flex; }
+        body.editing .food-qty { display: none; } 
+        body.editing .sub-trigger { display: none; } 
+        body.editing .meal-card { border-style: dashed; border-color: var(--text-muted); }
+        
+        .btn-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
+        .btn-edit { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
+        .btn-edit:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-delete { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); }
+        
+        .add-item-btn { display: none; width: 100%; padding: 10px; text-align: center; font-weight: 700; color: var(--text-muted); border-top: 1px dashed var(--border); cursor: pointer; transition: 0.2s; font-size: 0.8rem; }
+        body.editing .add-item-btn { display: block; }
+        .add-item-btn:hover { background: var(--bg); color: var(--primary); }
+
+        .add-meal-btn { display: none; width: 100%; padding: 15px; border: 2px dashed var(--border); border-radius: 16px; color: var(--text-muted); font-weight: 700; cursor: pointer; margin-top: 15px; text-align: center; transition: 0.2s; font-size: 0.9rem; }
+        body.editing .add-meal-btn { display: block; }
+        .add-meal-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
 
         /* MODAL */
-        .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,31,91,0.6); z-index:1000; align-items:center; justify-content:center; backdrop-filter:blur(5px); }
-        .modal-box { background:var(--card); width:90%; max-width:400px; padding:30px; border-radius:24px; animation:slideUp 0.3s; box-shadow:0 25px 60px rgba(0,0,0,0.3); position:relative; }
-        .modal-close { position:absolute; top:20px; right:20px; color:#94a3b8; cursor:pointer; font-size:1.4rem; transition:0.2s; }
-        .modal-close:hover { color:var(--danger); transform:rotate(90deg); }
+        .modal { display:none; position:fixed; inset:0; background:rgba(2, 6, 23, 0.85); z-index:2000; align-items:center; justify-content:center; backdrop-filter:blur(5px); }
+        .modal-box { background:var(--card); width:90%; max-width:380px; padding:20px; border-radius:20px; animation:slideUp 0.3s; box-shadow:0 25px 60px rgba(0,0,0,0.3); border: 1px solid var(--border); }
         
-        .sync-btn { width: 100%; padding: 18px; margin-bottom: 12px; border: 1px solid var(--border); border-radius: 16px; background: white; display: flex; align-items: center; gap: 20px; cursor: pointer; transition: 0.2s; text-align: left; }
-        .sync-btn:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .sync-btn i { font-size: 1.4rem; width: 30px; text-align: center; }
-        .sb-title { font-weight: 700; font-size: 0.95rem; color: var(--primary); display:block; margin-bottom: 2px; }
-        .sb-desc { font-size: 0.75rem; color: #94a3b8; }
+        .inp-group { margin-bottom: 12px; }
+        .inp-label { display: block; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
+        .inp-field { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-weight: 600; outline: none; transition: 0.3s; font-size: 0.9rem; }
+        .inp-field:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); background: var(--card); }
 
-        /* DOCK */
-        .nav-dock { position:fixed; bottom:25px; left:50%; transform:translateX(-50%); background:white; padding:10px 25px; border-radius:25px; display:flex; gap:30px; box-shadow:0 15px 40px rgba(0,0,0,0.1); z-index:100; border:1px solid rgba(0,0,0,0.05); }
-        .dock-item { color:#cbd5e1; font-size:1.4rem; cursor:pointer; transition:0.2s; position:relative; padding:5px; }
-        .dock-item.active { color:var(--primary); transform:translateY(-5px); }
-        .dock-item.active::after { content:''; position:absolute; bottom:-5px; left:50%; transform:translateX(-50%); width:5px; height:5px; background:var(--accent); border-radius:50%; }
+        .btn-save { width: 100%; padding: 12px; border-radius: 12px; background: var(--primary); color: white; font-weight: 800; font-size: 0.95rem; border: none; cursor: pointer; margin-top: 5px; transition: 0.2s; }
+        .btn-save:hover { opacity: 0.9; transform: translateY(-1px); }
+        
+        /* GATEKEEPER & STATUS */
+        .cloud-dot { width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; position:absolute; top:8px; right:8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+        .cloud-dot.ok { background: var(--success); box-shadow: 0 0 8px var(--success); }
+        .cloud-dot.error { background: var(--danger); }
+        .cloud-dot.sync { background: #38bdf8; animation: pulse 1s infinite; }
+
+        #gatekeeper { position: fixed; inset: 0; z-index: 100000; background: radial-gradient(circle at center, #1e293b 0%, #020617 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--font-num); }
+        .pin-input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; letter-spacing: 4px; font-size: 1.2rem; text-align: center; padding: 1rem; border-radius: 1rem; width: 260px; outline: none; transition: 0.3s; margin-bottom: 1rem; }
+        .pin-input:focus { border-color: var(--primary); box-shadow: 0 0 20px rgba(34, 197, 94, 0.3); }
+        .btn-action { background: var(--primary); color: white; font-weight: 700; border-radius: 0.8rem; padding: 0.8rem; transition: 0.3s; width: 260px; display: flex; align-items: center; justify-content: center; gap: 8px; border:none; cursor: pointer; }
+        [data-theme="dark"] .btn-action { color: #020617; }
+
+        #gk-config-modal { z-index: 100001; }
 
         @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
         @keyframes slideUp { from{transform:translateY(20px); opacity:0;} to{transform:translateY(0); opacity:1;} }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
     </style>
 </head>
-<body>
+<body id="body-lock">
 
-    <div class="container">
-        <header>
-            <div class="logo"><i class="fa-solid fa-leaf"></i> Benai</div>
-            <div class="header-actions">
-                <button class="action-btn" onclick="finishDay()" title="Salvar Dia"><i class="fa-solid fa-check"></i></button>
-                <button class="action-btn sync" onclick="openModal('sync')" title="Nuvem">
-                    <i class="fa-solid fa-cloud"></i>
-                    <div id="cloudDot" class="cloud-dot"></div>
-                </button>
-            </div>
-        </header>
-        
-        <div id="view-diet" class="view active">
-            <div class="meta-card">
-                <div><span class="meta-lbl">Meta Diária</span><div class="meta-val" id="metaKcal">2100</div></div>
-                <div class="meta-sub">
-                    <div class="tag-status"><i class="fa-solid fa-fire"></i> Déficit -550</div>
-                    <div class="tag-status"><i class="fa-solid fa-weight-scale"></i> <span id="dispWeight">--.-</span> kg</div>
+    <!-- GATEKEEPER CONFIG MODAL -->
+    <div id="gk-config-modal" class="modal" style="background: rgba(2,6,23,0.95);">
+        <div class="modal-box" style="text-align: center;">
+            <div style="margin-bottom: 20px;">
+                <div style="width:60px; height:60px; background:var(--primary); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px; color:white;">
+                    <i data-lucide="settings-2" class="w-8 h-8"></i>
                 </div>
+                <h3 style="color:var(--text); font-weight: 800; font-family:var(--font-num); font-size:1.2rem;">Configuração Inicial</h3>
+                <p style="font-size: 0.8rem; color:var(--text-muted); margin-top:5px;">Configure o acesso antes de entrar.</p>
             </div>
-            <div class="day-toggle" id="dayButtons"></div>
-            <div id="mealList"></div>
-        </div>
-
-        <div id="view-evo" class="view">
-            <h2 style="margin-bottom:20px; color:var(--primary);">Evolução</h2>
-            <div class="stat-grid">
-                <div class="stat-card">
-                    <input type="number" id="inpWeight" class="stat-inp" placeholder="0.0" onchange="updateBio()">
-                    <span style="font-size:0.8rem; font-weight:700; color:#64748b;">PESO (kg)</span>
-                </div>
-                <div class="stat-card">
-                    <input type="number" id="inpSteps" class="stat-inp" placeholder="0" style="color:var(--accent);" onchange="updateBio()">
-                    <span style="font-size:0.8rem; font-weight:700; color:#64748b;">PASSOS</span>
-                </div>
+            
+            <div class="inp-group">
+                <label class="inp-label">Token GitHub</label>
+                <input type="password" id="gk-token" placeholder="ghp_..." class="inp-field" style="text-align:center;">
             </div>
-            <div style="background:white; padding:15px; border-radius:20px; border:1px solid var(--border); height:250px; margin-bottom:20px;"><canvas id="weightChart"></canvas></div>
-            <div id="historyList"></div>
-        </div>
-
-        <div id="view-admin" class="view">
-            <h2 style="margin-bottom:10px; color:var(--primary);">Avançado</h2>
-            <textarea id="jsonInput" class="json-box" placeholder="JSON Raw Data..."></textarea>
-            <button class="btn-full" onclick="importFromText()"><i class="fa-solid fa-code"></i> Carregar Texto</button>
-            <button class="btn-full" onclick="exportToClipboard()" style="background:#475569;"><i class="fa-solid fa-copy"></i> Copiar Texto</button>
+            <button onclick="saveTokenFromGatekeeper()" class="btn-save" style="margin-bottom:15px;">
+                <i class="fa-solid fa-save"></i> SALVAR E SINCRONIZAR
+            </button>
+            <button onclick="document.getElementById('gk-config-modal').style.display='none'" style="background:transparent; border:none; color:var(--text-muted); font-weight:700; cursor:pointer;">FECHAR</button>
         </div>
     </div>
 
-    <div id="modal-sync" class="modal">
-        <div class="modal-box">
-            <i class="fa-solid fa-xmark modal-close" onclick="closeModal('sync')"></i>
-            <h3 style="color:var(--primary); margin-bottom:5px; font-weight:800; font-family:var(--font-num);">Central de Dados</h3>
-            <p style="font-size:0.85rem; color:#64748b; margin-bottom:20px;">GitHub Cloud + Backup Local</p>
+    <!-- GATEKEEPER -->
+    <div id="gatekeeper">
+        <div style="margin-bottom:30px; text-align:center;">
+            <i class="fa-solid fa-leaf" style="font-size: 3rem; color: #4ade80; margin-bottom: 15px;"></i>
+            <h2 style="font-size: 2rem; font-weight: 900; color: white;">BENAI <span style="color:#4ade80">NUTRI</span></h2>
+            <p style="opacity: 0.6; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; color: white;">Acesso Restrito</p>
+        </div>
+        <input type="text" id="userInput" class="pin-input uppercase" placeholder="USUÁRIO" autocomplete="off" style="font-size:1rem; letter-spacing:2px;">
+        <input type="password" id="passInput" class="pin-input" placeholder="SENHA" onkeyup="if(event.key==='Enter') attemptLogin()">
+        <button onclick="attemptLogin()" class="btn-action">ENTRAR</button>
+        <div id="loginError" style="color:#ef4444; font-size:0.8rem; font-weight:700; margin-top:15px; min-height: 20px;"></div>
+        
+        <!-- CONFIG BUTTON -->
+        <button onclick="openGatekeeperConfig()" style="margin-top: 20px; background: rgba(255,255,255,0.1); border: none; width: 40px; height: 40px; border-radius: 50%; color: rgba(255,255,255,0.5); cursor: pointer; transition:0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)';this.style.color='white'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.5)'">
+            <i class="fa-solid fa-gear"></i>
+        </button>
+    </div>
 
-            <div style="margin-bottom:15px; border-bottom:1px solid var(--border); padding-bottom:15px;">
-                <label style="font-size:0.75rem; font-weight:700; color:#64748b; margin-bottom:5px; display:block;">TOKEN DE ACESSO</label>
-                <input type="password" id="manualToken" placeholder="ghp_..." style="width:100%; padding:12px; border:1px solid var(--border); border-radius:12px; margin-bottom:10px; background:#f8fafc; color:#334155; outline:none;">
-                <button class="sync-btn" onclick="saveManualToken()" style="justify-content:center; padding:12px; margin-bottom:15px;">
-                    <i class="fa-solid fa-key"></i> Salvar Token
-                </button>
-                
-                <button class="sync-btn" onclick="forceSync()">
-                    <i class="fa-solid fa-cloud-arrow-down" style="color:var(--accent)"></i> 
-                    <div><span class="sb-title">Forçar Download</span><span class="sb-desc">Baixar da Nuvem</span></div>
-                </button>
+    <!-- APP CONTENT -->
+    <div id="app-content" style="display: none;">
+        <div class="container">
+            <header>
+                <div class="logo"><i class="fa-solid fa-leaf"></i> Benai Nutri</div>
+                <div class="header-actions">
+                    <button class="action-btn" onclick="toggleEditMode()" id="btnEditMode" title="Modo Chef (Editor)">
+                        <i data-lucide="chef-hat"></i>
+                    </button>
+                    <button class="action-btn" onclick="toggleLocalTheme()"><i id="themeIcon" data-lucide="moon"></i></button>
+                    <button class="action-btn sync" onclick="openCloudModal()" title="Dados">
+                        <i class="fa-solid fa-cloud"></i>
+                        <div id="cloudDot" class="cloud-dot"></div>
+                    </button>
+                </div>
+            </header>
+            
+            <div class="tabs">
+                <div class="tab-item active" onclick="switchTab('routine')" id="tab-routine">Rotina (Seg-Sex)</div>
+                <div class="tab-item" onclick="switchTab('saturday')" id="tab-saturday">Sábado</div>
+                <div class="tab-item" onclick="switchTab('sunday')" id="tab-sunday">Domingo</div>
             </div>
 
-            <button class="sync-btn" onclick="exportFile()">
-                <i class="fa-solid fa-download" style="color:#334155"></i> 
-                <div><span class="sb-title">Baixar Arquivo</span><span class="sb-desc">Salvar .json no celular</span></div>
+            <!-- MEALS CONTAINER -->
+            <div id="meals-container">
+                <!-- RENDERED BY JS -->
+            </div>
+
+            <button class="add-meal-btn" onclick="openMealModal()">
+                <i class="fa-solid fa-plus-circle"></i> ADICIONAR REFEIÇÃO
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD/EDIT FOOD -->
+    <div id="modal-food" class="modal">
+        <div class="modal-box">
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+                <h3 style="font-weight:800; font-size:1.1rem; color:var(--primary);">Item do Cardápio</h3>
+                <i class="fa-solid fa-xmark" style="font-size:1.2rem; cursor:pointer;" onclick="closeModal('food')"></i>
+            </div>
+            
+            <input type="hidden" id="edit-meal-idx">
+            <input type="hidden" id="edit-food-idx">
+
+            <div class="inp-group">
+                <label class="inp-label">Alimento</label>
+                <input type="text" id="inp-name" class="inp-field" placeholder="Ex: Ovos Mexidos">
+            </div>
+
+            <div style="display:flex; gap:10px;">
+                <div class="inp-group" style="flex:1;">
+                    <label class="inp-label">Quantidade</label>
+                    <input type="text" id="inp-qty" class="inp-field" placeholder="Ex: 3">
+                </div>
+                <div class="inp-group" style="flex:1;">
+                    <label class="inp-label">Unidade</label>
+                    <input type="text" id="inp-unit" class="inp-field" placeholder="unid / g / ml">
+                </div>
+            </div>
+            
+            <div class="inp-group">
+                <label class="inp-label">Tipo (Ícone)</label>
+                <select id="inp-type" class="inp-field">
+                    <option value="prot">Proteína (Carne/Ovo)</option>
+                    <option value="carb">Carboidrato (Pão/Arroz)</option>
+                    <option value="fat">Gordura (Azeite/Castanha)</option>
+                    <option value="veg">Vegetal/Salada</option>
+                    <option value="fruit">Fruta</option>
+                    <option value="drink">Bebida</option>
+                </select>
+            </div>
+
+            <div class="inp-group">
+                <label class="inp-label" style="color:var(--accent);">Substituição (Aparece na gaveta)</label>
+                <textarea id="inp-sub" class="inp-field" rows="4" placeholder="Detalhes da substituição..."></textarea>
+            </div>
+
+            <button class="btn-save" onclick="saveFood()">SALVAR ITEM</button>
+            <button onclick="closeModal('food')" style="width:100%; margin-top:5px; background:transparent; border:none; color:var(--text-muted); font-weight:700; cursor:pointer; font-size:0.8rem;">CANCELAR</button>
+        </div>
+    </div>
+
+    <!-- MODAL: MEAL MANAGER -->
+    <div id="modal-meal" class="modal">
+        <div class="modal-box">
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+                <h3 style="font-weight:800; font-size:1.1rem; color:var(--primary);">Configurar Refeição</h3>
+                <i class="fa-solid fa-xmark" style="font-size:1.2rem; cursor:pointer;" onclick="closeModal('meal')"></i>
+            </div>
+            
+            <input type="hidden" id="edit-meal-idx-only">
+
+            <div class="inp-group">
+                <label class="inp-label">Nome da Refeição</label>
+                <input type="text" id="meal-name" class="inp-field" placeholder="Ex: Almoço">
+            </div>
+            
+            <div class="inp-group">
+                <label class="inp-label">Horário Sugerido</label>
+                <input type="time" id="meal-time" class="inp-field" value="12:00">
+            </div>
+
+            <button class="btn-save" onclick="saveMeal()">SALVAR REFEIÇÃO</button>
+        </div>
+    </div>
+
+    <!-- MODAL CLOUD -->
+    <div id="modal-cloud" class="modal">
+        <div class="modal-box" style="text-align:center;">
+            <div style="width:50px; height:50px; background:var(--bg); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px; color:var(--primary);">
+                <i data-lucide="database" class="w-6 h-6"></i>
+            </div>
+            <h3 style="color:var(--text); font-weight: 800; font-family:var(--font-num); font-size:1.1rem;">Central de Dados</h3>
+            <p style="font-size: 0.8rem; color:var(--text-muted); margin:5px 0 20px;">Sincronização e Backup</p>
+            
+            <div class="inp-group">
+                <input type="password" id="manualToken" placeholder="Token GitHub (ghp_...)" class="inp-field" style="text-align:center;">
+            </div>
+            
+            <div style="display:flex; gap:10px; margin-bottom:20px;">
+                <button onclick="saveManualToken()" style="flex:1; padding:10px; border-radius:10px; background:var(--primary); color:white; border:none; font-weight:700; font-size:0.8rem; cursor:pointer;">SALVAR</button>
+                <button onclick="removeToken()" style="flex:1; padding:10px; border-radius:10px; background:rgba(239,68,68,0.1); color:var(--danger); border:1px solid rgba(239,68,68,0.2); font-weight:700; font-size:0.8rem; cursor:pointer;">DESCONECTAR</button>
+            </div>
+            
+            <div style="height:1px; background:var(--border); margin-bottom:20px;"></div>
+            
+            <button onclick="forceSync()" style="width:100%; padding:10px; border-radius:10px; border:1px solid var(--accent); color:var(--accent); background:transparent; font-weight:700; margin-bottom:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; font-size:0.8rem;">
+                <i class="fa-solid fa-sync"></i> FORÇAR SINCRONIZAÇÃO
             </button>
 
-            <button class="sync-btn" onclick="document.getElementById('importFile').click()">
-                <i class="fa-solid fa-upload" style="color:#334155"></i> 
-                <div><span class="sb-title">Restaurar Arquivo</span><span class="sb-desc">Carregar backup .json</span></div>
+            <button onclick="backupData()" style="width:100%; padding:10px; border-radius:10px; border:1px solid var(--text-muted); color:var(--text); background:transparent; font-weight:700; margin-bottom:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; font-size:0.8rem;">
+                <i class="fa-solid fa-download"></i> FAZER BACKUP (JSON)
             </button>
             
-             <button class="sync-btn" style="border-color:var(--danger); color:var(--danger); margin-bottom:0;" onclick="hardReset()">
-                <i class="fa-solid fa-trash"></i> 
-                <div><span class="sb-title" style="color:var(--danger)">Resetar Tudo</span><span class="sb-desc">Limpar dados locais</span></div>
-            </button>
+            <label style="width:100%; padding:10px; border-radius:10px; border:1px solid var(--text-muted); color:var(--text); background:transparent; font-weight:700; margin-bottom:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; font-size:0.8rem;">
+                <i class="fa-solid fa-upload"></i> RESTAURAR BACKUP
+                <input type="file" hidden onchange="restoreData(this)">
+            </label>
+
+            <button onclick="closeModal('cloud')" style="margin-top:5px; background:transparent; border:none; color:var(--text-muted); font-weight:700; cursor:pointer; font-size:0.8rem;">FECHAR</button>
         </div>
     </div>
-
-    <div class="nav-dock">
-        <div class="dock-item active" id="btn-diet" onclick="setView('diet')"><i class="fa-solid fa-utensils"></i></div>
-        <div class="dock-item" id="btn-evo" onclick="setView('evo')"><i class="fa-solid fa-chart-line"></i></div>
-        <div class="dock-item" id="btn-admin" onclick="setView('admin')"><i class="fa-solid fa-sliders"></i></div>
-    </div>
-
-    <input type="file" id="importFile" hidden onchange="handleFileImport(this)">
 
     <script>
-        // --- CONSTANTES ---
-        const DB_KEY = 'benai_diet_main_db'; 
-        const TOKEN_KEY = 'benai_coach_gh_token'; 
-        const GIST_DESC = 'BENAI_PERSONAL_DB';
-        
-        // Estrutura Padrão (Fallback)
-        const DEFAULT_DATA = { 
-            "meta": { "kcal": 2100, "weight": 75.0, "steps": 0 }, 
-            "currentDay": "A", 
-            "history": [], 
-            "days": { 
-                "A": { "label": "Padrão", "meals": [] } 
-            } 
-        };
+        // --- CONFIG ---
+        const DB_KEY = 'BENAI_DIET_MASTER';
+        const TOKEN_KEY = 'BENAI_GLOBAL_TOKEN';
+        const GIST_DESC = 'BENAI_DIET_DB';
+        const GIST_FILENAME = 'diet_master.json';
+        const MASTER_PIN = "16359001";
+        const STAFF_USER = "BENAI";
+        const STAFF_PASS = "123";
 
-        // Estado Global
-        let appData = JSON.parse(JSON.stringify(DEFAULT_DATA));
-        let chartInst = null;
+        // --- STATE ---
+        let appData = {
+            routine: [],
+            saturday: [],
+            sunday: [],
+            lastUpdated: 0
+        };
+        let currentTab = 'routine';
+        let isEditMode = false;
         let gistId = null;
 
-        // --- INICIALIZAÇÃO ---
-        async function init() {
-            // 1. Tenta carregar do LocalStorage
-            const saved = localStorage.getItem(DB_KEY);
-            if (saved) {
-                try {
-                    const parsed = JSON.parse(saved);
-                    if (parsed && parsed.days) appData = parsed;
-                } catch(e) { console.error("Dados locais corrompidos", e); }
-            }
-
-            // 1.1 Tenta preencher o token se já existir
+        // --- INIT ---
+        window.onload = () => {
+            initTheme();
+            lucide.createIcons();
+            
+            // Check pre-filled token
             const t = localStorage.getItem(TOKEN_KEY);
-            if(t && document.getElementById('manualToken')) document.getElementById('manualToken').value = t;
-
-            // 2. Renderiza o que tiver
-            renderAll();
-
-            // 3. Tenta conectar na Nuvem
-            await syncCloud();
-        }
-
-        // --- RENDERIZAÇÃO ---
-        function renderAll() {
-            renderDiet();
-            renderStats();
-            renderChart();
-        }
-
-        function renderDiet() {
-            if (!appData.meta) appData.meta = DEFAULT_DATA.meta;
-            document.getElementById('metaKcal').innerText = appData.meta.kcal || 0;
-            document.getElementById('dispWeight').innerText = appData.meta.weight || 0;
-
-            const btnCont = document.getElementById('dayButtons');
-            btnCont.innerHTML = '';
-            if (!appData.days) appData.days = DEFAULT_DATA.days;
-            
-            Object.keys(appData.days).forEach(key => {
-                const isActive = appData.currentDay === key;
-                btnCont.innerHTML += `<div class="toggle-btn ${isActive?'active':''}" onclick="changeDay('${key}')">${appData.days[key].label}</div>`;
-            });
-
-            const list = document.getElementById('mealList');
-            list.innerHTML = '';
-            
-            const currentPlan = appData.days[appData.currentDay];
-            if (!currentPlan || !currentPlan.meals || currentPlan.meals.length === 0) {
-                list.innerHTML = '<div style="text-align:center; padding:40px; color:#94a3b8; font-style:italic;">Nenhuma refeição neste dia.</div>';
-                return;
+            if(t) {
+                document.getElementById('manualToken').value = t;
+                document.getElementById('gk-token').value = t;
             }
-
-            currentPlan.meals.forEach(meal => {
-                let foodsHTML = '';
-                if(meal.foods) {
-                    meal.foods.forEach(f => {
-                        const icon = getFoodIcon(f.n, f.t);
-                        foodsHTML += `
-                        <div class="food-item">
-                            <div class="fi-main">
-                                <div class="fi-icon">${icon}</div>
-                                <div class="fi-info">
-                                    <span class="fi-name">${f.n}</span>
-                                    <span class="fi-macro ${f.t}">${f.t}</span>
-                                </div>
-                            </div>
-                            <div class="fi-actions">
-                                <span class="fi-qty ${f.t}">${f.q}</span>
-                            </div>
-                        </div>`;
-                    });
-                }
-                list.innerHTML += `
-                <div class="meal-card">
-                    <div class="meal-head">
-                        <div class="mh-left">
-                            <span class="meal-icon">${meal.icon || '🍽️'}</span>
-                            <span class="meal-name">${meal.name}</span>
-                        </div>
-                        <span class="meal-time">${meal.time}</span>
-                    </div>
-                    <div>${foodsHTML}</div>
-                </div>`;
-            });
-        }
-
-        function renderStats() {
-            document.getElementById('inpWeight').value = appData.meta.weight;
-            document.getElementById('inpSteps').value = appData.meta.steps || 0;
             
-            const hList = document.getElementById('historyList');
-            hList.innerHTML = '';
-            if(appData.history && appData.history.length > 0) {
-                [...appData.history].reverse().slice(0, 10).forEach(h => {
-                    hList.innerHTML += `<div style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid #f1f5f9; color:#475569;"><span>${h.date}</span><span><b>${h.weight}</b> kg</span></div>`;
-                });
+            checkAuth();
+        };
+
+        function checkAuth() {
+            if (sessionStorage.getItem("benai_auth") === "true") {
+                document.getElementById('gatekeeper').style.display = 'none';
+                document.getElementById('app-content').style.display = 'block';
+                initApp();
             }
         }
 
-        function renderChart() {
-            const ctx = document.getElementById('weightChart');
-            if(!appData.history) return;
-            const recent = appData.history.slice(-7); 
-            
-            if(chartInst) chartInst.destroy();
-            chartInst = new Chart(ctx, {
-                type: 'line',
-                data: { 
-                    labels: recent.map(h => h.date), 
-                    datasets: [{ 
-                        label: 'Peso', 
-                        data: recent.map(h => h.weight), 
-                        borderColor: '#15803d', 
-                        backgroundColor: 'rgba(21, 128, 61, 0.1)', 
-                        tension: 0.4, 
-                        fill: true 
-                    }] 
-                },
-                options: { 
-                    responsive:true, 
-                    maintainAspectRatio:false, 
-                    plugins:{legend:{display:false}}, 
-                    scales:{y:{suggestedMin:60, suggestedMax:100}} 
-                }
-            });
+        function attemptLogin() {
+            const u = document.getElementById('userInput').value.toUpperCase().trim();
+            const p = document.getElementById('passInput').value.trim();
+            if (p === MASTER_PIN || (u === STAFF_USER && p === STAFF_PASS)) {
+                sessionStorage.setItem("benai_auth", "true");
+                checkAuth();
+            } else {
+                document.getElementById('loginError').innerText = "Código Incorreto";
+                setTimeout(()=>document.getElementById('loginError').innerText="", 2000);
+            }
         }
 
-        // --- AÇÕES ---
-        function changeDay(key) {
-            appData.currentDay = key;
-            save();
-            renderDiet();
+        function openGatekeeperConfig() {
+            document.getElementById('gk-config-modal').style.display = 'flex';
         }
 
-        function updateBio() {
-            const w = parseFloat(document.getElementById('inpWeight').value);
-            const s = parseInt(document.getElementById('inpSteps').value);
-            if(w) appData.meta.weight = w;
-            if(s) appData.meta.steps = s;
-            save();
-            renderDiet();
-        }
-
-        function finishDay() {
-            if(!confirm("Concluir o dia e salvar histórico?")) return;
-            const today = new Date().toLocaleDateString('pt-BR').substring(0,5); // DD/MM
-            if(!appData.history) appData.history = [];
-            appData.history = appData.history.filter(h => h.date !== today);
-            appData.history.push({ date: today, weight: appData.meta.weight, steps: appData.meta.steps });
-            save();
-            renderChart();
-            renderStats();
-            alert("Histórico Salvo!");
-        }
-
-        function getFoodIcon(name, type) { 
-            const n = name.toLowerCase(); 
-            if(n.includes('ovo')) return '🥚'; 
-            if(n.includes('frango') || n.includes('carne') || n.includes('patê')) return '🥩'; 
-            if(n.includes('peixe') || n.includes('sardinha')) return '🐟'; 
-            if(n.includes('arroz')) return '🍚'; 
-            if(n.includes('batata')) return '🥔'; 
-            if(n.includes('pão')) return '🍞'; 
-            if(n.includes('banana') || n.includes('fruta')) return '🍎'; 
-            if(n.includes('café')) return '☕'; 
-            if(n.includes('iogurte') || n.includes('leite')) return '🥛'; 
-            return '🍽️'; 
-        }
-
-        // --- SISTEMA DE NUVEM ---
-        function updateStatus(status) {
-            const el = document.getElementById('cloudDot');
-            if(el) el.className = 'cloud-dot ' + status;
-        }
-
-        function saveManualToken() {
-            const t = document.getElementById('manualToken').value.trim();
+        function saveTokenFromGatekeeper() {
+            const t = document.getElementById('gk-token').value.trim();
             if(t) {
                 localStorage.setItem(TOKEN_KEY, t);
-                alert("Token salvo! Tentando conectar...");
-                syncCloud();
+                document.getElementById('gk-config-modal').style.display = 'none';
+                alert("Token salvo. Tente entrar.");
+                initApp(); // Try background sync
             }
+        }
+
+        // --- DATA ENGINE ---
+        async function initApp() {
+            // 1. Load Local
+            const local = localStorage.getItem(DB_KEY);
+            if(local) {
+                try { 
+                    appData = JSON.parse(local);
+                } catch(e) { console.error(e); }
+            }
+            
+            // Validate Data / Populate Dummy if empty
+            if(!appData.routine || appData.routine.length === 0) {
+                populateDummyData();
+            }
+
+            renderAll();
+
+            // 2. Cloud Sync
+            const token = localStorage.getItem(TOKEN_KEY);
+            if(token) {
+                updateStatus('sync');
+                await pullFromCloud();
+            } else {
+                updateStatus('offline');
+            }
+        }
+
+        function populateDummyData() {
+            // PLANO ALIMENTAR DETALHADO
+            appData.routine = [
+                {
+                    id: 1, name: "Café da Manhã", time: "05:00",
+                    foods: [
+                        { name: "Ovos Inteiros (Mexidos ou Cozidos)", qty: "3", unit: "unid", type: "prot", sub: "Substituição Líquida:<br>• 30g Whey Protein Growth (Morango)<br>• 200ml Leite Semi-desnatado (Bater c/ Whey)<br>• 15g Pasta de Amendoim (1 col. sopa)<br>• 5g Creatina Growth" },
+                        { name: "Requeijão Tradicional (Misturar nos ovos)", qty: "20", unit: "g", type: "fat", sub: "" },
+                        { name: "Café Coado (Sem açúcar)", qty: "200", unit: "ml", type: "drink", sub: "" },
+                        { name: "Leite Semi-desnatado", qty: "50", unit: "ml", type: "carb", sub: "" },
+                        { name: "Creatina Growth", qty: "5", unit: "g", type: "fat", sub: "" }
+                    ]
+                },
+                {
+                    id: 2, name: "Pré-Treino (Colação)", time: "09:15",
+                    foods: [
+                        { name: "Banana Prata (Amassada)", qty: "1", unit: "méd", type: "fruit", sub: "Substituição Sólida:<br>• 3 Unidades Claras de Ovo Cozidas<br>• 1 Unidade Média Banana Prata<br>• 20g Farelo de Aveia<br>• Canela a gosto" },
+                        { name: "Farelo de Aveia (2 col. sopa rasas)", qty: "20", unit: "g", type: "carb", sub: "" },
+                        { name: "Whey Growth (Morango)", qty: "30", unit: "g", type: "prot", sub: "" },
+                        { name: "Cacau 70% (Misturar c/ água até virar creme)", qty: "1", unit: "col chá", type: "fat", sub: "" }
+                    ]
+                },
+                {
+                    id: 3, name: "Almoço (Pós-Treino)", time: "12:00",
+                    foods: [
+                        { name: "Peito de Frango OU Patinho Moído (Pronto)", qty: "150", unit: "g", type: "prot", sub: "Substituição (Com Arroz):<br>• 150g Peito de Frango OU Patinho Moído<br>• 130g Arroz Branco ou Integral (Peso Cozido)<br>• 5g Manteiga<br>• 100g Legumes + Salada Livre" },
+                        { name: "Batata Inglesa (Cozida/Assada/Airfryer)", qty: "280", unit: "g", type: "carb", sub: "Ou 220g Mandioquinha (Batata Baroa)" },
+                        { name: "Manteiga (Usar no preparo ou sobre o carbo)", qty: "5", unit: "g", type: "fat", sub: "" },
+                        { name: "Legumes Cozidos (Brócolis, Cenoura, Vagem...)", qty: "100", unit: "g", type: "veg", sub: "" },
+                        { name: "Salada de Folhas Verdes", qty: "Livre", unit: "", type: "veg", sub: "" }
+                    ]
+                },
+                {
+                    id: 4, name: "Lanche da Tarde", time: "16:00",
+                    foods: [
+                        { name: "Iogurte Grego Zero Gordura (aprox. 1/3 pote)", qty: "170", unit: "g", type: "prot", sub: "Substituição Salgada:<br>• 2 Unidades Ovos Cozidos<br>• 150g Fruta (Morango, Melão ou Mamão)<br>• 10g Sementes de Chia" },
+                        { name: "Whey Growth (1/2 scoop - misturar no iogurte)", qty: "15", unit: "g", type: "prot", sub: "" },
+                        { name: "Sementes de Chia", qty: "10", unit: "g", type: "fat", sub: "" },
+                        { name: "Morangos Picados", qty: "150", unit: "g", type: "fruit", sub: "Ou 150g Melão / Ou 150g Mamão" }
+                    ]
+                },
+                {
+                    id: 5, name: "Jantar (Acquafit)", time: "19:00",
+                    foods: [
+                        { name: "Patê de Frango (Desfiado + Requeijão)", qty: "150", unit: "g", type: "prot", sub: "Substituição (Sanduíche):<br>• 1 Unidade Rap10 Integral OU 1 fatia Pão Integral<br>• 140g Patê de Frango<br>• Salada de Folhas Livre" },
+                        { name: "Cenoura Crua (Ralada/Bastonetes)", qty: "Livre", unit: "", type: "veg", sub: "" },
+                        { name: "Salada de Folhas", qty: "Livre", unit: "", type: "veg", sub: "Comer no pote com talher (Zero Carbo)" }
+                    ]
+                }
+            ];
+
+            appData.saturday = [
+                {
+                    id: 1, name: "Café da Manhã", time: "09:00",
+                    foods: [
+                        { name: "Ovos Inteiros (Mexidos)", qty: "4", unit: "unid", type: "prot", sub: "" },
+                        { name: "Requeijão Tradicional", qty: "20", unit: "g", type: "fat", sub: "" },
+                        { name: "Café Preto (Sem açúcar)", qty: "Livre", unit: "", type: "drink", sub: "" }
+                    ]
+                },
+                {
+                    id: 2, name: "Almoço Zero Carbo", time: "12:30",
+                    foods: [
+                        { name: "Carne Bovina, Frango ou Churrasco Magro", qty: "200", unit: "g", type: "prot", sub: "" },
+                        { name: "Salada Variada e Legumes", qty: "Livre", unit: "", type: "veg", sub: "" },
+                        { name: "Arroz, Batata, Farofa ou Macarrão", qty: "0", unit: "g", type: "carb", sub: "Zero Carbo nesta refeição" }
+                    ]
+                },
+                {
+                    id: 3, name: "Lanche da Tarde", time: "16:00",
+                    foods: [
+                        { name: "Iogurte Grego Zero Gordura", qty: "170", unit: "g", type: "prot", sub: "" },
+                        { name: "Whey Protein (Opcional)", qty: "15", unit: "g", type: "prot", sub: "" }
+                    ]
+                },
+                {
+                    id: 4, name: "Jantar Sagrado (Pizza)", time: "20:00",
+                    foods: [
+                        { name: "Pizza (Sabor de preferência)", qty: "3-4", unit: "fatias", type: "carb", sub: "" },
+                        { name: "Refrigerante Zero ou Água com gás", qty: "Livre", unit: "", type: "drink", sub: "" }
+                    ]
+                }
+            ];
+
+            appData.sunday = [
+                {
+                    id: 1, name: "Brunch / Café", time: "10:00",
+                    foods: [
+                        { name: "Ovos (Mexidos ou Cozidos)", qty: "3", unit: "unid", type: "prot", sub: "" },
+                        { name: "Fruta (Melão, Mamão ou Morangos)", qty: "1", unit: "unid", type: "fruit", sub: "" },
+                        { name: "Café Preto", qty: "Livre", unit: "", type: "drink", sub: "" }
+                    ]
+                },
+                {
+                    id: 2, name: "Almoço em Família", time: "13:00",
+                    foods: [
+                        { name: "Proteína (Carne, Frango ou Peixe)", qty: "1", unit: "Porção", type: "prot", sub: "" },
+                        { name: "Arroz OU Batata OU Macarrão", qty: "1", unit: "Porção", type: "carb", sub: "Escolha apenas UM carbo" },
+                        { name: "Salada Verde", qty: "Livre", unit: "", type: "veg", sub: "" }
+                    ]
+                },
+                {
+                    id: 3, name: "Jantar Reset", time: "20:00",
+                    foods: [
+                        { name: "Ovos Cozidos", qty: "3", unit: "unid", type: "prot", sub: "Ou 150g Patê de Frango (Sem pão)" },
+                        { name: "Vegetais", qty: "Livre", unit: "", type: "veg", sub: "" },
+                        { name: "Carboidratos (Para desinchar)", qty: "0", unit: "g", type: "carb", sub: "" }
+                    ]
+                }
+            ];
+            
+            // Meta Data
+            appData.meta = { kcal: 1750, weight: 76.3, water: 4.0 };
+            
+            localStorage.setItem(DB_KEY, JSON.stringify(appData));
+        }
+
+        async function pullFromCloud() {
+            const token = localStorage.getItem(TOKEN_KEY);
+            if(!token) return;
+            
+            try {
+                const res = await fetch('https://api.github.com/gists', { headers: { 'Authorization': `token ${token}` } });
+                const gists = await res.json();
+                const found = gists.find(g => g.description === GIST_DESC);
+                if(found) {
+                    gistId = found.id;
+                    const r = await fetch(found.url, { headers: { 'Authorization': `token ${token}` } });
+                    const d = await r.json();
+                    if(d.files[GIST_FILENAME]) {
+                        appData = JSON.parse(d.files[GIST_FILENAME].content);
+                        localStorage.setItem(DB_KEY, JSON.stringify(appData));
+                        renderAll();
+                    }
+                }
+                updateStatus('ok');
+            } catch(e) { updateStatus('error'); }
         }
 
         async function syncCloud() {
             const token = localStorage.getItem(TOKEN_KEY);
-            if(!token) { updateStatus('error'); return; }
+            if(!token) return alert("Configure o Token primeiro.");
             
             updateStatus('sync');
+            localStorage.setItem(DB_KEY, JSON.stringify(appData));
+
             try {
                 if(!gistId) {
-                    const s = await fetch('https://api.github.com/gists', { headers: { 'Authorization': `token ${token}` } });
-                    const gists = await s.json();
-                    const found = gists.find(g => g.description === GIST_DESC);
-                    if(found) gistId = found.id;
+                     const s = await fetch('https://api.github.com/gists', { headers: { 'Authorization': `token ${token}` } });
+                     const g = await s.json();
+                     const f = g.find(x => x.description === GIST_DESC);
+                     if(f) gistId = f.id;
                 }
 
-                if(gistId) {
-                    const r = await fetch(`https://api.github.com/gists/${gistId}`, { headers: { 'Authorization': `token ${token}` } });
-                    const gistData = await r.json();
-                    if(gistData.files && gistData.files["diet.json"]) {
-                        const cloudContent = JSON.parse(gistData.files["diet.json"].content);
-                        if(cloudContent && cloudContent.days) {
-                            appData = cloudContent;
-                            saveLocal();
-                            renderAll();
-                        }
-                    } else { await pushCloud(); }
-                    updateStatus('ok');
-                } else { await pushCloud(); }
-            } catch(e) {
-                console.error(e);
-                updateStatus('error');
-            }
-        }
-
-        async function pushCloud() {
-            const token = localStorage.getItem(TOKEN_KEY);
-            if(!token) return;
-            
-            updateStatus('sync');
-            try {
-                const url = gistId ? `https://api.github.com/gists/${gistId}` : 'https://api.github.com/gists';
-                const method = gistId ? 'PATCH' : 'POST';
-                const payload = {
+                const body = JSON.stringify({
                     description: GIST_DESC,
                     public: false,
-                    files: { "diet.json": { content: JSON.stringify(appData) } }
-                };
-
-                const res = await fetch(url, {
-                    method: method,
-                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    files: { [GIST_FILENAME]: { content: JSON.stringify(appData) } }
                 });
                 
-                if(res.ok) {
-                    if(!gistId) { const j = await res.json(); gistId = j.id; }
+                let url = 'https://api.github.com/gists';
+                let method = 'POST';
+                if(gistId) { url += `/${gistId}`; method = 'PATCH'; }
+
+                const r = await fetch(url, { method, headers: { 'Authorization': `token ${token}` }, body });
+                if(r.ok) {
+                    if(method === 'POST') { const j = await r.json(); gistId = j.id; }
                     updateStatus('ok');
-                } else { updateStatus('error'); }
-            } catch(e) {
-                console.error(e);
-                updateStatus('error');
+                } else updateStatus('error');
+            } catch(e) { updateStatus('error'); }
+        }
+
+        // --- RENDER LOGIC ---
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab-'+tab).classList.add('active');
+            renderAll();
+        }
+
+        function getFoodIcon(type) {
+            switch(type) {
+                case 'prot': return '<i class="fa-solid fa-drumstick-bite" style="color:var(--prot);"></i>';
+                case 'carb': return '<i class="fa-solid fa-wheat-awn" style="color:var(--carb);"></i>';
+                case 'fat': return '<i class="fa-solid fa-droplet" style="color:var(--fat);"></i>';
+                case 'veg': return '<i class="fa-solid fa-carrot" style="color:var(--veg);"></i>';
+                case 'fruit': return '<i class="fa-solid fa-apple-whole" style="color:var(--fruit);"></i>';
+                case 'drink': return '<i class="fa-solid fa-mug-hot" style="color:#a16207;"></i>';
+                default: return '<i class="fa-solid fa-utensils"></i>';
             }
         }
 
-        function forceSync() {
-            if(confirm("Isso substituirá os dados locais pela versão da Nuvem. Continuar?")) {
-                syncCloud();
-                closeModal('sync');
+        function toggleSub(id) {
+            const drawer = document.getElementById('drawer-'+id);
+            if(drawer) drawer.classList.toggle('open');
+        }
+
+        function renderAll() {
+            const container = document.getElementById('meals-container');
+            container.innerHTML = '';
+            
+            const meals = appData[currentTab] || [];
+            
+            if(meals.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:40px; color:var(--text-muted); font-style:italic;">
+                    <i class="fa-solid fa-plate-wheat" style="font-size:3rem; margin-bottom:15px; opacity:0.3;"></i><br>
+                    Nenhuma refeição neste dia.
+                </div>`;
+            }
+
+            meals.forEach((meal, mIdx) => {
+                let foodsHTML = '';
+                meal.foods.forEach((food, fIdx) => {
+                    const icon = getFoodIcon(food.type);
+                    const subId = `${mIdx}-${fIdx}`;
+                    const hasSub = food.sub && food.sub.trim() !== "";
+                    const typeClass = `type-${food.type || 'prot'}`;
+                    
+                    const subTriggerHTML = hasSub ? 
+                        `<div class="sub-trigger"><i class="fa-solid fa-rotate"></i> Substituição</div>` : '';
+                    
+                    const subDrawerHTML = hasSub ? 
+                        `<div id="drawer-${subId}" class="sub-drawer">
+                            <div class="sub-content">${food.sub}</div>
+                         </div>` : '';
+
+                    const onclickAttr = hasSub ? `onclick="toggleSub('${subId}')"` : '';
+
+                    foodsHTML += `
+                    <div class="food-row-container">
+                        <div class="food-row ${typeClass}" ${onclickAttr}>
+                            <div class="food-info">
+                                <div class="food-name"><span class="food-icon">${icon}</span> ${food.name}</div>
+                                ${subTriggerHTML}
+                            </div>
+                            <div class="food-qty">${food.qty} <small>${food.unit}</small></div>
+                            <div class="edit-controls">
+                                <div class="btn-icon btn-edit" onclick="event.stopPropagation(); openFoodModal(${mIdx}, ${fIdx})"><i class="fa-solid fa-pencil"></i></div>
+                                <div class="btn-icon btn-delete" onclick="event.stopPropagation(); deleteFood(${mIdx}, ${fIdx})"><i class="fa-solid fa-trash"></i></div>
+                            </div>
+                        </div>
+                        ${subDrawerHTML}
+                    </div>`;
+                });
+
+                container.innerHTML += `
+                <div class="meal-card">
+                    <div class="meal-header">
+                        <div class="meal-title"><i class="fa-solid fa-utensils" style="color:var(--primary);"></i> ${meal.name}</div>
+                        <div class="meal-right">
+                            <span class="meal-time">${meal.time}</span>
+                            <div class="edit-controls">
+                                <div class="btn-icon btn-edit" onclick="editMeal(${mIdx})"><i class="fa-solid fa-pencil"></i></div>
+                                <div class="btn-icon btn-delete" onclick="deleteMeal(${mIdx})"><i class="fa-solid fa-trash"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="meal-body">
+                        ${foodsHTML}
+                        <div class="add-item-btn" onclick="openFoodModal(${mIdx}, null)">+ Adicionar Alimento</div>
+                    </div>
+                </div>`;
+            });
+        }
+
+        // --- ACTIONS ---
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            if(isEditMode) {
+                document.body.classList.add('editing');
+                document.getElementById('btnEditMode').classList.add('edit-active');
+            } else {
+                document.body.classList.remove('editing');
+                document.getElementById('btnEditMode').classList.remove('edit-active');
+                // Close all drawers when entering normal mode to avoid visual clutter
+                document.querySelectorAll('.sub-drawer').forEach(d => d.classList.remove('open'));
             }
         }
 
-        function saveLocal() { localStorage.setItem(DB_KEY, JSON.stringify(appData)); }
-        function save() { saveLocal(); pushCloud(); }
-
-        // Modais e Utils
-        function openModal(id) { document.getElementById('modal-'+id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById('modal-'+id).style.display = 'none'; }
-        
-        function setView(vId) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.dock-item').forEach(d => d.classList.remove('active'));
-            document.getElementById('view-'+vId).classList.add('active');
-            document.getElementById('btn-'+vId).classList.add('active');
+        function openMealModal() {
+            document.getElementById('modal-meal').style.display = 'flex';
+            document.getElementById('meal-name').value = '';
+            document.getElementById('meal-time').value = '12:00';
+            document.getElementById('edit-meal-idx-only').value = ""; // Clear ID for new
         }
 
-        function exportFile() {
-            const blob = new Blob([JSON.stringify(appData)], {type: "application/json"});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url; a.download = "benai_diet_backup.json";
-            a.click();
+        function editMeal(mIdx) {
+            document.getElementById('modal-meal').style.display = 'flex';
+            const meal = appData[currentTab][mIdx];
+            document.getElementById('meal-name').value = meal.name;
+            document.getElementById('meal-time').value = meal.time;
+            document.getElementById('edit-meal-idx-only').value = mIdx;
         }
 
-        function handleFileImport(input) {
-            const file = input.files[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const json = JSON.parse(e.target.result);
-                    if(json.days) {
-                        appData = json;
-                        save();
-                        renderAll();
-                        alert("Backup restaurado com sucesso!");
-                    } else { alert("Arquivo inválido (estrutura incorreta)."); }
-                } catch(err) { alert("Erro ao ler arquivo JSON."); }
+        function saveMeal() {
+            const name = document.getElementById('meal-name').value;
+            const time = document.getElementById('meal-time').value;
+            const idx = document.getElementById('edit-meal-idx-only').value;
+            
+            if(!name) return alert("Nome obrigatório");
+            
+            if(!appData[currentTab]) appData[currentTab] = [];
+
+            if (idx !== "") {
+                // Edit existing
+                appData[currentTab][idx].name = name;
+                appData[currentTab][idx].time = time;
+            } else {
+                // Create new
+                appData[currentTab].push({
+                    id: Date.now(),
+                    name: name,
+                    time: time,
+                    foods: []
+                });
+            }
+            
+            closeModal('meal');
+            saveAndRender();
+        }
+
+        function deleteMeal(idx) {
+            if(confirm("Apagar esta refeição?")) {
+                appData[currentTab].splice(idx, 1);
+                saveAndRender();
+            }
+        }
+
+        function openFoodModal(mIdx, fIdx) {
+            document.getElementById('modal-food').style.display = 'flex';
+            document.getElementById('edit-meal-idx').value = mIdx;
+            
+            if(fIdx !== null) {
+                // Edit
+                const food = appData[currentTab][mIdx].foods[fIdx];
+                document.getElementById('edit-food-idx').value = fIdx;
+                document.getElementById('inp-name').value = food.name;
+                document.getElementById('inp-qty').value = food.qty;
+                document.getElementById('inp-unit').value = food.unit;
+                document.getElementById('inp-sub').value = food.sub;
+                document.getElementById('inp-type').value = food.type || 'prot';
+            } else {
+                // Add
+                document.getElementById('edit-food-idx').value = "NEW";
+                document.getElementById('inp-name').value = "";
+                document.getElementById('inp-qty').value = "";
+                document.getElementById('inp-unit').value = "";
+                document.getElementById('inp-sub').value = "";
+                document.getElementById('inp-type').value = 'prot';
+                document.getElementById('inp-name').focus();
+            }
+        }
+
+        function saveFood() {
+            const mIdx = document.getElementById('edit-meal-idx').value;
+            const fIdx = document.getElementById('edit-food-idx').value;
+            
+            const food = {
+                name: document.getElementById('inp-name').value,
+                qty: document.getElementById('inp-qty').value,
+                unit: document.getElementById('inp-unit').value,
+                sub: document.getElementById('inp-sub').value,
+                type: document.getElementById('inp-type').value
             };
-            reader.readAsText(file);
+
+            if(!food.name) return alert("Nome é obrigatório");
+
+            if(fIdx === "NEW") {
+                appData[currentTab][mIdx].foods.push(food);
+            } else {
+                appData[currentTab][mIdx].foods[fIdx] = food;
+            }
+            
+            closeModal('food');
+            saveAndRender();
         }
 
-        function hardReset() {
-            if(confirm("Tem certeza? Isso apagará TUDO deste dispositivo.")) {
-                localStorage.removeItem(DB_KEY);
-                location.reload();
+        function deleteFood(mIdx, fIdx) {
+            if(confirm("Remover este item?")) {
+                appData[currentTab][mIdx].foods.splice(fIdx, 1);
+                saveAndRender();
             }
         }
 
-        function exportToClipboard() {
-            document.getElementById('jsonInput').value = JSON.stringify(appData, null, 2);
-            document.getElementById('jsonInput').select();
-            document.execCommand('copy');
-            alert("JSON copiado para área de transferência!");
-        }
-        function importFromText() {
-            try {
-                const txt = document.getElementById('jsonInput').value;
-                const json = JSON.parse(txt);
-                if(json.days) {
-                    appData = json;
-                    save();
-                    renderAll();
-                    alert("Dados atualizados via texto!");
-                } else { alert("Estrutura JSON inválida."); }
-            } catch(e) { alert("Erro de sintaxe no JSON."); }
+        function saveAndRender() {
+            localStorage.setItem(DB_KEY, JSON.stringify(appData));
+            renderAll();
+            syncCloud(); // Auto sync
         }
 
-        init();
+        // --- CLOUD UTILS ---
+        function openCloudModal() { 
+            const t = localStorage.getItem(TOKEN_KEY);
+            if(t) document.getElementById('manualToken').value = t;
+            document.getElementById('modal-cloud').style.display='flex'; 
+        }
+        function saveManualToken() { const t=document.getElementById('manualToken').value.trim(); if(t){ localStorage.setItem(TOKEN_KEY, t); alert('Token Salvo'); syncCloud(); } }
+        function removeToken() { if(confirm('Desconectar?')) { localStorage.removeItem(TOKEN_KEY); location.reload(); } }
+        function forceSync() { syncCloud().then(() => alert('Sincronização forçada concluída.')); }
+        
+        function backupData() { const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(appData)],{type:"application/json"})); a.download="benai_diet_backup.json"; a.click(); }
+        function restoreData(i) { 
+            const f=i.files[0]; if(!f) return;
+            const r=new FileReader();
+            r.onload=e=>{
+                try {
+                    const j=JSON.parse(e.target.result);
+                    if(confirm("Restaurar backup? Isso substituirá os dados atuais.")) {
+                        appData = j;
+                        saveAndRender();
+                        alert("Restaurado com sucesso!");
+                    }
+                } catch(e){ alert("Erro no arquivo."); }
+            };
+            r.readAsText(f);
+        }
+
+        // --- UTILS ---
+        function closeModal(id) { document.getElementById('modal-'+id).style.display = 'none'; }
+        function updateStatus(status) {
+            const el = document.getElementById('cloudDot');
+            if(el) el.className = 'cloud-dot ' + status;
+        }
+        
+        function initTheme() {
+            const t = localStorage.getItem('theme');
+            if(t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('themeIcon').setAttribute('data-lucide', 'sun');
+            }
+        }
+        function toggleLocalTheme() {
+            if(document.documentElement.getAttribute('data-theme') === 'dark') {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                document.getElementById('themeIcon').setAttribute('data-lucide', 'moon');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                document.getElementById('themeIcon').setAttribute('data-lucide', 'sun');
+            }
+            lucide.createIcons();
+        }
     </script>
 </body>
 </html>
-
