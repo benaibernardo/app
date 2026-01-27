@@ -1,1190 +1,1268 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="dark">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Benai Finance | Jar Method</title>
+    <title>BENAI FIN | Gestão Inteligente</title>
+    
+    <!-- LIBS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Space+Grotesk:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Outfit', 'sans-serif'], mono: ['Space Grotesk', 'monospace'] },
-                    colors: {
-                        brand: { dark: '#0f172a', accent: '#0ea5e9', success: '#10b981', danger: '#ef4444', warn: '#f59e0b' }
-                    }
-                }
-            }
-        }
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        body { background-color: #f8fafc; color: #1e293b; font-family: 'Outfit', sans-serif; transition: background-color 0.3s, color 0.3s; }
-        .dark body { background-color: #0f172a; color: #f8fafc; }
-        
-        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(0, 0, 0, 0.05); }
-        .dark .glass { background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.1); }
-        
-        .glass-header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 50; transition: background 0.3s; }
-        .dark .glass-header { background: rgba(15, 23, 42, 0.9); border-bottom: 1px solid rgba(56, 189, 248, 0.1); }
-        
-        .jar-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid transparent; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-        .jar-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.2); }
-        .dark .jar-card:hover { border-color: rgba(56, 189, 248, 0.3); box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5); }
-        
-        .input-std { background: #fff; border: 1px solid #e2e8f0; color: #1e293b; padding: 10px; border-radius: 8px; width: 100%; outline: none; transition: 0.2s; }
-        .dark .input-std { background: #1e293b; border: 1px solid #334155; color: white; }
-        .input-std:focus { border-color: #0ea5e9; box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2); }
-        
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        .dark ::-webkit-scrollbar-thumb { background: #334155; }
-        
-        .modal { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); display: none; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(4px); }
-        .dark .modal { background: rgba(0, 0, 0, 0.7); }
-        
-        /* CLOUD SHIELD (BLOCKING OVERLAY) */
-        #cloud-shield {
-            position: fixed; inset: 0; z-index: 9999;
-            background: #0f172a; color: white;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 0.5s ease;
+        :root {
+            --primary: #0f172a;
+            --accent: #0ea5e9;
+            --accent-glow: rgba(14, 165, 233, 0.5);
+            --card-glass: rgba(15, 23, 42, 0.95);
+            --glass-border: rgba(56, 189, 248, 0.15);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --bg-grad: linear-gradient(-45deg, #020617, #0f172a, #1e293b, #172554);
         }
-        .shield-spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top-color: #0ea5e9; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+
+        [data-theme="light"] {
+            --primary: #ffffff;
+            --accent: #0284c7;
+            --accent-glow: rgba(2, 132, 199, 0.3);
+            --card-glass: rgba(255, 255, 255, 0.95);
+            --glass-border: rgba(203, 213, 225, 0.8);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --bg-grad: linear-gradient(-45deg, #f0f9ff, #e0f2fe, #bae6fd, #f1f5f9);
+        }
+
+        @keyframes oceanMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            color: var(--text-main); 
+            overflow-x: hidden; 
+            min-height: 100vh;
+            background: var(--bg-grad);
+            background-size: 400% 400%;
+            animation: oceanMove 15s ease infinite;
+            transition: color 0.3s;
+        }
+
+        h1, h2, h3, h4, .font-heading { font-family: 'Outfit', sans-serif; }
+        .font-mono { font-family: 'Space Grotesk', monospace; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+        /* UI COMPONENTS */
+        .glass-card {
+            background: var(--card-glass);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1.2rem;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            transition: 0.2s;
+        }
+
+        .input-prime {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid var(--glass-border);
+            color: #0f172a; padding: 0.8rem 1rem;
+            border-radius: 0.8rem; width: 100%;
+            outline: none; transition: all 0.3s;
+            font-size: 0.9rem; font-weight: 600;
+        }
+        [data-theme="dark"] .input-prime { 
+            background: rgba(15, 23, 42, 0.8); 
+            color: white;
+            border-color: rgba(255,255,255,0.1);
+        }
+        .input-prime:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+        [data-theme="dark"] select.input-prime { background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); }
+
+        .btn-action {
+            background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+            color: white; font-weight: 700; border-radius: 0.8rem;
+            padding: 0.8rem; transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(14, 165, 233, 0.5); }
+
+        /* JARS GRID */
+        .jar-card {
+            position: relative; overflow: hidden;
+            display: flex; flex-direction: column; justify-content: space-between;
+            padding: 1rem; height: 100%;
+        }
+        .jar-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem; font-size: 1.1rem; color: white; }
+        .jar-bar-bg { height: 6px; background: rgba(128,128,128,0.2); border-radius: 3px; overflow: hidden; margin-top: 8px; }
+        .jar-bar-fill { height: 100%; border-radius: 3px; transition: width 1s ease; }
         
-        /* Z-INDEX FIX FOR NESTED MODALS */
-        #modalCats { z-index: 200; } 
+        /* HEADER */
+        .glass-header {
+            background: var(--card-glass);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky; top: 0; z-index: 50;
+        }
+
+        /* --- NEW EXTRACT STYLES (REFINED v5) --- */
+        .tx-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(128,128,128,0.1);
+            border-radius: 16px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .tx-card.clickable { cursor: pointer; }
+        [data-theme="light"] .tx-card { background: white; border-color: #e2e8f0; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
         
-        .modal-content { background: white; border-radius: 16px; padding: 24px; width: 90%; max-width: 450px; border: 1px solid #e2e8f0; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); animation: slideUp 0.3s ease-out; max-height: 90vh; overflow-y: auto; }
-        .dark .modal-content { background: #1e293b; border: 1px solid #334155; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+        .tx-card.clickable:hover { 
+            transform: translateY(-1px); 
+            border-color: var(--accent); 
+            background: rgba(255,255,255,0.05);
+        }
+
+        .tx-main-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
         
-        .toggle-checkbox:checked { right: 0; border-color: #0ea5e9; }
-        .toggle-checkbox:checked + .toggle-label { background-color: #0ea5e9; }
+        /* DATE BOX */
+        .tx-date-box { 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            width: 44px; height: 44px; 
+            background: rgba(128,128,128,0.1); 
+            border-radius: 10px; flex-shrink: 0; 
+            font-family: var(--font-mono); line-height: 1;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .tx-day { font-size: 1.2rem; font-weight: 800; color: var(--text-main); }
+        .tx-month { font-size: 0.6rem; text-transform: uppercase; font-weight: 800; color: var(--text-muted); margin-top: 2px; }
+
+        /* INFO BOX */
+        .tx-info { flex: 1; display: flex; flex-direction: column; justify-content: center; overflow: hidden; gap: 3px; }
         
-        /* SYNC INDICATOR DOT */
-        .sync-dot { width: 8px; height: 8px; border-radius: 50%; position: absolute; top: 8px; right: 8px; }
-        .sync-dot.active { background-color: #10b981; box-shadow: 0 0 5px #10b981; }
-        .sync-dot.inactive { background-color: #94a3b8; }
+        .tx-line-1 { display: flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .tx-desc { font-weight: 800; font-size: 0.95rem; color: var(--text-main); }
+        .tx-loc { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .tx-sep { color: var(--text-muted); opacity: 0.4; font-size: 0.8rem; font-weight: 300; }
         
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .tx-line-2 { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
+        .tx-cat-wrap { display: flex; align-items: center; gap: 6px; }
+        .tx-jar-icon { font-size: 0.8rem; } 
         
-        /* JAR COLORS */
-        .j-essen { --c: #3b82f6; } 
-        .j-free { --c: #a855f7; }  
-        .j-edu { --c: #06b6d4; }   
-        .j-long { --c: #10b981; }  
-        .j-play { --c: #f59e0b; }  
-        .j-give { --c: #ec4899; }  
+        .note-icon { color: #f59e0b; font-size: 0.7rem; animation: pulse 2s infinite; }
+
+        /* RIGHT BOX */
+        .tx-right { text-align: right; display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 4px; }
+        .tx-val-row { display: flex; align-items: center; gap: 8px; }
+        .tx-val { font-family: var(--font-mono); font-weight: 800; font-size: 1rem; white-space: nowrap; }
+        .pay-icon { font-size: 1.1rem; }
+        
+        .tx-installments { 
+            font-size: 0.65rem; font-weight: 800; color: #a78bfa; 
+            background: rgba(139, 92, 246, 0.15); padding: 1px 6px; 
+            border-radius: 4px; border: 1px solid rgba(139, 92, 246, 0.3);
+            display: inline-block;
+        }
+
+        /* ACTIONS (FIXED VISIBLE) */
+        .tx-actions { 
+            display: flex; gap: 8px; margin-top: 2px;
+            justify-content: flex-end;
+        }
+        
+        .action-icon { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; font-size: 0.75rem; }
+        .act-edit { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
+        .act-del { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+        .act-edit:hover { background: #38bdf8; color: white; }
+        .act-del:hover { background: #ef4444; color: white; }
+
+        /* DRAWER (Notes) */
+        .tx-drawer { 
+            max-height: 0; overflow: hidden; transition: max-height 0.3s ease-in-out, margin 0.3s; 
+            background: rgba(0,0,0,0.2); border-radius: 12px; margin-top: 0;
+        }
+        .tx-card.expanded .tx-drawer { max-height: 200px; margin-top: 10px; padding: 10px; border: 1px solid var(--glass-border); }
+        .tx-note-text { font-size: 0.85rem; color: var(--text-muted); font-style: italic; line-height: 1.4; border-left: 2px solid var(--accent); padding-left: 8px; }
+
+        /* FILTER STYLING */
+        .filter-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid var(--glass-border); margin-bottom: 12px; }
+        .filter-toggle { font-size: 0.75rem; font-weight: 800; color: var(--accent); background: rgba(14, 165, 233, 0.1); padding: 6px 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.2s; border: 1px solid rgba(14, 165, 233, 0.2); }
+        
+        .filter-panel { 
+            max-height: 0; overflow: hidden; transition: max-height 0.4s ease; 
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; 
+            opacity: 0;
+        }
+        .filter-panel.open { max-height: 400px; padding-bottom: 15px; opacity: 1; }
+        
+        .filter-group { position: relative; }
+        .filter-icon { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); z-index: 10; font-size: 0.8rem; pointer-events: none; }
+        
+        /* Specific Filter Icon Colors */
+        .fi-cal { color: #38bdf8; }
+        .fi-tag { color: #f59e0b; }
+        .fi-map { color: #ec4899; }
+        .fi-card { color: #10b981; }
+
+        .filter-select { 
+            width: 100%; background: rgba(15, 23, 42, 0.4); border: 1px solid var(--glass-border); 
+            color: var(--text-main); font-size: 0.7rem; padding: 8px 8px 8px 26px; border-radius: 8px; 
+            outline: none; font-weight: 600; cursor: pointer; appearance: none;
+        }
+        [data-theme="light"] .filter-select { background: white; }
+        .filter-select:hover { border-color: var(--accent); }
+        
+        /* Dark Mode Select Options Fix */
+        option { background-color: #1e293b; color: white; }
+        [data-theme="light"] option { background-color: white; color: #0f172a; }
+
+        /* Icon Colors */
+        .ic-pix { color: #2dd4bf; }
+        .ic-cred { color: #a78bfa; }
+        .ic-deb { color: #3b82f6; }
+        .ic-money { color: #10b981; }
+
+        /* MODALS */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 100; display: none; align-items: center; justify-content: center; padding: 15px; }
+        .modal-box { background: #ffffff; border: 1px solid var(--glass-border); width: 100%; max-width: 500px; border-radius: 20px; padding: 25px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto; color: #0f172a; }
+        [data-theme="dark"] .modal-box { background: #1e293b; color: #f8fafc; border-color: #334155; }
+
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; }
+        .status-dot.online { background: #34d399; box-shadow: 0 0 10px #34d399; }
+        .status-dot.offline { background: #94a3b8; }
+        .status-dot.sync { background: #38bdf8; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
     </style>
 </head>
-<body class="pb-20">
+<body>
 
-    <!-- CLOUD SHIELD (Load Blocker) -->
-    <div id="cloud-shield">
-        <div class="shield-spinner"></div>
-        <h2 class="text-xl font-bold font-sans tracking-widest uppercase">Sincronizando</h2>
-        <p class="text-xs text-slate-400 mt-2" id="shield-msg">Buscando versão mais recente...</p>
+    <!-- CLOUD SHIELD -->
+    <div id="cloud-shield" style="position:fixed; inset:0; z-index:99999; background:#020617; display:flex; flex-direction:column; align-items:center; justify-content:center; color:white;">
+        <div style="width:40px; height:40px; border:4px solid rgba(255,255,255,0.1); border-top-color:#0ea5e9; border-radius:50%; animation:spin 1s linear infinite;"></div>
+        <h2 class="mt-4 font-bold tracking-widest uppercase">Sincronizando</h2>
+        <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
     </div>
 
-    <!-- HEADER -->
-    <header class="glass-header px-6 py-4 flex justify-between items-center">
-        <div class="flex items-center gap-4">
-            <button onclick="window.parent.closeApp()" class="p-2 hover:bg-black/5 dark:hover:bg-white/10 rounded-lg transition"><i data-lucide="arrow-left" class="w-5 h-5 text-slate-500 dark:text-slate-400"></i></button>
-            <div>
-                <h1 class="text-xl font-bold text-slate-800 dark:text-white tracking-tight flex items-center gap-2"><i data-lucide="wallet" class="w-5 h-5 text-sky-500 dark:text-sky-400"></i> Benai<span class="text-sky-500 dark:text-sky-400">Fin</span></h1>
-                <p class="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-widest font-bold">Gestão Inteligente</p>
-            </div>
-        </div>
-        <div class="flex gap-2">
-            <button onclick="toggleLocalTheme()" class="p-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-500 dark:text-slate-300 hover:text-sky-500 transition"><i id="themeIcon" data-lucide="moon" class="w-5 h-5"></i></button>
-            <button onclick="openConfig()" class="p-2 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-500 dark:text-slate-300 hover:text-sky-500 transition"><i data-lucide="settings" class="w-5 h-5"></i></button>
-            <button onclick="openCloudModal()" class="p-2 bg-sky-50 dark:bg-sky-900/30 border border-sky-200 dark:border-sky-800 rounded-lg text-sky-500 dark:text-sky-400 hover:bg-sky-100 dark:hover:bg-sky-900/50 transition relative">
-                <i data-lucide="cloud" class="w-5 h-5"></i>
-                <div id="cloudStatusDot" class="sync-dot inactive"></div>
-            </button>
-        </div>
-    </header>
-
-    <!-- MAIN DASHBOARD -->
-    <main class="max-w-4xl mx-auto px-4 mt-6 space-y-8">
+    <!-- APP CONTENT -->
+    <div id="app-content">
         
-        <!-- MONTH NAVIGATOR (NATIVE PICKER) -->
-        <div class="flex justify-center items-center gap-4">
-            <button onclick="changeMonth(-1)" class="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full transition text-slate-500 dark:text-slate-300"><i data-lucide="chevron-left"></i></button>
-            <div class="relative group">
-                <h2 id="mainDateDisplay" class="text-xl font-bold text-slate-800 dark:text-white uppercase tracking-widest min-w-[180px] text-center cursor-pointer hover:text-sky-500 transition">Mês Atual</h2>
-                <input type="month" id="monthPicker" class="absolute inset-0 opacity-0 cursor-pointer" onchange="setSpecificMonth(this.value)">
-                <div class="absolute -bottom-4 left-0 right-0 text-[10px] text-center text-sky-500 opacity-0 group-hover:opacity-100 transition">Clique para mudar</div>
-            </div>
-            <button onclick="changeMonth(1)" class="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full transition text-slate-500 dark:text-slate-300"><i data-lucide="chevron-right"></i></button>
-        </div>
-
-        <!-- SUMMARY CARDS -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <!-- SALDO EM CONTA (Inclui TUDO) -->
-            <div class="glass p-5 rounded-2xl border-l-4 border-l-blue-500 relative overflow-hidden">
-                <div class="absolute right-0 top-0 p-4 opacity-10"><i data-lucide="landmark" class="w-16 h-16 text-slate-800 dark:text-white"></i></div>
-                <p class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Saldo Bancário (Real)</p>
-                <h2 class="text-2xl font-bold text-blue-600 dark:text-blue-400 font-mono mt-1" id="dispBankBalance">R$ 0,00</h2>
-                <p class="text-[10px] text-slate-400 mt-1">Considera todas movimentações (inclusive terceiros)</p>
-            </div>
-            <!-- CUSTO DE VIDA (Sem terceiros) -->
-            <div class="glass p-5 rounded-2xl border-l-4 border-l-rose-500 relative overflow-hidden">
-                <div class="absolute right-0 top-0 p-4 opacity-10"><i data-lucide="user-minus" class="w-16 h-16 text-slate-800 dark:text-white"></i></div>
-                <p class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Meu Gasto Real</p>
-                <h2 class="text-2xl font-bold text-rose-600 dark:text-rose-400 font-mono mt-1" id="dispMySpent">R$ 0,00</h2>
-                <p class="text-[10px] text-slate-400 mt-1">Exclui repasses/reembolsos</p>
-            </div>
-            <!-- ENTRADA PESSOAL -->
-            <div class="glass p-5 rounded-2xl border-l-4 border-l-emerald-500 relative overflow-hidden">
-                <div class="absolute right-0 top-0 p-4 opacity-10"><i data-lucide="user-plus" class="w-16 h-16 text-slate-800 dark:text-white"></i></div>
-                <p class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Minha Renda</p>
-                <h2 class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 font-mono mt-1" id="dispMyIncome">R$ 0,00</h2>
-                <p class="text-[10px] text-slate-400 mt-1">Exclui dinheiro de terceiros</p>
-            </div>
-        </div>
-
-        <!-- DEBT SNIPER WIDGET (MULTI TARGET) -->
-        <div id="debtSniper" class="glass p-6 rounded-2xl border border-rose-200 dark:border-rose-900/30 bg-rose-50/50 dark:bg-rose-900/10">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-sm font-bold text-rose-800 dark:text-rose-300 uppercase tracking-widest flex items-center gap-2"><i data-lucide="crosshair" class="w-4 h-4"></i> Sniper de Dívidas</h3>
-                <button onclick="editDebtTarget()" class="text-xs font-bold text-rose-600 dark:text-rose-400 hover:underline flex items-center gap-1"><i data-lucide="settings-2" class="w-3 h-3"></i> Gerenciar Dívidas</button>
-            </div>
-            
-            <div id="debtList" class="space-y-4">
-                <!-- JS RENDERED INDIVIDUAL DEBTS -->
-            </div>
-
-            <div class="mt-4 pt-4 border-t border-rose-200 dark:border-rose-800">
-                <div class="flex justify-between text-xs font-mono font-bold text-rose-900 dark:text-rose-100">
-                    <span>TOTAL PAGO</span>
-                    <span id="debtTotalPaid">R$ 0,00</span>
-                </div>
-                <div class="flex justify-between text-xs font-mono font-bold text-rose-900 dark:text-rose-100 mt-1">
-                    <span>TOTAL RESTANTE</span>
-                    <span id="debtTotalRemaining">R$ 0,00</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- NEW TRANSACTION BUTTON -->
-        <div class="glass p-4 rounded-xl flex gap-3 items-center">
-            <div class="flex-1">
-                <h3 class="font-bold text-slate-800 dark:text-white text-sm">Novo Lançamento</h3>
-                <p class="text-xs text-slate-500 dark:text-slate-400">Registre entradas, saídas ou pague contas.</p>
-            </div>
-            <button onclick="openTransactionModal()" class="bg-sky-600 hover:bg-sky-500 text-white font-bold py-2 px-6 rounded-lg shadow-lg shadow-sky-500/20 transition flex items-center gap-2 text-sm">
-                <i data-lucide="plus-circle" class="w-4 h-4"></i> LANÇAR
-            </button>
-        </div>
-
-        <!-- CHARTS SECTION -->
-        <div class="glass p-6 rounded-2xl border border-slate-200 dark:border-slate-700/50">
-            <h3 class="text-sm font-bold text-slate-800 dark:text-white uppercase tracking-widest mb-4 flex items-center gap-2"><i data-lucide="bar-chart-2" class="w-4 h-4 text-sky-500"></i> Gastos Diários (Pessoal)</h3>
-            <div class="h-48 w-full relative">
-                <canvas id="dailyChart"></canvas>
-            </div>
-        </div>
-
-        <!-- JARS GRID -->
-        <div>
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2"><i data-lucide="package" class="w-5 h-5 text-sky-500"></i> Seus Potes (Orçamento)</h3>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="jarsContainer">
-                <!-- JARS RENDERED JS -->
-            </div>
-        </div>
-
-        <!-- TRANSACTIONS (WITH FILTERS) -->
-        <div class="glass rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700/50">
-            <!-- Filter Header -->
-            <div class="p-4 border-b border-slate-200 dark:border-slate-700/50 bg-slate-50 dark:bg-slate-800/30">
-                <div class="flex justify-between items-center mb-3">
-                    <h3 class="font-bold text-slate-700 dark:text-white text-sm flex items-center gap-2"><i data-lucide="list" class="w-4 h-4 text-sky-500"></i> Extrato</h3>
-                    <button onclick="toggleFilters()" class="text-xs font-bold text-sky-600 dark:text-sky-400 flex items-center gap-1"><i data-lucide="filter" class="w-3 h-3"></i> Filtros</button>
-                </div>
-                
-                <!-- Expanded Filters -->
-                <div id="filterPanel" class="hidden grid grid-cols-1 md:grid-cols-4 gap-3 mb-3 animate-fade-in">
-                    <input type="text" id="filterText" placeholder="Buscar (Local, Desc)..." class="input-std text-xs" onkeyup="renderTransactions()">
-                    <select id="filterCat" class="input-std text-xs" onchange="renderTransactions()">
-                        <option value="">Todas Categorias</option>
-                    </select>
-                    <!-- NEW DATE FILTER -->
-                    <select id="filterDate" class="input-std text-xs" onchange="renderTransactions()">
-                        <option value="">Todas as Datas</option>
-                    </select>
-                    <div class="flex items-center gap-2">
-                        <input type="checkbox" id="filterHideThirdParty" class="w-4 h-4 rounded border-slate-300" onchange="renderTransactions()" checked>
-                        <label for="filterHideThirdParty" class="text-xs text-slate-600 dark:text-slate-300">Ocultar Terceiros</label>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="max-h-[500px] overflow-y-auto" id="txList">
-                <!-- TX RENDERED JS -->
-            </div>
-        </div>
-
-    </main>
-
-    <!-- MODAL CLOUD & BACKUP (NEW) -->
-    <div id="modalCloud" class="modal">
-        <div class="modal-content max-w-sm text-center">
-            <div class="flex justify-end mb-2">
-                <button onclick="closeModal('modalCloud')"><i data-lucide="x" class="w-5 h-5 text-slate-400"></i></button>
-            </div>
-            <div class="w-16 h-16 bg-sky-100 dark:bg-sky-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i data-lucide="cloud" class="w-8 h-8 text-sky-600 dark:text-sky-400"></i>
-            </div>
-            <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-1">Central de Dados</h3>
-            <p class="text-xs text-slate-500 mb-6">Sincronização & Segurança</p>
-            
-            <div class="space-y-4">
-                <div class="text-left">
-                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Token GitHub (Acesso Direto)</label>
-                    <div class="flex gap-2">
-                        <input type="password" id="manualToken" class="input-std text-xs" placeholder="ghp_...">
-                        <button onclick="saveLocalToken()" class="p-2 bg-emerald-500 text-white rounded-lg"><i data-lucide="save" class="w-4 h-4"></i></button>
-                    </div>
-                </div>
-
-                <div class="border-t border-slate-200 dark:border-slate-700 my-4"></div>
-
-                <button onclick="backupData()" class="w-full py-3 rounded-xl bg-slate-800 dark:bg-slate-700 text-white font-bold text-xs flex justify-center gap-2 hover:bg-slate-700 transition">
-                    <i data-lucide="download"></i> FAZER BACKUP (JSON)
-                </button>
-                
-                <label class="w-full py-3 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 text-slate-500 font-bold text-xs cursor-pointer flex justify-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
-                    <i data-lucide="upload"></i> RESTAURAR BACKUP
-                    <input type="file" id="fileIn" hidden onchange="restoreData(this)">
-                </label>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL CONFIG (SMART CALC & DEBTS) -->
-    <div id="modalConfig" class="modal">
-        <div class="modal-content max-w-lg">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2"><i data-lucide="settings" class="w-5 h-5 text-sky-500"></i> Configurações</h3>
-                <button onclick="closeModal('modalConfig')"><i data-lucide="x" class="w-5 h-5 text-slate-400 hover:text-slate-600 dark:hover:text-white"></i></button>
-            </div>
-            
-            <div class="space-y-6 max-h-[70vh] overflow-y-auto pr-2">
-                <!-- Smart Calc Section -->
-                <div class="space-y-3">
-                    <h4 class="text-xs font-bold text-sky-600 dark:text-sky-400 uppercase border-b border-slate-200 dark:border-slate-700 pb-1">Orçamento Inteligente</h4>
-                    <div><label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Renda Mensal Estimada</label><input type="text" id="cfgIncome" class="input-std font-mono text-lg font-bold" oninput="maskMoney(this)" placeholder="R$ 0,00"></div>
+        <!-- HEADER -->
+        <header class="glass-header">
+            <div class="max-w-4xl mx-auto px-4 h-[70px] flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <button onclick="window.location.href='index.html'" class="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center border border-white/10 transition">
+                        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                    </button>
                     <div>
-                        <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Gastos Fixos (Obrigatórios)</label>
-                        <div id="fixedList" class="space-y-2 mb-2"></div>
-                        <div class="flex gap-2"><input id="newFixedName" class="input-std text-xs" placeholder="Nome (Ex: Aluguel)"><input id="newFixedVal" class="input-std text-xs font-mono w-24" placeholder="R$ 0,00" oninput="maskMoney(this)"><button onclick="addFixedCost()" class="p-2 bg-slate-200 dark:bg-slate-700 rounded-lg"><i data-lucide="plus" class="w-3 h-3"></i></button></div>
+                        <h1 class="text-lg font-bold leading-none font-heading flex items-center gap-2">
+                            BENAI <span class="text-sky-500">FIN</span>
+                        </h1>
+                        <p class="text-[10px] opacity-70 font-bold uppercase tracking-widest mt-0.5">Gestão de Potes</p>
                     </div>
-                    <div class="grid grid-cols-3 gap-2 mt-2"><button onclick="applyPreset('conservative')" class="py-2 text-[10px] font-bold bg-emerald-100 text-emerald-700 rounded hover:bg-emerald-200">Conservador</button><button onclick="applyPreset('balanced')" class="py-2 text-[10px] font-bold bg-blue-100 text-blue-700 rounded hover:bg-blue-200">Equilibrado</button><button onclick="applyPreset('aggressive')" class="py-2 text-[10px] font-bold bg-rose-100 text-rose-700 rounded hover:bg-rose-200">Agressivo (Econ)</button></div>
-                    <button onclick="runSmartCalc()" class="w-full py-2 bg-sky-600 text-white font-bold rounded-lg text-xs hover:bg-sky-500">RECALCULAR POTES</button>
-                    <div id="jarSliders" class="space-y-3 mt-2 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg"></div>
                 </div>
-                <!-- Debts Section -->
-                <div class="space-y-3 pt-4">
-                    <h4 class="text-xs font-bold text-rose-600 dark:text-rose-400 uppercase border-b border-slate-200 dark:border-slate-700 pb-1">Gestão de Dívidas</h4>
-                    <p class="text-[10px] text-slate-500">Cadastre suas dívidas para abatimento no Sniper.</p>
-                    <div id="cfgDebtList" class="space-y-2"></div>
-                    <div class="flex gap-2"><input id="newDebtName" class="input-std text-xs" placeholder="Nome (Ex: C6)"><input id="newDebtVal" class="input-std text-xs font-mono w-24" placeholder="Total" oninput="maskMoney(this)"><button onclick="addDebtConfig()" class="p-2 bg-rose-100 dark:bg-rose-900/30 text-rose-600 rounded-lg hover:bg-rose-200"><i data-lucide="plus" class="w-3 h-3"></i></button></div>
+                <div class="flex gap-2">
+                    <button onclick="toggleTheme()" class="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center border border-white/10 transition">
+                        <i id="theme-icon" data-lucide="moon" class="w-5 h-5"></i>
+                    </button>
+                    <button onclick="openConfig()" class="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center border border-white/10 transition">
+                        <i data-lucide="settings-2" class="w-5 h-5"></i>
+                    </button>
+                    <button onclick="openCloudModal()" class="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center border border-white/10 transition relative">
+                        <div id="statusDot" class="status-dot offline absolute top-2 right-2"></div>
+                        <i data-lucide="cloud" class="w-5 h-5"></i>
+                    </button>
                 </div>
             </div>
-            <button onclick="saveConfig()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl shadow-lg transition mt-4">SALVAR TUDO</button>
-        </div>
-    </div>
+        </header>
 
-    <!-- MODAL CATEGORIES -->
-    <div id="modalCats" class="modal">
-        <div class="modal-content">
-            <div class="flex justify-between items-center mb-4"><h3 class="text-lg font-bold text-slate-800 dark:text-white">Gerenciar Categorias</h3><button onclick="closeModal('modalCats')"><i data-lucide="x" class="w-5 h-5"></i></button></div>
-            <div class="flex gap-2 mb-4"><input id="newCatName" class="input-std" placeholder="Nome (Ex: Uber)"><select id="newCatJar" class="input-std w-40"></select><button onclick="addNewCategory()" class="bg-emerald-500 text-white p-2 rounded-lg"><i data-lucide="plus" class="w-5 h-5"></i></button></div>
-            <div id="catList" class="max-h-60 overflow-y-auto space-y-2"></div>
-        </div>
-    </div>
+        <main class="max-w-4xl mx-auto px-4 py-6 space-y-6 pb-24">
 
-    <!-- MODAL INFO -->
-    <div id="modalInfo" class="modal">
-        <div class="modal-content">
-            <div class="flex justify-between items-center mb-4"><h3 class="text-lg font-bold text-slate-800 dark:text-white" id="infoTitle">Titulo</h3><button onclick="closeModal('modalInfo')"><i data-lucide="x" class="w-5 h-5"></i></button></div>
-            <p id="infoText" class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed"></p>
-        </div>
+            <!-- MAIN ACTION BUTTON -->
+            <div class="flex justify-center -mt-2 mb-4">
+                <button onclick="openTxModal()" class="btn-action w-full max-w-sm py-4 text-lg rounded-2xl shadow-lg shadow-sky-500/20 transform hover:scale-105 transition">
+                    <i data-lucide="plus-circle" class="w-6 h-6"></i> NOVO MOVIMENTO
+                </button>
+            </div>
+
+            <!-- DATE & SUMMARY -->
+            <div class="flex justify-between items-center bg-white/5 p-2 rounded-2xl border border-white/10">
+                <button onclick="changeMonth(-1)" class="w-10 h-10 flex items-center justify-center opacity-60 hover:opacity-100"><i data-lucide="chevron-left"></i></button>
+                <div class="text-center relative">
+                    <h2 id="monthDisplay" class="text-lg font-bold uppercase tracking-widest cursor-pointer">--/--</h2>
+                    <input type="month" id="monthPicker" class="absolute inset-0 opacity-0 cursor-pointer" onchange="setSpecificMonth(this.value)">
+                </div>
+                <button onclick="changeMonth(1)" class="w-10 h-10 flex items-center justify-center opacity-60 hover:opacity-100"><i data-lucide="chevron-right"></i></button>
+            </div>
+
+            <!-- BALANCES (TRIO VIEW) -->
+            <div class="grid grid-cols-3 gap-3">
+                <div class="glass-card p-4 relative overflow-hidden flex flex-col justify-center border-l-4 border-emerald-500">
+                    <p class="text-[9px] font-bold opacity-60 mb-1 uppercase">Saldo Real</p>
+                    <h3 id="dsp-balance-real" class="text-sm md:text-lg font-bold font-mono tracking-tight text-emerald-500">R$ 0,00</h3>
+                </div>
+                <div class="glass-card p-4 relative overflow-hidden flex flex-col justify-center border-l-4 border-red-500">
+                    <p class="text-[9px] font-bold opacity-60 mb-1 uppercase">Gastos Totais</p>
+                    <h3 id="dsp-total-expenses" class="text-sm md:text-lg font-bold font-mono tracking-tight text-red-500">R$ 0,00</h3>
+                </div>
+                <div class="glass-card p-4 relative overflow-hidden flex flex-col justify-center border-l-4 border-sky-500">
+                    <p class="text-[9px] font-bold opacity-60 mb-1 uppercase">Saldo Pessoal</p>
+                    <h3 id="dsp-balance-personal" class="text-sm md:text-lg font-bold font-mono tracking-tight text-sky-500">R$ 0,00</h3>
+                </div>
+            </div>
+
+            <!-- JARS GRID -->
+            <div>
+                <div class="flex justify-between items-end mb-4 px-1">
+                    <h3 class="text-sm font-bold uppercase tracking-wider flex items-center gap-2"><i data-lucide="layers" class="w-4 h-4 text-sky-500"></i> Meus Potes</h3>
+                    <span class="text-[10px] opacity-60 font-bold">Base: Renda Líquida</span>
+                </div>
+                <div id="jarsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- JS RENDERED -->
+                </div>
+            </div>
+
+            <!-- EXTRACT & FILTERS REFACTORED -->
+            <div class="glass-card overflow-hidden">
+                <div class="p-4">
+                    <!-- NEW FILTER HEADER -->
+                    <div class="filter-header">
+                        <h3 class="text-xs font-bold uppercase tracking-wider opacity-70">Extrato Detalhado</h3>
+                        <button onclick="toggleFilters()" class="filter-toggle" id="filterToggleBtn">
+                            FILTRAR <i class="fa-solid fa-chevron-down"></i>
+                        </button>
+                    </div>
+
+                    <!-- COLLAPSIBLE FILTER DRAWER -->
+                    <div id="filter-panel" class="filter-panel">
+                        <div class="filter-group">
+                            <i class="fa-regular fa-calendar filter-icon fi-cal"></i>
+                            <select id="filter-day" class="filter-select" onchange="setFilter('day', this.value)"></select>
+                        </div>
+                        <div class="filter-group">
+                            <i class="fa-solid fa-tag filter-icon fi-tag"></i>
+                            <select id="filter-cat" class="filter-select" onchange="setFilter('cat', this.value)"></select>
+                        </div>
+                        <div class="filter-group">
+                            <i class="fa-solid fa-map-pin filter-icon fi-map"></i>
+                            <select id="filter-place" class="filter-select" onchange="setFilter('place', this.value)"></select>
+                        </div>
+                        <div class="filter-group">
+                            <i class="fa-regular fa-credit-card filter-icon fi-card"></i>
+                            <select id="filter-method" class="filter-select" onchange="setFilter('method', this.value)"></select>
+                        </div>
+                        <div class="col-span-4 mt-2">
+                            <button onclick="resetFilters()" class="w-full py-2 bg-white/5 border border-white/10 text-[10px] font-bold text-slate-400 rounded-lg hover:bg-white/10 transition uppercase tracking-widest">Limpar Filtros</button>
+                        </div>
+                    </div>
+
+                    <div id="txList" class="mt-4">
+                        <!-- JS Rendered Cards -->
+                    </div>
+                </div>
+            </div>
+
+        </main>
     </div>
 
     <!-- MODAL TRANSACTION -->
-    <div id="modalTx" class="modal">
-        <div class="modal-content">
+    <div id="modal-tx" class="modal-overlay">
+        <div class="modal-box">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-lg font-bold text-slate-800 dark:text-white" id="mTxTitle">Nova Movimentação</h3>
-                <button onclick="closeModal('modalTx')"><i data-lucide="x" class="w-5 h-5 text-slate-400 hover:text-slate-600 dark:hover:text-white"></i></button>
+                <h3 class="text-xl font-bold" id="txTitle">Novo Lançamento</h3>
+                <button onclick="closeModal('modal-tx')"><i data-lucide="x"></i></button>
             </div>
             
-            <form id="txForm" onsubmit="handleTxSubmit(event)" class="space-y-4">
+            <form id="txForm" onsubmit="saveTx(event)" class="space-y-4">
                 <input type="hidden" id="txId">
                 
-                <!-- TIPO -->
-                <div class="grid grid-cols-2 gap-3">
-                    <button type="button" onclick="setTxType('out')" id="btnTypeOut" class="py-3 rounded-xl border border-rose-500/50 text-rose-500 font-bold text-sm transition flex justify-center items-center gap-2"><i data-lucide="arrow-up-right"></i> SAÍDA (Gasto)</button>
-                    <button type="button" onclick="setTxType('in')" id="btnTypeIn" class="py-3 rounded-xl border border-emerald-500/50 text-emerald-500 font-bold text-sm transition flex justify-center items-center gap-2"><i data-lucide="arrow-down-left"></i> ENTRADA (Renda)</button>
+                <!-- TYPE TOGGLE -->
+                <div class="grid grid-cols-2 gap-3 p-1 bg-slate-100 dark:bg-white/5 rounded-xl border border-slate-200 dark:border-white/10">
+                    <button type="button" onclick="setTxType('out')" id="btnOut" class="py-2 rounded-lg text-xs font-bold transition">SAÍDA (Gasto)</button>
+                    <button type="button" onclick="setTxType('in')" id="btnIn" class="py-2 rounded-lg text-xs font-bold transition">ENTRADA (Renda)</button>
                 </div>
 
-                <!-- DESCRIPTION & LOCAL -->
-                <div><label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">O que?</label><input id="txDesc" class="input-std" placeholder="Ex: Almoço" required></div>
-                <div><label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Onde? (Local)</label><input id="txLocal" class="input-std" placeholder="Ex: Restaurante X"></div>
+                <!-- VALUE & DATE -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Valor (R$)</label>
+                        <input type="text" id="txVal" class="input-prime font-mono text-lg font-bold" placeholder="0,00" oninput="maskMoney(this)" required>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Data</label>
+                        <input type="date" id="txDate" class="input-prime" required>
+                    </div>
+                </div>
 
-                <!-- FORM OF PAYMENT (NEW) -->
+                <!-- PLACE -->
                 <div>
-                    <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Forma de Pagamento</label>
-                    <select id="txMethod" class="input-std">
-                        <option value="pix">Pix</option>
-                        <option value="debit">Débito</option>
-                        <option value="credit">Crédito</option>
-                        <option value="cash">Dinheiro</option>
-                        <option value="transfer">Transferência</option>
-                    </select>
+                    <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Local / Estabelecimento</label>
+                    <input type="text" id="txPlace" class="input-prime" placeholder="Ex: Mercado Angeloni, Posto Shell..." required>
                 </div>
 
-                <!-- VALOR / DATA -->
-                <div class="grid grid-cols-2 gap-3">
-                    <div><label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Valor</label><input id="txVal" class="input-std font-mono text-lg" placeholder="R$ 0,00" oninput="maskMoney(this)" required></div>
-                    <div><label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Data</label><input type="date" id="txDate" class="input-std" required></div>
-                </div>
-
-                <!-- AREA DINAMICA: CATEGORIA (OUT) OU FONTE (IN) -->
-                <div id="divCategory">
-                    <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Categoria (Define o Pote)</label>
+                <!-- CATEGORY UNIFIED -->
+                <div id="catSection">
+                    <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Categoria do Gasto</label>
                     <div class="flex gap-2">
-                        <select id="txCat" class="input-std flex-1" onchange="renderDebtOptions()"></select>
-                        <button type="button" onclick="openCatManager()" class="p-2 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-sky-500 hover:border-sky-400 transition" title="Criar Nova Categoria"><i data-lucide="plus" class="w-5 h-5"></i></button>
+                        <select id="txCatUnified" class="input-prime text-sm flex-1">
+                            <!-- Populated with OptGroups -->
+                        </select>
+                        <button type="button" onclick="openCatManager()" class="w-12 rounded-lg bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/20 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-white/20 transition text-slate-600 dark:text-white"><i data-lucide="settings-2" class="w-5 h-5"></i></button>
                     </div>
-                    <!-- Debt Selector Updated (Always Available if Debts Exist) -->
-                    <div id="debtSelector" class="hidden mt-2 bg-rose-50 dark:bg-rose-900/20 p-2 rounded border border-rose-100 dark:border-rose-800">
-                        <label class="block text-[9px] font-bold text-rose-600 uppercase mb-1">Abater do Sniper de Dívidas? (Opcional)</label>
-                        <select id="txDebtItem" class="input-std text-xs h-8 py-0"></select>
+                </div>
+
+                <!-- TRANSPORT OPTIONS -->
+                <div id="transportSection">
+                    <button type="button" onclick="document.getElementById('transportFields').classList.toggle('hidden')" class="text-[10px] font-bold text-sky-500 uppercase flex items-center gap-1 mb-2 hover:underline">
+                        <i class="fa-solid fa-car"></i> Opções de Transporte (Uber/99)
+                    </button>
+                    <div id="transportFields" class="hidden grid grid-cols-2 gap-4 mb-2 p-3 bg-sky-500/10 rounded-xl">
+                        <div>
+                            <label class="text-[9px] font-bold opacity-60 uppercase block mb-1">Origem</label>
+                            <input type="text" id="txOrigin" class="input-prime text-xs" placeholder="Ex: Casa">
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-bold opacity-60 uppercase block mb-1">Destino</label>
+                            <input type="text" id="txDest" class="input-prime text-xs" placeholder="Ex: Trabalho">
+                        </div>
                     </div>
-                    <div id="jarPreview" class="mt-2 text-xs font-bold text-slate-400 flex items-center gap-2 hidden"><span>Sai do Pote:</span> <span id="jarPreviewTag" class="px-2 py-1 rounded text-white bg-slate-500">...</span></div>
                 </div>
 
-                <div id="divSource" class="hidden">
-                    <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Fonte de Renda</label>
-                    <select id="txSource" class="input-std"><option value="Salário">Salário</option><option value="Consultoria">Consultoria</option><option value="Venda">Venda</option><option value="Investimentos">Investimentos</option><option value="Repasse (Terceiros)">Repasse (Terceiros)</option><option value="Resgate (Caixinha)">Resgate (Caixinha)</option><option value="Outros">Outros</option></select>
+                <!-- PAYMENT & THIRD PARTY -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Pagamento</label>
+                        <select id="txMethod" class="input-prime text-sm" onchange="toggleInstallments()">
+                            <option value="Débito" selected>💳 Débito</option>
+                            <option value="Crédito">💳 Crédito</option>
+                            <option value="Pix">💠 Pix</option>
+                            <option value="Dinheiro">💵 Dinheiro</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end">
+                        <label class="flex items-center gap-2 cursor-pointer p-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 w-full hover:bg-slate-100 dark:hover:bg-white/10 transition h-[42px]">
+                            <input type="checkbox" id="txThirdParty" class="accent-sky-500 w-4 h-4">
+                            <div class="leading-tight">
+                                <div class="text-[10px] font-bold">Mov. Terceiros?</div>
+                            </div>
+                        </label>
+                    </div>
                 </div>
 
-                <!-- TERCEIROS TOGGLE -->
-                <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-100 dark:border-slate-700">
-                    <div><div class="text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase">Movimentação de Terceiros</div><div class="text-[9px] text-slate-400">Ignorar nos gráficos de gastos e potes.</div></div>
-                    <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in"><input type="checkbox" id="txThirdParty" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-slate-300"/><label for="txThirdParty" class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-300 cursor-pointer"></label></div>
+                <!-- INSTALLMENTS (CREDIT ONLY) -->
+                <div id="installmentsSection" class="hidden">
+                    <label class="text-[10px] font-bold opacity-60 uppercase block mb-1 text-purple-400">Parcelamento (Lançar Futuro)</label>
+                    <div class="flex items-center gap-3 p-3 bg-purple-500/10 border border-purple-500/20 rounded-xl">
+                        <input type="number" id="txInstallments" class="input-prime w-20 text-center font-bold" value="1" min="1" max="24">
+                        <div class="text-xs opacity-70">x Parcelas (Cria lançamentos futuros)</div>
+                    </div>
                 </div>
 
-                <!-- DETALHES -->
-                <div><label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Detalhes / Notas</label><textarea id="txNotes" class="input-std" rows="2" placeholder="Ex: Parcela 2/10, Reunião de negócios..."></textarea></div>
+                <!-- NOTES -->
+                <div>
+                    <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Nota / Detalhes (Opcional)</label>
+                    <textarea id="txNotes" class="input-prime text-sm" rows="3" placeholder="Ex: Jantar com amigos..."></textarea>
+                </div>
 
-                <button type="submit" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-bold py-3 rounded-xl shadow-lg transition mt-2">CONFIRMAR LANÇAMENTO</button>
+                <div class="pt-2 flex gap-3">
+                    <button type="button" id="btnDelete" onclick="deleteTx()" class="hidden px-4 py-3 bg-red-500/10 text-red-500 rounded-xl font-bold text-xs border border-red-500/30 hover:bg-red-500/20"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                    <button type="submit" class="btn-action w-full text-sm">CONFIRMAR LANÇAMENTO</button>
+                </div>
             </form>
         </div>
     </div>
 
-    <!-- TOAST -->
-    <div id="toast" class="fixed top-5 right-5 bg-emerald-500 text-white px-4 py-2 rounded-lg font-bold shadow-xl transform translate-x-full transition-transform duration-300 z-[200]">Salvo com sucesso!</div>
+    <!-- MODAL CATEGORY MANAGER -->
+    <div id="modal-cat-manager" class="modal-overlay" style="z-index: 102;">
+        <div class="modal-box">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-200 dark:border-white/10 pb-2">
+                <h3 class="text-lg font-bold">Gerenciar Categorias</h3>
+                <button onclick="closeModal('modal-cat-manager')"><i data-lucide="x"></i></button>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Nova Categoria</label>
+                    <input id="newCatName" class="input-prime text-sm mb-2" placeholder="Nome (Ex: Academia)">
+                    <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Pertence ao Pote</label>
+                    <select id="newCatJar" class="input-prime text-sm mb-2">
+                        <!-- Jars -->
+                    </select>
+                    <button type="button" onclick="addCategory()" class="w-full py-2 bg-emerald-500 text-white rounded-lg text-xs font-bold hover:bg-emerald-600 transition">ADICIONAR CATEGORIA</button>
+                </div>
+                
+                <div class="h-px bg-slate-200 dark:bg-white/10 my-2"></div>
+                
+                <div>
+                    <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Excluir Existente</label>
+                    <div class="flex gap-2">
+                        <select id="delCatSelect" class="input-prime text-sm flex-1"></select>
+                        <button type="button" onclick="deleteCategory()" class="px-3 bg-red-500/10 text-red-500 border border-red-500/20 rounded-lg text-xs font-bold hover:bg-red-500/20">EXCLUIR</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIG -->
+    <div id="modal-config" class="modal-overlay">
+        <div class="modal-box">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold">Configuração de Potes</h3>
+                <button onclick="closeModal('modal-config')"><i data-lucide="x"></i></button>
+            </div>
+            
+            <div class="space-y-6">
+                <!-- INCOME & FIXED -->
+                <div class="p-4 rounded-xl bg-sky-500/10 border border-sky-500/20">
+                    <label class="text-[10px] font-bold text-sky-500 uppercase block mb-1">Renda Mensal Total</label>
+                    <input type="text" id="cfgIncome" class="input-prime font-mono text-xl" oninput="maskMoney(this)">
+                    
+                    <label class="text-[10px] font-bold text-red-400 uppercase block mt-3 mb-1">Gastos Fixos (Aluguel, Luz, Net...)</label>
+                    <input type="text" id="cfgFixed" class="input-prime font-mono text-lg" oninput="maskMoney(this)">
+                    
+                    <div class="mt-2 text-[10px] text-right font-bold opacity-60">Base para Potes (Renda - Fixos): <span id="cfgBaseCalc">R$ 0,00</span></div>
+                </div>
+
+                <!-- PRESETS -->
+                <div>
+                    <p class="text-[10px] font-bold opacity-60 uppercase mb-2">Predefinições</p>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="applyPreset('standard')" class="py-2 px-1 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-[10px] font-bold hover:border-sky-500 transition">EQUILIBRADO</button>
+                        <button onclick="applyPreset('debt')" class="py-2 px-1 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-[10px] font-bold hover:border-red-500 transition">DÍVIDAS</button>
+                        <button onclick="applyPreset('invest')" class="py-2 px-1 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-[10px] font-bold hover:border-emerald-500 transition">INVESTIDOR</button>
+                    </div>
+                </div>
+                
+                <!-- JARS LIST -->
+                <div id="jarConfigList" class="space-y-3 max-h-[300px] overflow-y-auto pr-2">
+                    <!-- JS Rendered -->
+                </div>
+
+                <button onclick="saveConfig()" class="btn-action w-full">SALVAR E RECALCULAR</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CLOUD -->
+    <div id="modal-cloud" class="modal-overlay">
+        <div class="modal-box text-center">
+            <div class="w-16 h-16 bg-sky-500/20 rounded-full flex items-center justify-center mx-auto mb-4 text-sky-500"><i data-lucide="cloud" class="w-8 h-8"></i></div>
+            <h3 class="text-xl font-bold mb-2">Nuvem & Backup</h3>
+            
+            <input type="password" id="manualToken" placeholder="Token GitHub (ghp_...)" class="input-prime text-center text-xs mb-4">
+            
+            <div class="grid grid-cols-2 gap-3 mb-6">
+                <button onclick="saveManualToken()" class="py-2 bg-sky-500 text-white rounded-lg text-xs font-bold hover:bg-sky-600 transition">CONECTAR</button>
+                <button onclick="removeToken()" class="py-2 bg-red-500/10 text-red-500 border border-red-500/20 rounded-lg text-xs font-bold hover:bg-red-500/20 transition">DESCONECTAR</button>
+            </div>
+            
+            <div class="border-t border-slate-200 dark:border-white/10 pt-4 space-y-3">
+                <button onclick="backupJSON()" class="w-full py-3 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-xs font-bold hover:bg-slate-200 dark:hover:bg-white/10 flex items-center justify-center gap-2"><i data-lucide="download" class="w-4 h-4"></i> DOWNLOAD BACKUP</button>
+                <label class="w-full py-3 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-xs font-bold hover:bg-slate-200 dark:hover:bg-white/10 flex items-center justify-center gap-2 cursor-pointer">
+                    <i data-lucide="upload" class="w-4 h-4"></i> RESTAURAR ARQUIVO
+                    <input type="file" hidden onchange="restoreJSON(this)">
+                </label>
+            </div>
+            <button onclick="closeModal('modal-cloud')" class="mt-6 text-xs font-bold opacity-50 hover:opacity-100">FECHAR</button>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-6 right-6 bg-emerald-600 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-4 z-[110] translate-x-[150%] transition-transform duration-300"><i data-lucide="check-circle" class="w-5 h-5"></i> <span id="toast-msg" class="text-sm font-bold"></span></div>
 
     <script>
-        // --- MASTER CONFIG (FIXED) ---
-        const DB_KEY = 'BENAI_FINANCE_MASTER'; // Definitive Key
-        const TOKEN_KEY = 'BENAI_GLOBAL_TOKEN'; 
+        // --- CONSTANTS ---
+        const DB_KEY = 'BENAI_FIN_V3';
+        const TOKEN_KEY = 'BENAI_GLOBAL_TOKEN';
         const GIST_DESC = 'BENAI_FINANCE_DB';
-        const GIST_FILENAME = 'finance_master.json';
-        
-        // MIGRATION CANDIDATES
-        const OLD_DB_KEYS = ['benai_fin_v6', 'benai_fin_v5', 'finance_db_v1', 'benai_fin_v4'];
-        const OLD_GIST_FILES = ['finance_v5.json', 'finance.json', 'finance_db_v1.json'];
+        const GIST_FILENAME = 'finance_db.json';
 
-        const DEFAULT_JARS = [
-            { id: 'essen', name: 'Necessidades (55%)', perc: 55, color: 'j-essen', icon: 'home', desc: 'Sobrevivência: Aluguel, contas, mercado. Cobre seus Custos Fixos.' },
-            { id: 'free', name: 'Lib. Financeira (15%)', perc: 15, color: 'j-free', icon: 'trending-up', desc: 'Investimentos.' },
-            { id: 'long', name: 'Sonhos/Reserva (15%)', perc: 15, color: 'j-long', icon: 'piggy-bank', desc: 'Reserva de Emergência, Viagens, Bens.' },
-            { id: 'edu', name: 'Educação (5%)', perc: 5, color: 'j-edu', icon: 'book-open', desc: 'Cursos, livros, mentoria.' },
-            { id: 'play', name: 'Lazer (10%)', perc: 10, color: 'j-play', icon: 'gamepad-2', desc: 'Torrar sem culpa.' }
-        ];
+        // Updated Defaults
+        const DEFAULT_CATEGORIES = {
+            'essen': ['Aluguel', 'Mercado', 'Farmácia', 'Combustível', 'Contas', 'Celular'],
+            'free': ['Aporte', 'Reserva', 'CDB', 'FIIs'],
+            'long': ['Carro Novo', 'Casa Própria', 'Viagem Europa'],
+            'edu': ['Livros', 'Cursos', 'Mentoria', 'Inglês'],
+            'play': ['Restaurante', 'Cinema', 'Streaming', 'Ifood', 'Uber Lazer']
+        };
+
+        const JARS_INFO = {
+            'essen': { icon: 'home', color: 'text-blue-500', desc: 'Necessidades Básicas' },
+            'free': { icon: 'trending-up', color: 'text-emerald-500', desc: 'Liberdade Financeira' },
+            'long': { icon: 'plane', color: 'text-purple-500', desc: 'Sonhos Médio/Longo' },
+            'edu': { icon: 'book-open', color: 'text-cyan-500', desc: 'Educação' },
+            'play': { icon: 'gamepad-2', color: 'text-amber-500', desc: 'Lazer e Diversão' }
+        };
 
         let db = {
-            config: { income: 0, debts: [], jars: DEFAULT_JARS, fixedCosts: [] },
-            categories: [
-                {id:1, name:'Mercado', jar:'essen'}, 
-                {id:2, name:'Aluguel', jar:'essen'},
-                {id:3, name:'Amortização Dívida', jar:'free'}, 
-                {id:4, name:'Livros/Cursos', jar:'edu'},
-                {id:5, name:'Restaurante', jar:'play'}, 
-                {id:6, name:'Uber/Transporte', jar:'essen'},
-                {id:7, name:'Investimento', jar:'free'},
-                {id:8, name:'Presentes', jar:'play'},
-                {id:9, name:'Reserva Emergência', jar:'long'},
-                {id:10, name:'Cartão C6 (Total)', jar:'essen'},
-                {id:11, name:'Netflix (Repasse)', jar:'essen'},
-                {id:12, name:'Repasse/Terceiros', jar:'essen'}
-            ],
+            config: { income: 0, fixed: 0, jars: [] },
             transactions: [],
+            categories: JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)),
             lastUpdated: 0
         };
 
-        let currentType = 'out';
         let viewDate = new Date();
-        let chartInstance = null;
+        let currentType = 'out';
+        let activeFilters = { cat: 'all', place: 'all', method: 'all', day: 'all' };
+        let gistId = null;
 
-        // INIT
+        // --- INIT ---
         window.onload = async () => {
-            lucide.createIcons();
             initTheme();
+            lucide.createIcons();
             
-            const shield = document.getElementById('cloud-shield');
-            const hasToken = localStorage.getItem(TOKEN_KEY);
-            let loadedFromCloud = false;
+            const today = new Date();
+            const y = today.getFullYear();
+            const m = String(today.getMonth() + 1).padStart(2, '0');
+            document.getElementById('monthPicker').value = `${y}-${m}`;
+            setSpecificMonth(`${y}-${m}`);
 
-            if (hasToken) {
-                document.getElementById('manualToken').value = hasToken;
-                updateSyncUI(true);
-                try {
-                    // Try cloud load with migration support
-                    loadedFromCloud = await forceCloudLoad();
-                } catch (e) {
-                    console.error("Shield Error", e);
-                }
-            }
-            
-            if(!loadedFromCloud) {
-                // If cloud failed or no token, try local load with migration support
-                loadLocal();
-                updateSyncUI(false);
-            }
+            const token = localStorage.getItem(TOKEN_KEY);
+            if(token) document.getElementById('manualToken').value = token;
 
-            // Ensure data structure is sound
-            sanitizeData(db);
-            
-            // Fade out shield
-            shield.style.opacity = '0';
-            setTimeout(() => shield.style.display = 'none', 500);
-
-            if (loadedFromCloud) toast('Nuvem Sincronizada (Dados Mestre)');
-            else if (hasToken) toast('Offline (Usando cache local)');
-
-            updateDateDisplay();
-            renderAll();
-            updateFilterCats();
+            await initApp();
         };
 
-        // --- MIGRATION & DATA HANDLING ---
-
-        function sanitizeData(data) {
-            // Guarantees the structure supports new features without breaking
-            if(!data.transactions) data.transactions = [];
+        async function initApp() {
+            const shield = document.getElementById('cloud-shield');
+            shield.style.display = 'flex';
             
-            // Fix transactions
-            data.transactions.forEach(t => {
-                if(!t.method) t.method = 'pix'; // Default payment for old entries
-                if(!t.date) t.date = new Date().toISOString().split('T')[0];
-                if(t.date.includes('/')) { // Fix DD/MM/YYYY to YYYY-MM-DD
-                    const [d, m, y] = t.date.split('/');
-                    t.date = `${y}-${m}-${d}`;
-                }
-                if(!t.id) t.id = Date.now() + Math.random();
-            });
-
-            // Fix config
-            if(!data.config) data.config = {};
-            if(!data.config.jars) data.config.jars = DEFAULT_JARS;
-            
-            return data;
-        }
-
-        function loadLocal() {
-            // 1. Try Master Key
-            const saved = localStorage.getItem(DB_KEY);
-            if(saved) {
-                try {
-                    db = JSON.parse(saved);
-                    return;
-                } catch(e) { console.error("Corrupt Master DB", e); }
-            }
-
-            // 2. Try Old Keys (Migration)
-            for(const key of OLD_DB_KEYS) {
-                const oldData = localStorage.getItem(key);
-                if(oldData) {
-                    try {
-                        console.log(`Migrating from ${key}...`);
-                        const parsed = JSON.parse(oldData);
-                        db = sanitizeData(parsed);
-                        db.lastUpdated = Date.now();
-                        localStorage.setItem(DB_KEY, JSON.stringify(db)); // Save to Master
-                        toast("Dados antigos recuperados localmente!");
-                        return;
-                    } catch(e) { console.error(`Failed to migrate ${key}`, e); }
-                }
-            }
-        }
-
-        async function forceCloudLoad() {
-            const token = localStorage.getItem(TOKEN_KEY);
-            if (!token) return false;
-            
-            const headers = { 'Authorization': `token ${token}` };
             try {
-                const res = await fetch('https://api.github.com/gists', { headers });
-                if (!res.ok) return false;
+                const token = localStorage.getItem(TOKEN_KEY);
+                let loaded = false;
                 
-                const gists = await res.json();
-                const found = gists.find(g => g.description === GIST_DESC);
-                
-                if (found) {
-                    db.gistId = found.id;
-                    const r = await fetch(found.url, { headers });
-                    const data = await r.json();
-                    
-                    // 1. Look for Master File
-                    if (data.files[GIST_FILENAME]) {
-                        const cloudData = JSON.parse(data.files[GIST_FILENAME].content);
-                        db = sanitizeData(cloudData);
-                        localStorage.setItem(DB_KEY, JSON.stringify(db));
-                        return true;
+                if(token) {
+                    updateStatus('sync');
+                    try { loaded = await pullFromCloud(); } catch(e) { console.error(e); updateStatus('error'); }
+                }
+
+                if(!loaded) {
+                    const local = localStorage.getItem(DB_KEY);
+                    if(local) {
+                        try { 
+                            const parsed = JSON.parse(local);
+                            if(parsed.categories) db = parsed;
+                        } catch(e) {}
+                    } else {
+                        populateDummyData(); // Clean init
                     }
-
-                    // 2. Look for Old Files (Migration)
-                    for(const oldFile of OLD_GIST_FILES) {
-                        if(data.files[oldFile]) {
-                            console.log(`Migrating from cloud file: ${oldFile}`);
-                            const oldContent = JSON.parse(data.files[oldFile].content);
-                            db = sanitizeData(oldContent);
-                            db.lastUpdated = Date.now();
-                            localStorage.setItem(DB_KEY, JSON.stringify(db)); // Save local master
-                            
-                            // Trigger async save to create Master File in cloud
-                            syncData(true); 
-                            toast("Dados antigos recuperados da nuvem!");
-                            return true;
-                        }
-                    }
-                }
-            } catch (e) { console.error("Cloud Error", e); return false; }
-            return false;
-        }
-
-        async function syncData(silent = false) {
-            const token = localStorage.getItem(TOKEN_KEY);
-            if(!token) {
-                if(!silent) alert("Configure o Token Global.");
-                return;
-            }
-            
-            // Ensure local DB is updated before sending
-            localStorage.setItem(DB_KEY, JSON.stringify(db));
-
-            const headers = { 'Authorization': `token ${token}` };
-            try {
-                if(!silent) toast('Sincronizando...');
-                
-                if(!db.gistId) {
-                    // Search for Gist ID again if lost
-                    const res = await fetch('https://api.github.com/gists', { headers });
-                    const gists = await res.json();
-                    const found = gists.find(g => g.description === GIST_DESC);
-                    if(found) db.gistId = found.id;
+                    updateStatus('offline');
+                } else {
+                    updateStatus('online');
+                    toast('Sincronizado!');
                 }
 
-                if(db.gistId) {
-                    // Create payload with NEW filename
-                    const filesPayload = {};
-                    filesPayload[GIST_FILENAME] = { content: JSON.stringify(db) };
-                    
-                    // Optional: Nullify old files to delete them? 
-                    // No, let's keep them for safety for now.
-
-                    const body = JSON.stringify({
-                        description: GIST_DESC,
-                        public: false,
-                        files: filesPayload
-                    });
-
-                    let url = `https://api.github.com/gists/${db.gistId}`;
-                    await fetch(url, { method: 'PATCH', headers, body });
-                    if(!silent) toast('Dados Salvos na Nuvem!');
+                if(!db.categories || Object.keys(db.categories).length === 0) {
+                    db.categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
                 }
-            } catch(e) {
-                console.error(e);
-                if(!silent) alert("Erro de sincronização.");
+            } catch (err) {
+                console.error("Critical Init Error:", err);
+                // Fallback to minimal state to prevent lock
+                if(!db.config.jars || db.config.jars.length === 0) populateDummyData();
+            } finally {
+                // Ensure shield is removed
+                shield.style.display = 'none';
+                renderAll();
             }
         }
 
-        // --- UI HELPERS ---
-        function updateSyncUI(isActive) {
-            const dot = document.getElementById('cloudStatusDot');
-            if(isActive) dot.className = "sync-dot active";
-            else dot.className = "sync-dot inactive";
+        function populateDummyData() {
+            applyPreset('standard'); // FIXED: Was applyPresetLogic
+            db.config.income = 0;
+            db.config.fixed = 0;
+            db.transactions = []; // Empty Data for clean start
+            saveData();
         }
 
-        function changeMonth(dir) {
-            viewDate.setMonth(viewDate.getMonth() + dir);
-            updateDateDisplay();
-            renderAll();
-        }
-
-        function setSpecificMonth(val) {
-            if(!val) return;
-            const [y, m] = val.split('-');
-            viewDate = new Date(parseInt(y), parseInt(m) - 1, 1);
-            updateDateDisplay();
-            renderAll();
-        }
-
-        function updateDateDisplay() {
-            const m = viewDate.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
-            document.getElementById('mainDateDisplay').innerText = m.toUpperCase();
-        }
-
-        function initTheme() {
-            if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                document.documentElement.classList.add('dark');
-                document.getElementById('themeIcon').setAttribute('data-lucide', 'sun');
-            } else {
-                document.documentElement.classList.remove('dark');
-                document.getElementById('themeIcon').setAttribute('data-lucide', 'moon');
-            }
-        }
-
-        function toggleLocalTheme() {
-            if (document.documentElement.classList.contains('dark')) {
-                document.documentElement.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-                document.getElementById('themeIcon').setAttribute('data-lucide', 'moon');
-            } else {
-                document.documentElement.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-                document.getElementById('themeIcon').setAttribute('data-lucide', 'sun');
-            }
-            lucide.createIcons();
-        }
-
-        function saveLocal() {
-            db.lastUpdated = Date.now();
-            localStorage.setItem(DB_KEY, JSON.stringify(db));
-            renderAll();
-        }
-
-        // RENDER FUNCTIONS
+        // --- CORE LOGIC ---
         function renderAll() {
-            renderSummary();
-            renderDebtSniper();
+            calculateBalances();
             renderJars();
             renderTransactions();
-            renderDailyChart();
-            updateCategorySelect();
         }
 
-        function renderSummary() {
-            const currentMonth = viewDate.toISOString().slice(0, 7); 
-            
-            const allIn = db.transactions
-                .filter(t => t.date.startsWith(currentMonth) && t.type === 'in')
-                .reduce((acc, t) => acc + t.val, 0);
+        function calculateBalances() {
+            const allIn = db.transactions.filter(t => t.type === 'in').reduce((a,b)=>a+b.val,0);
+            const allOut = db.transactions.filter(t => t.type === 'out').reduce((a,b)=>a+b.val,0);
+            const myIn = db.transactions.filter(t => t.type === 'in' && !t.thirdParty).reduce((a,b)=>a+b.val,0);
+            const myOut = db.transactions.filter(t => t.type === 'out' && !t.thirdParty).reduce((a,b)=>a+b.val,0);
 
-            const allOut = db.transactions
-                .filter(t => t.date.startsWith(currentMonth) && t.type === 'out')
-                .reduce((acc, t) => acc + t.val, 0);
-            
-            const myIncome = db.transactions
-                .filter(t => t.date.startsWith(currentMonth) && t.type === 'in' && !t.thirdParty)
-                .reduce((acc, t) => acc + t.val, 0);
-
-            const mySpent = db.transactions
-                .filter(t => t.date.startsWith(currentMonth) && t.type === 'out' && !t.thirdParty)
-                .reduce((acc, t) => acc + t.val, 0);
-            
-            const netBank = allIn - allOut; 
-            document.getElementById('dispBankBalance').innerText = fmtMoney(netBank);
-            if(netBank < 0) document.getElementById('dispBankBalance').className = "text-2xl font-bold text-rose-500 font-mono mt-1";
-            else document.getElementById('dispBankBalance').className = "text-2xl font-bold text-blue-600 dark:text-blue-400 font-mono mt-1";
-
-            document.getElementById('dispMyIncome').innerText = fmtMoney(myIncome);
-            document.getElementById('dispMySpent').innerText = fmtMoney(mySpent);
-        }
-
-        function renderDebtSniper() {
-            const list = document.getElementById('debtList');
-            list.innerHTML = '';
-            
-            let totalPaid = 0;
-            let totalTarget = 0;
-
-            if(!db.config.debts || db.config.debts.length === 0) {
-                list.innerHTML = '<div class="text-center text-xs text-slate-400 italic">Nenhuma dívida cadastrada.</div>';
-            } else {
-                db.config.debts.forEach(d => {
-                    const paid = db.transactions
-                        .filter(t => t.type === 'out' && t.debtId === d.id)
-                        .reduce((acc, t) => acc + t.val, 0);
-                    
-                    totalPaid += paid;
-                    totalTarget += d.val;
-                    
-                    const pct = Math.min((paid / d.val) * 100, 100);
-                    
-                    list.innerHTML += `
-                    <div>
-                        <div class="flex justify-between text-xs font-bold text-rose-700 dark:text-rose-300 mb-1">
-                            <span>${d.name}</span>
-                            <span>${fmtMoney(paid)} / ${fmtMoney(d.val)}</span>
-                        </div>
-                        <div class="relative w-full h-2 bg-rose-200 dark:bg-rose-900/50 rounded-full overflow-hidden">
-                            <div class="absolute top-0 left-0 h-full bg-rose-500" style="width: ${pct}%"></div>
-                        </div>
-                    </div>`;
-                });
-            }
-
-            document.getElementById('debtTotalPaid').innerText = fmtMoney(totalPaid);
-            const remaining = Math.max(0, totalTarget - totalPaid);
-            document.getElementById('debtTotalRemaining').innerText = fmtMoney(remaining);
+            document.getElementById('dsp-balance-real').innerText = fmtMoney(allIn - allOut);
+            document.getElementById('dsp-total-expenses').innerText = fmtMoney(allOut);
+            document.getElementById('dsp-balance-personal').innerText = fmtMoney(myIn - myOut);
         }
 
         function renderJars() {
             const container = document.getElementById('jarsContainer');
             container.innerHTML = '';
             
-            const estimatedIncome = db.config.income || 1;
-            const currentMonth = viewDate.toISOString().slice(0, 7);
+            const income = db.config.income || 0;
+            const fixed = db.config.fixed || 0;
+            const baseForJars = Math.max(0, income - fixed);
+            const mStr = viewDate.toISOString().slice(0, 7);
+            const myOutTxs = db.transactions.filter(t => t.type === 'out' && !t.thirdParty && t.date.startsWith(mStr));
 
             db.config.jars.forEach(jar => {
-                let limit = jar.limitVal || (estimatedIncome * jar.perc) / 100;
-                
-                const spent = db.transactions
-                    .filter(t => t.date.startsWith(currentMonth) && t.type === 'out' && !t.thirdParty)
-                    .filter(t => {
-                        const cat = db.categories.find(c => c.name === t.cat);
-                        return cat && cat.jar === jar.id;
-                    })
-                    .reduce((acc, t) => acc + t.val, 0);
+                let jarBg = 'bg-slate-500';
+                if(jar.id === 'essen') jarBg = 'bg-blue-500';
+                if(jar.id === 'free') jarBg = 'bg-emerald-500';
+                if(jar.id === 'long') jarBg = 'bg-purple-500';
+                if(jar.id === 'edu') jarBg = 'bg-cyan-500';
+                if(jar.id === 'play') jarBg = 'bg-amber-500';
 
-                const pct = limit > 0 ? (spent / limit) * 100 : 0;
-                const available = Math.max(0, limit - spent);
-                
-                let statusColor = 'bg-emerald-500'; 
-                if(pct > 80) statusColor = 'bg-amber-500'; 
-                if(pct > 100) statusColor = 'bg-rose-500'; 
+                const info = JARS_INFO[jar.id] || { icon: 'box', color: 'text-slate-500', desc: '' };
+                const limit = (baseForJars * jar.perc) / 100;
+                const spent = myOutTxs.filter(t => t.catJar === jar.id).reduce((a,b)=>a+b.val,0);
+                const pct = limit > 0 ? (spent / limit) * 100 : (spent > 0 ? 100 : 0);
+                let barColor = jarBg;
+                if(pct > 100) barColor = 'bg-red-500';
 
-                const card = document.createElement('div');
-                card.className = `glass p-5 rounded-2xl jar-card ${jar.color} relative overflow-hidden group`;
-                card.innerHTML = `
-                    <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onclick="showInfo('${jar.id}')" class="text-slate-400 hover:text-sky-500"><i data-lucide="info" class="w-4 h-4"></i></button>
-                    </div>
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">${jar.name}</span>
-                                <span class="text-[10px] bg-slate-200 dark:bg-slate-800 px-2 py-0.5 rounded text-sky-600 dark:text-sky-400 font-mono">${Math.round(jar.perc)}%</span>
+                container.innerHTML += `
+                <div class="glass-card jar-card">
+                    <div class="flex justify-between items-start">
+                        <div class="flex gap-3 items-center">
+                            <div class="jar-icon ${jarBg} text-white"><i data-lucide="${info.icon}"></i></div>
+                            <div>
+                                <h4 class="font-bold uppercase tracking-wider text-xs">${jar.name} <span class="text-[9px] opacity-60 ml-1">(${jar.perc}%)</span></h4>
+                                <div class="text-[10px] opacity-60">${info.desc}</div>
                             </div>
-                            <h3 class="text-xl font-bold text-slate-800 dark:text-white font-mono">${fmtMoney(available)}</h3>
-                            <span class="text-[10px] text-slate-500">Meta: ${fmtMoney(limit)}</span>
                         </div>
-                        <div class="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg text-[var(--c)]">
-                            <i data-lucide="${jar.icon}" class="w-5 h-5"></i>
+                        <div class="text-right">
+                            <div class="text-lg font-mono font-bold ${info.color}">${fmtMoney(spent)}</div>
+                            <div class="text-[10px] opacity-60">Meta: ${fmtMoney(limit)}</div>
                         </div>
                     </div>
-                    <div class="relative w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
-                        <div class="absolute top-0 left-0 h-full ${statusColor} transition-all duration-1000" style="width: ${Math.min(pct, 100)}%"></div>
+                    <div class="jar-bar-bg">
+                        <div class="jar-bar-fill ${barColor}" style="width: ${Math.min(pct,100)}%"></div>
                     </div>
-                    <div class="mt-2 text-[10px] font-bold ${pct > 100 ? 'text-rose-500' : 'text-slate-500'} text-right">
-                        ${pct > 100 ? 'ORÇAMENTO ESTOURADO!' : `${Math.round(pct)}% Utilizado`}
-                    </div>
-                `;
-                container.appendChild(card);
+                </div>`;
             });
             lucide.createIcons();
         }
 
+        // --- NEW EXTRACT RENDER (v5) ---
         function renderTransactions() {
             const list = document.getElementById('txList');
-            const search = document.getElementById('filterText') ? document.getElementById('filterText').value.toLowerCase() : '';
-            const filterCat = document.getElementById('filterCat') ? document.getElementById('filterCat').value : '';
-            const filterDate = document.getElementById('filterDate') ? document.getElementById('filterDate').value : '';
-            const hideThirdParty = document.getElementById('filterHideThirdParty') ? document.getElementById('filterHideThirdParty').checked : false;
+            const mStr = viewDate.toISOString().slice(0, 7);
             
-            const currentMonth = viewDate.toISOString().slice(0, 7);
-            
-            // Populate Date Filter
-            const dateSel = document.getElementById('filterDate');
-            if (dateSel && dateSel.options.length <= 1) { 
-                const dates = [...new Set(db.transactions.filter(t => t.date.startsWith(currentMonth)).map(t => t.date))].sort().reverse();
-                dateSel.innerHTML = '<option value="">Todas as Datas</option>';
-                dates.forEach(d => {
-                    const [y, m, day] = d.split('-');
-                    dateSel.add(new Option(`${day}/${m}`, d));
-                });
-            }
+            let txs = db.transactions.filter(t => t.date.startsWith(mStr));
+            populateFilterOptions(txs);
+
+            if(activeFilters.day !== 'all') txs = txs.filter(t => t.date.endsWith(activeFilters.day));
+            if(activeFilters.cat !== 'all') txs = txs.filter(t => t.catName === activeFilters.cat);
+            if(activeFilters.place !== 'all') txs = txs.filter(t => t.place === activeFilters.place);
+            if(activeFilters.method !== 'all') txs = txs.filter(t => t.method === activeFilters.method);
 
             list.innerHTML = '';
 
-            let filtered = db.transactions.filter(t => t.date.startsWith(currentMonth));
-
-            // Apply Filters
-            if(hideThirdParty) filtered = filtered.filter(t => !t.thirdParty);
-            if(filterCat) filtered = filtered.filter(t => t.cat === filterCat);
-            if(filterDate) filtered = filtered.filter(t => t.date === filterDate);
-            if(search) {
-                filtered = filtered.filter(t => 
-                    (t.desc && t.desc.toLowerCase().includes(search)) || 
-                    (t.local && t.local.toLowerCase().includes(search))
-                );
-            }
-            
-            filtered.sort((a,b) => new Date(b.date) - new Date(a.date));
-
-            if(filtered.length === 0) {
-                list.innerHTML = '<div class="text-center p-8 text-slate-500 text-xs italic">Nenhuma movimentação encontrada.</div>';
+            if(txs.length === 0) {
+                list.innerHTML = '<div class="text-center py-10 opacity-50 text-xs italic">Nenhum lançamento encontrado.</div>';
                 return;
             }
 
-            filtered.forEach(t => {
-                const isOut = t.type === 'out';
-                let iconColor = isOut ? 'text-rose-500' : 'text-emerald-500';
+            txs.sort((a,b) => new Date(b.date) - new Date(a.date));
+            const monthNames = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"];
+
+            txs.forEach(t => {
+                const isInc = t.type === 'in';
+                const colorClass = isInc ? 'text-emerald-500' : 'text-red-400';
                 
-                let subLabel = "";
+                const day = t.date.split('-')[2];
+                const monthIndex = parseInt(t.date.split('-')[1]) - 1;
+                const monthName = monthNames[monthIndex];
+
+                const catLabel = t.catName || 'Geral';
+                const hasNote = t.notes && t.notes.trim().length > 0;
                 
-                if(isOut) {
-                    subLabel = `<span class="text-rose-400 font-bold">${t.cat}</span>`;
-                } else {
-                    subLabel = `<span class="text-emerald-400 font-bold">${t.source || 'Entrada'}</span>`;
-                }
-                
-                // Badges
-                let badges = "";
-                if(t.thirdParty) badges += `<span class="ml-2 text-[9px] bg-slate-200 dark:bg-slate-700 px-1 rounded text-slate-500">Terceiros</span>`;
-                if(t.debtId) {
-                    const d = (db.config.debts || []).find(x=>x.id===t.debtId);
-                    if(d) badges += `<span class="ml-2 text-[9px] bg-rose-100 dark:bg-rose-900/30 px-1 rounded text-rose-500">Dívida: ${d.name}</span>`;
-                }
-                
-                // Payment Method Badge
-                if(t.method) {
-                    let mColor = "bg-slate-100 text-slate-500";
-                    let mIcon = "credit-card";
-                    if(t.method === 'pix') { mColor = "bg-emerald-100 text-emerald-600"; mIcon="zap"; }
-                    if(t.method === 'credit') { mColor = "bg-purple-100 text-purple-600"; mIcon="credit-card"; }
-                    if(t.method === 'debit') { mColor = "bg-blue-100 text-blue-600"; mIcon="credit-card"; }
-                    if(t.method === 'cash') { mColor = "bg-amber-100 text-amber-600"; mIcon="banknote"; }
-                    
-                    badges += `<span class="ml-2 text-[9px] ${mColor} px-1.5 py-0.5 rounded flex items-center gap-1 inline-flex"><i data-lucide="${mIcon}" class="w-2 h-2"></i> ${t.method.toUpperCase()}</span>`;
+                let payIcon = "fa-solid fa-credit-card";
+                let payColor = "ic-cred";
+                if(t.method === 'Pix') { payIcon = "fa-solid fa-qrcode"; payColor = "ic-pix"; }
+                else if(t.method === 'Débito') { payIcon = "fa-regular fa-credit-card"; payColor = "ic-deb"; }
+                else if(t.method === 'Dinheiro') { payIcon = "fa-solid fa-money-bill-1"; payColor = "ic-money"; }
+
+                let installBadge = '';
+                const noteMatch = (t.notes || "").match(/\((\d+)\/(\d+)\)/);
+                if(noteMatch) {
+                    installBadge = `<div class="tx-installments">${noteMatch[0]}</div>`;
                 }
 
-                const location = t.local ? `<div class="flex items-center gap-1 text-[10px] text-slate-500"><i data-lucide="map-pin" class="w-3 h-3"></i> ${t.local}</div>` : '';
+                let jarIconClass = 'fa-solid fa-box';
+                let jarColorClass = 'text-slate-400';
+                
+                if(t.catJar && JARS_INFO[t.catJar]) {
+                    const jMap = { 'home':'fa-house', 'trending-up':'fa-chart-line', 'plane':'fa-plane', 'book-open':'fa-book', 'gamepad-2':'fa-gamepad' };
+                    jarIconClass = 'fa-solid ' + (jMap[JARS_INFO[t.catJar].icon] || 'fa-box');
+                    jarColorClass = JARS_INFO[t.catJar].color;
+                }
 
-                const el = document.createElement('div');
-                el.className = 'p-3 hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-lg flex items-center justify-between group transition border-b border-slate-100 dark:border-slate-800/50 last:border-0';
-                el.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center ${iconColor}">
-                            <i data-lucide="${isOut ? 'arrow-up-right' : 'arrow-down-left'}" class="w-5 h-5"></i>
+                let transDetails = '';
+                if(t.origin && t.destination) {
+                    transDetails = `<span class="text-[0.65rem] text-slate-400 font-bold ml-1 bg-slate-800/10 dark:bg-white/10 px-1 rounded">${t.origin} <i class="fa-solid fa-arrow-right text-[0.5rem]"></i> ${t.destination}</span>`;
+                }
+
+                const clickable = hasNote; 
+                const cursorClass = clickable ? "clickable" : "";
+                const onclickAction = clickable ? "toggleNote(this)" : "";
+
+                list.innerHTML += `
+                <div class="tx-card ${cursorClass}" onclick="${onclickAction}">
+                    <div class="tx-main-row">
+                        <div class="tx-date-box">
+                            <span class="tx-day">${day}</span>
+                            <span class="tx-month">${monthName}</span>
                         </div>
-                        <div>
-                            <div class="text-sm font-bold text-slate-800 dark:text-white flex items-center flex-wrap gap-1">${t.desc} ${badges}</div>
-                            ${location}
-                            <div class="text-xs text-slate-500 flex items-center mt-0.5">
-                                ${subLabel}
-                                <span class="text-slate-400 mx-1">•</span> ${fmtDate(t.date)}
+                        
+                        <div class="tx-info">
+                            <div class="tx-line-1">
+                                <span class="tx-desc">${t.notes && t.notes.indexOf('(') === -1 && t.notes.length > 2 ? t.notes.substring(0, 15) : (t.place || 'S/ Local')}</span>
+                                <span class="tx-sep">|</span>
+                                <span class="tx-loc">${t.place}</span>
+                                ${transDetails}
+                            </div>
+                            <div class="tx-line-2">
+                                <div class="tx-cat-wrap">
+                                    <i class="${jarIconClass} tx-jar-icon ${jarColorClass}"></i>
+                                    <span class="${jarColorClass}">${catLabel}</span>
+                                </div>
+                                ${hasNote ? '<i class="fa-solid fa-note-sticky note-icon"></i>' : ''}
+                                ${t.thirdParty ? '<span class="text-[0.6rem] text-sky-400 font-bold bg-sky-500/10 px-1 rounded">3º</span>' : ''}
+                            </div>
+                        </div>
+
+                        <div class="tx-right">
+                            <div class="tx-val-row">
+                                <span class="tx-val ${colorClass}">${isInc ? '+' : '-'} ${fmtMoney(t.val)}</span>
+                                <i class="${payIcon} pay-icon ${payColor}"></i>
+                            </div>
+                            ${installBadge}
+                            <!-- FIXED ACTIONS -->
+                            <div class="tx-actions">
+                                <div class="action-icon act-edit" onclick="event.stopPropagation(); editTx(${t.id})"><i class="fa-solid fa-pencil"></i></div>
+                                <div class="action-icon act-del" onclick="event.stopPropagation(); deleteTxLogic(${t.id})"><i class="fa-solid fa-trash"></i></div>
                             </div>
                         </div>
                     </div>
-                    <div class="text-right">
-                        <div class="text-sm font-bold font-mono ${isOut ? 'text-rose-500' : 'text-emerald-500'}">
-                            ${isOut ? '-' : '+'} ${fmtMoney(t.val)}
-                        </div>
-                        <div class="opacity-0 group-hover:opacity-100 transition flex justify-end gap-2 mt-1">
-                            <button onclick="editTx(${t.id})" class="text-sky-500 hover:text-sky-700 dark:hover:text-white"><i data-lucide="pencil" class="w-3 h-3"></i></button>
-                            <button onclick="delTx(${t.id})" class="text-rose-500 hover:text-rose-700 dark:hover:text-white"><i data-lucide="trash" class="w-3 h-3"></i></button>
-                        </div>
-                    </div>
-                `;
-                list.appendChild(el);
+
+                    ${hasNote ? `<div class="tx-drawer"><div class="tx-note-text">"${t.notes}"</div></div>` : ''}
+                </div>`;
             });
-            lucide.createIcons();
         }
 
-        function renderDailyChart() {
-            const ctx = document.getElementById('dailyChart');
-            if(!ctx) return;
-            if(chartInstance) chartInstance.destroy();
+        function toggleNote(el) { el.classList.toggle('expanded'); }
 
-            const currentMonth = viewDate.toISOString().slice(0, 7);
-            const daysInMonth = new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 0).getDate();
-            const labels = [];
-            const data = [];
+        // --- FILTER DRAWER ---
+        function toggleFilters() {
+            const panel = document.getElementById('filter-panel');
+            const btn = document.getElementById('filterToggleBtn');
+            const isOpen = panel.classList.contains('open');
             
-            for(let i=1; i<=daysInMonth; i++) labels.push(i);
-            
-            labels.forEach(d => {
-                const dateStr = `${currentMonth}-${String(d).padStart(2,'0')}`;
-                const dailySum = db.transactions
-                    .filter(t => t.date === dateStr && t.type === 'out' && !t.thirdParty)
-                    .reduce((acc, t) => acc + t.val, 0);
-                data.push(dailySum);
-            });
-
-            chartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Gasto Pessoal (R$)',
-                        data: data,
-                        backgroundColor: '#0ea5e9',
-                        borderRadius: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { grid: { display: false }, ticks: { color: '#94a3b8', font: {size: 8} } },
-                        y: { border: { display: false }, grid: { color: '#334155' }, ticks: { display: false } }
-                    }
-                }
-            });
-        }
-
-        // --- FILTERS ---
-        function toggleFilters() { document.getElementById('filterPanel').classList.toggle('hidden'); }
-        function updateFilterCats() {
-            const sel = document.getElementById('filterCat');
-            sel.innerHTML = '<option value="">Todas Categorias</option>';
-            db.categories.forEach(c => { sel.add(new Option(c.name, c.name)); });
-        }
-
-        // --- CONFIG ---
-        function openConfig() {
-            document.getElementById('cfgIncome').value = fmtMoney(db.config.income);
-            renderFixedList(); renderSliders(); renderDebtConfigList();
-            openModal('modalConfig');
-        }
-        function renderDebtConfigList() {
-            const div = document.getElementById('cfgDebtList'); div.innerHTML = '';
-            (db.config.debts || []).forEach((d, i) => {
-                div.innerHTML += `<div class="flex justify-between items-center text-xs p-2 bg-white dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700"><span class="text-slate-700 dark:text-slate-300 font-bold">${d.name}</span><div class="flex items-center gap-2"><span class="font-mono text-slate-500">${fmtMoney(d.val)}</span><i data-lucide="trash" class="w-3 h-3 text-rose-400 cursor-pointer" onclick="removeDebtConfig(${i})"></i></div></div>`;
-            });
-            lucide.createIcons();
-        }
-        function addDebtConfig() {
-            const n = document.getElementById('newDebtName').value;
-            const v = parseMoney(document.getElementById('newDebtVal').value);
-            if(n && v) {
-                if(!db.config.debts) db.config.debts = [];
-                db.config.debts.push({ id: Date.now().toString(), name: n, val: v });
-                document.getElementById('newDebtName').value = ''; document.getElementById('newDebtVal').value = ''; renderDebtConfigList();
+            if(isOpen) {
+                panel.classList.remove('open');
+                btn.style.color = "var(--accent)";
+            } else {
+                panel.classList.add('open');
+                btn.style.color = "white";
             }
         }
-        function removeDebtConfig(i) { db.config.debts.splice(i,1); renderDebtConfigList(); }
-        function applyPreset(type) {
-            const income = parseMoney(document.getElementById('cfgIncome').value) || 1000;
-            let p = { essen:55, free:15, long:15, edu:5, play:10 };
-            if(type==='balanced') p = { essen:50, free:20, long:20, edu:5, play:5 };
-            if(type==='aggressive') p = { essen:40, free:30, long:20, edu:5, play:5 };
-            db.config.jars.forEach(j => { j.perc = p[j.id]; j.limitVal = (income * j.perc) / 100; });
-            renderSliders();
-        }
-        function renderFixedList() {
-            const div = document.getElementById('fixedList'); div.innerHTML = '';
-            (db.config.fixedCosts || []).forEach((c, i) => {
-                div.innerHTML += `<div class="flex justify-between items-center text-xs p-2 bg-white dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700"><span class="text-slate-700 dark:text-slate-300 font-bold">${c.name}</span><div class="flex items-center gap-2"><span class="font-mono text-slate-500">${fmtMoney(c.val)}</span><i data-lucide="trash" class="w-3 h-3 text-rose-400 cursor-pointer" onclick="removeFixed(${i})"></i></div></div>`;
-            });
-            lucide.createIcons();
-        }
-        function addFixedCost() { const n = document.getElementById('newFixedName').value; const v = parseMoney(document.getElementById('newFixedVal').value); if(n && v) { db.config.fixedCosts.push({name: n, val: v}); document.getElementById('newFixedName').value = ''; document.getElementById('newFixedVal').value = ''; renderFixedList(); }}
-        function removeFixed(i) { db.config.fixedCosts.splice(i,1); renderFixedList(); }
-        function runSmartCalc() { applyPreset('conservative'); } 
-        function renderSliders() {
-            const div = document.getElementById('jarSliders'); div.innerHTML = '';
-            const inc = parseMoney(document.getElementById('cfgIncome').value);
-            db.config.jars.forEach((jar) => {
-                const val = jar.limitVal || (inc * jar.perc / 100);
-                div.innerHTML += `<div><div class="flex justify-between text-[10px] font-bold text-slate-500 dark:text-slate-300 mb-1"><span>${jar.name}</span><span class="text-sky-500">${fmtMoney(val)} (${Math.round(jar.perc)}%)</span></div><div class="w-full h-1 bg-slate-200 dark:bg-slate-700 rounded-lg overflow-hidden"><div class="h-full bg-sky-500" style="width:${jar.perc}%"></div></div></div>`;
-            });
-        }
-        function saveConfig() { db.config.income = parseMoney(document.getElementById('cfgIncome').value); saveLocal(); closeModal('modalConfig'); toast('Configurações Salvas!'); }
 
-        // --- TX LOGIC ---
-        function openTransactionModal() {
+        function populateFilterOptions(txs) {
+            const days = new Set();
+            const cats = new Set();
+            const places = new Set();
+            const methods = new Set();
+
+            txs.forEach(t => {
+                days.add(t.date.split('-')[2]);
+                if(t.catName) cats.add(t.catName);
+                if(t.place) places.add(t.place);
+                if(t.method) methods.add(t.method);
+            });
+
+            fillSelect('filter-day', Array.from(days).sort(), activeFilters.day, 'Dia');
+            fillSelect('filter-cat', Array.from(cats).sort(), activeFilters.cat, 'Cat');
+            fillSelect('filter-place', Array.from(places).sort(), activeFilters.place, 'Local');
+            fillSelect('filter-method', Array.from(methods).sort(), activeFilters.method, 'Pgto');
+        }
+
+        function fillSelect(id, items, currentVal, label) {
+            const sel = document.getElementById(id);
+            sel.innerHTML = `<option value="all">${label}: Todos</option>`;
+            items.forEach(i => {
+                const opt = new Option(i, i);
+                if(i === currentVal) opt.selected = true;
+                sel.add(opt);
+            });
+        }
+
+        function setFilter(type, val) {
+            activeFilters[type] = val;
+            renderTransactions(); 
+        }
+
+        function resetFilters() {
+            activeFilters = { cat: 'all', place: 'all', method: 'all', day: 'all' };
+            renderTransactions();
+            document.getElementById('filter-panel').classList.remove('open');
+        }
+
+        // --- TRANSACTION MODAL ---
+        function openTxModal(id = null) {
             document.getElementById('txForm').reset();
             document.getElementById('txId').value = '';
-            document.getElementById('txDate').value = new Date().toISOString().split('T')[0];
-            document.getElementById('mTxTitle').innerText = "Nova Movimentação";
-            document.getElementById('txMethod').value = 'pix';
-            setTxType('out');
-            checkDebtOption(); // Ensure visibility logic runs
-            openModal('modalTx');
-        }
-        function renderDebtOptions() {
-            // Updated logic: Always check if debts exist, regardless of category name
-            const div = document.getElementById('debtSelector');
-            const sel = document.getElementById('txDebtItem');
+            document.getElementById('btnDelete').classList.add('hidden');
+            document.getElementById('installmentsSection').classList.add('hidden');
+            document.getElementById('transportFields').classList.add('hidden');
             
-            if(db.config.debts && db.config.debts.length > 0) {
-                div.classList.remove('hidden');
-                // Preserve value if editing, otherwise reset to empty
-                const currentVal = sel.value;
-                sel.innerHTML = '<option value="">(Opcional) Selecione para abater...</option>';
-                db.config.debts.forEach(d => sel.add(new Option(d.name, d.id)));
-                if(currentVal) sel.value = currentVal;
-            } else {
-                div.classList.add('hidden');
-                sel.value = "";
-            }
-            updateJarPreview();
-        }
-        // Alias for backward compatibility if needed, but we updated the HTML to call renderDebtOptions
-        function checkDebtOption() { renderDebtOptions(); }
+            const today = new Date();
+            const todayLocal = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+            document.getElementById('txDate').value = todayLocal;
+            
+            setTxType('out');
+            populateUnifiedSelect();
 
-        function setTxType(type) {
-            currentType = type;
-            const btnIn = document.getElementById('btnTypeIn');
-            const btnOut = document.getElementById('btnTypeOut');
-            const divCat = document.getElementById('divCategory');
-            const divSrc = document.getElementById('divSource');
-            if(type === 'in') {
-                btnIn.className = "py-3 rounded-xl border border-emerald-500 bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold text-sm transition flex justify-center items-center gap-2 ring-2 ring-emerald-500 ring-offset-2 dark:ring-offset-slate-800";
-                btnOut.className = "py-3 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 font-bold text-sm transition flex justify-center items-center gap-2 opacity-50";
-                divCat.style.display = 'none'; divSrc.style.display = 'block';
+            if(id) {
+                const t = db.transactions.find(x=>x.id == id);
+                if(t) {
+                    document.getElementById('txId').value = t.id;
+                    document.getElementById('txVal').value = fmtMoney(t.val);
+                    document.getElementById('txDate').value = t.date;
+                    document.getElementById('txPlace').value = t.place || '';
+                    document.getElementById('txMethod').value = t.method || 'Débito';
+                    document.getElementById('txNotes').value = t.notes || '';
+                    document.getElementById('txThirdParty').checked = t.thirdParty;
+                    document.getElementById('txOrigin').value = t.origin || '';
+                    document.getElementById('txDest').value = t.destination || '';
+                    
+                    if(t.origin || t.destination) document.getElementById('transportFields').classList.remove('hidden');
+
+                    setTxType(t.type);
+                    if(t.type === 'out') {
+                        if(t.catJar && t.catName) document.getElementById('txCatUnified').value = `${t.catJar}|${t.catName}`;
+                    }
+                    document.getElementById('btnDelete').classList.remove('hidden');
+                }
+            }
+            document.getElementById('modal-tx').style.display = 'flex';
+        }
+
+        function setTxType(t) {
+            currentType = t;
+            const bOut = document.getElementById('btnOut');
+            const bIn = document.getElementById('btnIn');
+            const cSec = document.getElementById('catSection');
+            
+            if(t === 'out') {
+                bOut.className = "py-2 rounded-lg text-xs font-bold transition flex-1 bg-red-500 text-white shadow-lg";
+                bIn.className = "py-2 rounded-lg text-xs font-bold transition flex-1 bg-slate-100 dark:bg-white/10 opacity-50";
+                cSec.style.display = 'block';
             } else {
-                btnOut.className = "py-3 rounded-xl border border-rose-500 bg-rose-100 dark:bg-rose-500/20 text-rose-600 dark:text-rose-400 font-bold text-sm transition flex justify-center items-center gap-2 ring-2 ring-rose-500 ring-offset-2 dark:ring-offset-slate-800";
-                btnIn.className = "py-3 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 font-bold text-sm transition flex justify-center items-center gap-2 opacity-50";
-                divCat.style.display = 'block'; divSrc.style.display = 'none';
-                updateCategorySelect();
+                bIn.className = "py-2 rounded-lg text-xs font-bold transition flex-1 bg-emerald-500 text-white shadow-lg";
+                bOut.className = "py-2 rounded-lg text-xs font-bold transition flex-1 bg-slate-100 dark:bg-white/10 opacity-50";
+                cSec.style.display = 'none';
             }
         }
-        function updateCategorySelect() {
-            const sel = document.getElementById('txCat');
-            const currentVal = sel.value;
+
+        function toggleInstallments() {
+            const m = document.getElementById('txMethod').value;
+            const sec = document.getElementById('installmentsSection');
+            if(m === 'Crédito') sec.classList.remove('hidden'); else sec.classList.add('hidden');
+        }
+
+        function populateUnifiedSelect() {
+            const sel = document.getElementById('txCatUnified');
             sel.innerHTML = '';
+            
             db.config.jars.forEach(jar => {
-                const group = document.createElement('optgroup'); group.label = jar.name;
-                const cats = db.categories.filter(c => c.jar === jar.id);
-                cats.forEach(c => { const opt = document.createElement('option'); opt.value = c.name; opt.innerText = c.name; group.appendChild(opt); });
-                if(cats.length > 0) sel.appendChild(group);
+                const optGroup = document.createElement('optgroup');
+                optGroup.label = jar.name.toUpperCase();
+                (db.categories[jar.id] || []).forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = `${jar.id}|${c}`;
+                    opt.text = c;
+                    optGroup.appendChild(opt);
+                });
+                sel.appendChild(optGroup);
             });
-            if(currentVal) sel.value = currentVal;
-            renderDebtOptions(); // Trigger debt option check
         }
-        function updateJarPreview() {
-            const catName = document.getElementById('txCat').value;
-            const cat = db.categories.find(c => c.name === catName);
-            const preview = document.getElementById('jarPreview');
-            const tag = document.getElementById('jarPreviewTag');
-            if(cat) {
-                const jar = db.config.jars.find(j => j.id === cat.jar);
-                if(jar) {
-                    preview.classList.remove('hidden');
-                    tag.innerText = jar.name;
-                    const colors = {'j-essen':'bg-blue-500', 'j-free':'bg-purple-500', 'j-edu':'bg-cyan-500', 'j-long':'bg-emerald-500', 'j-play':'bg-amber-500', 'j-give':'bg-pink-500'};
-                    tag.className = `px-2 py-1 rounded text-white font-bold text-[10px] uppercase ${colors[jar.color]||'bg-slate-500'}`;
-                }
-            } else { preview.classList.add('hidden'); }
-        }
-        function handleTxSubmit(e) {
+
+        function saveTx(e) {
             e.preventDefault();
             const id = document.getElementById('txId').value;
-            const desc = document.getElementById('txDesc').value;
-            const local = document.getElementById('txLocal').value;
-            const notes = document.getElementById('txNotes').value;
             const val = parseMoney(document.getElementById('txVal').value);
-            const date = document.getElementById('txDate').value;
-            const thirdParty = document.getElementById('txThirdParty').checked;
+            if(!val) return alert("Valor inválido");
+
+            const unifiedCat = document.getElementById('txCatUnified').value;
+            let catJar = null;
+            let catName = 'Entrada';
+            
+            if(currentType === 'out' && unifiedCat) {
+                const parts = unifiedCat.split('|');
+                catJar = parts[0];
+                catName = parts[1];
+            }
+
             const method = document.getElementById('txMethod').value;
-            let cat = ""; let source = ""; let debtId = "";
-            if(currentType === 'out') {
-                cat = document.getElementById('txCat').value;
-                debtId = document.getElementById('txDebtItem').value;
-                if(!cat) return alert("Selecione uma Categoria");
-            } else { source = document.getElementById('txSource').value; }
-            const tx = { id: id ? parseInt(id) : Date.now(), type: currentType, desc, local, notes, val, date, cat, source, thirdParty, debtId, method };
-            if(id) { const idx = db.transactions.findIndex(t => t.id == id); if(idx > -1) db.transactions[idx] = tx; } else { db.transactions.push(tx); }
-            document.getElementById('filterDate').innerHTML = '<option value="">Todas as Datas</option>';
-            saveLocal();
-            // Trigger background cloud save to create master file if it doesn't exist
-            syncData(true);
-            closeModal('modalTx');
-            toast('Movimentação Registrada!');
+            const baseDate = document.getElementById('txDate').value;
+            const place = document.getElementById('txPlace').value.toUpperCase();
+            const notes = document.getElementById('txNotes').value;
+            const origin = document.getElementById('txOrigin').value;
+            const dest = document.getElementById('txDest').value;
+            
+            const installments = (method === 'Crédito' && !id) ? parseInt(document.getElementById('txInstallments').value) : 1;
+            const valPerInst = parseFloat((val / installments).toFixed(2));
+
+            if(id) {
+                const idx = db.transactions.findIndex(t=>t.id == id);
+                if(idx > -1) {
+                    db.transactions[idx] = {
+                        ...db.transactions[idx],
+                        val: val, date: baseDate, place, method, notes, catJar, catName,
+                        thirdParty: document.getElementById('txThirdParty').checked,
+                        origin: origin, destination: dest
+                    };
+                }
+            } else {
+                for(let i=0; i<installments; i++) {
+                    const txId = Date.now() + i;
+                    let txDate = new Date(baseDate + 'T12:00:00');
+                    txDate.setMonth(txDate.getMonth() + i);
+                    const isoDate = txDate.toISOString().split('T')[0];
+                    const instNote = installments > 1 ? ` (${i+1}/${installments})` : '';
+                    
+                    db.transactions.push({
+                        id: txId,
+                        type: currentType,
+                        val: valPerInst,
+                        date: isoDate,
+                        place: place,
+                        method: method,
+                        notes: notes + instNote,
+                        thirdParty: document.getElementById('txThirdParty').checked,
+                        catJar: catJar,
+                        catName: catName,
+                        origin: origin, destination: dest
+                    });
+                }
+            }
+
+            saveData();
+            closeModal('modal-tx');
+            renderAll();
         }
-        function editTx(id) {
-            const t = db.transactions.find(x => x.id === id); if(!t) return;
-            document.getElementById('txId').value = t.id;
-            document.getElementById('txDesc').value = t.desc;
-            document.getElementById('txLocal').value = t.local || '';
-            document.getElementById('txNotes').value = t.notes || '';
-            document.getElementById('txVal').value = fmtMoney(t.val);
-            document.getElementById('txDate').value = t.date;
-            document.getElementById('txThirdParty').checked = !!t.thirdParty;
-            document.getElementById('txMethod').value = t.method || 'pix';
-            setTxType(t.type);
-            if(t.type === 'out') {
-                document.getElementById('txCat').value = t.cat;
-                // Important: Call renderDebtOptions first to populate the list
-                renderDebtOptions();
-                document.getElementById('txDebtItem').value = t.debtId || '';
-            } else { document.getElementById('txSource').value = t.source; }
-            document.getElementById('mTxTitle').innerText = "Editar Movimentação";
-            openModal('modalTx');
+
+        function deleteTxLogic(id) {
+            if(confirm("Excluir lançamento?")) {
+                db.transactions = db.transactions.filter(t => t.id != id);
+                saveData(); renderAll();
+            }
         }
-        function delTx(id) {
-            if(confirm("Excluir registro?")) {
-                db.transactions = db.transactions.filter(t => t.id !== id);
-                document.getElementById('filterDate').innerHTML = '<option value="">Todas as Datas</option>';
-                saveLocal();
-                syncData(true);
-                toast('Registro Excluído');
+        function deleteTx() { deleteTxLogic(document.getElementById('txId').value); closeModal('modal-tx'); }
+        function editTx(id) { openTxModal(id); }
+
+        // --- CATEGORY MANAGER ---
+        function openCatManager() {
+            document.getElementById('modal-cat-manager').style.display = 'flex';
+            const jarSel = document.getElementById('newCatJar');
+            jarSel.innerHTML = '';
+            db.config.jars.forEach(j => jarSel.add(new Option(j.name, j.id)));
+            renderDelCatOptions();
+        }
+
+        function renderDelCatOptions() {
+            const sel = document.getElementById('delCatSelect');
+            sel.innerHTML = '';
+            db.config.jars.forEach(jar => {
+                const grp = document.createElement('optgroup');
+                grp.label = jar.name;
+                (db.categories[jar.id]||[]).forEach(c => {
+                    grp.appendChild(new Option(c, `${jar.id}|${c}`));
+                });
+                sel.appendChild(grp);
+            });
+        }
+
+        function addCategory() {
+            const name = document.getElementById('newCatName').value.trim();
+            const jar = document.getElementById('newCatJar').value;
+            if(!name) return;
+            if(!db.categories[jar]) db.categories[jar] = [];
+            db.categories[jar].push(name);
+            saveData();
+            document.getElementById('newCatName').value = '';
+            populateUnifiedSelect(); renderDelCatOptions();
+            toast('Categoria Adicionada');
+        }
+
+        function deleteCategory() {
+            const val = document.getElementById('delCatSelect').value;
+            if(!val) return;
+            const [jar, name] = val.split('|');
+            if(confirm(`Excluir "${name}"?`)) {
+                db.categories[jar] = db.categories[jar].filter(c => c !== name);
+                saveData();
+                populateUnifiedSelect(); renderDelCatOptions();
             }
         }
 
-        // --- CLOUD/BACKUP ---
-        function openCloudModal() { document.getElementById('manualToken').value = localStorage.getItem(TOKEN_KEY) || ''; openModal('modalCloud'); }
-        function saveLocalToken() { const t = document.getElementById('manualToken').value.trim(); if(t) { localStorage.setItem(TOKEN_KEY, t); updateSyncUI(true); toast('Token Salvo! Sincronizando...'); syncData(true); } }
-        function backupData() { const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(db,null,2)],{type:"application/json"})); a.download=`finance_backup_${new Date().toISOString().split('T')[0]}.json`; document.body.appendChild(a); a.click(); document.body.removeChild(a); toast('Backup baixado!'); }
-        function restoreData(input) {
-            const file = input.files[0]; if(!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const json = JSON.parse(e.target.result);
-                    if(confirm("Substituir dados atuais?")) {
-                        db = sanitizeData(json); // Use Sanitizer here too
-                        saveLocal();
-                        syncData(true);
-                        toast('Restaurado!');
-                        setTimeout(() => location.reload(), 1000);
-                    }
-                } catch(err) { alert("Erro JSON."); }
-            };
-            reader.readAsText(file);
+        // --- CONFIG & PRESETS ---
+        function openConfig() {
+            document.getElementById('cfgIncome').value = fmtMoney(db.config.income);
+            document.getElementById('cfgFixed').value = fmtMoney(db.config.fixed);
+            updateBaseCalc();
+            renderJarConfigList();
+            document.getElementById('modal-config').style.display = 'flex';
         }
 
-        // --- UTILS ---
-        function openCatManager() { document.getElementById('modalCats').style.display = 'flex'; renderCatList(); const s = document.getElementById('newCatJar'); s.innerHTML = ''; db.config.jars.forEach(j => s.add(new Option(j.name, j.id))); }
-        function renderCatList() { const div = document.getElementById('catList'); div.innerHTML = ''; db.categories.forEach((c, i) => { const jar = db.config.jars.find(j=>j.id===c.jar); div.innerHTML += `<div class="flex justify-between items-center p-2 bg-slate-50 dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700"><div><div class="font-bold text-sm text-slate-700 dark:text-slate-300">${c.name}</div><div class="text-[10px] text-slate-400">${jar ? jar.name : '?'}</div></div><i data-lucide="trash" class="w-4 h-4 text-rose-400 cursor-pointer" onclick="deleteCat(${i})"></i></div>`; }); lucide.createIcons(); }
-        function addNewCategory() { const name = document.getElementById('newCatName').value; const jar = document.getElementById('newCatJar').value; if(name && jar) { db.categories.push({id:Date.now(), name, jar}); saveLocal(); renderCatList(); document.getElementById('newCatName').value = ''; updateCategorySelect(); updateFilterCats(); } }
-        function deleteCat(i) { db.categories.splice(i,1); saveLocal(); renderCatList(); updateCategorySelect(); updateFilterCats(); }
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        document.getElementById('cfgIncome').addEventListener('input', updateBaseCalc);
+        document.getElementById('cfgFixed').addEventListener('input', updateBaseCalc);
+
+        function updateBaseCalc() {
+            const inc = parseMoney(document.getElementById('cfgIncome').value);
+            const fix = parseMoney(document.getElementById('cfgFixed').value);
+            document.getElementById('cfgBaseCalc').innerText = fmtMoney(Math.max(0, inc - fix));
+        }
+
+        function renderJarConfigList() {
+            const l = document.getElementById('jarConfigList');
+            l.innerHTML = '';
+            db.config.jars.forEach((j, i) => {
+                const info = JARS_INFO[j.id] || JARS_INFO['essen'];
+                l.innerHTML += `
+                <div class="flex items-center gap-2 p-2 bg-slate-100 dark:bg-white/5 rounded-lg border border-slate-200 dark:border-white/10">
+                    <div class="w-8 h-8 rounded flex items-center justify-center ${info.color.replace('text-','bg-')} text-white"><i data-lucide="${info.icon}"></i></div>
+                    <div class="flex-1">
+                        <div class="text-xs font-bold uppercase">${j.name}</div>
+                        <div class="text-[9px] opacity-50">${info.desc}</div>
+                    </div>
+                    <input type="number" class="w-12 p-1 rounded bg-white dark:bg-black/20 text-center font-bold text-xs border border-slate-200 dark:border-white/10" value="${j.perc}" onchange="updateJarPerc(${i}, this.value)">
+                    <span class="text-xs font-bold">%</span>
+                </div>`;
+            });
+            lucide.createIcons();
+        }
+
+        function updateJarPerc(i, val) { db.config.jars[i].perc = parseFloat(val); }
+
+        function applyPreset(type) {
+            if(type === 'standard') {
+                db.config.jars = [{id:'essen', name:'Necessidades', perc:55}, {id:'free', name:'Lib. Financeira', perc:20}, {id:'long', name:'Sonhos', perc:10}, {id:'edu', name:'Educação', perc:5}, {id:'play', name:'Lazer', perc:10}];
+            } else if (type === 'debt') {
+                db.config.jars = [{id:'essen', name:'Contas/Dívidas', perc:80}, {id:'free', name:'Reserva Emergência', perc:10}, {id:'play', name:'Lazer Mínimo', perc:10}, {id:'long', name:'Sonhos', perc:0}, {id:'edu', name:'Educação', perc:0}];
+            } else if (type === 'invest') {
+                db.config.jars = [{id:'essen', name:'Custo de Vida', perc:40}, {id:'free', name:'Investimentos', perc:40}, {id:'play', name:'Lazer', perc:10}, {id:'long', name:'Sonhos', perc:5}, {id:'edu', name:'Educação', perc:5}];
+            }
+            renderJarConfigList();
+        }
+
+        function saveConfig() {
+            db.config.income = parseMoney(document.getElementById('cfgIncome').value);
+            db.config.fixed = parseMoney(document.getElementById('cfgFixed').value);
+            saveData();
+            closeModal('modal-config');
+            renderAll();
+        }
+
+        // --- CLOUD ---
+        async function saveData() {
+            db.lastUpdated = Date.now();
+            localStorage.setItem(DB_KEY, JSON.stringify(db));
+            
+            const token = localStorage.getItem(TOKEN_KEY);
+            if(token) {
+                updateStatus('sync');
+                try {
+                    if(!gistId) {
+                         const s = await fetch('https://api.github.com/gists',{headers:{'Authorization':`token ${token}`}});
+                         const g = await s.json();
+                         const f = g.find(x=>x.description===GIST_DESC);
+                         if(f) gistId = f.id;
+                    }
+                    const body = JSON.stringify({ description: GIST_DESC, public: false, files: { [GIST_FILENAME]: { content: JSON.stringify(db) } } });
+                    let url = 'https://api.github.com/gists'; let method = 'POST';
+                    if(gistId) { url += `/${gistId}`; method = 'PATCH'; }
+                    await fetch(url, { method, headers: {'Authorization': `token ${token}`}, body });
+                    updateStatus('online');
+                } catch(e) { updateStatus('error'); }
+            }
+        }
+
+        async function pullFromCloud() {
+            const token = localStorage.getItem(TOKEN_KEY);
+            const headers = { 'Authorization': `token ${token}` };
+            const res = await fetch('https://api.github.com/gists', { headers });
+            if (!res.ok) throw new Error("API Error");
+            
+            const gists = await res.json();
+            const found = gists.find(g => g.description === GIST_DESC);
+            
+            if (found) {
+                gistId = found.id;
+                const r = await fetch(found.url, { headers });
+                const d = await r.json();
+                if (d.files[GIST_FILENAME]) {
+                    const cloudData = JSON.parse(d.files[GIST_FILENAME].content);
+                    if(!cloudData.categories) cloudData.categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
+                    db = cloudData;
+                    localStorage.setItem(DB_KEY, JSON.stringify(db));
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // --- HELPERS ---
+        function updateStatus(s) {
+            const d = document.getElementById('statusDot');
+            d.className = 'status-dot ' + (s==='online'?'online':(s==='sync'?'sync':'offline'));
+        }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        function showInfo(jarId) { const jar = db.config.jars.find(j => j.id === jarId); if(jar) { document.getElementById('infoTitle').innerText = jar.name; document.getElementById('infoText').innerText = jar.desc || "Sem descrição."; openModal('modalInfo'); } }
-        function editDebtTarget() { openConfig(); }
-        function toast(msg) { const t=document.getElementById('toast'); t.innerText=msg; t.classList.remove('translate-x-full'); setTimeout(()=>t.classList.add('translate-x-full'), 3000); }
+        function openCloudModal() { document.getElementById('modal-cloud').style.display='flex'; }
+        function saveManualToken() { localStorage.setItem(TOKEN_KEY, document.getElementById('manualToken').value); initApp(); closeModal('modal-cloud'); }
+        function removeToken() { localStorage.removeItem(TOKEN_KEY); location.reload(); }
+        function backupJSON() { const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(db)],{type:"application/json"})); a.download="finance_bkp.json"; a.click(); }
+        function restoreJSON(i) { const r=new FileReader(); r.onload=e=>{ try{ db=JSON.parse(e.target.result); saveData(); location.reload(); }catch{alert('Erro');} }; r.readAsText(i.files[0]); }
+        
         function maskMoney(i) { let v = i.value.replace(/\D/g,''); v = (v/100).toFixed(2) + ''; v = v.replace(".", ","); v = v.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.'); i.value = 'R$ ' + v; }
         function parseMoney(s) { return parseFloat(s.replace(/[^0-9,]/g,'').replace(',','.')) || 0; }
         function fmtMoney(n) { return n.toLocaleString('pt-BR', {style:'currency', currency:'BRL'}); }
-        function fmtDate(d) { return d.split('-').reverse().join('/'); }
+        function toast(msg) { const t=document.getElementById('toast-msg'); document.getElementById('toast').style.transform='translateX(0)'; t.innerText=msg; setTimeout(()=>document.getElementById('toast').style.transform='translateX(150%)', 3000); }
+        
+        function changeMonth(d) { viewDate.setMonth(viewDate.getMonth()+d); updateDateDisplay(); renderAll(); }
+        function setSpecificMonth(v) { if(v){ const[y,m]=v.split('-'); viewDate=new Date(y,m-1,1); updateDateDisplay(); renderAll(); } }
+        function updateDateDisplay() { 
+            const str = viewDate.toLocaleDateString('pt-BR', {month:'long', year:'numeric'});
+            document.getElementById('monthDisplay').innerText = str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        // Theme
+        function initTheme() {
+            if(localStorage.getItem('theme') === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                document.getElementById('theme-icon').setAttribute('data-lucide', 'sun');
+            }
+        }
+        function toggleTheme() {
+            if(document.documentElement.getAttribute('data-theme') === 'light') {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'dark');
+                document.getElementById('theme-icon').setAttribute('data-lucide', 'moon');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+                document.getElementById('theme-icon').setAttribute('data-lucide', 'sun');
+            }
+            lucide.createIcons();
+        }
 
     </script>
 </body>
