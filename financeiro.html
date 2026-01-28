@@ -21,6 +21,15 @@
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --bg-grad: linear-gradient(-45deg, #020617, #0f172a, #1e293b, #172554);
+            
+            /* Category Colors */
+            --c-essen: #3b82f6; --c-essen-bg: rgba(59, 130, 246, 0.15);
+            --c-free: #10b981; --c-free-bg: rgba(16, 185, 129, 0.15);
+            --c-long: #a855f7; --c-long-bg: rgba(168, 85, 247, 0.15);
+            --c-edu: #06b6d4; --c-edu-bg: rgba(6, 182, 212, 0.15);
+            --c-play: #f59e0b; --c-play-bg: rgba(245, 158, 11, 0.15);
+            --c-repass: #ef4444; --c-repass-bg: rgba(239, 68, 68, 0.15);
+            --c-income: #22c55e; --c-income-bg: rgba(34, 197, 94, 0.15);
         }
 
         [data-theme="light"] {
@@ -113,7 +122,7 @@
             position: sticky; top: 0; z-index: 50;
         }
 
-        /* --- NEW EXTRACT STYLES (REFINED v5) --- */
+        /* --- NEW EXTRACT STYLES (REFINED v6) --- */
         .tx-card {
             background: rgba(255,255,255,0.03);
             border: 1px solid rgba(128,128,128,0.1);
@@ -133,6 +142,12 @@
             background: rgba(255,255,255,0.05);
         }
 
+        /* REPASS SPECIAL STYLE */
+        .tx-card.is-repass { border-left: 4px solid #ef4444; background: rgba(239, 68, 68, 0.05); opacity: 0.7; }
+        .tx-card.is-c6 { border-left: 4px solid #a855f7; }
+        .tx-card.is-nubank { border-left: 4px solid #3b82f6; } /* Blue for Nubank */
+        [data-theme="light"] .tx-card.is-repass { background: #fef2f2; border-left-color: #ef4444; }
+
         .tx-main-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
         
         /* DATE BOX */
@@ -147,19 +162,32 @@
         .tx-day { font-size: 1.2rem; font-weight: 800; color: var(--text-main); }
         .tx-month { font-size: 0.6rem; text-transform: uppercase; font-weight: 800; color: var(--text-muted); margin-top: 2px; }
 
-        /* INFO BOX */
-        .tx-info { flex: 1; display: flex; flex-direction: column; justify-content: center; overflow: hidden; gap: 3px; }
+        /* INFO BOX - UPDATED LAYOUT */
+        .tx-info { flex: 1; display: flex; flex-direction: column; justify-content: center; overflow: hidden; gap: 4px; }
         
-        .tx-line-1 { display: flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .tx-desc { font-weight: 800; font-size: 0.95rem; color: var(--text-main); }
-        .tx-loc { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .tx-sep { color: var(--text-muted); opacity: 0.4; font-size: 0.8rem; font-weight: 300; }
+        /* PLACE IS NOW TITLE */
+        .tx-title-row { display: flex; align-items: center; gap: 6px; }
+        .tx-place { font-weight: 800; font-size: 0.95rem; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        .tx-line-2 { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
-        .tx-cat-wrap { display: flex; align-items: center; gap: 6px; }
-        .tx-jar-icon { font-size: 0.8rem; } 
+        /* DETAILS SUBTITLE */
+        .tx-sub-row { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; color: var(--text-muted); font-weight: 500; flex-wrap: wrap; }
         
-        .note-icon { color: #f59e0b; font-size: 0.7rem; animation: pulse 2s infinite; }
+        .cat-badge { 
+            font-size: 0.65rem; font-weight: 800; padding: 2px 8px; border-radius: 6px; 
+            text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;
+            display: flex; align-items: center; gap: 4px;
+        }
+        
+        /* Colors for Badges */
+        .bg-essen { background: var(--c-essen-bg); color: var(--c-essen); }
+        .bg-free { background: var(--c-free-bg); color: var(--c-free); }
+        .bg-long { background: var(--c-long-bg); color: var(--c-long); }
+        .bg-edu { background: var(--c-edu-bg); color: var(--c-edu); }
+        .bg-play { background: var(--c-play-bg); color: var(--c-play); }
+        .bg-repass { background: var(--c-repass-bg); color: var(--c-repass); }
+        .bg-income { background: var(--c-income-bg); color: var(--c-income); }
+        
+        .tx-has-note { color: var(--accent); margin-left: 2px; }
 
         /* RIGHT BOX */
         .tx-right { text-align: right; display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 4px; }
@@ -186,15 +214,21 @@
         .act-edit:hover { background: #38bdf8; color: white; }
         .act-del:hover { background: #ef4444; color: white; }
 
-        /* DRAWER (Notes) */
+        /* DRAWER (Notes & Progress) */
         .tx-drawer { 
             max-height: 0; overflow: hidden; transition: max-height 0.3s ease-in-out, margin 0.3s; 
             background: rgba(0,0,0,0.2); border-radius: 12px; margin-top: 0;
         }
         .tx-card.expanded .tx-drawer { max-height: 200px; margin-top: 10px; padding: 10px; border: 1px solid var(--glass-border); }
-        .tx-note-text { font-size: 0.85rem; color: var(--text-muted); font-style: italic; line-height: 1.4; border-left: 2px solid var(--accent); padding-left: 8px; }
+        .tx-note-text { font-size: 0.85rem; color: var(--text-muted); font-style: italic; line-height: 1.4; border-left: 2px solid var(--accent); padding-left: 8px; margin-bottom: 8px; }
 
-        /* FILTER STYLING */
+        /* DEBT PROGRESS BAR */
+        .debt-progress-container { margin-top: 8px; }
+        .debt-bar-bg { height: 6px; background: rgba(128,128,128,0.2); border-radius: 3px; overflow: hidden; }
+        .debt-bar-fill { height: 100%; background: #a78bfa; border-radius: 3px; }
+        .debt-text { font-size: 0.65rem; color: var(--text-muted); margin-top: 4px; display: flex; justify-content: space-between; font-weight: 700; text-transform: uppercase; }
+
+        /* FILTER STYLING - RESTORED COLORS */
         .filter-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid var(--glass-border); margin-bottom: 12px; }
         .filter-toggle { font-size: 0.75rem; font-weight: 800; color: var(--accent); background: rgba(14, 165, 233, 0.1); padding: 6px 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.2s; border: 1px solid rgba(14, 165, 233, 0.2); }
         
@@ -208,12 +242,12 @@
         .filter-group { position: relative; }
         .filter-icon { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); z-index: 10; font-size: 0.8rem; pointer-events: none; }
         
-        /* Specific Filter Icon Colors */
+        /* RESTORED COLORS */
         .fi-cal { color: #38bdf8; }
         .fi-tag { color: #f59e0b; }
         .fi-map { color: #ec4899; }
         .fi-card { color: #10b981; }
-
+        
         .filter-select { 
             width: 100%; background: rgba(15, 23, 42, 0.4); border: 1px solid var(--glass-border); 
             color: var(--text-main); font-size: 0.7rem; padding: 8px 8px 8px 26px; border-radius: 8px; 
@@ -222,7 +256,6 @@
         [data-theme="light"] .filter-select { background: white; }
         .filter-select:hover { border-color: var(--accent); }
         
-        /* Dark Mode Select Options Fix */
         option { background-color: #1e293b; color: white; }
         [data-theme="light"] option { background-color: white; color: #0f172a; }
 
@@ -388,15 +421,15 @@
                 
                 <!-- TYPE TOGGLE -->
                 <div class="grid grid-cols-2 gap-3 p-1 bg-slate-100 dark:bg-white/5 rounded-xl border border-slate-200 dark:border-white/10">
-                    <button type="button" onclick="setTxType('out')" id="btnOut" class="py-2 rounded-lg text-xs font-bold transition">SAÍDA (Gasto)</button>
-                    <button type="button" onclick="setTxType('in')" id="btnIn" class="py-2 rounded-lg text-xs font-bold transition">ENTRADA (Renda)</button>
+                    <button type="button" onclick="setTxType('out')" id="btnOut" class="py-2 rounded-lg text-xs font-bold transition flex-1">SAÍDA (Gasto)</button>
+                    <button type="button" onclick="setTxType('in')" id="btnIn" class="py-2 rounded-lg text-xs font-bold transition flex-1">ENTRADA (Renda)</button>
                 </div>
 
                 <!-- VALUE & DATE -->
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Valor (R$)</label>
-                        <input type="text" id="txVal" class="input-prime font-mono text-lg font-bold" placeholder="0,00" oninput="maskMoney(this)" required>
+                        <input type="text" id="txVal" class="input-prime font-mono text-lg font-bold" placeholder="0,00" oninput="maskMoney(this); updateInstallmentPreview();" required>
                     </div>
                     <div>
                         <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Data</label>
@@ -417,7 +450,7 @@
                         <select id="txCatUnified" class="input-prime text-sm flex-1">
                             <!-- Populated with OptGroups -->
                         </select>
-                        <button type="button" onclick="openCatManager()" class="w-12 rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-500 flex items-center justify-center hover:bg-sky-500/20 transition"><i data-lucide="settings-2" class="w-5 h-5"></i></button>
+                        <button type="button" onclick="openCatManager()" class="w-12 rounded-lg bg-slate-200 dark:bg-white/10 border border-slate-300 dark:border-white/20 text-slate-700 dark:text-white flex items-center justify-center hover:bg-slate-300 dark:hover:bg-white/20 transition"><i data-lucide="settings-2" class="w-5 h-5"></i></button>
                     </div>
                 </div>
 
@@ -459,13 +492,20 @@
                     </div>
                 </div>
 
-                <!-- INSTALLMENTS (CREDIT ONLY) -->
+                <!-- RECURRENCE & INSTALLMENTS -->
                 <div id="installmentsSection" class="hidden">
-                    <label class="text-[10px] font-bold opacity-60 uppercase block mb-1 text-purple-400">Parcelamento (Lançar Futuro)</label>
-                    <div class="flex items-center gap-3 p-3 bg-purple-500/10 border border-purple-500/20 rounded-xl">
-                        <input type="number" id="txInstallments" class="input-prime w-20 text-center font-bold" value="1" min="1" max="24">
-                        <div class="text-xs opacity-70">x Parcelas (Cria lançamentos futuros)</div>
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="text-[10px] font-bold opacity-60 uppercase text-purple-400" id="installLabel">Repetição / Parcelamento</label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="txIsSubscription" class="accent-emerald-500 w-3 h-3" onchange="updateInstallmentPreview()">
+                            <span class="text-[10px] font-bold text-emerald-500 uppercase">É Assinatura/Fixo?</span>
+                        </label>
                     </div>
+                    <div class="flex items-center gap-3 p-3 bg-purple-500/10 border border-purple-500/20 rounded-xl">
+                        <input type="number" id="txInstallments" class="input-prime w-20 text-center font-bold" value="1" min="1" max="60" oninput="updateInstallmentPreview()">
+                        <div class="text-xs opacity-70 font-bold" id="txInstallmentsText">Vezes / Meses</div>
+                    </div>
+                    <div id="txCalcPreview" class="text-[10px] font-bold text-center mt-2 text-purple-400 bg-purple-500/5 p-2 rounded-lg border border-purple-500/10"></div>
                 </div>
 
                 <!-- NOTES -->
@@ -492,22 +532,23 @@
             
             <div class="space-y-4">
                 <div>
-                    <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Nova Categoria</label>
+                    <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Nova / Editar Categoria</label>
                     <input id="newCatName" class="input-prime text-sm mb-2" placeholder="Nome (Ex: Academia)">
                     <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Pertence ao Pote</label>
                     <select id="newCatJar" class="input-prime text-sm mb-2">
                         <!-- Jars -->
                     </select>
-                    <button type="button" onclick="addCategory()" class="w-full py-2 bg-emerald-500 text-white rounded-lg text-xs font-bold hover:bg-emerald-600 transition">ADICIONAR CATEGORIA</button>
+                    <button type="button" onclick="addCategory()" class="w-full py-2 bg-emerald-500 text-white rounded-lg text-xs font-bold hover:bg-emerald-600 transition">SALVAR CATEGORIA</button>
                 </div>
                 
                 <div class="h-px bg-slate-200 dark:bg-white/10 my-2"></div>
                 
                 <div>
-                    <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Excluir Existente</label>
+                    <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Gerenciar Existente</label>
                     <div class="flex gap-2">
                         <select id="delCatSelect" class="input-prime text-sm flex-1"></select>
-                        <button type="button" onclick="deleteCategory()" class="px-3 bg-red-500/10 text-red-500 border border-red-500/20 rounded-lg text-xs font-bold hover:bg-red-500/20">EXCLUIR</button>
+                        <button type="button" onclick="editCategory()" class="px-3 bg-sky-500/10 text-sky-500 border border-sky-500/20 rounded-lg text-xs font-bold hover:bg-sky-500/20"><i class="fa-solid fa-pencil"></i></button>
+                        <button type="button" onclick="deleteCategory()" class="px-3 bg-red-500/10 text-red-500 border border-red-500/20 rounded-lg text-xs font-bold hover:bg-red-500/20"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
             </div>
@@ -587,10 +628,11 @@
         const GIST_DESC = 'BENAI_FINANCE_DB';
         const GIST_FILENAME = 'finance_db.json';
 
-        // Updated Defaults
+        // Updated Defaults - INCLUDING REPASS AND NUBANK
         const DEFAULT_CATEGORIES = {
             'income': ['Salário', 'Consultoria', 'Saldo', 'Outros'],
-            'essen': ['Aluguel', 'Mercado', 'Farmácia', 'Combustível', 'Contas', 'Celular'],
+            'repass': ['Reembolso', 'Compartilhado', 'Passagem', 'Empréstimo', 'Outros'],
+            'essen': ['Cartão C6 (Total)', 'Nubank (Crédito)', 'Aluguel', 'Mercado', 'Farmácia', 'Combustível', 'Contas', 'Celular'],
             'free': ['Aporte', 'Reserva', 'CDB', 'FIIs'],
             'long': ['Carro Novo', 'Casa Própria', 'Viagem Europa'],
             'edu': ['Livros', 'Cursos', 'Mentoria', 'Inglês'],
@@ -652,6 +694,7 @@
                     if(local) {
                         try { 
                             const parsed = JSON.parse(local);
+                            // Ensure categories structure exists before migrating
                             if(parsed.categories) db = parsed;
                         } catch(e) {}
                     } else {
@@ -663,9 +706,11 @@
                     toast('Sincronizado!');
                 }
 
-                if(!db.categories || Object.keys(db.categories).length === 0) {
-                    db.categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
-                }
+                // === MIGRATION LOGIC (CRITICAL FOR BACKUP COMPATIBILITY) ===
+                db = migrateData(db);
+                // Save migrated structure back to local immediately
+                localStorage.setItem(DB_KEY, JSON.stringify(db));
+
             } catch (err) {
                 console.error("Critical Init Error:", err);
                 // Fallback to minimal state to prevent lock
@@ -675,6 +720,35 @@
                 shield.style.display = 'none';
                 renderAll();
             }
+        }
+
+        // --- SAFE MIGRATION FUNCTION ---
+        function migrateData(data) {
+            // 1. Ensure Categories Structure
+            if(!data.categories) data.categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
+            
+            // 2. Inject Missing New Categories
+            if(data.categories.essen && !data.categories.essen.includes('Nubank (Crédito)')) {
+                data.categories.essen.unshift('Nubank (Crédito)');
+            }
+
+            // 3. Normalize Transactions (Add new fields if missing)
+            if(data.transactions) {
+                data.transactions.forEach(t => {
+                    if(t.origin === undefined) t.origin = '';
+                    if(t.destination === undefined) t.destination = '';
+                    // Ensure notes is a string for regex checks later
+                    if(t.notes === undefined || t.notes === null) t.notes = '';
+                });
+            }
+            
+            // 4. Ensure Jars Config
+            if(!data.config.jars || data.config.jars.length === 0) {
+                // Apply standard if missing
+                data.config.jars = [{id:'essen', name:'Necessidades', perc:55}, {id:'free', name:'Lib. Financeira', perc:20}, {id:'long', name:'Sonhos', perc:10}, {id:'edu', name:'Educação', perc:5}, {id:'play', name:'Lazer', perc:10}];
+            }
+
+            return data;
         }
 
         function populateDummyData() {
@@ -693,14 +767,43 @@
         }
 
         function calculateBalances() {
+            // GLOBAL BALANCE (BANK REALITY)
             const allIn = db.transactions.filter(t => t.type === 'in').reduce((a,b)=>a+b.val,0);
             const allOut = db.transactions.filter(t => t.type === 'out').reduce((a,b)=>a+b.val,0);
-            const myIn = db.transactions.filter(t => t.type === 'in' && !t.thirdParty).reduce((a,b)=>a+b.val,0);
-            const myOut = db.transactions.filter(t => t.type === 'out' && !t.thirdParty).reduce((a,b)=>a+b.val,0);
-
-            document.getElementById('dsp-balance-real').innerText = fmtMoney(allIn - allOut);
+            
+            // TOTAL EXPENSES (SIMPLE SUM)
             document.getElementById('dsp-total-expenses').innerText = fmtMoney(allOut);
+            // REAL BANK BALANCE
+            document.getElementById('dsp-balance-real').innerText = fmtMoney(allIn - allOut);
+
+            // PERSONAL BALANCE LOGIC
+            // Income: Only non-repass
+            const myIn = db.transactions
+                .filter(t => t.type === 'in' && !isRepassCategory(t.catName))
+                .reduce((a,b)=>a+b.val,0);
+
+            // Expenses: Logic for C6 (50%) and Repass (0%)
+            const myOut = db.transactions
+                .filter(t => t.type === 'out')
+                .reduce((acc, t) => {
+                    if (isC6Category(t.catName)) return acc + (t.val / 2); // 50% Rule for C6
+                    if (isRepassCategory(t.catName) || t.thirdParty) return acc; // Ignore Repass/ThirdParty
+                    return acc + t.val; // 100% Rule for others (including Nubank)
+                }, 0);
+
             document.getElementById('dsp-balance-personal').innerText = fmtMoney(myIn - myOut);
+        }
+
+        function isC6Category(name) {
+            return name && (name.includes('C6'));
+        }
+        
+        function isNubankCategory(name) {
+            return name && (name.includes('Nubank'));
+        }
+
+        function isRepassCategory(name) {
+            return name && (name.includes('Repasse') || name.includes('Terceiros') || name.includes('Caixinha'));
         }
 
         function renderJars() {
@@ -711,7 +814,9 @@
             const fixed = db.config.fixed || 0;
             const baseForJars = Math.max(0, income - fixed);
             const mStr = viewDate.toISOString().slice(0, 7);
-            const myOutTxs = db.transactions.filter(t => t.type === 'out' && !t.thirdParty && t.date.startsWith(mStr));
+            
+            // Filter Out transactions for current month
+            const monthOutTxs = db.transactions.filter(t => t.type === 'out' && t.date.startsWith(mStr));
 
             db.config.jars.forEach(jar => {
                 let jarBg = 'bg-slate-500';
@@ -723,7 +828,14 @@
 
                 const info = JARS_INFO[jar.id] || { icon: 'box', color: 'text-slate-500', desc: '' };
                 const limit = (baseForJars * jar.perc) / 100;
-                const spent = myOutTxs.filter(t => t.catJar === jar.id).reduce((a,b)=>a+b.val,0);
+                
+                // Calculate Spent per Jar with Logic
+                const spent = monthOutTxs.filter(t => t.catJar === jar.id).reduce((acc, t) => {
+                    if (isC6Category(t.catName)) return acc + (t.val / 2); // 50% Rule
+                    if (isRepassCategory(t.catName) || t.thirdParty) return acc; // Ignore
+                    return acc + t.val; // 100% for Nubank and others
+                }, 0);
+
                 const pct = limit > 0 ? (spent / limit) * 100 : (spent > 0 ? 100 : 0);
                 let barColor = jarBg;
                 if(pct > 100) barColor = 'bg-red-500';
@@ -751,7 +863,7 @@
             lucide.createIcons();
         }
 
-        // --- NEW EXTRACT RENDER (v5) ---
+        // --- NEW EXTRACT RENDER (v6) ---
         function renderTransactions() {
             const list = document.getElementById('txList');
             const mStr = viewDate.toISOString().slice(0, 7);
@@ -776,8 +888,13 @@
 
             txs.forEach(t => {
                 const isInc = t.type === 'in';
-                const colorClass = isInc ? 'text-emerald-500' : 'text-red-400';
+                const isRepassCat = isRepassCategory(t.catName) || t.thirdParty;
+                const isC6 = isC6Category(t.catName);
+                const isNubank = isNubankCategory(t.catName);
                 
+                let colorClass = isInc ? 'text-emerald-500' : 'text-red-400';
+                if (isRepassCat && !isInc) colorClass = 'text-slate-400 line-through decoration-red-500/50'; 
+
                 const day = t.date.split('-')[2];
                 const monthIndex = parseInt(t.date.split('-')[1]) - 1;
                 const monthName = monthNames[monthIndex];
@@ -791,35 +908,59 @@
                 else if(t.method === 'Débito') { payIcon = "fa-regular fa-credit-card"; payColor = "ic-deb"; }
                 else if(t.method === 'Dinheiro') { payIcon = "fa-solid fa-money-bill-1"; payColor = "ic-money"; }
 
+                // DEBT PROGRESS LOGIC
+                let debtHTML = '';
                 let installBadge = '';
                 const noteMatch = (t.notes || "").match(/\((\d+)\/(\d+)\)/);
-                if(noteMatch) {
-                    installBadge = `<div class="tx-installments">${noteMatch[0]}</div>`;
-                }
-
-                let jarIconClass = 'fa-solid fa-box';
-                let jarColorClass = 'text-slate-400';
                 
-                if(t.catJar && JARS_INFO[t.catJar]) {
-                    const jMap = { 'home':'fa-house', 'trending-up':'fa-chart-line', 'plane':'fa-plane', 'book-open':'fa-book', 'gamepad-2':'fa-gamepad' };
-                    jarIconClass = 'fa-solid ' + (jMap[JARS_INFO[t.catJar].icon] || 'fa-box');
-                    jarColorClass = JARS_INFO[t.catJar].color;
-                } else if(t.catJar === 'income') {
-                    jarIconClass = 'fa-solid fa-arrow-up';
-                    jarColorClass = 'text-emerald-500';
+                if(noteMatch) {
+                    const current = parseInt(noteMatch[1]);
+                    const total = parseInt(noteMatch[2]);
+                    installBadge = `<div class="tx-installments">${noteMatch[0]}</div>`;
+                    
+                    // Progress Bar
+                    const pct = (current / total) * 100;
+                    const remainingDebt = (total - current) * t.val;
+                    
+                    debtHTML = `
+                    <div class="debt-progress-container">
+                        <div class="debt-bar-bg"><div class="debt-bar-fill" style="width:${pct}%"></div></div>
+                        <div class="debt-text">
+                            <span>Parcela ${current} de ${total}</span>
+                            <span>Resta: ${fmtMoney(remainingDebt)}</span>
+                        </div>
+                    </div>`;
                 }
 
-                let transDetails = '';
-                if(t.origin && t.destination) {
-                    transDetails = `<span class="text-[0.65rem] text-slate-400 font-bold ml-1 bg-slate-800/10 dark:bg-white/10 px-1 rounded">${t.origin} <i class="fa-solid fa-arrow-right text-[0.5rem]"></i> ${t.destination}</span>`;
-                }
+                // Determine Category Badge Color & Icon
+                let badgeClass = 'bg-slate-100 text-slate-600';
+                if(t.catJar === 'essen') badgeClass = 'bg-essen';
+                if(t.catJar === 'free') badgeClass = 'bg-free';
+                if(t.catJar === 'long') badgeClass = 'bg-long';
+                if(t.catJar === 'edu') badgeClass = 'bg-edu';
+                if(t.catJar === 'play') badgeClass = 'bg-play';
+                if(t.catJar === 'repass' || isRepassCat) badgeClass = 'bg-repass';
+                if(t.catJar === 'income') badgeClass = 'bg-income';
+
+                let cardClass = '';
+                if(isRepassCat) cardClass = 'is-repass';
+                if(isC6) cardClass = 'is-c6';
+                if(isNubank) cardClass = 'is-nubank';
+
+                let specialTag = '';
+                if(isC6) specialTag = '<span class="text-[9px] bg-purple-100 text-purple-700 px-1 rounded border border-purple-200">50% Pessoal</span>';
+                if(isNubank) specialTag = '<span class="text-[9px] bg-blue-100 text-blue-700 px-1 rounded border border-blue-200">100% Pessoal</span>';
+                if(isRepassCat && !isInc) specialTag = '<span class="text-[9px] bg-red-50 text-red-400 px-1 rounded border border-red-100">Não Desconta</span>';
+
+                // Helper to get cat icon
+                const catIconClass = getCategoryIcon(t.catName);
 
                 const clickable = hasNote; 
                 const cursorClass = clickable ? "clickable" : "";
                 const onclickAction = clickable ? "toggleNote(this)" : "";
 
                 list.innerHTML += `
-                <div class="tx-card ${cursorClass}" onclick="${onclickAction}">
+                <div class="tx-card ${cursorClass} ${cardClass}" onclick="${onclickAction}">
                     <div class="tx-main-row">
                         <div class="tx-date-box">
                             <span class="tx-day">${day}</span>
@@ -827,19 +968,15 @@
                         </div>
                         
                         <div class="tx-info">
-                            <div class="tx-line-1">
-                                <span class="tx-desc">${t.notes && t.notes.indexOf('(') === -1 && t.notes.length > 2 ? t.notes.substring(0, 15) : (t.place || 'S/ Local')}</span>
-                                <span class="tx-sep">|</span>
-                                <span class="tx-loc">${t.place}</span>
-                                ${transDetails}
+                            <div class="tx-title-row">
+                                <span class="tx-place">${t.place || 'Sem Local'}</span>
                             </div>
-                            <div class="tx-line-2">
-                                <div class="tx-cat-wrap">
-                                    <i class="${jarIconClass} tx-jar-icon ${jarColorClass}"></i>
-                                    <span class="${jarColorClass}">${catLabel}</span>
-                                </div>
-                                ${hasNote ? '<i class="fa-solid fa-note-sticky note-icon"></i>' : ''}
-                                ${t.thirdParty ? '<span class="text-[0.6rem] text-sky-400 font-bold bg-sky-500/10 px-1 rounded">3º</span>' : ''}
+                            <div class="tx-sub-row">
+                                <span class="cat-badge ${badgeClass}">
+                                    <i class="${catIconClass}"></i> ${catLabel}
+                                    ${hasNote ? '<i class="fa-regular fa-note-sticky tx-has-note"></i>' : ''}
+                                </span>
+                                ${specialTag}
                             </div>
                         </div>
 
@@ -857,12 +994,32 @@
                         </div>
                     </div>
 
-                    ${hasNote ? `<div class="tx-drawer"><div class="tx-note-text">"${t.notes}"</div></div>` : ''}
+                    ${hasNote ? `
+                    <div class="tx-drawer">
+                        <div class="tx-note-text">"${t.notes.replace(/\(\d+\/\d+\)/, '').trim()}"</div>
+                        ${debtHTML}
+                    </div>` : ''}
                 </div>`;
             });
         }
 
         function toggleNote(el) { el.classList.toggle('expanded'); }
+
+        function getCategoryIcon(name) {
+            if(!name) return 'fa-solid fa-tag';
+            const n = name.toLowerCase();
+            if(n.includes('mercado') || n.includes('compra')) return 'fa-solid fa-cart-shopping';
+            if(n.includes('carro') || n.includes('uber') || n.includes('combust') || n.includes('transporte')) return 'fa-solid fa-car';
+            if(n.includes('casa') || n.includes('aluguel') || n.includes('luz') || n.includes('internet')) return 'fa-solid fa-house';
+            if(n.includes('comida') || n.includes('restaurante') || n.includes('ifood')) return 'fa-solid fa-utensils';
+            if(n.includes('saúde') || n.includes('farmácia') || n.includes('médico')) return 'fa-solid fa-heart-pulse';
+            if(n.includes('pet') || n.includes('gato') || n.includes('cachorro')) return 'fa-solid fa-paw';
+            if(n.includes('lazer') || n.includes('cinema') || n.includes('jogo')) return 'fa-solid fa-gamepad';
+            if(n.includes('c6') || n.includes('cartão') || n.includes('nubank')) return 'fa-regular fa-credit-card';
+            if(n.includes('salário') || n.includes('renda')) return 'fa-solid fa-money-bill-wave';
+            if(n.includes('repasse') || n.includes('transferência')) return 'fa-solid fa-arrow-right-arrow-left';
+            return 'fa-solid fa-tag';
+        }
 
         // --- FILTER DRAWER ---
         function toggleFilters() {
@@ -926,12 +1083,15 @@
             document.getElementById('btnDelete').classList.add('hidden');
             document.getElementById('installmentsSection').classList.add('hidden');
             document.getElementById('transportFields').classList.add('hidden');
+            document.getElementById('txIsSubscription').checked = false; 
+            document.getElementById('txCalcPreview').innerText = "";
+            document.getElementById('txCalcPreview').style.display = 'none';
             
             const today = new Date();
             const todayLocal = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
             document.getElementById('txDate').value = todayLocal;
             
-            setTxType('out');
+            setTxType('out'); // Default
             populateUnifiedSelect();
 
             if(id) {
@@ -949,13 +1109,12 @@
                     
                     if(t.origin || t.destination) document.getElementById('transportFields').classList.remove('hidden');
 
-                    setTxType(t.type);
-                    // Handle cat logic for both in and out
-                    if(t.type === 'out') {
-                        if(t.catJar && t.catName) document.getElementById('txCatUnified').value = `${t.catJar}|${t.catName}`;
-                    } else {
-                        document.getElementById('txCatUnified').value = t.catName || '';
-                    }
+                    setTxType(t.type); 
+                    
+                    // Cat logic
+                    if (t.type === 'in') document.getElementById('txCatUnified').value = t.catName || '';
+                    else if (t.catJar && t.catName) document.getElementById('txCatUnified').value = `${t.catJar}|${t.catName}`;
+                    
                     document.getElementById('btnDelete').classList.remove('hidden');
                 }
             }
@@ -968,22 +1127,48 @@
             const bIn = document.getElementById('btnIn');
             const cSec = document.getElementById('catSection');
             
+            // Reset styles
+            bOut.className = "py-2 rounded-lg text-xs font-bold transition flex-1 bg-slate-100 dark:bg-white/10 opacity-50";
+            bIn.className = "py-2 rounded-lg text-xs font-bold transition flex-1 bg-slate-100 dark:bg-white/10 opacity-50";
+
             if(t === 'out') {
                 bOut.className = "py-2 rounded-lg text-xs font-bold transition flex-1 bg-red-500 text-white shadow-lg";
-                bIn.className = "py-2 rounded-lg text-xs font-bold transition flex-1 bg-slate-100 dark:bg-white/10 opacity-50";
-            } else {
+            } else if (t === 'in') {
                 bIn.className = "py-2 rounded-lg text-xs font-bold transition flex-1 bg-emerald-500 text-white shadow-lg";
-                bOut.className = "py-2 rounded-lg text-xs font-bold transition flex-1 bg-slate-100 dark:bg-white/10 opacity-50";
             }
+            
             // Always show cat section, just repopulate
             cSec.style.display = 'block';
             populateUnifiedSelect();
         }
 
         function toggleInstallments() {
-            const m = document.getElementById('txMethod').value;
-            const sec = document.getElementById('installmentsSection');
-            if(m === 'Crédito') sec.classList.remove('hidden'); else sec.classList.add('hidden');
+            // Show installments section for ANY method now (to support recurring pix/boleto)
+            document.getElementById('installmentsSection').classList.remove('hidden');
+            updateInstallmentPreview();
+        }
+
+        function updateInstallmentPreview() {
+            const val = parseMoney(document.getElementById('txVal').value);
+            const count = parseInt(document.getElementById('txInstallments').value) || 1;
+            const isSub = document.getElementById('txIsSubscription').checked;
+            const preview = document.getElementById('txCalcPreview');
+            const label = document.getElementById('txInstallmentsText');
+
+            if (count > 1) {
+                preview.style.display = 'block';
+                if (isSub) {
+                    label.innerText = "Meses (Recorrência)";
+                    preview.innerText = `Serão ${count} lançamentos de ${fmtMoney(val)} (Total: ${fmtMoney(val * count)})`;
+                } else {
+                    label.innerText = "Parcelas (Divisão)";
+                    const parc = val / count;
+                    preview.innerText = `Serão ${count} parcelas de ${fmtMoney(parc)} (Total: ${fmtMoney(val)})`;
+                }
+            } else {
+                preview.style.display = 'none';
+                label.innerText = "Vezes / Meses";
+            }
         }
 
         function populateUnifiedSelect() {
@@ -992,21 +1177,22 @@
             
             if(currentType === 'in') {
                 const incomeCats = db.categories['income'] || [];
-                incomeCats.forEach(c => {
-                    const opt = document.createElement('option');
-                    opt.value = c; // Just the name for income
-                    opt.text = c;
-                    sel.appendChild(opt);
-                });
+                incomeCats.forEach(c => { sel.add(new Option(c, c)); });
             } else {
+                
+                // Repass Group First
+                if(db.categories['repass']) {
+                    const repGrp = document.createElement('optgroup');
+                    repGrp.label = "REPASSES / TERCEIROS";
+                    db.categories['repass'].forEach(c => repGrp.appendChild(new Option(c, `repass|${c}`)));
+                    sel.appendChild(repGrp);
+                }
+
                 db.config.jars.forEach(jar => {
                     const optGroup = document.createElement('optgroup');
                     optGroup.label = jar.name.toUpperCase();
                     (db.categories[jar.id] || []).forEach(c => {
-                        const opt = document.createElement('option');
-                        opt.value = `${jar.id}|${c}`;
-                        opt.text = c;
-                        optGroup.appendChild(opt);
+                        optGroup.appendChild(new Option(c, `${jar.id}|${c}`));
                     });
                     sel.appendChild(optGroup);
                 });
@@ -1016,8 +1202,8 @@
         function saveTx(e) {
             e.preventDefault();
             const id = document.getElementById('txId').value;
-            const val = parseMoney(document.getElementById('txVal').value);
-            if(!val) return alert("Valor inválido");
+            const valTotal = parseMoney(document.getElementById('txVal').value);
+            if(!valTotal) return alert("Valor inválido");
 
             const unifiedCat = document.getElementById('txCatUnified').value;
             let catJar = null;
@@ -1038,37 +1224,60 @@
             const notes = document.getElementById('txNotes').value;
             const origin = document.getElementById('txOrigin').value;
             const dest = document.getElementById('txDest').value;
+            const isTP = document.getElementById('txThirdParty').checked;
             
-            const installments = (method === 'Crédito' && !id) ? parseInt(document.getElementById('txInstallments').value) : 1;
-            const valPerInst = parseFloat((val / installments).toFixed(2));
+            const count = parseInt(document.getElementById('txInstallments').value) || 1;
+            const isSub = document.getElementById('txIsSubscription').checked;
+
+            // LOGIC SPLIT:
+            // 1. Subscription (Recorrente): Value is FULL per month.
+            // 2. Installment (Parcelado): Value is TOTAL / count per month.
+            let valPerTx = valTotal;
+            let noteSuffix = "";
+
+            if (count > 1) {
+                if (isSub) {
+                    valPerTx = valTotal; // Recurring = same value
+                    // No automatic suffix for recurring, maybe add manually if needed?
+                    // Or keep logic simple.
+                } else {
+                    valPerTx = parseFloat((valTotal / count).toFixed(2)); // Installment = division
+                }
+            }
 
             if(id) {
+                // Edit Single Mode
                 const idx = db.transactions.findIndex(t=>t.id == id);
                 if(idx > -1) {
                     db.transactions[idx] = {
                         ...db.transactions[idx],
-                        val: val, date: baseDate, place, method, notes, catJar, catName,
-                        thirdParty: document.getElementById('txThirdParty').checked,
+                        type: currentType, 
+                        val: valTotal, // In single edit, value usually means the single value, but keep consistent
+                        date: baseDate, place, method, notes, catJar, catName,
+                        thirdParty: isTP,
                         origin: origin, destination: dest
                     };
                 }
             } else {
-                for(let i=0; i<installments; i++) {
+                // Batch Create
+                for(let i=0; i<count; i++) {
                     const txId = Date.now() + i;
                     let txDate = new Date(baseDate + 'T12:00:00');
                     txDate.setMonth(txDate.getMonth() + i);
                     const isoDate = txDate.toISOString().split('T')[0];
-                    const instNote = installments > 1 ? ` (${i+1}/${installments})` : '';
+                    
+                    let finalNote = notes;
+                    if (count > 1 && !isSub) finalNote += ` (${i+1}/${count})`; // Only add (1/12) for installments
                     
                     db.transactions.push({
                         id: txId,
                         type: currentType,
-                        val: valPerInst,
+                        val: valPerTx,
                         date: isoDate,
                         place: place,
                         method: method,
-                        notes: notes + instNote,
-                        thirdParty: document.getElementById('txThirdParty').checked,
+                        notes: finalNote,
+                        thirdParty: isTP,
                         catJar: catJar,
                         catName: catName,
                         origin: origin, destination: dest
@@ -1090,14 +1299,15 @@
         function deleteTx() { deleteTxLogic(document.getElementById('txId').value); closeModal('modal-tx'); }
         function editTx(id) { openTxModal(id); }
 
-        // --- CATEGORY MANAGER ---
+        // --- CATEGORY MANAGER (UPDATED WITH EDIT) ---
         function openCatManager() {
             document.getElementById('modal-cat-manager').style.display = 'flex';
             const jarSel = document.getElementById('newCatJar');
             jarSel.innerHTML = '';
             
-            // Add Income Option
+            // Add Special Groups
             jarSel.add(new Option('Renda / Entradas', 'income'));
+            jarSel.add(new Option('Repasses / Terceiros', 'repass'));
             
             db.config.jars.forEach(j => jarSel.add(new Option(j.name, j.id)));
             renderDelCatOptions();
@@ -1107,13 +1317,19 @@
             const sel = document.getElementById('delCatSelect');
             sel.innerHTML = '';
             
+            // Repass Group
+            if(db.categories['repass']) {
+                const repGrp = document.createElement('optgroup');
+                repGrp.label = "REPASSES";
+                db.categories['repass'].forEach(c => repGrp.appendChild(new Option(c, `repass|${c}`)));
+                sel.appendChild(repGrp);
+            }
+
             // Income Group
             if(db.categories['income']) {
                 const incGrp = document.createElement('optgroup');
-                incGrp.label = "RENDA / ENTRADAS";
-                db.categories['income'].forEach(c => {
-                    incGrp.appendChild(new Option(c, `income|${c}`));
-                });
+                incGrp.label = "RENDA";
+                db.categories['income'].forEach(c => incGrp.appendChild(new Option(c, `income|${c}`)));
                 sel.appendChild(incGrp);
             }
 
@@ -1131,12 +1347,43 @@
             const name = document.getElementById('newCatName').value.trim();
             const jar = document.getElementById('newCatJar').value;
             if(!name) return;
+            
+            // Handle existing update check if needed, but for now simple add
             if(!db.categories[jar]) db.categories[jar] = [];
             db.categories[jar].push(name);
             saveData();
             document.getElementById('newCatName').value = '';
-            populateUnifiedSelect(); renderDelCatOptions();
-            toast('Categoria Adicionada');
+            closeModal('modal-cat-manager'); // Close on add
+            populateUnifiedSelect(); 
+            toast('Categoria Salva');
+        }
+
+        function editCategory() {
+            const val = document.getElementById('delCatSelect').value;
+            if(!val) return;
+            const [jar, oldName] = val.split('|');
+            const newName = prompt("Novo nome para a categoria:", oldName);
+            
+            if(newName && newName !== oldName) {
+                // Update List
+                const idx = db.categories[jar].indexOf(oldName);
+                if(idx > -1) db.categories[jar][idx] = newName;
+                
+                // Update ALL transactions with this category
+                let count = 0;
+                db.transactions.forEach(t => {
+                    if(t.catJar === jar && t.catName === oldName) {
+                        t.catName = newName;
+                        count++;
+                    }
+                });
+                
+                saveData();
+                renderDelCatOptions();
+                populateUnifiedSelect();
+                renderAll();
+                toast(`${count} lançamentos atualizados.`);
+            }
         }
 
         function deleteCategory() {
@@ -1146,7 +1393,8 @@
             if(confirm(`Excluir "${name}"?`)) {
                 db.categories[jar] = db.categories[jar].filter(c => c !== name);
                 saveData();
-                populateUnifiedSelect(); renderDelCatOptions();
+                renderDelCatOptions();
+                populateUnifiedSelect();
             }
         }
 
@@ -1247,8 +1495,9 @@
                 const d = await r.json();
                 if (d.files[GIST_FILENAME]) {
                     const cloudData = JSON.parse(d.files[GIST_FILENAME].content);
-                    if(!cloudData.categories) cloudData.categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
-                    db = cloudData;
+                    
+                    // === AUTO MIGRATION ON PULL ===
+                    db = migrateData(cloudData);
                     localStorage.setItem(DB_KEY, JSON.stringify(db));
                     return true;
                 }
@@ -1266,7 +1515,20 @@
         function saveManualToken() { localStorage.setItem(TOKEN_KEY, document.getElementById('manualToken').value); initApp(); closeModal('modal-cloud'); }
         function removeToken() { localStorage.removeItem(TOKEN_KEY); location.reload(); }
         function backupJSON() { const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(db)],{type:"application/json"})); a.download="finance_bkp.json"; a.click(); }
-        function restoreJSON(i) { const r=new FileReader(); r.onload=e=>{ try{ db=JSON.parse(e.target.result); saveData(); location.reload(); }catch{alert('Erro');} }; r.readAsText(i.files[0]); }
+        
+        function restoreJSON(i) { 
+            const r=new FileReader(); 
+            r.onload=e=>{ 
+                try { 
+                    const recovered = JSON.parse(e.target.result);
+                    // Safe Migration on Restore
+                    db = migrateData(recovered);
+                    saveData(); 
+                    location.reload(); 
+                } catch { alert('Erro'); } 
+            }; 
+            r.readAsText(i.files[0]); 
+        }
         
         function maskMoney(i) { let v = i.value.replace(/\D/g,''); v = (v/100).toFixed(2) + ''; v = v.replace(".", ","); v = v.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.'); i.value = 'R$ ' + v; }
         function parseMoney(s) { return parseFloat(s.replace(/[^0-9,]/g,'').replace(',','.')) || 0; }
