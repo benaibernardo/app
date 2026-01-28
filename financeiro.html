@@ -143,17 +143,18 @@
         }
 
         /* SPECIAL STYLES */
-        .tx-card.is-repass { border-left: 4px solid #ef4444; background: rgba(239, 68, 68, 0.05); opacity: 0.8; }
-        .tx-card.is-c6 { border-left: 4px solid #a855f7; }
+        .tx-card.is-repass { 
+            border-left: 4px solid #94a3b8; 
+            background: rgba(148, 163, 184, 0.05); 
+            opacity: 0.75; 
+        }
         
-        /* CREDIT CARD STYLE (NUBANK PURPLE IDENTITY) */
-        .tx-card.is-credit {
-            border-left: 4px solid #8b5cf6; /* Purple 500 */
-        }
+        /* CREDIT CARD UNPAID STYLE */
         .tx-card.is-credit-pending { 
-            background: rgba(139, 92, 246, 0.05); /* Light Purple bg */
+            border-left: 4px solid #f97316; /* Orange */
+            background: rgba(249, 115, 22, 0.05);
         }
-        [data-theme="light"] .tx-card.is-credit-pending { background: #f3e8ff; } /* Light Purple */
+        [data-theme="light"] .tx-card.is-credit-pending { background: #fff7ed; }
 
         .tx-main-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
         
@@ -197,7 +198,7 @@
         .tx-val-row { display: flex; align-items: center; gap: 8px; }
         .tx-val { font-family: var(--font-mono); font-weight: 800; font-size: 1rem; white-space: nowrap; }
         
-        .tx-val.pending-credit { color: #a78bfa; } /* Purple for credit */
+        .tx-val.pending-credit { color: #f97316; } 
 
         .pay-icon { font-size: 1.1rem; }
         
@@ -218,13 +219,13 @@
         .act-edit { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
         .act-del { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
         
-        /* PAY BTN - CREDIT SPECIFIC */
-        .act-pay { background: rgba(139, 92, 246, 0.15); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.3); } 
+        /* PAY BUTTON (CREDIT) */
+        .act-pay { background: rgba(249, 115, 22, 0.15); color: #f97316; border: 1px solid rgba(249, 115, 22, 0.3); } 
         .act-pay.paid { background: rgba(16, 185, 129, 0.15); color: #10b981; border-color: rgba(16, 185, 129, 0.3); }
 
         .act-edit:hover { background: #38bdf8; color: white; }
         .act-del:hover { background: #ef4444; color: white; }
-        .act-pay:hover { background: #a78bfa; color: white; }
+        .act-pay:hover { background: #f97316; color: white; }
         .act-pay.paid:hover { background: #10b981; color: white; }
 
         /* DRAWER (Notes & Progress) */
@@ -638,7 +639,7 @@
             'free': ['Aporte', 'Reserva', 'CDB', 'FIIs'],
             'long': ['Carro Novo', 'Casa Própria', 'Viagem Europa'],
             'edu': ['Livros', 'Cursos', 'Mentoria', 'Inglês'],
-            'play': ['Restaurante', 'Cinema', 'Streaming', 'Ifood', 'Uber Lazer']
+            'play': ['Restaurante', 'Cinema', 'Streaming', 'Ifood', 'Uber Lazer', 'Cartão C6 (Lazer)']
         };
 
         const JARS_INFO = {
@@ -733,6 +734,10 @@
             if(data.categories.essen && !data.categories.essen.includes('Nubank (Crédito)')) {
                 data.categories.essen.unshift('Nubank (Crédito)');
             }
+            // Add C6 Lazer if missing
+            if(data.categories.play && !data.categories.play.includes('Cartão C6 (Lazer)')) {
+                data.categories.play.push('Cartão C6 (Lazer)');
+            }
 
             // 3. Normalize Transactions (Add new fields if missing)
             if(data.transactions) {
@@ -782,11 +787,13 @@
             // GLOBAL BALANCE (BANK REALITY)
             const allIn = db.transactions.filter(t => t.type === 'in').reduce((a,b)=>a+b.val,0);
             
-            // Real Out (Cash flow)
+            // Real Out (Cash flow - only Paid items count)
             const realOut = db.transactions.filter(t => t.type === 'out' && t.paid).reduce((a,b)=>a+b.val,0);
             
-            // Total Out (Competence/Consumption - includes unpaid credit)
-            const totalOut = db.transactions.filter(t => t.type === 'out').reduce((a,b)=>a+b.val,0);
+            // Total Out (Competence/Consumption) - Excludes Repasses to show real burning rate
+            const totalOut = db.transactions
+                .filter(t => t.type === 'out' && !isRepassCategory(t.catName) && !t.thirdParty)
+                .reduce((a,b)=>a+b.val,0);
             
             // TOTAL EXPENSES (SIMPLE SUM - Consumption View)
             document.getElementById('dsp-total-expenses').innerText = fmtMoney(totalOut);
@@ -802,7 +809,6 @@
             const myOut = db.transactions
                 .filter(t => t.type === 'out')
                 .reduce((acc, t) => {
-                    if (isC6Category(t.catName)) return acc + (t.val / 2); // 50% Rule for C6
                     if (isRepassCategory(t.catName) || t.thirdParty) return acc; // Ignore Repass/ThirdParty
                     return acc + t.val; // 100% Rule for others (including Nubank)
                 }, 0);
@@ -810,16 +816,10 @@
             document.getElementById('dsp-balance-personal').innerText = fmtMoney(myIn - myOut);
         }
 
-        function isC6Category(name) {
-            return name && (name.includes('C6'));
-        }
-        
-        function isNubankCategory(name) {
-            return name && (name.includes('Nubank'));
-        }
-
         function isRepassCategory(name) {
-            return name && (name.includes('Repasse') || name.includes('Terceiros') || name.includes('Caixinha'));
+            if(!name) return false;
+            const n = name.toLowerCase();
+            return n.includes('repasse') || n.includes('terceiros') || n.includes('reembolso') || n.includes('compartilhado');
         }
 
         function renderJars() {
@@ -847,9 +847,8 @@
                 
                 // Calculate Spent per Jar with Logic
                 const spent = monthOutTxs.filter(t => t.catJar === jar.id).reduce((acc, t) => {
-                    if (isC6Category(t.catName)) return acc + (t.val / 2); // 50% Rule
                     if (isRepassCategory(t.catName) || t.thirdParty) return acc; // Ignore
-                    return acc + t.val; // 100% for Nubank and others
+                    return acc + t.val; 
                 }, 0);
 
                 const pct = limit > 0 ? (spent / limit) * 100 : (spent > 0 ? 100 : 0);
@@ -905,13 +904,12 @@
             txs.forEach(t => {
                 const isInc = t.type === 'in';
                 const isRepassCat = isRepassCategory(t.catName) || t.thirdParty;
-                const isC6 = isC6Category(t.catName);
                 const isCredit = t.method === 'Crédito';
                 const isPaid = t.paid !== false; // Default true if undefined
                 
                 let colorClass = isInc ? 'text-emerald-500' : 'text-red-400';
                 if (isRepassCat && !isInc) colorClass = 'text-slate-400 line-through decoration-red-500/50'; 
-                if (isCredit && !isPaid) colorClass = 'text-purple-500'; // Unpaid Credit color (Updated to Purple)
+                if (isCredit && !isPaid) colorClass = 'text-orange-500'; // Orange for Unpaid Credit
 
                 const day = t.date.split('-')[2];
                 const monthIndex = parseInt(t.date.split('-')[1]) - 1;
@@ -962,19 +960,16 @@
 
                 let cardClass = '';
                 if(isRepassCat) cardClass = 'is-repass';
-                else if(isCredit && !isPaid) cardClass = 'is-credit-pending is-credit'; // Apply Credit Style
-                else if(isCredit && isPaid) cardClass = 'is-credit'; // Keep border even if paid
-                else if(isC6) cardClass = 'is-c6';
-
+                else if(isCredit && !isPaid) cardClass = 'is-credit-pending'; // Apply Credit Style
+                
                 let specialTag = '';
-                if(isC6) specialTag = '<span class="text-[9px] bg-purple-100 text-purple-700 px-1 rounded border border-purple-200">50% Pessoal</span>';
-                if(isRepassCat && !isInc) specialTag = '<span class="text-[9px] bg-red-50 text-red-400 px-1 rounded border border-red-100">Não Desconta</span>';
+                if(isRepassCat && !isInc) specialTag = '<span class="text-[9px] bg-slate-100 text-slate-500 px-1 rounded border border-slate-200">Repasse</span>';
                 
                 // Credit Card Badge Logic
                 if(isCredit) {
                     specialTag += isPaid ? 
-                        ' <span class="text-[9px] bg-emerald-100 text-emerald-700 px-1 rounded border border-emerald-200"><i class="fa-brands fa-cc-mastercard"></i> Pago</span>' : 
-                        ' <span class="text-[9px] bg-purple-100 text-purple-700 px-1 rounded border border-purple-200"><i class="fa-brands fa-cc-mastercard"></i> Fatura</span>';
+                        ' <span class="text-[9px] bg-emerald-100 text-emerald-700 px-1 rounded border border-emerald-200"><i class="fa-solid fa-check"></i> Pago</span>' : 
+                        ' <span class="text-[9px] bg-orange-100 text-orange-700 px-1 rounded border border-orange-200"><i class="fa-solid fa-clock"></i> Pendente</span>';
                 }
 
                 // Helper to get cat icon
