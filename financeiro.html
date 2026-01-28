@@ -412,12 +412,12 @@
 
                 <!-- CATEGORY UNIFIED -->
                 <div id="catSection">
-                    <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Categoria do Gasto</label>
+                    <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Categoria</label>
                     <div class="flex gap-2">
                         <select id="txCatUnified" class="input-prime text-sm flex-1">
                             <!-- Populated with OptGroups -->
                         </select>
-                        <button type="button" onclick="openCatManager()" class="w-12 rounded-lg bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/20 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-white/20 transition text-slate-600 dark:text-white"><i data-lucide="settings-2" class="w-5 h-5"></i></button>
+                        <button type="button" onclick="openCatManager()" class="w-12 rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-500 flex items-center justify-center hover:bg-sky-500/20 transition"><i data-lucide="settings-2" class="w-5 h-5"></i></button>
                     </div>
                 </div>
 
@@ -589,6 +589,7 @@
 
         // Updated Defaults
         const DEFAULT_CATEGORIES = {
+            'income': ['Salário', 'Consultoria', 'Saldo', 'Outros'],
             'essen': ['Aluguel', 'Mercado', 'Farmácia', 'Combustível', 'Contas', 'Celular'],
             'free': ['Aporte', 'Reserva', 'CDB', 'FIIs'],
             'long': ['Carro Novo', 'Casa Própria', 'Viagem Europa'],
@@ -803,6 +804,9 @@
                     const jMap = { 'home':'fa-house', 'trending-up':'fa-chart-line', 'plane':'fa-plane', 'book-open':'fa-book', 'gamepad-2':'fa-gamepad' };
                     jarIconClass = 'fa-solid ' + (jMap[JARS_INFO[t.catJar].icon] || 'fa-box');
                     jarColorClass = JARS_INFO[t.catJar].color;
+                } else if(t.catJar === 'income') {
+                    jarIconClass = 'fa-solid fa-arrow-up';
+                    jarColorClass = 'text-emerald-500';
                 }
 
                 let transDetails = '';
@@ -946,8 +950,11 @@
                     if(t.origin || t.destination) document.getElementById('transportFields').classList.remove('hidden');
 
                     setTxType(t.type);
+                    // Handle cat logic for both in and out
                     if(t.type === 'out') {
                         if(t.catJar && t.catName) document.getElementById('txCatUnified').value = `${t.catJar}|${t.catName}`;
+                    } else {
+                        document.getElementById('txCatUnified').value = t.catName || '';
                     }
                     document.getElementById('btnDelete').classList.remove('hidden');
                 }
@@ -964,12 +971,13 @@
             if(t === 'out') {
                 bOut.className = "py-2 rounded-lg text-xs font-bold transition flex-1 bg-red-500 text-white shadow-lg";
                 bIn.className = "py-2 rounded-lg text-xs font-bold transition flex-1 bg-slate-100 dark:bg-white/10 opacity-50";
-                cSec.style.display = 'block';
             } else {
                 bIn.className = "py-2 rounded-lg text-xs font-bold transition flex-1 bg-emerald-500 text-white shadow-lg";
                 bOut.className = "py-2 rounded-lg text-xs font-bold transition flex-1 bg-slate-100 dark:bg-white/10 opacity-50";
-                cSec.style.display = 'none';
             }
+            // Always show cat section, just repopulate
+            cSec.style.display = 'block';
+            populateUnifiedSelect();
         }
 
         function toggleInstallments() {
@@ -982,17 +990,27 @@
             const sel = document.getElementById('txCatUnified');
             sel.innerHTML = '';
             
-            db.config.jars.forEach(jar => {
-                const optGroup = document.createElement('optgroup');
-                optGroup.label = jar.name.toUpperCase();
-                (db.categories[jar.id] || []).forEach(c => {
+            if(currentType === 'in') {
+                const incomeCats = db.categories['income'] || [];
+                incomeCats.forEach(c => {
                     const opt = document.createElement('option');
-                    opt.value = `${jar.id}|${c}`;
+                    opt.value = c; // Just the name for income
                     opt.text = c;
-                    optGroup.appendChild(opt);
+                    sel.appendChild(opt);
                 });
-                sel.appendChild(optGroup);
-            });
+            } else {
+                db.config.jars.forEach(jar => {
+                    const optGroup = document.createElement('optgroup');
+                    optGroup.label = jar.name.toUpperCase();
+                    (db.categories[jar.id] || []).forEach(c => {
+                        const opt = document.createElement('option');
+                        opt.value = `${jar.id}|${c}`;
+                        opt.text = c;
+                        optGroup.appendChild(opt);
+                    });
+                    sel.appendChild(optGroup);
+                });
+            }
         }
 
         function saveTx(e) {
@@ -1003,12 +1021,15 @@
 
             const unifiedCat = document.getElementById('txCatUnified').value;
             let catJar = null;
-            let catName = 'Entrada';
+            let catName = 'Geral';
             
             if(currentType === 'out' && unifiedCat) {
                 const parts = unifiedCat.split('|');
                 catJar = parts[0];
                 catName = parts[1];
+            } else if (currentType === 'in') {
+                catJar = 'income';
+                catName = unifiedCat || 'Entrada';
             }
 
             const method = document.getElementById('txMethod').value;
@@ -1074,6 +1095,10 @@
             document.getElementById('modal-cat-manager').style.display = 'flex';
             const jarSel = document.getElementById('newCatJar');
             jarSel.innerHTML = '';
+            
+            // Add Income Option
+            jarSel.add(new Option('Renda / Entradas', 'income'));
+            
             db.config.jars.forEach(j => jarSel.add(new Option(j.name, j.id)));
             renderDelCatOptions();
         }
@@ -1081,6 +1106,17 @@
         function renderDelCatOptions() {
             const sel = document.getElementById('delCatSelect');
             sel.innerHTML = '';
+            
+            // Income Group
+            if(db.categories['income']) {
+                const incGrp = document.createElement('optgroup');
+                incGrp.label = "RENDA / ENTRADAS";
+                db.categories['income'].forEach(c => {
+                    incGrp.appendChild(new Option(c, `income|${c}`));
+                });
+                sel.appendChild(incGrp);
+            }
+
             db.config.jars.forEach(jar => {
                 const grp = document.createElement('optgroup');
                 grp.label = jar.name;
