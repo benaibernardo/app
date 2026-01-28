@@ -142,11 +142,17 @@
             background: rgba(255,255,255,0.05);
         }
 
-        /* REPASS SPECIAL STYLE */
-        .tx-card.is-repass { border-left: 4px solid #ef4444; background: rgba(239, 68, 68, 0.05); opacity: 0.7; }
+        /* SPECIAL STYLES */
+        .tx-card.is-repass { border-left: 4px solid #ef4444; background: rgba(239, 68, 68, 0.05); opacity: 0.8; }
         .tx-card.is-c6 { border-left: 4px solid #a855f7; }
-        .tx-card.is-nubank { border-left: 4px solid #3b82f6; } /* Blue for Nubank */
-        [data-theme="light"] .tx-card.is-repass { background: #fef2f2; border-left-color: #ef4444; }
+        .tx-card.is-nubank { border-left: 4px solid #3b82f6; } 
+        
+        /* CREDIT CARD UNPAID STYLE */
+        .tx-card.is-credit-pending { 
+            border-left: 4px solid #f59e0b; /* Amber/Orange */
+            background: rgba(245, 158, 11, 0.05);
+        }
+        [data-theme="light"] .tx-card.is-credit-pending { background: #fffbeb; }
 
         .tx-main-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
         
@@ -162,14 +168,10 @@
         .tx-day { font-size: 1.2rem; font-weight: 800; color: var(--text-main); }
         .tx-month { font-size: 0.6rem; text-transform: uppercase; font-weight: 800; color: var(--text-muted); margin-top: 2px; }
 
-        /* INFO BOX - UPDATED LAYOUT */
+        /* INFO BOX */
         .tx-info { flex: 1; display: flex; flex-direction: column; justify-content: center; overflow: hidden; gap: 4px; }
-        
-        /* PLACE IS NOW TITLE */
         .tx-title-row { display: flex; align-items: center; gap: 6px; }
         .tx-place { font-weight: 800; font-size: 0.95rem; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        
-        /* DETAILS SUBTITLE */
         .tx-sub-row { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; color: var(--text-muted); font-weight: 500; flex-wrap: wrap; }
         
         .cat-badge { 
@@ -193,6 +195,9 @@
         .tx-right { text-align: right; display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 4px; }
         .tx-val-row { display: flex; align-items: center; gap: 8px; }
         .tx-val { font-family: var(--font-mono); font-weight: 800; font-size: 1rem; white-space: nowrap; }
+        
+        .tx-val.pending-credit { color: #f59e0b; } /* Orange for pending credit */
+
         .pay-icon { font-size: 1.1rem; }
         
         .tx-installments { 
@@ -211,8 +216,13 @@
         .action-icon { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; font-size: 0.75rem; }
         .act-edit { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
         .act-del { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+        .act-pay { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); } /* Pay Button */
+        .act-pay.paid { background: rgba(16, 185, 129, 0.15); color: #10b981; border-color: rgba(16, 185, 129, 0.3); }
+
         .act-edit:hover { background: #38bdf8; color: white; }
         .act-del:hover { background: #ef4444; color: white; }
+        .act-pay:hover { background: #f59e0b; color: white; }
+        .act-pay.paid:hover { background: #10b981; color: white; }
 
         /* DRAWER (Notes & Progress) */
         .tx-drawer { 
@@ -228,16 +238,12 @@
         .debt-bar-fill { height: 100%; background: #a78bfa; border-radius: 3px; }
         .debt-text { font-size: 0.65rem; color: var(--text-muted); margin-top: 4px; display: flex; justify-content: space-between; font-weight: 700; text-transform: uppercase; }
 
-        /* FILTER STYLING - RESTORED COLORS */
-        .filter-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid var(--glass-border); margin-bottom: 12px; }
-        .filter-toggle { font-size: 0.75rem; font-weight: 800; color: var(--accent); background: rgba(14, 165, 233, 0.1); padding: 6px 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.2s; border: 1px solid rgba(14, 165, 233, 0.2); }
-        
-        .filter-panel { 
-            max-height: 0; overflow: hidden; transition: max-height 0.4s ease; 
+        /* FIXED FILTERS (No Drawer) */
+        .fixed-filters { 
             display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; 
-            opacity: 0;
+            padding-bottom: 15px; margin-bottom: 10px; 
+            border-bottom: 1px solid var(--glass-border);
         }
-        .filter-panel.open { max-height: 400px; padding-bottom: 15px; opacity: 1; }
         
         .filter-group { position: relative; }
         .filter-icon { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); z-index: 10; font-size: 0.8rem; pointer-events: none; }
@@ -368,16 +374,9 @@
             <!-- EXTRACT & FILTERS REFACTORED -->
             <div class="glass-card overflow-hidden">
                 <div class="p-4">
-                    <!-- NEW FILTER HEADER -->
-                    <div class="filter-header">
-                        <h3 class="text-xs font-bold uppercase tracking-wider opacity-70">Extrato Detalhado</h3>
-                        <button onclick="toggleFilters()" class="filter-toggle" id="filterToggleBtn">
-                            FILTRAR <i class="fa-solid fa-chevron-down"></i>
-                        </button>
-                    </div>
-
-                    <!-- COLLAPSIBLE FILTER DRAWER -->
-                    <div id="filter-panel" class="filter-panel">
+                    
+                    <!-- VISIBLE FILTERS -->
+                    <div class="fixed-filters">
                         <div class="filter-group">
                             <i class="fa-regular fa-calendar filter-icon fi-cal"></i>
                             <select id="filter-day" class="filter-select" onchange="setFilter('day', this.value)"></select>
@@ -394,8 +393,8 @@
                             <i class="fa-regular fa-credit-card filter-icon fi-card"></i>
                             <select id="filter-method" class="filter-select" onchange="setFilter('method', this.value)"></select>
                         </div>
-                        <div class="col-span-4 mt-2">
-                            <button onclick="resetFilters()" class="w-full py-2 bg-white/5 border border-white/10 text-[10px] font-bold text-slate-400 rounded-lg hover:bg-white/10 transition uppercase tracking-widest">Limpar Filtros</button>
+                        <div class="col-span-4 mt-1 flex justify-end">
+                            <button onclick="resetFilters()" class="text-[10px] font-bold text-slate-400 hover:text-white uppercase tracking-widest transition">Limpar</button>
                         </div>
                     </div>
 
@@ -739,6 +738,21 @@
                     if(t.destination === undefined) t.destination = '';
                     // Ensure notes is a string for regex checks later
                     if(t.notes === undefined || t.notes === null) t.notes = '';
+                    
+                    // CREDIT CARD PAYMENT STATUS LOGIC
+                    if(t.paid === undefined) {
+                        // Default behavior for existing items:
+                        // If it's NOT credit, it's paid immediately.
+                        // If it IS credit:
+                        //   - If it's old (before today), mark as paid to not mess up old history.
+                        //   - If it's future, mark as unpaid.
+                        if(t.method !== 'Crédito') {
+                            t.paid = true;
+                        } else {
+                            const today = new Date().toISOString().split('T')[0];
+                            t.paid = (t.date < today); 
+                        }
+                    }
                 });
             }
             
@@ -768,13 +782,21 @@
 
         function calculateBalances() {
             // GLOBAL BALANCE (BANK REALITY)
+            // Rule: Only count expenses if they are PAID (marked as paid)
+            // Income is usually paid immediately upon receipt, assuming type 'in' implies received.
             const allIn = db.transactions.filter(t => t.type === 'in').reduce((a,b)=>a+b.val,0);
-            const allOut = db.transactions.filter(t => t.type === 'out').reduce((a,b)=>a+b.val,0);
             
-            // TOTAL EXPENSES (SIMPLE SUM)
-            document.getElementById('dsp-total-expenses').innerText = fmtMoney(allOut);
-            // REAL BANK BALANCE
-            document.getElementById('dsp-balance-real').innerText = fmtMoney(allIn - allOut);
+            // Real Out (Cash flow)
+            const realOut = db.transactions.filter(t => t.type === 'out' && t.paid).reduce((a,b)=>a+b.val,0);
+            
+            // Total Out (Competence/Consumption - includes unpaid credit)
+            const totalOut = db.transactions.filter(t => t.type === 'out').reduce((a,b)=>a+b.val,0);
+            
+            // TOTAL EXPENSES (SIMPLE SUM - Consumption View)
+            document.getElementById('dsp-total-expenses').innerText = fmtMoney(totalOut);
+            
+            // REAL BANK BALANCE (Cash Flow View)
+            document.getElementById('dsp-balance-real').innerText = fmtMoney(allIn - realOut);
 
             // PERSONAL BALANCE LOGIC
             // Income: Only non-repass
@@ -782,7 +804,9 @@
                 .filter(t => t.type === 'in' && !isRepassCategory(t.catName))
                 .reduce((a,b)=>a+b.val,0);
 
-            // Expenses: Logic for C6 (50%) and Repass (0%)
+            // Expenses: Logic for C6 (50%) and Repass (0%) - Based on CONSUMPTION (Total)
+            // Or should personal balance reflect cash flow? Usually consumption for budget tracking.
+            // Let's keep it based on Consumption (Total) so the user sees their commitment.
             const myOut = db.transactions
                 .filter(t => t.type === 'out')
                 .reduce((acc, t) => {
@@ -815,7 +839,7 @@
             const baseForJars = Math.max(0, income - fixed);
             const mStr = viewDate.toISOString().slice(0, 7);
             
-            // Filter Out transactions for current month
+            // Filter Out transactions for current month (Consumption View)
             const monthOutTxs = db.transactions.filter(t => t.type === 'out' && t.date.startsWith(mStr));
 
             db.config.jars.forEach(jar => {
@@ -891,9 +915,12 @@
                 const isRepassCat = isRepassCategory(t.catName) || t.thirdParty;
                 const isC6 = isC6Category(t.catName);
                 const isNubank = isNubankCategory(t.catName);
+                const isCredit = t.method === 'Crédito';
+                const isPaid = t.paid !== false; // Default true if undefined
                 
                 let colorClass = isInc ? 'text-emerald-500' : 'text-red-400';
                 if (isRepassCat && !isInc) colorClass = 'text-slate-400 line-through decoration-red-500/50'; 
+                if (isCredit && !isPaid) colorClass = 'text-amber-500'; // Unpaid Credit color
 
                 const day = t.date.split('-')[2];
                 const monthIndex = parseInt(t.date.split('-')[1]) - 1;
@@ -944,13 +971,15 @@
 
                 let cardClass = '';
                 if(isRepassCat) cardClass = 'is-repass';
-                if(isC6) cardClass = 'is-c6';
-                if(isNubank) cardClass = 'is-nubank';
+                else if(isCredit && !isPaid) cardClass = 'is-credit-pending';
+                else if(isC6) cardClass = 'is-c6';
+                else if(isNubank) cardClass = 'is-nubank';
 
                 let specialTag = '';
                 if(isC6) specialTag = '<span class="text-[9px] bg-purple-100 text-purple-700 px-1 rounded border border-purple-200">50% Pessoal</span>';
                 if(isNubank) specialTag = '<span class="text-[9px] bg-blue-100 text-blue-700 px-1 rounded border border-blue-200">100% Pessoal</span>';
                 if(isRepassCat && !isInc) specialTag = '<span class="text-[9px] bg-red-50 text-red-400 px-1 rounded border border-red-100">Não Desconta</span>';
+                if(isCredit) specialTag += isPaid ? ' <span class="text-[9px] bg-emerald-100 text-emerald-700 px-1 rounded border border-emerald-200">Pago</span>' : ' <span class="text-[9px] bg-amber-100 text-amber-700 px-1 rounded border border-amber-200">Fatura Aberta</span>';
 
                 // Helper to get cat icon
                 const catIconClass = getCategoryIcon(t.catName);
@@ -958,6 +987,14 @@
                 const clickable = hasNote; 
                 const cursorClass = clickable ? "clickable" : "";
                 const onclickAction = clickable ? "toggleNote(this)" : "";
+
+                // ACTION BUTTONS (PAY TOGGLE)
+                let payBtn = '';
+                if (isCredit) {
+                    const payIconClass = isPaid ? 'fa-solid fa-check' : 'fa-regular fa-circle';
+                    const payBtnClass = isPaid ? 'act-pay paid' : 'act-pay';
+                    payBtn = `<div class="action-icon ${payBtnClass}" onclick="event.stopPropagation(); toggleTxPaid(${t.id})" title="${isPaid ? 'Marcar como Pendente' : 'Marcar como Pago'}"><i class="${payIconClass}"></i></div>`;
+                }
 
                 list.innerHTML += `
                 <div class="tx-card ${cursorClass} ${cardClass}" onclick="${onclickAction}">
@@ -988,6 +1025,7 @@
                             ${installBadge}
                             <!-- FIXED ACTIONS -->
                             <div class="tx-actions">
+                                ${payBtn}
                                 <div class="action-icon act-edit" onclick="event.stopPropagation(); editTx(${t.id})"><i class="fa-solid fa-pencil"></i></div>
                                 <div class="action-icon act-del" onclick="event.stopPropagation(); deleteTxLogic(${t.id})"><i class="fa-solid fa-trash"></i></div>
                             </div>
@@ -1001,6 +1039,16 @@
                     </div>` : ''}
                 </div>`;
             });
+        }
+
+        function toggleTxPaid(id) {
+            const idx = db.transactions.findIndex(t => t.id == id);
+            if(idx > -1) {
+                // Toggle state
+                db.transactions[idx].paid = !db.transactions[idx].paid;
+                saveData();
+                renderAll();
+            }
         }
 
         function toggleNote(el) { el.classList.toggle('expanded'); }
@@ -1022,19 +1070,7 @@
         }
 
         // --- FILTER DRAWER ---
-        function toggleFilters() {
-            const panel = document.getElementById('filter-panel');
-            const btn = document.getElementById('filterToggleBtn');
-            const isOpen = panel.classList.contains('open');
-            
-            if(isOpen) {
-                panel.classList.remove('open');
-                btn.style.color = "var(--accent)";
-            } else {
-                panel.classList.add('open');
-                btn.style.color = "white";
-            }
-        }
+        // Filters are now fixed, removed toggle logic
 
         function populateFilterOptions(txs) {
             const days = new Set();
@@ -1073,7 +1109,6 @@
         function resetFilters() {
             activeFilters = { cat: 'all', place: 'all', method: 'all', day: 'all' };
             renderTransactions();
-            document.getElementById('filter-panel').classList.remove('open');
         }
 
         // --- TRANSACTION MODAL ---
@@ -1229,33 +1264,29 @@
             const count = parseInt(document.getElementById('txInstallments').value) || 1;
             const isSub = document.getElementById('txIsSubscription').checked;
 
-            // LOGIC SPLIT:
-            // 1. Subscription (Recorrente): Value is FULL per month.
-            // 2. Installment (Parcelado): Value is TOTAL / count per month.
             let valPerTx = valTotal;
-            let noteSuffix = "";
-
-            if (count > 1) {
-                if (isSub) {
-                    valPerTx = valTotal; // Recurring = same value
-                    // No automatic suffix for recurring, maybe add manually if needed?
-                    // Or keep logic simple.
-                } else {
-                    valPerTx = parseFloat((valTotal / count).toFixed(2)); // Installment = division
-                }
+            if (count > 1 && !isSub) {
+                valPerTx = parseFloat((valTotal / count).toFixed(2));
             }
 
+            const groupId = Date.now().toString(); // ID for Batch Operation
+
+            // PAYMENT STATUS LOGIC
+            const isCredit = method === 'Crédito';
+            
             if(id) {
                 // Edit Single Mode
                 const idx = db.transactions.findIndex(t=>t.id == id);
                 if(idx > -1) {
+                    const oldTx = db.transactions[idx];
                     db.transactions[idx] = {
-                        ...db.transactions[idx],
+                        ...oldTx,
                         type: currentType, 
-                        val: valTotal, // In single edit, value usually means the single value, but keep consistent
+                        val: valTotal, 
                         date: baseDate, place, method, notes, catJar, catName,
                         thirdParty: isTP,
-                        origin: origin, destination: dest
+                        origin: origin, destination: dest,
+                        paid: isCredit ? (oldTx.paid !== undefined ? oldTx.paid : false) : true // Preserve payment status if editing
                     };
                 }
             } else {
@@ -1267,10 +1298,11 @@
                     const isoDate = txDate.toISOString().split('T')[0];
                     
                     let finalNote = notes;
-                    if (count > 1 && !isSub) finalNote += ` (${i+1}/${count})`; // Only add (1/12) for installments
+                    if (count > 1 && !isSub) finalNote += ` (${i+1}/${count})`; 
                     
                     db.transactions.push({
                         id: txId,
+                        groupId: groupId, // Link transactions
                         type: currentType,
                         val: valPerTx,
                         date: isoDate,
@@ -1280,7 +1312,8 @@
                         thirdParty: isTP,
                         catJar: catJar,
                         catName: catName,
-                        origin: origin, destination: dest
+                        origin: origin, destination: dest,
+                        paid: !isCredit // Credit starts as Unpaid (false), others Paid (true)
                     });
                 }
             }
@@ -1291,11 +1324,34 @@
         }
 
         function deleteTxLogic(id) {
-            if(confirm("Excluir lançamento?")) {
-                db.transactions = db.transactions.filter(t => t.id != id);
-                saveData(); renderAll();
+            const tx = db.transactions.find(t => t.id == id);
+            if(!tx) return;
+
+            let deleteFuture = false;
+            
+            // Check if part of a group/series and if there are future items
+            const futureCount = db.transactions.filter(t => t.groupId === tx.groupId && t.groupId && t.date > tx.date).length;
+
+            if (tx.groupId && futureCount > 0) {
+                const choice = confirm(`Este lançamento faz parte de uma série.\n\n[OK] para excluir este e TODOS os futuros.\n[Cancelar] para excluir APENAS este.`);
+                deleteFuture = choice;
+            } else {
+                if(!confirm("Excluir lançamento?")) return;
             }
+
+            if (deleteFuture) {
+                // Delete this one AND all future ones with same groupId
+                db.transactions = db.transactions.filter(t => 
+                    !(t.groupId === tx.groupId && t.date >= tx.date)
+                );
+            } else {
+                // Delete only this one
+                db.transactions = db.transactions.filter(t => t.id != id);
+            }
+            
+            saveData(); renderAll();
         }
+        
         function deleteTx() { deleteTxLogic(document.getElementById('txId').value); closeModal('modal-tx'); }
         function editTx(id) { openTxModal(id); }
 
