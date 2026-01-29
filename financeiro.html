@@ -209,21 +209,23 @@
             display: inline-block;
         }
 
-        /* ACTIONS (FIXED VISIBLE) */
+        /* ACTIONS (FIXED VISIBLE - Contrast Fix) */
         .tx-actions { 
             display: flex; gap: 8px; margin-top: 2px;
             justify-content: flex-end;
         }
         
         .action-icon { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; font-size: 0.75rem; }
-        .act-edit { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
-        .act-del { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+        
+        /* Force explicit colors for light/dark mode visibility */
+        .act-edit { background: rgba(56, 189, 248, 0.15); color: #0ea5e9; border: 1px solid rgba(14, 165, 233, 0.2); }
+        .act-del { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
         
         /* PAY BUTTON (CREDIT) */
         .act-pay { background: rgba(249, 115, 22, 0.15); color: #f97316; border: 1px solid rgba(249, 115, 22, 0.3); } 
         .act-pay.paid { background: rgba(16, 185, 129, 0.15); color: #10b981; border-color: rgba(16, 185, 129, 0.3); }
 
-        .act-edit:hover { background: #38bdf8; color: white; }
+        .act-edit:hover { background: #0ea5e9; color: white; }
         .act-del:hover { background: #ef4444; color: white; }
         .act-pay:hover { background: #f97316; color: white; }
         .act-pay.paid:hover { background: #10b981; color: white; }
@@ -315,6 +317,9 @@
                     </div>
                 </div>
                 <div class="flex gap-2">
+                    <button onclick="openFastActions()" class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-500 hover:bg-amber-500 hover:text-white flex items-center justify-center border border-amber-500/30 transition shadow-lg shadow-amber-500/10">
+                        <i data-lucide="zap" class="w-5 h-5"></i>
+                    </button>
                     <button onclick="toggleTheme()" class="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center border border-white/10 transition">
                         <i id="theme-icon" data-lucide="moon" class="w-5 h-5"></i>
                     </button>
@@ -409,6 +414,64 @@
             </div>
 
         </main>
+    </div>
+
+    <!-- MODAL FAST ACTIONS -->
+    <div id="modal-fast-actions" class="modal-overlay">
+        <div class="modal-box">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold flex items-center gap-2"><i data-lucide="zap" class="text-amber-500"></i> Ações Rápidas</h3>
+                <button onclick="closeModal('modal-fast-actions')"><i data-lucide="x"></i></button>
+            </div>
+
+            <!-- TABS -->
+            <div class="flex gap-2 mb-6 p-1 bg-slate-100 dark:bg-white/5 rounded-xl border border-slate-200 dark:border-white/10">
+                <button onclick="switchFastAction('nubank')" id="tab-nubank" class="flex-1 py-2 rounded-lg text-xs font-bold transition bg-white dark:bg-white/10 shadow-sm">PAGAR NUBANK</button>
+                <button onclick="switchFastAction('c6')" id="tab-c6" class="flex-1 py-2 rounded-lg text-xs font-bold transition opacity-50 hover:opacity-100">C6 COMPARTILHADO</button>
+            </div>
+
+            <!-- NUBANK CONTENT -->
+            <div id="fa-nubank-content">
+                <div class="bg-purple-500/10 border border-purple-500/20 rounded-xl p-4 mb-4">
+                    <h4 class="text-sm font-bold text-purple-500 mb-2">Resumo da Fatura Atual</h4>
+                    <div id="nubank-preview-list" class="space-y-1 text-xs opacity-80 mb-3 max-h-32 overflow-y-auto">
+                        <!-- Filled by JS -->
+                    </div>
+                    <div class="flex justify-between items-end border-t border-purple-500/20 pt-2">
+                        <span class="text-xs font-bold uppercase opacity-60">Total Aberto</span>
+                        <span class="text-xl font-mono font-bold text-purple-500" id="nubank-total-display">R$ 0,00</span>
+                    </div>
+                </div>
+                <button onclick="confirmNubankPay()" class="btn-action w-full bg-purple-600 hover:bg-purple-700 shadow-purple-500/30">
+                    <i class="fa-solid fa-check-double"></i> PAGAR FATURA E DAR BAIXA
+                </button>
+            </div>
+
+            <!-- C6 CONTENT -->
+            <div id="fa-c6-content" class="hidden">
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Valor Total da Fatura (R$)</label>
+                        <input type="text" id="c6-total" class="input-prime font-mono text-lg font-bold" placeholder="0,00" oninput="maskMoney(this); calcC6Split()">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Sua Parte (R$)</label>
+                        <input type="text" id="c6-mine" class="input-prime font-mono text-lg font-bold text-sky-500" placeholder="0,00" oninput="maskMoney(this); calcC6Split()">
+                    </div>
+                    <div class="p-3 bg-slate-100 dark:bg-white/5 rounded-xl border border-slate-200 dark:border-white/10 text-center">
+                        <span class="text-[10px] font-bold opacity-60 uppercase block">Parte Dela (Repasse)</span>
+                        <span id="c6-her-part" class="text-lg font-mono font-bold text-slate-500">R$ 0,00</span>
+                    </div>
+                    <div class="text-[10px] opacity-60 italic text-center px-4">
+                        Isso criará dois lançamentos de saída: um para seu lazer e outro para anular o repasse dela.
+                    </div>
+                    <button onclick="confirmC6Pay()" class="btn-action w-full">
+                        <i class="fa-solid fa-share-nodes"></i> LANÇAR DIVISÃO
+                    </button>
+                </div>
+            </div>
+
+        </div>
     </div>
 
     <!-- MODAL TRANSACTION -->
@@ -631,11 +694,11 @@
         const GIST_DESC = 'BENAI_FINANCE_DB';
         const GIST_FILENAME = 'finance_db.json';
 
-        // Updated Defaults - INCLUDING REPASS AND NUBANK
+        // Updated Defaults - Cleaned "Nubank" and Moved Repass
         const DEFAULT_CATEGORIES = {
             'income': ['Salário', 'Consultoria', 'Saldo', 'Outros'],
-            'repass': ['Reembolso', 'Compartilhado', 'Passagem', 'Empréstimo', 'Outros'],
-            'essen': ['Cartão C6 (Total)', 'Nubank (Crédito)', 'Aluguel', 'Mercado', 'Farmácia', 'Combustível', 'Contas', 'Celular'],
+            'repass': ['Repasses (Terceiros)', 'Repasse (Caixinha)', 'Reembolso', 'Compartilhado', 'Passagem', 'Empréstimo', 'Outros'],
+            'essen': ['Mercado', 'Farmácia', 'Combustível', 'Contas', 'Celular', 'Aluguel', 'Casa'],
             'free': ['Aporte', 'Reserva', 'CDB', 'FIIs'],
             'long': ['Carro Novo', 'Casa Própria', 'Viagem Europa'],
             'edu': ['Livros', 'Cursos', 'Mentoria', 'Inglês'],
@@ -730,28 +793,18 @@
             // 1. Ensure Categories Structure
             if(!data.categories) data.categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
             
-            // 2. Inject Missing New Categories
-            if(data.categories.essen && !data.categories.essen.includes('Nubank (Crédito)')) {
-                data.categories.essen.unshift('Nubank (Crédito)');
-            }
-            // Add C6 Lazer if missing
-            if(data.categories.play && !data.categories.play.includes('Cartão C6 (Lazer)')) {
-                data.categories.play.push('Cartão C6 (Lazer)');
-            }
-
-            // 3. Normalize Transactions (Add new fields if missing)
+            // 2. Inject Missing New Categories if structure changed
+            if(!data.categories.play.includes('Cartão C6 (Lazer)')) data.categories.play.push('Cartão C6 (Lazer)');
+            
+            // 3. Normalize Transactions
             if(data.transactions) {
                 data.transactions.forEach(t => {
                     if(t.origin === undefined) t.origin = '';
                     if(t.destination === undefined) t.destination = '';
-                    // Ensure notes is a string for regex checks later
                     if(t.notes === undefined || t.notes === null) t.notes = '';
-                    
-                    // CREDIT CARD PAYMENT STATUS LOGIC
                     if(t.paid === undefined) {
-                        if(t.method !== 'Crédito') {
-                            t.paid = true;
-                        } else {
+                        if(t.method !== 'Crédito') t.paid = true;
+                        else {
                             const today = new Date().toISOString().split('T')[0];
                             t.paid = (t.date < today); 
                         }
@@ -761,7 +814,6 @@
             
             // 4. Ensure Jars Config
             if(!data.config.jars || data.config.jars.length === 0) {
-                // Apply standard if missing
                 data.config.jars = [{id:'essen', name:'Necessidades', perc:55}, {id:'free', name:'Lib. Financeira', perc:20}, {id:'long', name:'Sonhos', perc:10}, {id:'edu', name:'Educação', perc:5}, {id:'play', name:'Lazer', perc:10}];
             }
 
@@ -776,6 +828,141 @@
             saveData();
         }
 
+        // --- FAST ACTIONS LOGIC (NEW) ---
+        function openFastActions() {
+            document.getElementById('modal-fast-actions').style.display = 'flex';
+            switchFastAction('nubank'); // Default
+        }
+
+        function switchFastAction(tab) {
+            const btnNubank = document.getElementById('tab-nubank');
+            const btnC6 = document.getElementById('tab-c6');
+            const contentNubank = document.getElementById('fa-nubank-content');
+            const contentC6 = document.getElementById('fa-c6-content');
+
+            // Reset Styles
+            btnNubank.className = "flex-1 py-2 rounded-lg text-xs font-bold transition opacity-50 hover:opacity-100";
+            btnC6.className = "flex-1 py-2 rounded-lg text-xs font-bold transition opacity-50 hover:opacity-100";
+            contentNubank.classList.add('hidden');
+            contentC6.classList.add('hidden');
+
+            if(tab === 'nubank') {
+                btnNubank.className = "flex-1 py-2 rounded-lg text-xs font-bold transition bg-purple-500 text-white shadow-md";
+                contentNubank.classList.remove('hidden');
+                renderNubankPreview();
+            } else {
+                btnC6.className = "flex-1 py-2 rounded-lg text-xs font-bold transition bg-slate-800 text-white shadow-md";
+                contentC6.classList.remove('hidden');
+                // Reset C6 inputs
+                document.getElementById('c6-total').value = "";
+                document.getElementById('c6-mine').value = "";
+                document.getElementById('c6-her-part').innerText = "R$ 0,00";
+            }
+        }
+
+        function renderNubankPreview() {
+            const list = document.getElementById('nubank-preview-list');
+            const totalEl = document.getElementById('nubank-total-display');
+            list.innerHTML = '';
+            
+            const mStr = viewDate.toISOString().slice(0, 7);
+            
+            // Find ALL Credit + Unpaid + Current Month
+            const pending = db.transactions.filter(t => 
+                t.method === 'Crédito' && 
+                t.paid === false &&
+                t.date.startsWith(mStr)
+            );
+
+            let total = 0;
+            if(pending.length === 0) {
+                list.innerHTML = '<div class="text-center py-4 italic">Nenhuma fatura pendente para este mês.</div>';
+            } else {
+                pending.forEach(t => {
+                    total += t.val;
+                    list.innerHTML += `<div class="flex justify-between border-b border-purple-500/10 pb-1"><span>${t.place || 'Compra'}</span> <span>${fmtMoney(t.val)}</span></div>`;
+                });
+            }
+            totalEl.innerText = fmtMoney(total);
+        }
+
+        function confirmNubankPay() {
+            const mStr = viewDate.toISOString().slice(0, 7);
+            let count = 0;
+            
+            db.transactions.forEach(t => {
+                if(t.method === 'Crédito' && t.paid === false && t.date.startsWith(mStr)) {
+                    t.paid = true; // Mark as paid
+                    count++;
+                }
+            });
+
+            if(count > 0) {
+                saveData();
+                renderAll();
+                closeModal('modal-fast-actions');
+                toast(`${count} lançamentos pagos!`);
+            } else {
+                alert("Nada para pagar neste mês.");
+            }
+        }
+
+        function calcC6Split() {
+            const total = parseMoney(document.getElementById('c6-total').value);
+            const mine = parseMoney(document.getElementById('c6-mine').value);
+            const her = Math.max(0, total - mine);
+            document.getElementById('c6-her-part').innerText = fmtMoney(her);
+        }
+
+        function confirmC6Pay() {
+            const total = parseMoney(document.getElementById('c6-total').value);
+            const mine = parseMoney(document.getElementById('c6-mine').value);
+            const her = Math.max(0, total - mine);
+
+            if(total <= 0) return alert("Valor total inválido");
+
+            const date = new Date().toISOString().split('T')[0];
+
+            // 1. Transaction: My Part (Lazer)
+            if(mine > 0) {
+                db.transactions.push({
+                    id: Date.now(),
+                    type: 'out',
+                    val: mine,
+                    date: date,
+                    place: 'C6 FATURA (MINHA PARTE)',
+                    method: 'Pix', // Assuming you pay via Pix from main account
+                    catJar: 'play',
+                    catName: 'Cartão C6 (Lazer)',
+                    notes: 'Parte Benai - Ação Rápida',
+                    thirdParty: false,
+                    paid: true
+                });
+            }
+
+            // 2. Transaction: Her Part (Repass)
+            if(her > 0) {
+                db.transactions.push({
+                    id: Date.now() + 1,
+                    type: 'out',
+                    val: her,
+                    date: date,
+                    place: 'C6 FATURA (REPASSE)',
+                    method: 'Pix',
+                    catJar: 'repass',
+                    catName: 'Repasses (Terceiros)',
+                    notes: 'Parte Talita - Anula Entrada',
+                    thirdParty: true,
+                    paid: true
+                });
+            }
+
+            saveData();
+            renderAll();
+            closeModal('modal-fast-actions');
+            toast('Lançamentos C6 criados!');
+        }
+
         // --- CORE LOGIC ---
         function renderAll() {
             calculateBalances();
@@ -784,33 +971,21 @@
         }
 
         function calculateBalances() {
-            // GLOBAL BALANCE (BANK REALITY)
             const allIn = db.transactions.filter(t => t.type === 'in').reduce((a,b)=>a+b.val,0);
-            
-            // Real Out (Cash flow - only Paid items count)
             const realOut = db.transactions.filter(t => t.type === 'out' && t.paid).reduce((a,b)=>a+b.val,0);
             
-            // Total Out (Competence/Consumption) - Excludes Repasses to show real burning rate
+            // Total Out (Competence) excluding Repass
             const totalOut = db.transactions
                 .filter(t => t.type === 'out' && !isRepassCategory(t.catName) && !t.thirdParty)
                 .reduce((a,b)=>a+b.val,0);
             
-            // TOTAL EXPENSES (SIMPLE SUM - Consumption View)
             document.getElementById('dsp-total-expenses').innerText = fmtMoney(totalOut);
-            
-            // REAL BANK BALANCE (Cash Flow View)
             document.getElementById('dsp-balance-real').innerText = fmtMoney(allIn - realOut);
 
-            // PERSONAL BALANCE LOGIC
-            const myIn = db.transactions
-                .filter(t => t.type === 'in' && !isRepassCategory(t.catName))
-                .reduce((a,b)=>a+b.val,0);
-
-            const myOut = db.transactions
-                .filter(t => t.type === 'out')
-                .reduce((acc, t) => {
-                    if (isRepassCategory(t.catName) || t.thirdParty) return acc; // Ignore Repass/ThirdParty
-                    return acc + t.val; // 100% Rule for others (including Nubank)
+            const myIn = db.transactions.filter(t => t.type === 'in' && !isRepassCategory(t.catName)).reduce((a,b)=>a+b.val,0);
+            const myOut = db.transactions.filter(t => t.type === 'out').reduce((acc, t) => {
+                    if (isRepassCategory(t.catName) || t.thirdParty) return acc; 
+                    return acc + t.val;
                 }, 0);
 
             document.getElementById('dsp-balance-personal').innerText = fmtMoney(myIn - myOut);
@@ -831,7 +1006,6 @@
             const baseForJars = Math.max(0, income - fixed);
             const mStr = viewDate.toISOString().slice(0, 7);
             
-            // Filter Out transactions for current month (Consumption View)
             const monthOutTxs = db.transactions.filter(t => t.type === 'out' && t.date.startsWith(mStr));
 
             db.config.jars.forEach(jar => {
@@ -845,9 +1019,8 @@
                 const info = JARS_INFO[jar.id] || { icon: 'box', color: 'text-slate-500', desc: '' };
                 const limit = (baseForJars * jar.perc) / 100;
                 
-                // Calculate Spent per Jar with Logic
                 const spent = monthOutTxs.filter(t => t.catJar === jar.id).reduce((acc, t) => {
-                    if (isRepassCategory(t.catName) || t.thirdParty) return acc; // Ignore
+                    if (isRepassCategory(t.catName) || t.thirdParty) return acc; 
                     return acc + t.val; 
                 }, 0);
 
@@ -905,11 +1078,11 @@
                 const isInc = t.type === 'in';
                 const isRepassCat = isRepassCategory(t.catName) || t.thirdParty;
                 const isCredit = t.method === 'Crédito';
-                const isPaid = t.paid !== false; // Default true if undefined
+                const isPaid = t.paid !== false; 
                 
                 let colorClass = isInc ? 'text-emerald-500' : 'text-red-400';
                 if (isRepassCat && !isInc) colorClass = 'text-slate-400 line-through decoration-red-500/50'; 
-                if (isCredit && !isPaid) colorClass = 'text-orange-500'; // Orange for Unpaid Credit
+                if (isCredit && !isPaid) colorClass = 'text-orange-500'; 
 
                 const day = t.date.split('-')[2];
                 const monthIndex = parseInt(t.date.split('-')[1]) - 1;
@@ -924,7 +1097,6 @@
                 else if(t.method === 'Débito') { payIcon = "fa-regular fa-credit-card"; payColor = "ic-deb"; }
                 else if(t.method === 'Dinheiro') { payIcon = "fa-solid fa-money-bill-1"; payColor = "ic-money"; }
 
-                // DEBT PROGRESS LOGIC
                 let debtHTML = '';
                 let installBadge = '';
                 const noteMatch = (t.notes || "").match(/\((\d+)\/(\d+)\)/);
@@ -934,7 +1106,6 @@
                     const total = parseInt(noteMatch[2]);
                     installBadge = `<div class="tx-installments">${noteMatch[0]}</div>`;
                     
-                    // Progress Bar
                     const pct = (current / total) * 100;
                     const remainingDebt = (total - current) * t.val;
                     
@@ -948,7 +1119,6 @@
                     </div>`;
                 }
 
-                // Determine Category Badge Color & Icon
                 let badgeClass = 'bg-slate-100 text-slate-600';
                 if(t.catJar === 'essen') badgeClass = 'bg-essen';
                 if(t.catJar === 'free') badgeClass = 'bg-free';
@@ -960,26 +1130,22 @@
 
                 let cardClass = '';
                 if(isRepassCat) cardClass = 'is-repass';
-                else if(isCredit && !isPaid) cardClass = 'is-credit-pending'; // Apply Credit Style
+                else if(isCredit && !isPaid) cardClass = 'is-credit-pending'; 
                 
                 let specialTag = '';
                 if(isRepassCat && !isInc) specialTag = '<span class="text-[9px] bg-slate-100 text-slate-500 px-1 rounded border border-slate-200">Repasse</span>';
                 
-                // Credit Card Badge Logic
                 if(isCredit) {
                     specialTag += isPaid ? 
                         ' <span class="text-[9px] bg-emerald-100 text-emerald-700 px-1 rounded border border-emerald-200"><i class="fa-solid fa-check"></i> Pago</span>' : 
                         ' <span class="text-[9px] bg-orange-100 text-orange-700 px-1 rounded border border-orange-200"><i class="fa-solid fa-clock"></i> Pendente</span>';
                 }
 
-                // Helper to get cat icon
                 const catIconClass = getCategoryIcon(t.catName);
-
                 const clickable = hasNote; 
                 const cursorClass = clickable ? "clickable" : "";
                 const onclickAction = clickable ? "toggleNote(this)" : "";
 
-                // ACTION BUTTONS (PAY TOGGLE)
                 let payBtn = '';
                 if (isCredit) {
                     const payIconClass = isPaid ? 'fa-solid fa-check' : 'fa-regular fa-circle';
@@ -1014,7 +1180,6 @@
                                 <i class="${payIcon} pay-icon ${payColor}"></i>
                             </div>
                             ${installBadge}
-                            <!-- FIXED ACTIONS -->
                             <div class="tx-actions">
                                 ${payBtn}
                                 <div class="action-icon act-edit" onclick="event.stopPropagation(); editTx(${t.id})"><i class="fa-solid fa-pencil"></i></div>
@@ -1035,7 +1200,6 @@
         function toggleTxPaid(id) {
             const idx = db.transactions.findIndex(t => t.id == id);
             if(idx > -1) {
-                // Toggle state
                 db.transactions[idx].paid = !db.transactions[idx].paid;
                 saveData();
                 renderAll();
@@ -1060,9 +1224,6 @@
             if(n.includes('curso') || n.includes('aula') || n.includes('educa')) return 'fa-solid fa-graduation-cap';
             return 'fa-solid fa-tag';
         }
-
-        // --- FILTER DRAWER ---
-        // Filters are now fixed, removed toggle logic
 
         function populateFilterOptions(txs) {
             const days = new Set();
@@ -1103,7 +1264,6 @@
             renderTransactions();
         }
 
-        // --- TRANSACTION MODAL ---
         function openTxModal(id = null) {
             document.getElementById('txForm').reset();
             document.getElementById('txId').value = '';
@@ -1118,7 +1278,7 @@
             const todayLocal = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
             document.getElementById('txDate').value = todayLocal;
             
-            setTxType('out'); // Default
+            setTxType('out'); 
             populateUnifiedSelect();
 
             if(id) {
@@ -1138,7 +1298,6 @@
 
                     setTxType(t.type); 
                     
-                    // Cat logic
                     if (t.type === 'in') document.getElementById('txCatUnified').value = t.catName || '';
                     else if (t.catJar && t.catName) document.getElementById('txCatUnified').value = `${t.catJar}|${t.catName}`;
                     
@@ -1154,7 +1313,6 @@
             const bIn = document.getElementById('btnIn');
             const cSec = document.getElementById('catSection');
             
-            // Reset styles
             bOut.className = "py-2 rounded-lg text-xs font-bold transition flex-1 bg-slate-100 dark:bg-white/10 opacity-50";
             bIn.className = "py-2 rounded-lg text-xs font-bold transition flex-1 bg-slate-100 dark:bg-white/10 opacity-50";
 
@@ -1164,13 +1322,11 @@
                 bIn.className = "py-2 rounded-lg text-xs font-bold transition flex-1 bg-emerald-500 text-white shadow-lg";
             }
             
-            // Always show cat section, just repopulate
             cSec.style.display = 'block';
             populateUnifiedSelect();
         }
 
         function toggleInstallments() {
-            // Show installments section for ANY method now (to support recurring pix/boleto)
             document.getElementById('installmentsSection').classList.remove('hidden');
             updateInstallmentPreview();
         }
@@ -1203,22 +1359,21 @@
             sel.innerHTML = '';
             
             if(currentType === 'in') {
-                const incomeCats = db.categories['income'] || [];
+                const incomeCats = (db.categories['income'] || []).sort();
                 incomeCats.forEach(c => { sel.add(new Option(c, c)); });
             } else {
-                
-                // Repass Group First
                 if(db.categories['repass']) {
                     const repGrp = document.createElement('optgroup');
                     repGrp.label = "REPASSES / TERCEIROS";
-                    db.categories['repass'].forEach(c => repGrp.appendChild(new Option(c, `repass|${c}`)));
+                    db.categories['repass'].sort().forEach(c => repGrp.appendChild(new Option(c, `repass|${c}`)));
                     sel.appendChild(repGrp);
                 }
 
                 db.config.jars.forEach(jar => {
                     const optGroup = document.createElement('optgroup');
                     optGroup.label = jar.name.toUpperCase();
-                    (db.categories[jar.id] || []).forEach(c => {
+                    const cats = (db.categories[jar.id] || []).sort();
+                    cats.forEach(c => {
                         optGroup.appendChild(new Option(c, `${jar.id}|${c}`));
                     });
                     sel.appendChild(optGroup);
@@ -1261,13 +1416,10 @@
                 valPerTx = parseFloat((valTotal / count).toFixed(2));
             }
 
-            const groupId = Date.now().toString(); // ID for Batch Operation
-
-            // PAYMENT STATUS LOGIC
+            const groupId = Date.now().toString(); 
             const isCredit = method === 'Crédito';
             
             if(id) {
-                // Edit Single Mode
                 const idx = db.transactions.findIndex(t=>t.id == id);
                 if(idx > -1) {
                     const oldTx = db.transactions[idx];
@@ -1278,11 +1430,10 @@
                         date: baseDate, place, method, notes, catJar, catName,
                         thirdParty: isTP,
                         origin: origin, destination: dest,
-                        paid: isCredit ? (oldTx.paid !== undefined ? oldTx.paid : false) : true // Preserve payment status if editing
+                        paid: isCredit ? (oldTx.paid !== undefined ? oldTx.paid : false) : true 
                     };
                 }
             } else {
-                // Batch Create
                 for(let i=0; i<count; i++) {
                     const txId = Date.now() + i;
                     let txDate = new Date(baseDate + 'T12:00:00');
@@ -1294,7 +1445,7 @@
                     
                     db.transactions.push({
                         id: txId,
-                        groupId: groupId, // Link transactions
+                        groupId: groupId, 
                         type: currentType,
                         val: valPerTx,
                         date: isoDate,
@@ -1305,7 +1456,7 @@
                         catJar: catJar,
                         catName: catName,
                         origin: origin, destination: dest,
-                        paid: !isCredit // Credit starts as Unpaid (false), others Paid (true)
+                        paid: !isCredit 
                     });
                 }
             }
@@ -1320,8 +1471,6 @@
             if(!tx) return;
 
             let deleteFuture = false;
-            
-            // Check if part of a group/series and if there are future items
             const futureCount = db.transactions.filter(t => t.groupId === tx.groupId && t.groupId && t.date > tx.date).length;
 
             if (tx.groupId && futureCount > 0) {
@@ -1332,12 +1481,10 @@
             }
 
             if (deleteFuture) {
-                // Delete this one AND all future ones with same groupId
                 db.transactions = db.transactions.filter(t => 
                     !(t.groupId === tx.groupId && t.date >= tx.date)
                 );
             } else {
-                // Delete only this one
                 db.transactions = db.transactions.filter(t => t.id != id);
             }
             
@@ -1347,16 +1494,12 @@
         function deleteTx() { deleteTxLogic(document.getElementById('txId').value); closeModal('modal-tx'); }
         function editTx(id) { openTxModal(id); }
 
-        // --- CATEGORY MANAGER (UPDATED WITH EDIT) ---
         function openCatManager() {
             document.getElementById('modal-cat-manager').style.display = 'flex';
             const jarSel = document.getElementById('newCatJar');
             jarSel.innerHTML = '';
-            
-            // Add Special Groups
             jarSel.add(new Option('Renda / Entradas', 'income'));
             jarSel.add(new Option('Repasses / Terceiros', 'repass'));
-            
             db.config.jars.forEach(j => jarSel.add(new Option(j.name, j.id)));
             renderDelCatOptions();
         }
@@ -1365,26 +1508,24 @@
             const sel = document.getElementById('delCatSelect');
             sel.innerHTML = '';
             
-            // Repass Group
             if(db.categories['repass']) {
                 const repGrp = document.createElement('optgroup');
                 repGrp.label = "REPASSES";
-                db.categories['repass'].forEach(c => repGrp.appendChild(new Option(c, `repass|${c}`)));
+                db.categories['repass'].sort().forEach(c => repGrp.appendChild(new Option(c, `repass|${c}`)));
                 sel.appendChild(repGrp);
             }
 
-            // Income Group
             if(db.categories['income']) {
                 const incGrp = document.createElement('optgroup');
                 incGrp.label = "RENDA";
-                db.categories['income'].forEach(c => incGrp.appendChild(new Option(c, `income|${c}`)));
+                db.categories['income'].sort().forEach(c => incGrp.appendChild(new Option(c, `income|${c}`)));
                 sel.appendChild(incGrp);
             }
 
             db.config.jars.forEach(jar => {
                 const grp = document.createElement('optgroup');
                 grp.label = jar.name;
-                (db.categories[jar.id]||[]).forEach(c => {
+                (db.categories[jar.id]||[]).sort().forEach(c => {
                     grp.appendChild(new Option(c, `${jar.id}|${c}`));
                 });
                 sel.appendChild(grp);
@@ -1395,13 +1536,11 @@
             const name = document.getElementById('newCatName').value.trim();
             const jar = document.getElementById('newCatJar').value;
             if(!name) return;
-            
-            // Handle existing update check if needed, but for now simple add
             if(!db.categories[jar]) db.categories[jar] = [];
             db.categories[jar].push(name);
             saveData();
             document.getElementById('newCatName').value = '';
-            closeModal('modal-cat-manager'); // Close on add
+            closeModal('modal-cat-manager'); 
             populateUnifiedSelect(); 
             toast('Categoria Salva');
         }
@@ -1413,11 +1552,8 @@
             const newName = prompt("Novo nome para a categoria:", oldName);
             
             if(newName && newName !== oldName) {
-                // Update List
                 const idx = db.categories[jar].indexOf(oldName);
                 if(idx > -1) db.categories[jar][idx] = newName;
-                
-                // Update ALL transactions with this category
                 let count = 0;
                 db.transactions.forEach(t => {
                     if(t.catJar === jar && t.catName === oldName) {
@@ -1425,7 +1561,6 @@
                         count++;
                     }
                 });
-                
                 saveData();
                 renderDelCatOptions();
                 populateUnifiedSelect();
@@ -1446,7 +1581,6 @@
             }
         }
 
-        // --- CONFIG & PRESETS ---
         function openConfig() {
             document.getElementById('cfgIncome').value = fmtMoney(db.config.income);
             document.getElementById('cfgFixed').value = fmtMoney(db.config.fixed);
@@ -1504,7 +1638,6 @@
             renderAll();
         }
 
-        // --- CLOUD ---
         async function saveData() {
             db.lastUpdated = Date.now();
             localStorage.setItem(DB_KEY, JSON.stringify(db));
@@ -1543,8 +1676,6 @@
                 const d = await r.json();
                 if (d.files[GIST_FILENAME]) {
                     const cloudData = JSON.parse(d.files[GIST_FILENAME].content);
-                    
-                    // === AUTO MIGRATION ON PULL ===
                     db = migrateData(cloudData);
                     localStorage.setItem(DB_KEY, JSON.stringify(db));
                     return true;
@@ -1553,7 +1684,6 @@
             return false;
         }
 
-        // --- HELPERS ---
         function updateStatus(s) {
             const d = document.getElementById('statusDot');
             d.className = 'status-dot ' + (s==='online'?'online':(s==='sync'?'sync':'offline'));
@@ -1569,7 +1699,6 @@
             r.onload=e=>{ 
                 try { 
                     const recovered = JSON.parse(e.target.result);
-                    // Safe Migration on Restore
                     db = migrateData(recovered);
                     saveData(); 
                     location.reload(); 
@@ -1590,7 +1719,6 @@
             document.getElementById('monthDisplay').innerText = str.charAt(0).toUpperCase() + str.slice(1);
         }
 
-        // Theme
         function initTheme() {
             if(localStorage.getItem('theme') === 'light') {
                 document.documentElement.setAttribute('data-theme', 'light');
