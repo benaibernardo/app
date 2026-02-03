@@ -122,7 +122,7 @@
             position: sticky; top: 0; z-index: 50;
         }
 
-        /* --- NEW EXTRACT STYLES (REFINED v6) --- */
+        /* --- EXTRACT STYLES --- */
         .tx-card {
             background: rgba(255,255,255,0.03);
             border: 1px solid rgba(128,128,128,0.1);
@@ -142,23 +142,20 @@
             background: rgba(255,255,255,0.05);
         }
 
-        /* SPECIAL STYLES */
         .tx-card.is-repass { 
             border-left: 4px solid #94a3b8; 
             background: rgba(148, 163, 184, 0.05); 
             opacity: 0.75; 
         }
         
-        /* CREDIT CARD UNPAID STYLE */
         .tx-card.is-credit-pending { 
-            border-left: 4px solid #f97316; /* Orange */
+            border-left: 4px solid #f97316; 
             background: rgba(249, 115, 22, 0.05);
         }
         [data-theme="light"] .tx-card.is-credit-pending { background: #fff7ed; }
 
         .tx-main-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
         
-        /* DATE BOX */
         .tx-date-box { 
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             width: 44px; height: 44px; 
@@ -170,7 +167,6 @@
         .tx-day { font-size: 1.2rem; font-weight: 800; color: var(--text-main); }
         .tx-month { font-size: 0.6rem; text-transform: uppercase; font-weight: 800; color: var(--text-muted); margin-top: 2px; }
 
-        /* INFO BOX */
         .tx-info { flex: 1; display: flex; flex-direction: column; justify-content: center; overflow: hidden; gap: 4px; }
         .tx-title-row { display: flex; align-items: center; gap: 6px; }
         .tx-place { font-weight: 800; font-size: 0.95rem; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -182,7 +178,6 @@
             display: flex; align-items: center; gap: 4px;
         }
         
-        /* Colors for Badges */
         .bg-essen { background: var(--c-essen-bg); color: var(--c-essen); }
         .bg-free { background: var(--c-free-bg); color: var(--c-free); }
         .bg-long { background: var(--c-long-bg); color: var(--c-long); }
@@ -193,7 +188,6 @@
         
         .tx-has-note { color: var(--accent); margin-left: 2px; }
 
-        /* RIGHT BOX */
         .tx-right { text-align: right; display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 4px; }
         .tx-val-row { display: flex; align-items: center; gap: 8px; }
         .tx-val { font-family: var(--font-mono); font-weight: 800; font-size: 1rem; white-space: nowrap; }
@@ -209,7 +203,6 @@
             display: inline-block;
         }
 
-        /* ACTIONS (FIXED VISIBLE - Contrast Fix) */
         .tx-actions { 
             display: flex; gap: 8px; margin-top: 2px;
             justify-content: flex-end;
@@ -217,11 +210,9 @@
         
         .action-icon { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; font-size: 0.75rem; }
         
-        /* Force explicit colors for light/dark mode visibility */
         .act-edit { background: rgba(56, 189, 248, 0.15); color: #0ea5e9; border: 1px solid rgba(14, 165, 233, 0.2); }
         .act-del { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
         
-        /* PAY BUTTON (CREDIT) */
         .act-pay { background: rgba(249, 115, 22, 0.15); color: #f97316; border: 1px solid rgba(249, 115, 22, 0.3); } 
         .act-pay.paid { background: rgba(16, 185, 129, 0.15); color: #10b981; border-color: rgba(16, 185, 129, 0.3); }
 
@@ -230,7 +221,6 @@
         .act-pay:hover { background: #f97316; color: white; }
         .act-pay.paid:hover { background: #10b981; color: white; }
 
-        /* DRAWER (Notes & Progress) */
         .tx-drawer { 
             max-height: 0; overflow: hidden; transition: max-height 0.3s ease-in-out, margin 0.3s; 
             background: rgba(0,0,0,0.2); border-radius: 12px; margin-top: 0;
@@ -238,13 +228,11 @@
         .tx-card.expanded .tx-drawer { max-height: 200px; margin-top: 10px; padding: 10px; border: 1px solid var(--glass-border); }
         .tx-note-text { font-size: 0.85rem; color: var(--text-muted); font-style: italic; line-height: 1.4; border-left: 2px solid var(--accent); padding-left: 8px; margin-bottom: 8px; }
 
-        /* DEBT PROGRESS BAR */
         .debt-progress-container { margin-top: 8px; }
         .debt-bar-bg { height: 6px; background: rgba(128,128,128,0.2); border-radius: 3px; overflow: hidden; }
         .debt-bar-fill { height: 100%; background: #a78bfa; border-radius: 3px; }
         .debt-text { font-size: 0.65rem; color: var(--text-muted); margin-top: 4px; display: flex; justify-content: space-between; font-weight: 700; text-transform: uppercase; }
 
-        /* FIXED FILTERS (No Drawer) */
         .fixed-filters { 
             display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; 
             padding-bottom: 15px; margin-bottom: 10px; 
@@ -254,7 +242,6 @@
         .filter-group { position: relative; }
         .filter-icon { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); z-index: 10; font-size: 0.8rem; pointer-events: none; }
         
-        /* RESTORED COLORS */
         .fi-cal { color: #38bdf8; }
         .fi-tag { color: #f59e0b; }
         .fi-map { color: #ec4899; }
@@ -271,13 +258,11 @@
         option { background-color: #1e293b; color: white; }
         [data-theme="light"] option { background-color: white; color: #0f172a; }
 
-        /* Icon Colors */
         .ic-pix { color: #2dd4bf; }
         .ic-cred { color: #a78bfa; }
         .ic-deb { color: #3b82f6; }
         .ic-money { color: #10b981; }
 
-        /* MODALS */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 100; display: none; align-items: center; justify-content: center; padding: 15px; }
         .modal-box { background: #ffffff; border: 1px solid var(--glass-border); width: 100%; max-width: 500px; border-radius: 20px; padding: 25px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto; color: #0f172a; }
         [data-theme="dark"] .modal-box { background: #1e293b; color: #f8fafc; border-color: #334155; }
@@ -288,21 +273,26 @@
         .status-dot.sync { background: #38bdf8; animation: pulse 1s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
+        /* Report Table */
+        .report-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 10px; }
+        .report-table th { text-align: left; padding: 8px; color: var(--text-muted); font-weight: 700; border-bottom: 1px solid var(--glass-border); font-size: 0.7rem; text-transform: uppercase; }
+        .report-table td { padding: 10px 8px; border-bottom: 1px solid rgba(128,128,128,0.1); font-weight: 600; }
+        .report-surplus { font-family: var(--font-mono); font-weight: 800; }
+        .report-surplus.positive { color: #10b981; }
+        .report-surplus.negative { color: #ef4444; }
+
     </style>
 </head>
 <body>
 
-    <!-- CLOUD SHIELD -->
     <div id="cloud-shield" style="position:fixed; inset:0; z-index:99999; background:#020617; display:flex; flex-direction:column; align-items:center; justify-content:center; color:white;">
         <div style="width:40px; height:40px; border:4px solid rgba(255,255,255,0.1); border-top-color:#0ea5e9; border-radius:50%; animation:spin 1s linear infinite;"></div>
         <h2 class="mt-4 font-bold tracking-widest uppercase">Sincronizando</h2>
         <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
     </div>
 
-    <!-- APP CONTENT -->
     <div id="app-content">
         
-        <!-- HEADER -->
         <header class="glass-header">
             <div class="max-w-4xl mx-auto px-4 h-[70px] flex justify-between items-center">
                 <div class="flex items-center gap-4">
@@ -317,6 +307,9 @@
                     </div>
                 </div>
                 <div class="flex gap-2">
+                    <button onclick="checkClosing()" class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-500 hover:bg-emerald-500 hover:text-white flex items-center justify-center border border-emerald-500/30 transition shadow-lg shadow-emerald-500/10" title="Relatório de Fechamento">
+                        <i data-lucide="clipboard-check" class="w-5 h-5"></i>
+                    </button>
                     <button onclick="openFastActions()" class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-500 hover:bg-amber-500 hover:text-white flex items-center justify-center border border-amber-500/30 transition shadow-lg shadow-amber-500/10">
                         <i data-lucide="zap" class="w-5 h-5"></i>
                     </button>
@@ -336,14 +329,12 @@
 
         <main class="max-w-4xl mx-auto px-4 py-6 space-y-6 pb-24">
 
-            <!-- MAIN ACTION BUTTON -->
             <div class="flex justify-center -mt-2 mb-4">
                 <button onclick="openTxModal()" class="btn-action w-full max-w-sm py-4 text-lg rounded-2xl shadow-lg shadow-sky-500/20 transform hover:scale-105 transition">
                     <i data-lucide="plus-circle" class="w-6 h-6"></i> NOVO MOVIMENTO
                 </button>
             </div>
 
-            <!-- DATE & SUMMARY -->
             <div class="flex justify-between items-center bg-white/5 p-2 rounded-2xl border border-white/10">
                 <button onclick="changeMonth(-1)" class="w-10 h-10 flex items-center justify-center opacity-60 hover:opacity-100"><i data-lucide="chevron-left"></i></button>
                 <div class="text-center relative">
@@ -353,7 +344,6 @@
                 <button onclick="changeMonth(1)" class="w-10 h-10 flex items-center justify-center opacity-60 hover:opacity-100"><i data-lucide="chevron-right"></i></button>
             </div>
 
-            <!-- BALANCES (TRIO VIEW) -->
             <div class="grid grid-cols-3 gap-3">
                 <div class="glass-card p-4 relative overflow-hidden flex flex-col justify-center border-l-4 border-emerald-500">
                     <p class="text-[9px] font-bold opacity-60 mb-1 uppercase">Saldo Real</p>
@@ -369,7 +359,6 @@
                 </div>
             </div>
 
-            <!-- JARS GRID -->
             <div>
                 <div class="flex justify-between items-end mb-4 px-1">
                     <h3 class="text-sm font-bold uppercase tracking-wider flex items-center gap-2"><i data-lucide="layers" class="w-4 h-4 text-sky-500"></i> Meus Potes</h3>
@@ -380,11 +369,8 @@
                 </div>
             </div>
 
-            <!-- EXTRACT & FILTERS REFACTORED -->
             <div class="glass-card overflow-hidden">
                 <div class="p-4">
-                    
-                    <!-- VISIBLE FILTERS -->
                     <div class="fixed-filters">
                         <div class="filter-group">
                             <i class="fa-regular fa-calendar filter-icon fi-cal"></i>
@@ -423,14 +409,14 @@
                 <h3 class="text-xl font-bold flex items-center gap-2"><i data-lucide="zap" class="text-amber-500"></i> Ações Rápidas</h3>
                 <button onclick="closeModal('modal-fast-actions')"><i data-lucide="x"></i></button>
             </div>
+            
+            <h4 id="fa-month-label" class="text-center font-bold text-xs uppercase mb-4 text-slate-500 border border-dashed border-slate-300 p-2 rounded-lg">Mês de Referência: --/--</h4>
 
-            <!-- TABS -->
             <div class="flex gap-2 mb-6 p-1 bg-slate-100 dark:bg-white/5 rounded-xl border border-slate-200 dark:border-white/10">
                 <button onclick="switchFastAction('nubank')" id="tab-nubank" class="flex-1 py-2 rounded-lg text-xs font-bold transition bg-white dark:bg-white/10 shadow-sm">PAGAR NUBANK</button>
                 <button onclick="switchFastAction('c6')" id="tab-c6" class="flex-1 py-2 rounded-lg text-xs font-bold transition opacity-50 hover:opacity-100">C6 COMPARTILHADO</button>
             </div>
 
-            <!-- NUBANK CONTENT -->
             <div id="fa-nubank-content">
                 <div class="bg-purple-500/10 border border-purple-500/20 rounded-xl p-4 mb-4">
                     <h4 class="text-sm font-bold text-purple-500 mb-2">Resumo da Fatura Atual</h4>
@@ -447,7 +433,6 @@
                 </button>
             </div>
 
-            <!-- C6 CONTENT -->
             <div id="fa-c6-content" class="hidden">
                 <div class="space-y-4">
                     <div>
@@ -485,13 +470,11 @@
             <form id="txForm" onsubmit="saveTx(event)" class="space-y-4">
                 <input type="hidden" id="txId">
                 
-                <!-- TYPE TOGGLE -->
                 <div class="grid grid-cols-2 gap-3 p-1 bg-slate-100 dark:bg-white/5 rounded-xl border border-slate-200 dark:border-white/10">
                     <button type="button" onclick="setTxType('out')" id="btnOut" class="py-2 rounded-lg text-xs font-bold transition flex-1">SAÍDA (Gasto)</button>
                     <button type="button" onclick="setTxType('in')" id="btnIn" class="py-2 rounded-lg text-xs font-bold transition flex-1">ENTRADA (Renda)</button>
                 </div>
 
-                <!-- VALUE & DATE -->
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Valor (R$)</label>
@@ -503,13 +486,11 @@
                     </div>
                 </div>
 
-                <!-- PLACE -->
                 <div>
                     <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Local / Estabelecimento</label>
                     <input type="text" id="txPlace" class="input-prime" placeholder="Ex: Mercado Angeloni, Posto Shell..." required>
                 </div>
 
-                <!-- CATEGORY UNIFIED -->
                 <div id="catSection">
                     <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Categoria (Pote)</label>
                     <div class="flex gap-2">
@@ -520,7 +501,6 @@
                     </div>
                 </div>
 
-                <!-- TRANSPORT OPTIONS -->
                 <div id="transportSection">
                     <button type="button" onclick="document.getElementById('transportFields').classList.toggle('hidden')" class="text-[10px] font-bold text-sky-500 uppercase flex items-center gap-1 mb-2 hover:underline">
                         <i class="fa-solid fa-car"></i> Opções de Transporte (Uber/99)
@@ -537,7 +517,6 @@
                     </div>
                 </div>
 
-                <!-- PAYMENT & THIRD PARTY -->
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Pagamento</label>
@@ -558,7 +537,6 @@
                     </div>
                 </div>
 
-                <!-- RECURRENCE & INSTALLMENTS -->
                 <div id="installmentsSection" class="hidden">
                     <div class="flex items-center justify-between mb-1">
                         <label class="text-[10px] font-bold opacity-60 uppercase text-purple-400" id="installLabel">Repetição / Parcelamento</label>
@@ -574,7 +552,6 @@
                     <div id="txCalcPreview" class="text-[10px] font-bold text-center mt-2 text-purple-400 bg-purple-500/5 p-2 rounded-lg border border-purple-500/10"></div>
                 </div>
 
-                <!-- NOTES -->
                 <div>
                     <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Nota / Detalhes (Opcional)</label>
                     <textarea id="txNotes" class="input-prime text-sm" rows="3" placeholder="Ex: Jantar com amigos..."></textarea>
@@ -625,12 +602,14 @@
     <div id="modal-config" class="modal-overlay">
         <div class="modal-box">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold">Configuração de Potes</h3>
+                <div>
+                    <h3 class="text-xl font-bold">Configuração de Potes</h3>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase mt-1">Definindo para: <span id="cfgMonthLabel" class="text-sky-500">--/--</span></p>
+                </div>
                 <button onclick="closeModal('modal-config')"><i data-lucide="x"></i></button>
             </div>
             
             <div class="space-y-6">
-                <!-- INCOME & FIXED -->
                 <div class="p-4 rounded-xl bg-sky-500/10 border border-sky-500/20">
                     <label class="text-[10px] font-bold text-sky-500 uppercase block mb-1">Renda Mensal Total</label>
                     <input type="text" id="cfgIncome" class="input-prime font-mono text-xl" oninput="maskMoney(this)">
@@ -641,7 +620,6 @@
                     <div class="mt-2 text-[10px] text-right font-bold opacity-60">Base para Potes (Renda - Fixos): <span id="cfgBaseCalc">R$ 0,00</span></div>
                 </div>
 
-                <!-- PRESETS -->
                 <div>
                     <p class="text-[10px] font-bold opacity-60 uppercase mb-2">Predefinições</p>
                     <div class="grid grid-cols-3 gap-2">
@@ -651,12 +629,11 @@
                     </div>
                 </div>
                 
-                <!-- JARS LIST -->
                 <div id="jarConfigList" class="space-y-3 max-h-[300px] overflow-y-auto pr-2">
                     <!-- JS Rendered -->
                 </div>
 
-                <button onclick="saveConfig()" class="btn-action w-full">SALVAR E RECALCULAR</button>
+                <button onclick="saveConfig()" class="btn-action w-full">SALVAR MÊS ATUAL</button>
             </div>
         </div>
     </div>
@@ -685,6 +662,43 @@
         </div>
     </div>
 
+    <!-- MODAL CLOSING REPORT -->
+    <div id="modal-closing" class="modal-overlay">
+        <div class="modal-box">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold flex items-center gap-2"><i data-lucide="clipboard-check" class="text-emerald-500"></i> Fechamento Mensal</h3>
+                <button onclick="closeModal('modal-closing')"><i data-lucide="x"></i></button>
+            </div>
+            
+            <div class="mb-6 p-4 bg-slate-100 dark:bg-white/5 rounded-xl border border-slate-200 dark:border-white/10 text-center">
+                <p class="text-xs uppercase font-bold opacity-60 mb-1">Balanço do Mês</p>
+                <div class="flex justify-center gap-6 items-end">
+                    <div class="text-right">
+                        <span class="block text-[10px] text-emerald-500 font-bold">ENTROU</span>
+                        <span id="rpt-in" class="text-lg font-mono font-bold text-emerald-500">R$ 0,00</span>
+                    </div>
+                    <div class="text-left">
+                        <span class="block text-[10px] text-red-500 font-bold">SAIU</span>
+                        <span id="rpt-out" class="text-lg font-mono font-bold text-red-500">R$ 0,00</span>
+                    </div>
+                </div>
+            </div>
+
+            <h4 class="text-sm font-bold uppercase opacity-70 mb-3">Performance dos Potes</h4>
+            <div class="overflow-x-auto mb-6">
+                <table class="report-table">
+                    <thead><tr><th>Pote</th><th>Meta</th><th>Gasto</th><th class="text-right">Sobra</th></tr></thead>
+                    <tbody id="rpt-table-body"></tbody>
+                </table>
+            </div>
+
+            <div class="p-4 bg-sky-500/10 border border-sky-500/20 rounded-xl">
+                <h4 class="text-xs font-bold text-sky-500 uppercase mb-2 flex items-center gap-2"><i data-lucide="lightbulb"></i> Consultor Virtual</h4>
+                <p class="text-xs opacity-80 leading-relaxed" id="rpt-advice">Analisando seus dados...</p>
+            </div>
+        </div>
+    </div>
+
     <div id="toast" class="fixed bottom-6 right-6 bg-emerald-600 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-4 z-[110] translate-x-[150%] transition-transform duration-300"><i data-lucide="check-circle" class="w-5 h-5"></i> <span id="toast-msg" class="text-sm font-bold"></span></div>
 
     <script>
@@ -694,7 +708,6 @@
         const GIST_DESC = 'BENAI_FINANCE_DB';
         const GIST_FILENAME = 'finance_db.json';
 
-        // Updated Defaults - Cleaned "Nubank" and Moved Repass
         const DEFAULT_CATEGORIES = {
             'income': ['Salário', 'Consultoria', 'Saldo', 'Outros'],
             'repass': ['Repasses (Terceiros)', 'Repasse (Caixinha)', 'Reembolso', 'Compartilhado', 'Passagem', 'Empréstimo', 'Outros'],
@@ -715,6 +728,7 @@
 
         let db = {
             config: { income: 0, fixed: 0, jars: [] },
+            monthlyConfig: {}, // Stores config per month: 'YYYY-MM': { income, fixed, jars }
             transactions: [],
             categories: JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)),
             lastUpdated: 0
@@ -760,11 +774,10 @@
                     if(local) {
                         try { 
                             const parsed = JSON.parse(local);
-                            // Ensure categories structure exists before migrating
                             if(parsed.categories) db = parsed;
                         } catch(e) {}
                     } else {
-                        populateDummyData(); // Clean init
+                        populateDummyData();
                     }
                     updateStatus('offline');
                 } else {
@@ -772,47 +785,31 @@
                     toast('Sincronizado!');
                 }
 
-                // === MIGRATION LOGIC (CRITICAL FOR BACKUP COMPATIBILITY) ===
                 db = migrateData(db);
-                // Save migrated structure back to local immediately
                 localStorage.setItem(DB_KEY, JSON.stringify(db));
 
             } catch (err) {
                 console.error("Critical Init Error:", err);
-                // Fallback to minimal state to prevent lock
                 if(!db.config.jars || db.config.jars.length === 0) populateDummyData();
             } finally {
-                // Ensure shield is removed
                 shield.style.display = 'none';
                 renderAll();
             }
         }
 
-        // --- SAFE MIGRATION FUNCTION ---
         function migrateData(data) {
-            // 1. Ensure Categories Structure
+            if(!data) return { config: { income: 0, fixed: 0, jars: [] }, monthlyConfig:{}, transactions: [], categories: JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)), lastUpdated: 0 };
             if(!data.categories) data.categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
+            if(!data.categories.repass) data.categories.repass = DEFAULT_CATEGORIES.repass;
+            if(!data.monthlyConfig) data.monthlyConfig = {}; // Ensure monthly config storage
             
-            // 2. Inject Missing New Categories if structure changed
-            if(!data.categories.play.includes('Cartão C6 (Lazer)')) data.categories.play.push('Cartão C6 (Lazer)');
-            
-            // 3. Normalize Transactions
-            if(data.transactions) {
-                data.transactions.forEach(t => {
-                    if(t.origin === undefined) t.origin = '';
-                    if(t.destination === undefined) t.destination = '';
-                    if(t.notes === undefined || t.notes === null) t.notes = '';
-                    if(t.paid === undefined) {
-                        if(t.method !== 'Crédito') t.paid = true;
-                        else {
-                            const today = new Date().toISOString().split('T')[0];
-                            t.paid = (t.date < today); 
-                        }
-                    }
-                });
+            if(data.categories.essen && data.categories.essen.includes('Repasse (Caixinha)')) {
+                data.categories.essen = data.categories.essen.filter(c => c !== 'Repasse (Caixinha)');
+                if(!data.categories.repass.includes('Repasse (Caixinha)')) data.categories.repass.push('Repasse (Caixinha)');
             }
             
-            // 4. Ensure Jars Config
+            if(data.categories.essen) data.categories.essen = data.categories.essen.filter(c => c !== 'Nubank (Crédito)');
+
             if(!data.config.jars || data.config.jars.length === 0) {
                 data.config.jars = [{id:'essen', name:'Necessidades', perc:55}, {id:'free', name:'Lib. Financeira', perc:20}, {id:'long', name:'Sonhos', perc:10}, {id:'edu', name:'Educação', perc:5}, {id:'play', name:'Lazer', perc:10}];
             }
@@ -821,17 +818,27 @@
         }
 
         function populateDummyData() {
-            applyPreset('standard'); // FIXED: Was applyPresetLogic
+            applyPreset('standard'); 
             db.config.income = 0;
             db.config.fixed = 0;
-            db.transactions = []; // Empty Data for clean start
+            db.transactions = [];
             saveData();
         }
 
-        // --- FAST ACTIONS LOGIC (NEW) ---
+        // --- CONFIG HELPER ---
+        function getMonthConfig(dateObj) {
+            const mStr = dateObj.toISOString().slice(0, 7);
+            // Return specific month config OR fall back to global config
+            if(db.monthlyConfig && db.monthlyConfig[mStr]) return db.monthlyConfig[mStr];
+            return db.config; 
+        }
+
+        // --- FAST ACTIONS LOGIC ---
         function openFastActions() {
+            const mStr = viewDate.toLocaleDateString('pt-BR', {month:'long', year:'numeric'}).toUpperCase();
+            document.getElementById('fa-month-label').innerText = "REFERÊNCIA: " + mStr;
             document.getElementById('modal-fast-actions').style.display = 'flex';
-            switchFastAction('nubank'); // Default
+            switchFastAction('nubank'); 
         }
 
         function switchFastAction(tab) {
@@ -840,7 +847,6 @@
             const contentNubank = document.getElementById('fa-nubank-content');
             const contentC6 = document.getElementById('fa-c6-content');
 
-            // Reset Styles
             btnNubank.className = "flex-1 py-2 rounded-lg text-xs font-bold transition opacity-50 hover:opacity-100";
             btnC6.className = "flex-1 py-2 rounded-lg text-xs font-bold transition opacity-50 hover:opacity-100";
             contentNubank.classList.add('hidden');
@@ -853,7 +859,6 @@
             } else {
                 btnC6.className = "flex-1 py-2 rounded-lg text-xs font-bold transition bg-slate-800 text-white shadow-md";
                 contentC6.classList.remove('hidden');
-                // Reset C6 inputs
                 document.getElementById('c6-total').value = "";
                 document.getElementById('c6-mine').value = "";
                 document.getElementById('c6-her-part').innerText = "R$ 0,00";
@@ -867,7 +872,6 @@
             
             const mStr = viewDate.toISOString().slice(0, 7);
             
-            // Find ALL Credit + Unpaid + Current Month
             const pending = db.transactions.filter(t => 
                 t.method === 'Crédito' && 
                 t.paid === false &&
@@ -892,7 +896,7 @@
             
             db.transactions.forEach(t => {
                 if(t.method === 'Crédito' && t.paid === false && t.date.startsWith(mStr)) {
-                    t.paid = true; // Mark as paid
+                    t.paid = true; 
                     count++;
                 }
             });
@@ -921,9 +925,8 @@
 
             if(total <= 0) return alert("Valor total inválido");
 
-            const date = new Date().toISOString().split('T')[0];
+            const date = viewDate.toISOString().split('T')[0]; // Use current view date
 
-            // 1. Transaction: My Part (Lazer)
             if(mine > 0) {
                 db.transactions.push({
                     id: Date.now(),
@@ -931,7 +934,7 @@
                     val: mine,
                     date: date,
                     place: 'C6 FATURA (MINHA PARTE)',
-                    method: 'Pix', // Assuming you pay via Pix from main account
+                    method: 'Pix',
                     catJar: 'play',
                     catName: 'Cartão C6 (Lazer)',
                     notes: 'Parte Benai - Ação Rápida',
@@ -940,7 +943,6 @@
                 });
             }
 
-            // 2. Transaction: Her Part (Repass)
             if(her > 0) {
                 db.transactions.push({
                     id: Date.now() + 1,
@@ -974,7 +976,6 @@
             const allIn = db.transactions.filter(t => t.type === 'in').reduce((a,b)=>a+b.val,0);
             const realOut = db.transactions.filter(t => t.type === 'out' && t.paid).reduce((a,b)=>a+b.val,0);
             
-            // Total Out (Competence) excluding Repass
             const totalOut = db.transactions
                 .filter(t => t.type === 'out' && !isRepassCategory(t.catName) && !t.thirdParty)
                 .reduce((a,b)=>a+b.val,0);
@@ -1001,14 +1002,13 @@
             const container = document.getElementById('jarsContainer');
             container.innerHTML = '';
             
-            const income = db.config.income || 0;
-            const fixed = db.config.fixed || 0;
-            const baseForJars = Math.max(0, income - fixed);
+            const cfg = getMonthConfig(viewDate); // Use monthly config
+            const baseForJars = Math.max(0, cfg.income - cfg.fixed);
             const mStr = viewDate.toISOString().slice(0, 7);
             
             const monthOutTxs = db.transactions.filter(t => t.type === 'out' && t.date.startsWith(mStr));
 
-            db.config.jars.forEach(jar => {
+            cfg.jars.forEach(jar => {
                 let jarBg = 'bg-slate-500';
                 if(jar.id === 'essen') jarBg = 'bg-blue-500';
                 if(jar.id === 'free') jarBg = 'bg-emerald-500';
@@ -1051,7 +1051,6 @@
             lucide.createIcons();
         }
 
-        // --- NEW EXTRACT RENDER (v6) ---
         function renderTransactions() {
             const list = document.getElementById('txList');
             const mStr = viewDate.toISOString().slice(0, 7);
@@ -1369,9 +1368,12 @@
                     sel.appendChild(repGrp);
                 }
 
-                db.config.jars.forEach(jar => {
+                // Use Monthly Config for Jars
+                const cfg = getMonthConfig(viewDate);
+                cfg.jars.forEach(jar => {
                     const optGroup = document.createElement('optgroup');
                     optGroup.label = jar.name.toUpperCase();
+                    // Categories are global for simplicity, but grouped by jar ID
                     const cats = (db.categories[jar.id] || []).sort();
                     cats.forEach(c => {
                         optGroup.appendChild(new Option(c, `${jar.id}|${c}`));
@@ -1500,7 +1502,9 @@
             jarSel.innerHTML = '';
             jarSel.add(new Option('Renda / Entradas', 'income'));
             jarSel.add(new Option('Repasses / Terceiros', 'repass'));
-            db.config.jars.forEach(j => jarSel.add(new Option(j.name, j.id)));
+            
+            const cfg = getMonthConfig(viewDate); // Use monthly config
+            cfg.jars.forEach(j => jarSel.add(new Option(j.name, j.id)));
             renderDelCatOptions();
         }
 
@@ -1522,7 +1526,8 @@
                 sel.appendChild(incGrp);
             }
 
-            db.config.jars.forEach(jar => {
+            const cfg = getMonthConfig(viewDate); // Use monthly config
+            cfg.jars.forEach(jar => {
                 const grp = document.createElement('optgroup');
                 grp.label = jar.name;
                 (db.categories[jar.id]||[]).sort().forEach(c => {
@@ -1582,10 +1587,14 @@
         }
 
         function openConfig() {
-            document.getElementById('cfgIncome').value = fmtMoney(db.config.income);
-            document.getElementById('cfgFixed').value = fmtMoney(db.config.fixed);
+            const cfg = getMonthConfig(viewDate);
+            const mStr = viewDate.toLocaleDateString('pt-BR', {month:'long', year:'numeric'}).toUpperCase();
+            
+            document.getElementById('cfgMonthLabel').innerText = mStr;
+            document.getElementById('cfgIncome').value = fmtMoney(cfg.income);
+            document.getElementById('cfgFixed').value = fmtMoney(cfg.fixed);
             updateBaseCalc();
-            renderJarConfigList();
+            renderJarConfigList(cfg.jars);
             document.getElementById('modal-config').style.display = 'flex';
         }
 
@@ -1598,10 +1607,11 @@
             document.getElementById('cfgBaseCalc').innerText = fmtMoney(Math.max(0, inc - fix));
         }
 
-        function renderJarConfigList() {
+        function renderJarConfigList(jars) {
             const l = document.getElementById('jarConfigList');
             l.innerHTML = '';
-            db.config.jars.forEach((j, i) => {
+            // Render from argument (jars of the month)
+            jars.forEach((j, i) => {
                 const info = JARS_INFO[j.id] || JARS_INFO['essen'];
                 l.innerHTML += `
                 <div class="flex items-center gap-2 p-2 bg-slate-100 dark:bg-white/5 rounded-lg border border-slate-200 dark:border-white/10">
@@ -1610,29 +1620,90 @@
                         <div class="text-xs font-bold uppercase">${j.name}</div>
                         <div class="text-[9px] opacity-50">${info.desc}</div>
                     </div>
-                    <input type="number" class="w-12 p-1 rounded bg-white dark:bg-black/20 text-center font-bold text-xs border border-slate-200 dark:border-white/10" value="${j.perc}" onchange="updateJarPerc(${i}, this.value)">
+                    <!-- IDs for extraction during save -->
+                    <input class="hidden" id="jar-id-${i}" value="${j.id}">
+                    <input type="text" class="w-20 p-1 rounded bg-white dark:bg-black/20 text-center font-bold text-xs border border-slate-200 dark:border-white/10" value="${j.name}" id="jar-name-${i}">
+                    <input type="number" class="w-12 p-1 rounded bg-white dark:bg-black/20 text-center font-bold text-xs border border-slate-200 dark:border-white/10" value="${j.perc}" id="jar-perc-${i}">
                     <span class="text-xs font-bold">%</span>
+                    <button class="text-red-400 hover:text-red-600" onclick="removeJar(${i})"><i class="fa-solid fa-trash"></i></button>
                 </div>`;
             });
             lucide.createIcons();
         }
 
-        function updateJarPerc(i, val) { db.config.jars[i].perc = parseFloat(val); }
+        // function updateJarPerc - Removed, logic moved to saveConfig extraction
 
         function applyPreset(type) {
+            // Apply to view only until saved
+            const cfg = getMonthConfig(viewDate); // Get current to modify structure
+            // Just simulate new structure for rendering, don't save yet?
+            // To be safe, we just modify the current object reference (db is mutable)
+            // But better: Create new jar list and re-render.
+            
+            let newJars = [];
             if(type === 'standard') {
-                db.config.jars = [{id:'essen', name:'Necessidades', perc:55}, {id:'free', name:'Lib. Financeira', perc:20}, {id:'long', name:'Sonhos', perc:10}, {id:'edu', name:'Educação', perc:5}, {id:'play', name:'Lazer', perc:10}];
+                newJars = [{id:'essen', name:'Necessidades', perc:55}, {id:'free', name:'Lib. Financeira', perc:20}, {id:'long', name:'Sonhos', perc:10}, {id:'edu', name:'Educação', perc:5}, {id:'play', name:'Lazer', perc:10}];
             } else if (type === 'debt') {
-                db.config.jars = [{id:'essen', name:'Contas/Dívidas', perc:80}, {id:'free', name:'Reserva Emergência', perc:10}, {id:'play', name:'Lazer Mínimo', perc:10}, {id:'long', name:'Sonhos', perc:0}, {id:'edu', name:'Educação', perc:0}];
+                newJars = [{id:'essen', name:'Contas/Dívidas', perc:80}, {id:'free', name:'Reserva Emergência', perc:10}, {id:'play', name:'Lazer Mínimo', perc:10}, {id:'long', name:'Sonhos', perc:0}, {id:'edu', name:'Educação', perc:0}];
             } else if (type === 'invest') {
-                db.config.jars = [{id:'essen', name:'Custo de Vida', perc:40}, {id:'free', name:'Investimentos', perc:40}, {id:'play', name:'Lazer', perc:10}, {id:'long', name:'Sonhos', perc:5}, {id:'edu', name:'Educação', perc:5}];
+                newJars = [{id:'essen', name:'Custo de Vida', perc:40}, {id:'free', name:'Investimentos', perc:40}, {id:'play', name:'Lazer', perc:10}, {id:'long', name:'Sonhos', perc:5}, {id:'edu', name:'Educação', perc:5}];
             }
-            renderJarConfigList();
+            renderJarConfigList(newJars);
+        }
+
+        function addJar() {
+            // Add visual row
+            const id = prompt("ID único do pote (sem espaços, ex: invest):");
+            if(id) {
+                // We need to persist this temporarily in the UI list.
+                // Simpler: Just save current state to DB then re-open config.
+                // OR: Manipulate DOM directly.
+                // Let's modify the underlying object of the *current month* if it exists, or create it.
+                let mStr = viewDate.toISOString().slice(0, 7);
+                if (!db.monthlyConfig[mStr]) db.monthlyConfig[mStr] = JSON.parse(JSON.stringify(db.config)); // Clone global
+                
+                db.monthlyConfig[mStr].jars.push({id: id.toLowerCase(), name: 'Novo Pote', perc: 0});
+                if(!db.categories[id]) db.categories[id] = [];
+                openConfig(); // Re-render
+            }
+        }
+
+        function removeJar(i) {
+            if(confirm("Remover este pote?")) {
+                let mStr = viewDate.toISOString().slice(0, 7);
+                if (!db.monthlyConfig[mStr]) db.monthlyConfig[mStr] = JSON.parse(JSON.stringify(db.config));
+                
+                db.monthlyConfig[mStr].jars.splice(i, 1);
+                openConfig();
+            }
         }
 
         function saveConfig() {
-            db.config.income = parseMoney(document.getElementById('cfgIncome').value);
-            db.config.fixed = parseMoney(document.getElementById('cfgFixed').value);
+            const mStr = viewDate.toISOString().slice(0, 7);
+            const income = parseMoney(document.getElementById('cfgIncome').value);
+            const fixed = parseMoney(document.getElementById('cfgFixed').value);
+            
+            // Extract Jars from DOM to capture edits
+            const list = document.getElementById('jarConfigList');
+            const newJars = [];
+            const rows = list.querySelectorAll('div.flex'); // Assuming rows are divs
+            
+            // Re-read from current month config to ensure we have base IDs, or use DOM
+            // Since we render inputs with IDs jar-id-i, jar-name-i, jar-perc-i
+            
+            // Find how many items
+            let i = 0;
+            while(document.getElementById(`jar-id-${i}`)) {
+                newJars.push({
+                    id: document.getElementById(`jar-id-${i}`).value,
+                    name: document.getElementById(`jar-name-${i}`).value,
+                    perc: parseFloat(document.getElementById(`jar-perc-${i}`).value)
+                });
+                i++;
+            }
+
+            db.monthlyConfig[mStr] = { income, fixed, jars: newJars };
+            
             saveData();
             closeModal('modal-config');
             renderAll();
@@ -1682,6 +1753,68 @@
                 }
             }
             return false;
+        }
+
+        // --- CLOSING REPORT ---
+        function checkClosing() {
+            const mStr = viewDate.toISOString().slice(0, 7);
+            const cfg = getMonthConfig(viewDate);
+            const pending = db.transactions.filter(t => t.date.startsWith(mStr) && t.method === 'Crédito' && !t.paid);
+            
+            if (pending.length > 0) {
+                alert(`Atenção: Existem ${pending.length} lançamentos de Crédito não marcados como pagos neste mês.`);
+            }
+            openClosingModal();
+        }
+
+        function openClosingModal() {
+            const mStr = viewDate.toISOString().slice(0, 7);
+            const cfg = getMonthConfig(viewDate); 
+
+            // Month Balance (Isolated)
+            const mIn = db.transactions.filter(t => t.type === 'in' && t.date.startsWith(mStr) && !isRepassCategory(t.catName)).reduce((a,b)=>a+b.val,0);
+            const mOut = db.transactions.filter(t => t.type === 'out' && t.date.startsWith(mStr) && !isRepassCategory(t.catName) && !t.thirdParty).reduce((a,b)=>a+b.val,0);
+            
+            document.getElementById('rpt-in').innerText = fmtMoney(mIn);
+            document.getElementById('rpt-out').innerText = fmtMoney(mOut);
+
+            // Jars Analysis
+            const tb = document.getElementById('rpt-table-body');
+            tb.innerHTML = '';
+            
+            const baseBudget = Math.max(0, cfg.income - cfg.fixed);
+            let totalSurplus = 0;
+
+            cfg.jars.forEach(jar => {
+                const limit = (baseBudget * jar.perc) / 100;
+                const spent = db.transactions
+                    .filter(t => t.catJar === jar.id && t.date.startsWith(mStr) && !isRepassCategory(t.catName) && !t.thirdParty)
+                    .reduce((a,b)=>a+b.val,0);
+                
+                const leftover = limit - spent;
+                if (leftover > 0 && jar.id !== 'essen') totalSurplus += leftover;
+
+                const colorClass = leftover >= 0 ? 'positive' : 'negative';
+                
+                tb.innerHTML += `
+                <tr>
+                    <td>${jar.name}</td>
+                    <td>${fmtMoney(limit)}</td>
+                    <td>${fmtMoney(spent)}</td>
+                    <td class="text-right report-surplus ${colorClass}">${fmtMoney(leftover)}</td>
+                </tr>`;
+            });
+
+            // Advice
+            const adviceEl = document.getElementById('rpt-advice');
+            if (totalSurplus > 0) {
+                adviceEl.innerHTML = `Parabéns! Você tem <strong>${fmtMoney(totalSurplus)}</strong> de sobras nos potes não essenciais.`;
+            } else {
+                adviceEl.innerHTML = `Neste mês não houve sobras significativas nos potes de metas.`;
+            }
+
+            document.getElementById('modal-closing').style.display = 'flex';
+            lucide.createIcons();
         }
 
         function updateStatus(s) {
