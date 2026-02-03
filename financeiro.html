@@ -307,7 +307,10 @@
                     </div>
                 </div>
                 <div class="flex gap-2">
-                    <button onclick="checkClosing()" class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-500 hover:bg-emerald-500 hover:text-white flex items-center justify-center border border-emerald-500/30 transition shadow-lg shadow-emerald-500/10" title="Relatório de Fechamento">
+                    <button onclick="openReserveModal()" class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-500 hover:bg-emerald-500 hover:text-white flex items-center justify-center border border-emerald-500/30 transition shadow-lg shadow-emerald-500/10" title="Reserva de Emergência">
+                        <i data-lucide="life-buoy" class="w-5 h-5"></i>
+                    </button>
+                    <button onclick="checkClosing()" class="w-10 h-10 rounded-xl bg-sky-500/20 text-sky-500 hover:bg-sky-500 hover:text-white flex items-center justify-center border border-sky-500/30 transition shadow-lg shadow-sky-500/10" title="Relatório de Fechamento">
                         <i data-lucide="clipboard-check" class="w-5 h-5"></i>
                     </button>
                     <button onclick="openFastActions()" class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-500 hover:bg-amber-500 hover:text-white flex items-center justify-center border border-amber-500/30 transition shadow-lg shadow-amber-500/10">
@@ -402,6 +405,56 @@
         </main>
     </div>
 
+    <!-- MODAL RESERVE CALCULATOR -->
+    <div id="modal-reserve" class="modal-overlay">
+        <div class="modal-box">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold flex items-center gap-2"><i data-lucide="life-buoy" class="text-emerald-500"></i> Reserva de Emergência</h3>
+                <button onclick="closeModal('modal-reserve')"><i data-lucide="x"></i></button>
+            </div>
+            
+            <div class="mb-4 bg-sky-50 dark:bg-white/5 rounded-xl p-4 border border-sky-100 dark:border-white/10">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs font-bold uppercase opacity-60">Gasto Mensal (Base)</span>
+                    <input type="text" id="res-base-val" class="input-prime w-28 text-right text-sm font-mono font-bold py-1" oninput="maskMoney(this); calcReserve()">
+                </div>
+                
+                <div class="flex items-center gap-2 mb-4">
+                    <span class="text-xs font-bold uppercase opacity-60">Meta Segura:</span>
+                    <select id="res-months" class="bg-white dark:bg-black/20 border border-slate-200 dark:border-white/20 rounded px-2 py-1 text-xs font-bold" onchange="calcReserve()">
+                        <option value="3">3 Meses (Básico)</option>
+                        <option value="6" selected>6 Meses (Recomendado)</option>
+                        <option value="12">12 Meses (Blindado)</option>
+                    </select>
+                </div>
+
+                <div class="h-px bg-slate-200 dark:bg-white/10 my-3"></div>
+
+                <div class="flex justify-between items-end mb-1">
+                    <span class="text-xs font-bold text-emerald-500 uppercase">Você Tem</span>
+                    <span class="text-xs font-bold text-slate-400 uppercase">Meta Total</span>
+                </div>
+                <div class="flex justify-between items-end mb-2">
+                    <span id="res-current" class="text-xl font-mono font-bold text-emerald-500">R$ 0,00</span>
+                    <span id="res-target" class="text-sm font-mono font-bold opacity-60">R$ 0,00</span>
+                </div>
+                <div class="w-full bg-slate-200 dark:bg-white/10 h-3 rounded-full overflow-hidden">
+                    <div id="res-progress" class="h-full bg-emerald-500 transition-all duration-1000" style="width: 0%"></div>
+                </div>
+                <div class="text-center mt-1 text-[10px] font-bold opacity-60" id="res-pct">0% Concluído</div>
+            </div>
+
+            <div class="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl mb-4">
+                <h4 class="text-xs font-bold text-emerald-500 uppercase mb-2 flex items-center gap-2"><i data-lucide="trending-up"></i> Aporte Rápido</h4>
+                <div class="flex gap-2">
+                    <input type="text" id="res-add-val" class="input-prime text-sm" placeholder="Valor Sobra (R$)" oninput="maskMoney(this)">
+                    <button onclick="saveSurplus()" class="bg-emerald-500 text-white px-4 rounded-lg font-bold text-xs hover:bg-emerald-600 transition">APORTAR</button>
+                </div>
+                <p class="text-[10px] opacity-60 mt-2 italic">Isso criará uma saída "Aporte" no dia de hoje.</p>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL FAST ACTIONS -->
     <div id="modal-fast-actions" class="modal-overlay">
         <div class="modal-box">
@@ -447,8 +500,17 @@
                         <span class="text-[10px] font-bold opacity-60 uppercase block">Parte Dela (Repasse)</span>
                         <span id="c6-her-part" class="text-lg font-mono font-bold text-slate-500">R$ 0,00</span>
                     </div>
+                    
+                    <label class="flex items-center gap-3 p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/10 cursor-pointer hover:bg-emerald-500/20 transition">
+                        <input type="checkbox" id="c6-paid-by-her" class="accent-emerald-500 w-4 h-4">
+                        <div class="leading-tight">
+                            <div class="text-xs font-bold text-emerald-600 dark:text-emerald-400">Ela já te transferiu?</div>
+                            <div class="text-[9px] opacity-70">Se sim, a entrada será marcada como PAGA.</div>
+                        </div>
+                    </label>
+
                     <div class="text-[10px] opacity-60 italic text-center px-4">
-                        Isso criará dois lançamentos de saída: um para seu lazer e outro para anular o repasse dela.
+                        Serão criados 3 lançamentos para equilibrar o saldo (Sua Saída + Saída Total + Entrada Dela).
                     </div>
                     <button onclick="confirmC6Pay()" class="btn-action w-full">
                         <i class="fa-solid fa-share-nodes"></i> LANÇAR DIVISÃO
@@ -922,11 +984,13 @@
             const total = parseMoney(document.getElementById('c6-total').value);
             const mine = parseMoney(document.getElementById('c6-mine').value);
             const her = Math.max(0, total - mine);
+            const paidByHer = document.getElementById('c6-paid-by-her').checked;
 
             if(total <= 0) return alert("Valor total inválido");
 
             const date = viewDate.toISOString().split('T')[0]; // Use current view date
 
+            // 1. Minha Parte (Gasto Real)
             if(mine > 0) {
                 db.transactions.push({
                     id: Date.now(),
@@ -943,7 +1007,10 @@
                 });
             }
 
+            // 2. Parte Dela (Saída para o Banco)
+            // 3. Parte Dela (Entrada no meu Caixa para repassar)
             if(her > 0) {
+                // Saída (Pagar Banco)
                 db.transactions.push({
                     id: Date.now() + 1,
                     type: 'out',
@@ -952,10 +1019,25 @@
                     place: 'C6 FATURA (REPASSE)',
                     method: 'Pix',
                     catJar: 'repass',
-                    catName: 'Repasses (Terceiros)',
-                    notes: 'Parte Talita - Anula Entrada',
+                    catName: 'Repasse (Terceiros)',
+                    notes: 'Parte Talita - Paga ao Banco',
                     thirdParty: true,
                     paid: true
+                });
+
+                // Entrada (Recebimento dela)
+                db.transactions.push({
+                    id: Date.now() + 2,
+                    type: 'in',
+                    val: her,
+                    date: date,
+                    place: 'C6 FATURA (PARTE TALITA)',
+                    method: 'Pix',
+                    catJar: 'income',
+                    catName: 'Repasses (Terceiros)',
+                    notes: 'C6 FATURA (PARTE TALITA)',
+                    thirdParty: true,
+                    paid: paidByHer // Se ela já pagou, entra como pago. Senão, pendente.
                 });
             }
 
@@ -963,6 +1045,70 @@
             renderAll();
             closeModal('modal-fast-actions');
             toast('Lançamentos C6 criados!');
+        }
+
+        // --- RESERVE CALCULATOR ---
+        function openReserveModal() {
+            const cfg = getMonthConfig(viewDate);
+            // Use global preference if set, otherwise current month fixed
+            const base = db.config.reserveBase !== undefined ? db.config.reserveBase : (cfg.fixed || 0);
+            document.getElementById('res-base-val').value = fmtMoney(base);
+            
+            calcReserve();
+            document.getElementById('modal-reserve').style.display = 'flex';
+        }
+
+        function calcReserve() {
+            const valStr = document.getElementById('res-base-val').value;
+            const fixed = parseMoney(valStr);
+            
+            // Save preference in memory (persisted on saveData)
+            db.config.reserveBase = fixed;
+
+            const months = parseInt(document.getElementById('res-months').value);
+            const target = fixed * months;
+            
+            let current = 0;
+            db.transactions.forEach(t => {
+                if (t.catJar === 'free' && t.paid) {
+                    if (t.type === 'out') current += t.val; // Investment
+                    if (t.type === 'in') current -= t.val; // Withdrawal
+                }
+            });
+            
+            const pct = target > 0 ? (current / target) * 100 : 0;
+            
+            document.getElementById('res-current').innerText = fmtMoney(current);
+            document.getElementById('res-target').innerText = fmtMoney(target);
+            document.getElementById('res-progress').style.width = Math.min(pct, 100) + '%';
+            document.getElementById('res-pct').innerText = pct.toFixed(1) + '% Concluído';
+        }
+
+        function saveSurplus() {
+            const val = parseMoney(document.getElementById('res-add-val').value);
+            if(val <= 0) return alert("Valor inválido");
+            
+            const date = new Date().toISOString().split('T')[0];
+            
+            db.transactions.push({
+                id: Date.now(),
+                type: 'out',
+                val: val,
+                date: date,
+                place: 'RESERVA DE EMERGÊNCIA',
+                method: 'Pix',
+                catJar: 'free',
+                catName: 'Reserva de Emergência',
+                notes: 'Aporte Ref. ' + new Date().toLocaleDateString('pt-BR', {month:'long', year:'numeric'}),
+                thirdParty: false,
+                paid: true
+            });
+            
+            saveData();
+            document.getElementById('res-add-val').value = '';
+            calcReserve();
+            toast('Aporte Realizado!');
+            renderAll(); // Refresh main view if visible
         }
 
         // --- CORE LOGIC ---
