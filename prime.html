@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* --- CONFIGURAÇÕES GERAIS E ANIMAÇÕES --- */
+        /* --- CONFIGURAÇÕES GERAIS E OTIMIZAÇÃO --- */
         :root {
             --primary: #05364F;     /* Azul Prime */
             --primary-dark: #022030;
@@ -22,15 +22,8 @@
             --accent: #C5A059;      /* Dourado Prime */
             --accent-light: #e6c885;
             --dark-bg: #0f172a;     
-            --card-glass: rgba(255, 255, 255, 0.92);
-            --glass-border: rgba(255, 255, 255, 0.6);
-        }
-
-        /* Fundo Animado 'Deep Ocean' */
-        @keyframes oceanMove {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            --card-surface: #ffffff;
+            --border-color: #e2e8f0;
         }
 
         body { 
@@ -38,9 +31,9 @@
             color: #1e293b; 
             overflow-x: hidden; 
             min-height: 100vh;
-            background: linear-gradient(-45deg, #0f172a, #05364F, #022030, #134e4a);
-            background-size: 400% 400%;
-            animation: oceanMove 15s ease infinite;
+            /* PERFORMANCE: Fundo Estático Profissional */
+            background: radial-gradient(circle at top right, #05364F, #020617);
+            background-attachment: fixed;
         }
 
         h1, h2, h3, h4, .font-heading { font-family: 'Outfit', sans-serif; }
@@ -67,41 +60,26 @@
             background: radial-gradient(circle at center, #05364F 0%, #020617 100%);
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
         }
-        
-        /* Partículas sutis no Gatekeeper */
-        .bubble { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.05); animation: floatUp 10s infinite linear; bottom: -20px; }
-        @keyframes floatUp { 0% { transform: translateY(0) scale(1); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateY(-100vh) scale(1.5); opacity: 0; } }
-
         .pin-input { 
             background: rgba(255,255,255,0.03); 
             border: 1px solid rgba(255,255,255,0.1); 
             color: white; letter-spacing: 4px; font-size: 1.1rem; 
             text-align: center; padding: 1.2rem; border-radius: 1rem; width: 100%; 
-            outline: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(5px);
+            outline: none; transition: 0.2s;
         }
-        .pin-input:focus { 
-            border-color: var(--secondary); 
-            box-shadow: 0 0 25px var(--secondary-glow); 
-            background: rgba(255,255,255,0.08); 
-            transform: scale(1.02);
-        }
-        .pin-input::placeholder { color: rgba(255,255,255,0.2); font-size: 0.8rem; letter-spacing: 1px; }
+        .pin-input:focus { border-color: var(--secondary); background: rgba(255,255,255,0.08); }
 
         /* --- HEADER & NAV --- */
         .glass-header {
-            background: rgba(5, 54, 79, 0.8);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            background: #05364F;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             position: sticky; top: 0; z-index: 50;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
         .nav-scroller { 
-            background: rgba(255,255,255,0.85); 
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255,255,255,0.3); 
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0; 
             position: sticky; top: 70px; z-index: 40; 
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
@@ -109,39 +87,29 @@
         .tab-btn { 
             position: relative; padding: 1rem 1.2rem; 
             color: #64748b; font-weight: 600; font-size: 0.85rem; 
-            transition: all 0.3s; cursor: pointer; display: flex; 
+            transition: all 0.2s; cursor: pointer; display: flex; 
             align-items: center; gap: 8px; white-space: nowrap; 
             border-radius: 8px; margin: 4px 0;
         }
-        .tab-btn:hover { color: var(--primary); background: rgba(5, 54, 79, 0.05); }
-        .tab-btn.active { color: var(--primary); font-weight: 800; background: rgba(5, 54, 79, 0.08); }
+        .tab-btn:hover { color: var(--primary); background: #e0f2fe; }
+        .tab-btn.active { color: var(--primary); font-weight: 800; background: #e0f2fe; }
         .tab-btn.active::after { 
             content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); 
             width: 20px; height: 3px; background: var(--secondary); border-radius: 3px; 
-            transition: width 0.3s;
         }
-        .tab-btn.active:hover::after { width: 80%; }
 
-        /* --- CARDS & UI (GLASSMORPHISM) --- */
+        /* --- CARDS & UI (PERFORMANCE OPTIMIZED) --- */
         .card-prime {
-            background: var(--card-glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            background: var(--card-surface);
             border-radius: 1.5rem;
-            box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-            border: 1px solid var(--glass-border);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--border-color);
             overflow: hidden;
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s;
-        }
-        .card-prime:hover {
-            box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.15);
         }
         
-        /* Títulos com Sombra Suave */
         .section-title { 
             font-size: 1.5rem; font-weight: 800; color: white; 
             display: flex; items-center; gap: 0.5rem; margin-bottom: 1.5rem; 
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2); 
         }
 
         /* --- INPUTS MODERNOS --- */
@@ -149,206 +117,161 @@
             width: 100%; padding: 0.8rem 1rem;
             background: #f1f5f9; border: 2px solid transparent;
             border-radius: 0.8rem; color: #0f172a; font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+            transition: 0.2s;
         }
-        .input-prime:hover { background: #e2e8f0; }
         .input-prime:focus { 
-            background: white; 
-            border-color: var(--secondary); 
-            box-shadow: 0 0 0 4px rgba(0, 168, 154, 0.15); 
-            outline: none; 
+            background: white; border-color: var(--secondary); outline: none; 
         }
         
-        .date-wrapper { position: relative; display: flex; align-items: center; }
-        .date-icon { position: absolute; left: 12px; pointer-events: none; color: var(--accent); z-index: 10; filter: drop-shadow(0 2px 2px rgba(197, 160, 89, 0.3)); }
-        .input-date-custom { padding-left: 40px; transition: all 0.3s; }
-        .input-date-custom:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.2); }
-
-        /* Search Dropdown - Efeito Flutuante */
+        /* Search Dropdown */
         .search-select-wrapper { position: relative; }
         .search-results {
             position: absolute; top: 110%; left: 0; right: 0;
-            background: rgba(255, 255, 255, 0.98); 
-            backdrop-filter: blur(10px);
-            border: 1px solid #e2e8f0; border-radius: 1rem;
+            background: white; border: 1px solid #e2e8f0; border-radius: 1rem;
             max-height: 250px; overflow-y: auto; z-index: 50;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-            display: none; transform-origin: top;
-            animation: menuDrop 0.2s ease-out;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            display: none;
         }
-        @keyframes menuDrop { from { opacity: 0; transform: scaleY(0.8); } to { opacity: 1; transform: scaleY(1); } }
-        
-        .search-result-item { padding: 12px 15px; cursor: pointer; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; font-weight: 600; color: #05364F; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
-        .search-result-item:hover { background: #f0f9ff; color: var(--secondary); padding-left: 20px; }
+        .search-result-item { padding: 12px 15px; cursor: pointer; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; font-weight: 600; color: #05364F; display: flex; justify-content: space-between; align-items: center; }
+        .search-result-item:hover { background: #f0f9ff; color: var(--secondary); }
 
-        /* --- AGENDA TABLE & DRAWER --- */
-        /* Header Azul Padronizado */
+        /* --- AGENDA TABLE --- */
         .agenda-thead {
-            background: linear-gradient(to right, #05364F, #084566);
-            color: white; text-transform: uppercase; font-size: 0.75rem; 
+            background: #05364F; color: white; 
+            text-transform: uppercase; font-size: 0.75rem; 
             font-weight: 800; tracking-wider; border-bottom: 2px solid #00A89A;
         }
-        .agenda-thead th { padding: 16px; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
-
-        .agenda-row { border-bottom: 1px solid #f1f5f9; transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); cursor: pointer; position: relative; }
-        .agenda-row:hover { background-color: #f8fafc; transform: scale(1.005); box-shadow: 0 4px 15px rgba(0,0,0,0.05); z-index: 10; border-radius: 8px; border-bottom: 1px solid transparent; }
+        .agenda-row { border-bottom: 1px solid #f1f5f9; cursor: pointer; background: white; }
+        .agenda-row:hover { background-color: #f8fafc; }
         
-        /* Time Badge Refined */
-        .agenda-time { font-family: 'Outfit', sans-serif; font-weight: 800; color: var(--accent); font-size: 1.1rem; letter-spacing: -0.5px; }
-        .agenda-time-box { background: var(--primary); padding: 6px 12px; border-radius: 8px; color: var(--accent); box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .agenda-time-box { background: var(--primary); padding: 6px 12px; border-radius: 8px; color: var(--accent); font-weight: 800; font-family: 'Outfit'; }
+        .agenda-workout { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; padding: 4px 10px; border-radius: 6px; background: #ccfbf1; color: #0f766e; display: inline-block; }
+        .prof-badge { font-size: 0.65rem; font-weight: 800; padding: 4px 8px; border-radius: 4px; color: white; display: inline-block; text-transform: uppercase; }
 
-        .agenda-workout { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; padding: 4px 10px; border-radius: 6px; background: rgba(0, 168, 154, 0.1); color: #00796b; display: inline-block; box-shadow: 0 2px 5px rgba(0, 168, 154, 0.1); }
-        
-        .prof-badge { font-size: 0.65rem; font-weight: 800; padding: 4px 8px; border-radius: 4px; color: white; display: inline-block; text-transform: uppercase; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-
-        /* PRIME KIDS STYLE (14H) - Animado */
-        @keyframes rainbow { 
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+        /* PRIME KIDS STYLE */
         .kids-badge { 
             font-family:'Outfit', sans-serif; font-weight:900; 
-            background: linear-gradient(270deg, #FF6B6B, #4ECDC4, #FFE66D, #FF6B6B); 
-            background-size: 300% 300%;
-            animation: rainbow 4s ease infinite;
-            -webkit-background-clip:text; -webkit-text-fill-color:transparent; 
-            text-shadow: 0px 2px 10px rgba(255, 107, 107, 0.3); 
-            font-size:0.8rem; letter-spacing:1px; 
+            color: #ec4899; font-size:0.8rem; letter-spacing:1px; 
         }
-        .row-kids { background: linear-gradient(90deg, #fff5f9 0%, #fff 100%); border-left: 4px solid #ec4899; }
-        .row-kids:hover { background: #ffeef6; transform: scale(1.01); box-shadow: 0 5px 15px rgba(236, 72, 153, 0.15); }
+        .row-kids { border-left: 4px solid #ec4899; background: #fff5f9; }
 
-        .drawer-content { max-height: 0; overflow: hidden; transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s; opacity: 0; background: #f8fafc; box-shadow: inset 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
-        .drawer-content.open { max-height: 600px; opacity: 1; border-bottom: 1px solid #e2e8f0; }
+        /* Drawer */
+        .drawer-content { display: none; background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
+        .drawer-content.open { display: block; }
 
         /* Time Separator */
-        .time-separator {
-            display: flex; align-items: center; justify-content: center;
-            padding: 1rem 0 0.5rem 0;
-        }
-        .time-pill {
-            background: white; color: var(--accent);
-            padding: 6px 20px; border-radius: 30px;
-            font-size: 0.75rem; font-weight: 900; letter-spacing: 1px;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
-        .time-line { height: 1px; flex-grow: 1; background: linear-gradient(90deg, transparent, #e2e8f0, transparent); margin: 0 15px; }
+        .time-separator { display: flex; align-items: center; justify-content: center; padding: 1rem 0 0.5rem 0; }
+        .time-pill { background: white; color: var(--accent); padding: 6px 20px; border-radius: 30px; font-size: 0.75rem; font-weight: 900; letter-spacing: 1px; border: 1px solid #e2e8f0; }
+        .time-line { height: 1px; flex-grow: 1; background: #e2e8f0; margin: 0 15px; }
 
-        /* --- ANIMATIONS (Fade In Up Staggered) --- */
-        @keyframes slideInUp { 
-            from { transform: translateY(20px); opacity: 0; } 
-            to { transform: translateY(0); opacity: 1; } 
-        }
-        .fade-in-up { animation: slideInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        
-        /* --- BUTTONS GLOW --- */
+        /* --- BUTTONS --- */
         .btn-gold { 
             background: linear-gradient(135deg, #C5A059 0%, #D4AF37 100%); 
-            color: white; 
-            box-shadow: 0 4px 15px rgba(197, 160, 89, 0.4); 
-            position: relative; overflow: hidden;
+            color: white; box-shadow: 0 4px 10px rgba(197, 160, 89, 0.4); 
         }
-        .btn-gold::before {
-            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            transition: 0.5s;
-        }
-        .btn-gold:hover::before { left: 100%; }
-        .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(197, 160, 89, 0.6); }
+        .btn-gold:hover { transform: translateY(-1px); opacity: 0.9; }
         
-        /* Confirm Button Special */
-        #ci-btn-submit {
-            background-size: 200% auto;
-            background-image: linear-gradient(to right, #00A89A 0%, #05364F 51%, #00A89A 100%);
-            transition: 0.5s;
-        }
-        #ci-btn-submit:hover { background-position: right center; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 168, 154, 0.3); }
+        #ci-btn-submit { background: #05364F; transition: 0.2s; }
+        #ci-btn-submit:hover { background: #00A89A; }
 
         /* --- MODALS --- */
         .modal-overlay { 
             position: fixed; inset: 0; background: rgba(2, 6, 23, 0.85); 
-            backdrop-filter: blur(8px); z-index: 100; 
-            display: none; align-items: center; justify-content: center; padding: 1rem; 
-            animation: fadeIn 0.3s ease-out;
+            z-index: 100; display: none; align-items: center; justify-content: center; padding: 1rem; 
         }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        
         .modal-card { 
             background: white; width: 100%; max-width: 500px; 
             border-radius: 1.5rem; padding: 2rem; 
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
-            animation: modalSlide 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            border: 1px solid rgba(255,255,255,0.5);
+            max-height: 95vh; overflow-y: auto;
         }
-        @keyframes modalSlide { from { transform: translateY(40px) scale(0.95); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
-
-        /* GATEKEEPER MODAL SPECIFIC (Z-Index + 1) */
         #gk-config-modal { z-index: 100001; }
 
         /* --- DATA STATUS PULSE --- */
-        .status-pill { display: flex; align-items: center; gap: 6px; padding: 6px 14px; background: rgba(255,255,255,0.1); border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); font-size: 0.75rem; color: white; font-weight: 600; cursor: pointer; transition: 0.2s; backdrop-filter: blur(4px); }
-        .status-pill:hover { background: rgba(255,255,255,0.2); transform: scale(1.05); }
+        .status-pill { display: flex; align-items: center; gap: 6px; padding: 6px 14px; background: rgba(255,255,255,0.1); border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); font-size: 0.75rem; color: white; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .status-pill:hover { background: rgba(255,255,255,0.2); }
         .dot { width: 8px; height: 8px; border-radius: 50%; }
-        .dot.online { background: #34d399; box-shadow: 0 0 10px #34d399; animation: pulseGreen 2s infinite; }
+        .dot.online { background: #34d399; box-shadow: 0 0 5px #34d399; }
         .dot.offline { background: #94a3b8; }
-        .dot.sync { background: #38bdf8; animation: pulse 1s infinite; }
-        @keyframes pulseGreen { 0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(52, 211, 153, 0); } 100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); } }
+        .dot.sync { background: #38bdf8; }
 
         /* Custom Dropdown for Time Filter */
         .custom-dropdown-content {
             display: none; position: absolute; top: 120%; right: 0; 
             background: white; border: 1px solid #e2e8f0; 
             border-radius: 12px; padding: 15px; 
-            box-shadow: 0 15px 30px rgba(0,0,0,0.15); 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
             z-index: 60; width: 220px; max-height: 300px; overflow-y: auto;
-            transform-origin: top right;
         }
-        .custom-dropdown-content.show { display: block; animation: menuDrop 0.2s ease-out; }
+        .custom-dropdown-content.show { display: block; }
         .cb-item { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
-        .cb-item:hover { background: #f8fafc; transform: translateX(2px); }
-        .cb-item input { accent-color: var(--secondary); width: 18px; height: 18px; }
+        .cb-item:hover { background: #f8fafc; }
         
-        /* --- FREQUENCY VISUALS --- */
+        /* --- LISTS & GRIDS (HISTORY) --- */
+        
+        /* Vertical List (Check-in Form) */
+        .week-list-vertical { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; }
+        .wl-item { 
+            display: flex; align-items: center; justify-content: space-between; 
+            padding: 10px 15px; border-radius: 12px; background: white; 
+            border: 1px solid #e2e8f0; font-size: 0.8rem; 
+        }
+        .wl-item.present { border-left: 5px solid var(--secondary); }
+        .wl-item.absent { border-left: 5px solid #ef4444; background: #fff5f5; }
+        .wl-item.future { border-left: 5px solid #cbd5e1; opacity: 0.6; }
+        .wl-date { font-weight: 800; color: #05364F; display: flex; flex-direction: column; }
+        .wl-date span { font-size: 0.65rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; }
+        .wl-workout { font-weight: 800; color: #64748b; text-transform: uppercase; font-size: 0.75rem; }
+        .wl-item.present .wl-workout { color: var(--secondary); }
+        .wl-item.absent .wl-workout { color: transparent; }
+
+        /* Grid Horizontal (Agenda Drawer) */
         .week-grid-box { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 5px; }
         .wg-box-item { 
-            min-width: 65px; flex: 1; padding: 10px 8px; border-radius: 10px; 
+            min-width: 60px; flex: 1; padding: 10px 5px; border-radius: 10px; 
             border: 1px solid #e2e8f0; text-align: center; background: white; 
-            transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            transition: all 0.2s;
         }
-        .wg-box-item:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
         .wg-box-item .day-lbl { font-size: 0.65rem; font-weight: 900; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px; }
-        .wg-box-item .val-lbl { font-size: 0.75rem; font-weight: 800; color: #cbd5e1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .wg-box-item .val-lbl { font-size: 0.7rem; font-weight: 800; color: #cbd5e1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
         
         .wg-box-item.present { background: #f0fdfa; border-color: #5eead4; border-bottom: 3px solid var(--secondary); }
         .wg-box-item.present .val-lbl { color: var(--secondary); }
         .wg-box-item.absent { background: #fef2f2; border-color: #fca5a5; border-bottom: 3px solid #ef4444; }
-        .wg-box-item.absent .val-lbl { color: transparent; } /* Hidden Text */
+        .wg-box-item.absent .val-lbl { color: transparent; }
 
-        /* Vertical List Style */
-        .week-list-vertical { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; }
-        .wl-item { 
-            display: flex; align-items: center; justify-content: space-between; 
-            padding: 12px 15px; border-radius: 12px; background: white; 
-            border: 1px solid #e2e8f0; font-size: 0.85rem; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.03); transition: 0.2s;
+        /* CALENDAR IN PROFILE (UPDATED COMPACT) */
+        .pf-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 10px; }
+        .pf-cal-day { 
+            aspect-ratio: 1;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            border-radius: 8px; background: #f1f5f9; color: #94a3b8; 
+            cursor: pointer; position: relative; overflow: hidden;
+            font-size: 0.7rem; font-weight: 700;
+            border: 1px solid transparent;
+            transition: all 0.2s;
         }
-        .wl-item:hover { transform: scale(1.02); }
-        .wl-item.present { border-left: 5px solid var(--secondary); }
-        .wl-item.absent { border-left: 5px solid #ef4444; background: #fff5f5; }
-        .wl-item.future { border-left: 5px solid #cbd5e1; opacity: 0.6; }
         
-        .wl-date { font-weight: 800; color: #05364F; display: flex; flex-direction: column; }
-        .wl-date span { font-size: 0.65rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; }
-        .wl-workout { font-weight: 800; color: #64748b; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; }
-        .wl-item.present .wl-workout { color: var(--secondary); }
-        .wl-item.absent .wl-workout { color: transparent; }
+        .pf-cal-day.active { 
+            background: #d1fae5; /* Verde claro */
+            border-color: #10b981; 
+            color: #064e3b;
+        }
+        
+        /* Inner cell details */
+        .cal-day-num { line-height: 1; margin-bottom: 2px; }
+        .cal-time { font-size: 0.6rem; color: #0284c7; font-weight: 900; line-height: 1; margin-bottom: 1px; } /* Azul */
+        .cal-work { 
+            font-size: 0.5rem; color: #b45309; text-transform: uppercase; 
+            font-weight: 800; line-height: 0.9; text-align: center; 
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; 
+        } /* Laranja/Dourado */
 
-        /* Profile Week Grid matches Agenda style */
-        .pf-grid-item { flex: 1; min-width: 80px; padding: 10px; border-radius: 12px; border: 1px solid #e2e8f0; text-align: center; transition: all 0.3s; background: white; }
-        .pf-grid-item.active { border-left: 4px solid var(--secondary); box-shadow: 0 2px 8px rgba(0,168,154,0.1); background: #f0fdfa; }
+        .pf-cal-head { text-align: center; font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; }
+
+        /* LAST UPDATE LABEL */
+        .last-update-lbl { font-size: 0.65rem; color: #64748b; font-style: italic; margin-top: 4px; display: block; font-weight: 600; opacity: 0.8; }
+
     </style>
 </head>
 <body>
@@ -368,7 +291,6 @@
                     <i data-lucide="settings-2" class="w-8 h-8 text-white"></i>
                 </div>
                 <h3 class="text-xl font-heading font-bold text-[#05364F]">Configuração Inicial</h3>
-                <p class="text-xs text-slate-400 text-center px-4 mt-2">Gerencie o acesso à nuvem e backup antes de entrar.</p>
             </div>
             
             <div class="space-y-4">
@@ -379,16 +301,11 @@
                 <button onclick="saveTokenFromGatekeeper()" class="w-full py-3 bg-[#05364F] text-white font-bold rounded-xl text-xs hover:bg-[#032435] transition flex justify-center items-center gap-2">
                     <i data-lucide="save" class="w-4 h-4"></i> SALVAR E SINCRONIZAR
                 </button>
-                
                 <div class="h-px bg-slate-100 my-2"></div>
-                
                 <div class="grid grid-cols-2 gap-3">
-                    <button onclick="backupData()" class="py-3 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl text-xs hover:bg-slate-50 transition flex justify-center items-center gap-2">
-                        <i data-lucide="download" class="w-4 h-4"></i> BACKUP
-                    </button>
-                    <label class="py-3 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl text-xs hover:bg-slate-50 transition flex justify-center items-center gap-2 cursor-pointer">
-                        <i data-lucide="upload" class="w-4 h-4"></i> RESTAURAR
-                        <input type="file" hidden onchange="restoreData(this)">
+                    <button onclick="backupData()" class="py-3 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl text-xs">BACKUP</button>
+                    <label class="py-3 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl text-xs cursor-pointer flex items-center justify-center">
+                        RESTAURAR <input type="file" hidden onchange="restoreData(this)">
                     </label>
                 </div>
             </div>
@@ -398,17 +315,11 @@
 
     <!-- GATEKEEPER -->
     <div id="gatekeeper">
-        <!-- Floating Bubbles for Visual Dazzle -->
-        <div class="bubble" style="width: 60px; height: 60px; left: 10%; animation-duration: 8s; opacity: 0.1;"></div>
-        <div class="bubble" style="width: 40px; height: 40px; left: 30%; animation-duration: 12s; opacity: 0.15;"></div>
-        <div class="bubble" style="width: 80px; height: 80px; left: 70%; animation-duration: 15s; opacity: 0.05;"></div>
-        <div class="bubble" style="width: 50px; height: 50px; left: 90%; animation-duration: 10s; opacity: 0.1;"></div>
-
         <div class="text-center w-full max-w-[280px] z-10">
-            <div class="w-24 h-24 bg-gradient-to-br from-[#C5A059] to-[#b8860b] rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-yellow-900/50 transform rotate-6 hover:rotate-0 transition-all duration-500 cursor-pointer">
-                <i class="fa-solid fa-dumbbell text-5xl text-white drop-shadow-md"></i>
+            <div class="w-24 h-24 bg-gradient-to-br from-[#C5A059] to-[#b8860b] rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-2xl">
+                <i class="fa-solid fa-dumbbell text-5xl text-white"></i>
             </div>
-            <h1 class="text-3xl font-black text-white mb-2 font-heading tracking-tight drop-shadow-lg">PRIME <span class="text-[#C5A059]">ACQUAFIT</span></h1>
+            <h1 class="text-3xl font-black text-white mb-2 font-heading tracking-tight">PRIME <span class="text-[#C5A059]">ACQUAFIT</span></h1>
             <p class="text-slate-400 mb-10 text-[11px] uppercase tracking-[0.3em] font-bold">Área Restrita</p>
             
             <div class="flex flex-col gap-4">
@@ -419,8 +330,6 @@
                 </button>
             </div>
             <div id="loginError" class="text-red-400 mt-6 font-bold text-xs h-5 tracking-wide"></div>
-            
-            <!-- NOVO BOTÃO DISCRETO -->
             <button onclick="openGatekeeperConfig()" class="mx-auto w-8 h-8 rounded-full bg-white/5 hover:bg-white/20 flex items-center justify-center text-white/30 hover:text-white transition mt-4">
                 <i class="fa-solid fa-gear text-xs"></i>
             </button>
@@ -434,11 +343,11 @@
         <header class="glass-header">
             <div class="max-w-7xl mx-auto px-4 h-[70px] flex justify-between items-center">
                 <div class="flex items-center gap-4">
-                    <a href="index.html" class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition border border-white/10 hover:scale-105 active:scale-95">
+                    <a href="index.html" class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition border border-white/10">
                         <i data-lucide="arrow-left" class="w-5 h-5"></i>
                     </a>
                     <div>
-                        <h1 class="text-lg font-bold text-white leading-none font-heading tracking-tight drop-shadow">PRIME <span class="text-[#00A89A]">ACQUAFIT</span></h1>
+                        <h1 class="text-lg font-bold text-white leading-none font-heading tracking-tight">PRIME <span class="text-[#00A89A]">ACQUAFIT</span></h1>
                         <p class="text-[10px] text-slate-300 font-bold uppercase tracking-widest mt-0.5 opacity-80">Gestão de Alunos</p>
                     </div>
                 </div>
@@ -462,7 +371,7 @@
         <main class="max-w-7xl mx-auto px-4 py-8">
 
             <!-- VIEW: DAILY -->
-            <section id="view-daily" class="view-section fade-in-up">
+            <section id="view-daily" class="view-section">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 relative">
                     
                     <!-- LEFT COLUMN: CHECKIN FORM -->
@@ -492,7 +401,7 @@
                                     </div>
                                     <div>
                                         <label class="text-[10px] font-bold text-slate-500 uppercase mb-1.5 block tracking-wide">Horário</label>
-                                        <select id="ci-time" class="input-prime text-sm"></select>
+                                        <select id="ci-time" class="input-prime text-sm font-bold text-[#05364F]"></select>
                                     </div>
                                 </div>
 
@@ -504,20 +413,28 @@
                                             <input type="text" id="ci-search-input" class="input-prime text-sm" placeholder="Digite para buscar..." autocomplete="off" onkeyup="filterStudentSearch()" onfocus="filterStudentSearch()">
                                             <div id="ci-search-results" class="search-results"></div>
                                         </div>
-                                        <button type="button" onclick="openStudentModal(null, true)" class="bg-[#00A89A] text-white px-3.5 rounded-xl hover:bg-teal-600 transition shadow-lg shadow-teal-500/30 hover:shadow-teal-500/50 hover:-translate-y-0.5 active:translate-y-0">
+                                        <button type="button" onclick="openStudentModal(null, true)" class="bg-[#00A89A] text-white px-3.5 rounded-xl hover:bg-teal-600 transition shadow-lg shadow-teal-500/30">
                                             <i data-lucide="plus" class="w-5 h-5"></i>
                                         </button>
                                     </div>
                                     
-                                    <!-- WEEK STATS VISUAL (LIST VERTICAL) -->
-                                    <div id="ci-week-stats" class="hidden"></div>
-
                                     <!-- ALERT BOX -->
                                     <div id="ci-alert" class="hidden mt-4 bg-red-50 border border-red-100 rounded-xl p-4 flex gap-3 items-start animate-pulse shadow-sm">
                                         <i data-lucide="alert-triangle" class="w-5 h-5 text-red-500 shrink-0 mt-0.5"></i>
                                         <div>
                                             <div class="text-[10px] font-bold text-red-500 uppercase mb-0.5">Atenção - Restrições</div>
                                             <p id="ci-alert-text" class="text-xs font-bold text-red-800 leading-tight"></p>
+                                            <span id="ci-alert-meta" class="last-update-lbl text-red-400"></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- NOTE BOX -->
+                                    <div id="ci-note-alert" class="hidden mt-4 bg-blue-50 border border-blue-100 rounded-xl p-4 flex gap-3 items-start shadow-sm">
+                                        <i data-lucide="info" class="w-5 h-5 text-blue-500 shrink-0 mt-0.5"></i>
+                                        <div>
+                                            <div class="text-[10px] font-bold text-blue-500 uppercase mb-0.5">Observações</div>
+                                            <p id="ci-note-text" class="text-xs font-bold text-blue-800 leading-tight"></p>
+                                            <span id="ci-note-meta" class="last-update-lbl text-blue-400"></span>
                                         </div>
                                     </div>
                                 </div>
@@ -526,33 +443,35 @@
                                     <div>
                                         <div class="flex justify-between items-center mb-1.5">
                                             <label class="text-[10px] font-bold text-slate-500 uppercase block tracking-wide">Treino</label>
-                                            <button type="button" onclick="openWorkoutModal()" class="text-[10px] font-bold text-[#00A89A] hover:underline hover:text-teal-700 transition">GERENCIAR</button>
+                                            <button type="button" onclick="openWorkoutModal()" class="text-[10px] font-bold text-[#00A89A] hover:underline">GERENCIAR</button>
                                         </div>
-                                        <select id="ci-workout" class="input-prime text-sm" onchange="toggleCustom(this.value)">
-                                            <!-- Preenchido via JS -->
-                                        </select>
+                                        <select id="ci-workout" class="input-prime text-sm" onchange="toggleCustom(this.value)"></select>
                                         <input id="ci-custom" type="text" class="hidden mt-2 input-prime text-sm border-[#00A89A]" placeholder="Digite o treino...">
                                     </div>
                                     <div>
                                         <div class="flex justify-between items-center mb-1.5">
                                             <label class="text-[10px] font-bold text-slate-500 uppercase block tracking-wide">Responsável</label>
-                                            <button type="button" onclick="openProfModal()" class="text-[10px] font-bold text-[#00A89A] hover:underline hover:text-teal-700 transition">GERENCIAR</button>
+                                            <button type="button" onclick="openProfModal()" class="text-[10px] font-bold text-[#00A89A] hover:underline">GERENCIAR</button>
                                         </div>
                                         <select id="ci-prof" class="input-prime text-sm"></select>
                                     </div>
                                 </div>
 
-                                <button type="submit" id="ci-btn-submit" class="w-full py-4 text-white font-bold rounded-xl shadow-xl transition flex justify-center items-center gap-2 mt-4 text-sm uppercase tracking-widest border border-white/10">
+                                <button type="submit" id="ci-btn-submit" class="w-full py-4 text-white font-bold rounded-xl shadow-xl transition flex justify-center items-center gap-2 mt-4 text-sm uppercase tracking-widest">
                                     <i data-lucide="check" class="w-5 h-5"></i> Confirmar
                                 </button>
+                                
+                                <!-- WEEK STATS VISUAL (MOVED BELOW BUTTON) -->
+                                <div id="ci-week-stats" class="hidden mt-4 pt-4 border-t border-slate-100">
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Histórico Recente</p>
+                                    <div id="ci-week-list-container"></div>
+                                </div>
                             </form>
                         </div>
 
                         <!-- STATS CARD -->
                         <div class="card-prime bg-gradient-to-br from-[#05364F] to-[#021824] text-white p-6 border-none relative overflow-hidden">
-                            <!-- Background pattern -->
                             <div class="absolute top-0 right-0 p-4 opacity-10"><i class="fa-solid fa-chart-line text-6xl"></i></div>
-                            
                             <h3 class="text-xs font-bold text-[#C5A059] uppercase tracking-widest mb-6 pb-2 border-b border-white/10 relative z-10">Resumo do Dia</h3>
                             <div class="grid grid-cols-2 gap-y-6 gap-x-4 relative z-10">
                                 <div><div class="text-[10px] text-slate-400 font-bold uppercase mb-1">Total Alunos</div><div class="text-3xl font-heading font-bold drop-shadow-md" id="st-total">0</div></div>
@@ -566,26 +485,20 @@
                     <!-- RIGHT COLUMN: AGENDA -->
                     <div class="lg:col-span-8">
                         <div class="card-prime h-full flex flex-col">
-                            <div class="p-5 border-b border-slate-100 flex flex-wrap gap-4 justify-between items-center bg-white/50">
+                            <div class="p-5 border-b border-slate-200 flex flex-wrap gap-4 justify-between items-center bg-slate-100">
                                 <h2 class="text-xl font-heading font-bold text-[#05364F] flex items-center gap-2">
                                     <i data-lucide="calendar-days" class="w-6 h-6 text-[#C5A059]"></i> Agenda
                                 </h2>
                                 <div class="flex gap-2 items-center flex-wrap">
                                     <!-- WRAPPER COM ÍCONE DO CALENDÁRIO -->
                                     <div class="date-wrapper">
-                                        <i data-lucide="calendar" class="date-icon w-4 h-4"></i>
-                                        <input type="date" id="ag-date" class="bg-white border border-slate-200 rounded-lg py-2 pr-3 text-sm font-bold text-[#05364F] outline-none focus:border-[#00A89A] input-date-custom hover:bg-slate-50 transition" onchange="document.getElementById('ag-month').value=''; renderAgenda()">
+                                        <i data-lucide="calendar" class="date-icon w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                        <input type="date" id="ag-date" class="bg-white border border-slate-200 rounded-lg py-2 pl-9 pr-3 text-sm font-bold text-[#05364F] outline-none focus:border-[#00A89A] hover:bg-white transition shadow-sm" onchange="renderAgenda()">
                                     </div>
                                     
-                                    <!-- Mês Picker (NEW) -->
-                                    <div class="date-wrapper">
-                                        <i data-lucide="calendar-range" class="date-icon w-4 h-4"></i>
-                                        <input type="month" id="ag-month" class="bg-white border border-slate-200 rounded-lg py-2 pr-3 text-sm font-bold text-[#05364F] outline-none focus:border-[#00A89A] input-date-custom hover:bg-slate-50 transition" onchange="document.getElementById('ag-date').value=''; renderAgenda()">
-                                    </div>
-
-                                    <!-- Novo Dropdown Multi-select -->
+                                    <!-- Dropdown Multi-select -->
                                     <div class="relative">
-                                        <button onclick="toggleTimeDropdown()" id="btn-time-filter" class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm font-bold text-[#05364F] hover:border-[#00A89A] hover:bg-slate-50 transition flex items-center gap-2">
+                                        <button onclick="toggleTimeDropdown()" id="btn-time-filter" class="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm font-bold text-[#05364F] hover:border-[#00A89A] hover:bg-slate-50 transition flex items-center gap-2 shadow-sm">
                                             <span>Todos Horários</span>
                                             <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i>
                                         </button>
@@ -600,7 +513,7 @@
 
                                     <div class="relative">
                                         <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
-                                        <input type="text" id="ag-search" placeholder="Buscar..." class="bg-white border border-slate-200 rounded-lg py-2 pl-9 pr-3 text-sm font-bold outline-none focus:border-[#00A89A] w-32 focus:w-48 transition-all" onkeyup="renderAgenda()">
+                                        <input type="text" id="ag-search" placeholder="Buscar..." class="bg-white border border-slate-200 rounded-lg py-2 pl-9 pr-3 text-sm font-bold outline-none focus:border-[#00A89A] w-32 focus:w-48 transition-all shadow-sm" onkeyup="renderAgenda()">
                                     </div>
                                 </div>
                             </div>
@@ -609,7 +522,7 @@
                                 <table class="w-full text-left text-sm border-collapse">
                                     <thead class="agenda-thead">
                                         <tr>
-                                            <th class="w-28 text-center">Horário</th>
+                                            <th class="w-20 text-center pl-4">Hora</th>
                                             <th>Aluno</th>
                                             <th>Treino</th>
                                             <th class="text-center">Resp.</th>
@@ -625,7 +538,7 @@
             </section>
 
             <!-- VIEW: STUDENTS -->
-            <section id="view-students" class="view-section hidden fade-in-up">
+            <section id="view-students" class="view-section hidden">
                 <div class="card-prime p-6">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="section-title text-[#05364F] mb-0 !text-[#05364F] !text-shadow-none">Base de Alunos</h2>
@@ -652,7 +565,7 @@
             </section>
 
             <!-- VIEW: REPORTS -->
-            <section id="view-reports" class="view-section hidden fade-in-up space-y-6">
+            <section id="view-reports" class="view-section hidden space-y-6">
                 <!-- Filter Header -->
                 <div class="flex justify-between items-center card-prime p-4 !shadow-sm">
                     <h2 class="text-xl font-heading font-bold text-[#05364F] flex items-center gap-2">
@@ -713,7 +626,6 @@
                     </div>
                 </div>
                 
-                <!-- GENDER ONLY ROW -->
                 <div>
                     <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Gênero</label>
                     <select id="ms-gender" class="input-prime">
@@ -723,8 +635,23 @@
                 </div>
 
                 <div class="grid grid-cols-2 gap-4"><div><label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Objetivo</label><input type="text" id="ms-obj" class="input-prime"></div><div><label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Plano</label><input type="text" id="ms-plan" class="input-prime"></div></div>
-                <div><label class="text-[10px] font-bold text-red-400 uppercase mb-1 block">Limitações / Lesões</label><textarea id="ms-lim" rows="2" class="w-full p-3 rounded-xl border border-red-200 bg-red-50 text-red-900 font-medium text-sm focus:border-red-400 outline-none"></textarea></div>
-                <div><label class="text-[10px] font-bold text-blue-400 uppercase mb-1 block">Observações Gerais</label><textarea id="ms-obs" rows="2" class="w-full p-3 rounded-xl border border-blue-200 bg-blue-50 text-slate-700 text-sm focus:border-blue-400 outline-none"></textarea></div>
+                <div>
+                    <label class="text-[10px] font-bold text-red-400 uppercase mb-1 block">Limitações / Lesões</label>
+                    <textarea id="ms-lim" rows="2" class="w-full p-3 rounded-xl border border-red-200 bg-red-50 text-red-900 font-medium text-sm focus:border-red-400 outline-none"></textarea>
+                    <div id="ms-lim-meta" class="last-update-lbl text-red-400 text-right mt-1"></div>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-blue-400 uppercase mb-1 block">Observações Gerais</label>
+                    <textarea id="ms-obs" rows="2" class="w-full p-3 rounded-xl border border-blue-200 bg-blue-50 text-slate-700 text-sm focus:border-blue-400 outline-none"></textarea>
+                    <div id="ms-obs-meta" class="last-update-lbl text-blue-400 text-right mt-1"></div>
+                </div>
+                
+                <!-- EDITOR TRACKING -->
+                <div class="pt-4 border-t border-slate-100">
+                    <label class="text-[10px] font-bold text-[#05364F] uppercase mb-1 block">Professor Responsável (Obrigatório)</label>
+                    <select id="ms-editor" class="input-prime" required><option value="">Selecione quem está alterando...</option></select>
+                </div>
+
                 <button type="submit" class="w-full py-3 bg-[#05364F] text-white font-bold rounded-xl hover:bg-[#032435] transition shadow-lg">SALVAR DADOS</button>
             </form>
         </div>
@@ -732,10 +659,10 @@
 
     <!-- MODAL PROFILE -->
     <div id="profile-modal" class="modal-overlay">
-        <div class="bg-white w-full max-w-4xl h-[90vh] rounded-2xl flex flex-col overflow-hidden animate-[modalSlide_0.4s_cubic-bezier(0.16,1,0.3,1)] shadow-2xl">
-            <div class="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-white/80 backdrop-blur-sm sticky top-0 z-10">
+        <div class="bg-white w-full max-w-4xl h-[90vh] rounded-2xl flex flex-col overflow-hidden shadow-2xl">
+            <div class="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-10">
                 <div class="flex items-center gap-5">
-                    <div id="pf-avatar" class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#00A89A] to-[#05364F] text-white flex items-center justify-center text-xl font-bold shadow-lg transform hover:scale-105 transition"></div>
+                    <div id="pf-avatar" class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#00A89A] to-[#05364F] text-white flex items-center justify-center text-xl font-bold shadow-lg"></div>
                     <div><h2 id="pf-name" class="text-2xl font-black text-[#05364F] font-heading leading-tight">NOME</h2><p class="text-xs font-bold text-[#C5A059] uppercase tracking-wider mt-1"><span id="pf-obj">OBJETIVO</span> • <span id="pf-plan">PLANO</span></p></div>
                 </div>
                 <div class="flex items-center gap-2">
@@ -745,27 +672,45 @@
                     <button onclick="document.getElementById('profile-modal').style.display='none'" class="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center transition"><i data-lucide="x" class="w-5 h-5 text-slate-500"></i></button>
                 </div>
             </div>
-            <div class="p-8 overflow-y-auto space-y-8 bg-slate-50/50 flex-grow">
+            <div class="p-8 overflow-y-auto space-y-8 bg-slate-50 flex-grow">
+                 
+                 <!-- CALENDAR -->
                  <div class="card-prime p-6 border-slate-200">
-                    <h3 class="text-xs font-bold text-slate-400 uppercase mb-4 flex items-center gap-2"><i data-lucide="calendar-days" class="w-4 h-4"></i> Frequência Semana Atual</h3>
-                    <div id="pf-week-grid" class="flex gap-3 overflow-x-auto pb-2"></div>
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xs font-bold text-slate-400 uppercase flex items-center gap-2"><i data-lucide="calendar-days" class="w-4 h-4"></i> Histórico de Frequência</h3>
+                        <div class="flex items-center gap-4">
+                            <button onclick="changeProfileMonth(-1)" class="w-8 h-8 flex items-center justify-center hover:bg-slate-100 rounded-full"><i data-lucide="chevron-left" class="w-4 h-4 text-slate-400"></i></button>
+                            <span id="pf-cal-title" class="text-sm font-bold text-[#05364F] uppercase w-32 text-center">JANEIRO 2026</span>
+                            <button onclick="changeProfileMonth(1)" class="w-8 h-8 flex items-center justify-center hover:bg-slate-100 rounded-full"><i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i></button>
+                        </div>
+                    </div>
+                    <div class="pf-cal-grid" id="pf-calendar"></div>
+                    <div id="pf-selected-workout" class="selected-workout-display" style="display:none;"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="p-6 rounded-2xl bg-red-50 border border-red-100">
+                        <h4 class="font-bold text-red-700 mb-2 flex items-center gap-2 text-sm uppercase"><i data-lucide="alert-triangle" class="w-4 h-4"></i> Limitações</h4>
+                        <ul id="pf-lim-list" class="space-y-3 text-sm text-red-800 font-medium mb-2"></ul>
+                        <span id="pf-lim-meta" class="last-update-lbl text-red-400"></span>
+                    </div>
+                    <div class="p-6 rounded-2xl bg-blue-50 border border-blue-100">
+                        <h4 class="font-bold text-blue-700 mb-2 flex items-center gap-2 text-sm uppercase"><i data-lucide="clipboard-list" class="w-4 h-4"></i> Observações</h4>
+                        <ul id="pf-obs-list" class="space-y-3 text-sm text-blue-800 font-medium mb-2"></ul>
+                        <span id="pf-obs-meta" class="last-update-lbl text-blue-400"></span>
+                    </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="p-6 rounded-2xl bg-red-50 border border-red-100"><h4 class="font-bold text-red-700 mb-4 flex items-center gap-2 text-sm uppercase"><i data-lucide="alert-triangle" class="w-4 h-4"></i> Limitações</h4><ul id="pf-lim-list" class="space-y-3 text-sm text-red-800 font-medium"></ul></div>
-                    <div class="p-6 rounded-2xl bg-blue-50 border border-blue-100"><h4 class="font-bold text-blue-700 mb-4 flex items-center gap-2 text-sm uppercase"><i data-lucide="clipboard-list" class="w-4 h-4"></i> Observações</h4><ul id="pf-obs-list" class="space-y-3 text-sm text-blue-800 font-medium"></ul></div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="card-prime p-6"><h4 class="text-xs font-bold text-slate-500 uppercase mb-4 text-center">Histórico de Presença</h4><div class="h-60"><canvas id="chart-freq"></canvas></div></div>
+                    <div class="card-prime p-6"><h4 class="text-xs font-bold text-slate-500 uppercase mb-4 text-center">Histórico de Presença (30 dias)</h4><div class="h-60"><canvas id="chart-freq"></canvas></div></div>
                     <div class="card-prime p-6"><h4 class="text-xs font-bold text-slate-500 uppercase mb-4 text-center">Músculos Trabalhados</h4><div class="h-60 relative flex justify-center"><canvas id="chart-workouts"></canvas></div></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL CLOUD & PROF (Minimal) -->
+    <!-- MODAL CLOUD -->
     <div id="modal-cloud" class="modal-overlay">
         <div class="modal-card text-center">
-            <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce"><i data-lucide="database" class="w-8 h-8 text-[#00A89A]"></i></div>
             <h3 class="text-xl font-bold text-[#05364F] mb-1 font-heading">Central de Dados</h3>
             <p class="text-sm text-slate-400 mb-6">Sincronização & Backup</p>
             <div class="space-y-3">
@@ -776,8 +721,6 @@
                 </div>
                 <div class="h-px bg-slate-100 my-4"></div>
                 <button onclick="backupData()" class="w-full py-3 rounded-xl bg-[#05364F] text-white font-bold hover:bg-[#032435] flex justify-center gap-2 transition hover:-translate-y-1 shadow-md"><i data-lucide="download" class="w-4 h-4"></i> FAZER BACKUP (JSON)</button>
-                
-                <!-- BOTÃO RESTAURAR -->
                 <label class="w-full py-3 rounded-xl border-2 border-slate-200 text-slate-600 font-bold hover:bg-slate-50 cursor-pointer flex justify-center gap-2 transition"><i data-lucide="upload" class="w-4 h-4"></i> RESTAURAR BACKUP <input type="file" id="fileIn" hidden onchange="restoreData(this)"></label>
             </div>
             <button onclick="document.getElementById('modal-cloud').style.display='none'" class="mt-6 text-xs font-bold text-slate-400 hover:text-slate-600">FECHAR</button>
@@ -800,7 +743,7 @@
         </div>
     </div>
 
-    <!-- MODAL WORKOUT MANAGER (NOVO) -->
+    <!-- MODAL WORKOUT MANAGER -->
     <div id="workout-modal" class="modal-overlay">
         <div class="modal-card max-w-sm">
              <div class="flex justify-between items-center mb-4"><h3 class="font-bold text-[#05364F]">Gerenciar Treinos</h3><button onclick="closeWorkoutModal()"><i data-lucide="x" class="w-5 h-5 hover:scale-110 transition"></i></button></div>
@@ -812,9 +755,9 @@
     <div id="toast" class="fixed bottom-6 right-6 bg-[#05364F] text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-4 z-[110] translate-x-[150%] transition-transform duration-300 border-l-4 border-[#C5A059]"><i data-lucide="check-circle" class="w-6 h-6 text-[#C5A059]"></i> <span id="toast-msg" class="font-bold"></span></div>
 
     <script>
-        // --- MASTER CONFIG (BENAI STANDARD PROTOCOL) ---
-        const DB_KEY = 'BENAI_PRIME_MASTER'; // Chave Mestra Segura
-        const TOKEN_KEY = 'BENAI_GLOBAL_TOKEN'; // Token Global
+        // --- MASTER CONFIG ---
+        const DB_KEY = 'BENAI_PRIME_MASTER'; 
+        const TOKEN_KEY = 'BENAI_GLOBAL_TOKEN'; 
         const GIST_DESC = 'BENAI_WORK_DB';
         const GIST_FILENAME = 'prime_db.json';
         
@@ -826,6 +769,9 @@
         let charts = {}; 
         let gistId = null;
         let selectedHours = new Set();
+        let profileViewDate = new Date(); // New state for profile calendar
+        let currentProfileId = null; // Track current profile for calendar navigation
+        let isCalendarExpanded = false; // State for calendar view mode
         
         const INITIAL_PROFS = [
             {name: 'BENJAMIN', role: 'PRO'}, 
@@ -836,242 +782,195 @@
             {name: 'MURILO', role: 'EST'}
         ];
         const INITIAL_WORKOUTS = ["QUADRICEPS","POSTERIOR/GLÚTEO","PEITO/TRÍCEPS/OMBRO","COSTAS/BÍCEPS/ANTEBRAÇO","FULL BODY","MMSS","MMII","CORE","AERÓBICO","AVALIAÇÃO"];
-        const INITIAL_STUDENTS = [
-             {"id":"1","firstName":"NILTON","lastName":"FLORIANO","nickname":"","gender":"M","objective":"GANHAR MASSA","limitations":"HERNIA INGUINAL","notes":"GOSTA DE FAZER BURPEES AO FINAL DA AULA","plan":"3X"},
-            {"id":"2","firstName":"LINDAMIR","lastName":"FLORIANO","nickname":"MIME","gender":"F","objective":"EMAGRECIMENTO","limitations":"NENHUMA","notes":"","plan":"3X"},
-        ];
+        const INITIAL_STUDENTS = [];
 
-        // GENDER DATABASE (DEEP RESEARCH)
         const MALE_EXCEPTIONS = ['luca','lucas','jean','gian','ryan','yan','kaue','caue','joshua','noah','elijah','sasa','zeca','juca','akira','mika','sasha','nicolas','nicolau','andrea','rene','michel','raigha','koda'];
-        const FEMALE_NAMES = [
-            'alice','ana','beatriz','bianca','camila','carolina','clara','daniela','eduarda','elena','elisa','fernanda','gabriela','helena','isabela','julia','larissa','laura','leticia','luana','luiza','manuela','maria','mariana','melissa','natalia','nicole','olivia','rafaela','rebeca','sarah','sophia','valentina','vitoria','yasmin','amanda','bruna','jessica','juliana','marcela','priscila','renata','vanessa','talita','lindamir','simone','ivone','solange',
-            'agatha','agnes','aide','alanis','alessandra','alexandra','aline','andressa','angelica','antonella','ariane','arlete','aurora','barbara','bernadete','betina','betania','brenda','brigite','carla','carmen','catarina','cecilia','celia','chloe','cibele','clarice','clarissa','cleide','cleo','consuelo','cristiane','cristina','daiane','dalila','damaris','debora','deise','denise','dirce','dolores','dora','doris','dulce','edite','elaine','elen','eliana','elizabeth','eloa','emanuelle','emilia','emily','ester','estela','eunice','eva','fabiana','fatima','franciele','francine','gabrielle','geni','giovana','giulia','gisele','glauce','graciela','guiomar','haydee','hebe','heloisa','ianca','iara','ilda','inaie','india','ines','ingrid','ione','iracema','irene','iris','isabel','isis','ivana','ivete','izabel','jaciara','janaina','janete','jaqueline','joana','joice','josiane','joyce','judite','jussara','karen','karina','katia','kelly','lais','lana','lara','lavinia','leia','leila','lenir','leonor','lidia','ligia','lilian','lis','livia','lorena','louise','luara','luciana','lucy','ludmila','lurdes','luzia','mabel','madalena','maisa','maite','malu','mara','marcia','margarida','mari','maribel','marilei','marilia','marina','marisa','marta','matilde','maya','mayara','mercedes','micaela','milena','mirela','miriam','moema','monica','monique','nair','nanci','naomi','nara','neide','neuza','nivea','noemi','norma','odete','olga','paloma','pamela','patricia','paula','penelope','pietra','poliana','rachel','raissa','raquel','regina','rita','roberta','rosa','rosana','rosangela','roseli','rosemary','ruth','sabrina','samanta','samara','sandra','selma','sheila','shirley','silvana','silvia','sofia','sonia','stefany','sueli','suzana','taina','tais','tamara','tania','tatiane','telma','teresa','thais','uidara','valeria','vania','vera','veronica','vivian','viviane','wanda','wilma','yara','yolanda','zilda','zuleide','zulmira', 'raquel', 'ester', 'ruth', 'lis', 'tais', 'iris', 'ines', 'lourdes', 'mirtes', 'gladis'
-        ];
+        const FEMALE_NAMES = ['alice','ana','beatriz','bianca','camila','carolina','clara','daniela','eduarda','elena','elisa','fernanda','gabriela','helena','isabela','julia','larissa','laura','leticia','luana','luiza','manuela','maria','mariana','melissa','natalia','nicole','olivia','rafaela','rebeca','sarah','sophia','valentina','vitoria','yasmin','amanda','bruna','jessica','juliana','marcela','priscila','renata','vanessa','talita','lindamir','simone','ivone','solange'];
         
-        // --- INIT LOGIC (SECURITY PROTOCOL) ---
+        // --- INIT LOGIC ---
         async function init() {
             const shield = document.getElementById('cloud-shield');
             const hasToken = localStorage.getItem(TOKEN_KEY);
             let loadedFromCloud = false;
 
-            // 1. Setup UI
             if(hasToken) {
-                document.getElementById('manualToken').value = hasToken;
-                document.getElementById('gk-token').value = hasToken;
+                const el = document.getElementById('manualToken');
+                if(el) el.value = hasToken;
+                const gk = document.getElementById('gk-token');
+                if(gk) gk.value = hasToken;
             }
             
-            // Fix Date to Today (Local) & Set Agenda
             const today = new Date();
             const todayLocal = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
-            
-            const dateEl = document.getElementById('ag-date');
-            const ciDateEl = document.getElementById('ci-date');
-            
-            if(dateEl) dateEl.value = todayLocal;
-            if(ciDateEl) ciDateEl.value = todayLocal;
+            const ag = document.getElementById('ag-date');
+            if(ag) ag.value = todayLocal;
+            const ci = document.getElementById('ci-date');
+            if(ci) ci.value = todayLocal;
 
-            // 2. Cloud First
             if(hasToken) {
                 updateCloudStatus('syncing');
-                try {
-                    loadedFromCloud = await forceCloudLoad();
-                } catch(e) { console.error("Cloud error", e); updateCloudStatus('error'); }
+                try { loadedFromCloud = await forceCloudLoad(); } catch(e) { console.error("Cloud error", e); updateCloudStatus('error'); }
             }
 
-            // 3. Local Fallback (NO MIGRATION LOGIC HERE - Pure Master Load)
             if(!loadedFromCloud) {
                 const saved = localStorage.getItem(DB_KEY);
-                if(saved) {
-                    try { db = JSON.parse(saved); } catch(e) {}
-                } else {
-                    // Empty state waiting for Restore
-                    db = { students: INITIAL_STUDENTS, checkins: [], professors: INITIAL_PROFS, workouts: INITIAL_WORKOUTS };
-                }
+                if(saved) try { db = JSON.parse(saved); } catch(e) {}
+                else db = { students: INITIAL_STUDENTS, checkins: [], professors: INITIAL_PROFS, workouts: INITIAL_WORKOUTS };
                 updateCloudStatus('offline');
             }
 
-            // 4. Close Shield
-            shield.style.opacity = '0';
-            setTimeout(() => shield.style.display = 'none', 500);
+            if(shield) {
+                shield.style.opacity = '0';
+                setTimeout(() => shield.style.display = 'none', 500);
+            }
 
-            // 5. App Setup
             if (loadedFromCloud) toast('Nuvem Sincronizada!');
             else if (hasToken) toast('Offline (Usando cache)');
 
-            lucide.createIcons();
+            if(window.lucide) lucide.createIcons();
             setTab('daily');
             setupTimeDropdown(); 
             setupReportFilter(); 
             setupCheckinForm(); 
-            
-            // Force Render Agenda with today's date
             renderAgenda();
             
-            // Clock
             setInterval(() => {
                 const el = document.getElementById('live-clock');
                 if(el) el.innerText = new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
             }, 1000);
             
-            Chart.defaults.font.family = "'Inter', sans-serif";
-            Chart.defaults.color = '#94a3b8';
-            Chart.defaults.scale.grid.color = 'rgba(255,255,255,0.05)';
+            if(window.Chart) {
+                Chart.defaults.font.family = "'Inter', sans-serif";
+                Chart.defaults.color = '#94a3b8';
+                Chart.defaults.scale.grid.color = 'rgba(0,0,0,0.05)';
+            }
         }
 
+        function checkAuth() {
+            if (sessionStorage.getItem("benai_auth") === "true") {
+                const gk = document.getElementById('gatekeeper');
+                const app = document.getElementById('app-content');
+                if(gk) gk.style.display = 'none';
+                if(app) app.style.display = 'block';
+                // Safe Init Call
+                try { init(); } catch(e) { console.error("Init failed", e); }
+            }
+        }
+
+        function attemptLogin() {
+            try {
+                const uEl = document.getElementById('userInput');
+                const pEl = document.getElementById('passInput');
+                if (!uEl || !pEl) { console.error("Inputs not found"); return; }
+                
+                const user = uEl.value.toUpperCase().trim();
+                const pass = pEl.value.trim();
+                const errEl = document.getElementById('loginError');
+
+                if (pass === MASTER_PIN || (user === STAFF_USER && pass === STAFF_PASS)) {
+                    sessionStorage.setItem("benai_auth", "true");
+                    checkAuth();
+                } else {
+                    if(errEl) {
+                        errEl.innerText = "Credenciais Inválidas";
+                        setTimeout(() => errEl.innerText = "", 2000);
+                    }
+                    pEl.value = "";
+                }
+            } catch (e) {
+                console.error("Login Error", e);
+                alert("Erro no login: " + e.message);
+            }
+        }
+        
         async function forceCloudLoad() {
             const token = localStorage.getItem(TOKEN_KEY);
             if (!token) return false;
-            
-            const headers = { 'Authorization': `token ${token}` };
             try {
-                const res = await fetch('https://api.github.com/gists', { headers });
+                const res = await fetch('https://api.github.com/gists', { headers: { 'Authorization': `token ${token}` } });
                 if (!res.ok) return false;
-                
                 const gists = await res.json();
                 const found = gists.find(g => g.description === GIST_DESC);
-                
                 if (found) {
                     gistId = found.id;
-                    const r = await fetch(found.url, { headers });
+                    const r = await fetch(found.url, { headers: { 'Authorization': `token ${token}` } });
                     const data = await r.json();
-                    
                     if (data.files[GIST_FILENAME]) {
-                        const cloudData = JSON.parse(data.files[GIST_FILENAME].content);
-                        db = cloudData;
+                        db = JSON.parse(data.files[GIST_FILENAME].content);
                         localStorage.setItem(DB_KEY, JSON.stringify(db));
                         return true;
                     }
                 }
-            } catch (e) { console.error("Cloud Error", e); return false; }
+            } catch (e) { return false; }
             return false;
         }
 
         async function saveDB() {
             db.lastUpdated = Date.now();
             localStorage.setItem(DB_KEY, JSON.stringify(db));
-            
-            // Sync logic
             const token = localStorage.getItem(TOKEN_KEY);
             if(token) {
                 updateCloudStatus('syncing');
                 try {
-                    // Check if Gist ID exists
                     if(!gistId) {
                          const s = await fetch('https://api.github.com/gists',{headers:{'Authorization':`token ${token}`}});
                          const g = await s.json();
                          const f = g.find(x=>x.description===GIST_DESC);
                          if(f) gistId = f.id;
                     }
-
-                    const filesPayload = {};
-                    filesPayload[GIST_FILENAME] = { content: JSON.stringify(db) };
-                    const body = JSON.stringify({ description: GIST_DESC, public: false, files: filesPayload });
-                    
+                    const body = JSON.stringify({ description: GIST_DESC, public: false, files: {[GIST_FILENAME]: { content: JSON.stringify(db) } } });
                     let url = 'https://api.github.com/gists';
-                    let method = 'POST';
-                    if(gistId) { url += '/' + gistId; method = 'PATCH'; }
-
-                    await fetch(url, { method, headers: {'Authorization': `token ${token}`}, body });
+                    if(gistId) url += '/' + gistId;
+                    await fetch(url, { method: gistId ? 'PATCH' : 'POST', headers: {'Authorization': `token ${token}`}, body });
                     updateCloudStatus('ok');
-                } catch(e) {
-                    console.error(e);
-                    updateCloudStatus('error');
-                }
+                } catch(e) { updateCloudStatus('error'); }
             }
         }
 
-        // --- RESTORE LOGIC (THE FIX) ---
         function restoreData(i) { 
             const r=new FileReader(); 
             r.onload=e=>{ 
                 try { 
                     const recovered = JSON.parse(e.target.result);
-                    // Minimal validation
-                    if (!recovered.students && !recovered.checkins) throw new Error("Invalid Format");
-                    
-                    if(confirm("Confirmar restauração? Isso substituirá os dados atuais.")) {
+                    if(confirm("Restaurar backup?")) {
                         db = recovered;
-                        // Ensure structure updates
-                        if(!db.professors || db.professors.length === 0) db.professors = INITIAL_PROFS;
-                        if(!db.workouts || db.workouts.length === 0) db.workouts = INITIAL_WORKOUTS;
-                        
-                        // Force Save to NEW Master Key and Sync
-                        saveDB(); 
-                        alert("Dados restaurados com sucesso! O sistema foi atualizado.");
-                        location.reload(); 
+                        if(!db.professors) db.professors = INITIAL_PROFS;
+                        saveDB(); location.reload(); 
                     }
-                } catch(err) {
-                    alert('Erro ao ler arquivo JSON. Verifique se é um backup válido.');
-                } 
+                } catch(err) { alert('Erro ao ler arquivo.'); } 
             }; 
             r.readAsText(i.files[0]); 
         }
 
-        // --- HELPERS ---
         function inferGender(name) {
             if(!name) return 'M';
             const parts = name.toLowerCase().trim().split(' ');
-            const n = parts[0]; // First name logic
-            
+            const n = parts[0];
             if (MALE_EXCEPTIONS.includes(n)) return 'M';
             if (FEMALE_NAMES.includes(n)) return 'F';
-            
-            // Logic rules for unknown names
             if (n.endsWith('a') || n.endsWith('elly') || n.endsWith('ele') || n.endsWith('ine') || n.endsWith('iz')) return 'F';
-            
             return 'M';
         }
 
         function getDisplayName(s) {
             if(!s) return "Desconhecido";
             if(s.firstName) return `${s.firstName} ${s.lastName || ''}`.trim();
-            if(s.name) return s.name; // Legacy fallback
+            if(s.name) return s.name; 
             return "Sem Nome";
         }
 
         function getProfColor(name) {
             if(!name) return 'background: #94a3b8;';
             const n = name.toUpperCase().trim();
-            if(n.includes('BENAI')) return 'background: #2563eb;'; // Blue
-            if(n.includes('JUAN')) return 'background: #7c3aed;'; // Purple
-            if(n.includes('LUANA')) return 'background: #db2777;'; // Pink
-            if(n.includes('MATHEUS')) return 'background: #059669;'; // Emerald
-            if(n.includes('MURILO')) return 'background: #d97706;'; // Amber
-            
-            // Hash for others
-            let hash = 0;
-            for (let i = 0; i < n.length; i++) {
-                hash = n.charCodeAt(i) + ((hash << 5) - hash);
-            }
-            const c = (hash & 0x00FFFFFF).toString(16).toUpperCase();
-            return `background: #${"00000".substring(0, 6 - c.length) + c};`;
-        }
-
-        // AUTH
-        function checkAuth() {
-            if (sessionStorage.getItem("benai_auth") === "true") {
-                document.getElementById('gatekeeper').style.display = 'none';
-                document.getElementById('app-content').style.display = 'block';
-                init(); // Start Protocol
-            }
-        }
-
-        function attemptLogin() {
-            const user = document.getElementById('userInput').value.toUpperCase().trim();
-            const pass = document.getElementById('passInput').value.trim();
-            const err = document.getElementById('loginError');
-
-            if (pass === MASTER_PIN || (user === STAFF_USER && pass === STAFF_PASS)) {
-                sessionStorage.setItem("benai_auth", "true");
-                checkAuth();
-            } else {
-                err.innerText = "Credenciais Inválidas";
-                document.getElementById('passInput').value = "";
-                setTimeout(() => err.innerText = "", 2000);
-            }
+            if(n.includes('BENAI')) return 'background: #2563eb;';
+            if(n.includes('JUAN')) return 'background: #7c3aed;';
+            if(n.includes('LUANA')) return 'background: #db2777;';
+            if(n.includes('MATHEUS')) return 'background: #059669;';
+            if(n.includes('MURILO')) return 'background: #d97706;';
+            let hash = 0; for (let i=0; i<n.length; i++) hash = n.charCodeAt(i) + ((hash << 5) - hash);
+            return `background: #${"00000".substring(0, 6 - (hash & 0x00FFFFFF).toString(16).toUpperCase().length) + (hash & 0x00FFFFFF).toString(16).toUpperCase()};`;
         }
         
-        // --- NEW: TOKEN NO GATEKEEPER MODAL ---
         function openGatekeeperConfig() {
             document.getElementById('gk-config-modal').style.display = 'flex';
             document.getElementById('gk-token').value = localStorage.getItem(TOKEN_KEY) || '';
@@ -1081,145 +980,84 @@
             const t = document.getElementById('gk-token').value.trim();
             if(t) {
                 localStorage.setItem(TOKEN_KEY, t);
-                init(); // Trigger sync logic
+                init();
                 document.getElementById('gk-config-modal').style.display = 'none';
-                alert("Token salvo e sincronização iniciada!");
+                alert("Token salvo!");
             }
         }
 
-        checkAuth(); // Run on load
+        checkAuth();
 
         function setTab(id) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
             document.getElementById('view-'+id).classList.remove('hidden');
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('btn-'+id).classList.add('active');
-            
-            if(id === 'daily') {
-                setupCheckinForm();
-                renderAgenda();
-            }
+            if(id === 'daily') { setupCheckinForm(); renderAgenda(); }
             if(id === 'students') renderStudentsTable();
             if(id === 'reports') renderReports();
-            lucide.createIcons();
+            if(window.lucide) lucide.createIcons();
         }
 
         function setupCheckinForm() {
             cancelEdit();
-            // Ensure date is set even if switching tabs
             if(!document.getElementById('ci-date').value) {
                 const today = new Date();
                 const todayLocal = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
                 document.getElementById('ci-date').value = todayLocal;
-                handleDateChange(todayLocal); // Set initial hours
-            } else {
-                handleDateChange(document.getElementById('ci-date').value);
-            }
+                handleDateChange(todayLocal); 
+            } else { handleDateChange(document.getElementById('ci-date').value); }
 
-            // Clear search input
             document.getElementById('ci-search-input').value = "";
             document.getElementById('ci-student-id').value = "";
-            document.getElementById('ci-week-stats').innerHTML = ""; 
+            document.getElementById('ci-week-list-container').innerHTML = ""; 
             document.getElementById('ci-week-stats').classList.add('hidden');
             
-            // Populate Profs (Grouped) with Icons
-            const pEl = document.getElementById('ci-prof'); 
-            pEl.innerHTML = '';
-            
-            if(!db.professors) db.professors = [];
-
+            const pEl = document.getElementById('ci-prof'); pEl.innerHTML = '';
             const profs = db.professors.filter(p => p.role === 'PRO').sort((a,b) => a.name.localeCompare(b.name));
             const ests = db.professors.filter(p => p.role === 'EST').sort((a,b) => a.name.localeCompare(b.name));
-            
-            if(profs.length > 0) {
-                const grp = document.createElement('optgroup'); grp.label = "PROFESSORES";
-                profs.forEach(p => grp.appendChild(new Option(`🎓 ${p.name}`, p.name)));
-                pEl.appendChild(grp);
-            }
-            if(ests.length > 0) {
-                const grp = document.createElement('optgroup'); grp.label = "ESTAGIÁRIOS";
-                ests.forEach(p => grp.appendChild(new Option(`📝 ${p.name}`, p.name)));
-                pEl.appendChild(grp);
-            }
-            
+            if(profs.length) { const grp=document.createElement('optgroup'); grp.label="PROFESSORES"; profs.forEach(p=>grp.appendChild(new Option(`🎓 ${p.name}`, p.name))); pEl.appendChild(grp); }
+            if(ests.length) { const grp=document.createElement('optgroup'); grp.label="ESTAGIÁRIOS"; ests.forEach(p=>grp.appendChild(new Option(`📝 ${p.name}`, p.name))); pEl.appendChild(grp); }
             renderWorkoutsSelect();
         }
 
-        // --- DATE & TIME LOGIC ---
         function handleDateChange(dateStr) {
             if(!dateStr) return;
-            const date = new Date(dateStr + 'T00:00:00'); // Force local time interpretation
-            const day = date.getDay(); // 0 = Sunday, 6 = Saturday
-            
+            const date = new Date(dateStr + 'T00:00:00');
+            const day = date.getDay();
             const tEl = document.getElementById('ci-time');
             const currentVal = tEl.value;
             tEl.innerHTML = '';
-
-            if (day === 0) {
-                alert("Domingo não há expediente.");
-                document.getElementById('ci-date').value = "";
-                return;
-            }
-
-            let startH = 6;
-            let endH = 21;
-
-            if (day === 6) { // Saturday logic
-                startH = 8;
-                endH = 11;
-            }
-
+            if (day === 0) { alert("Domingo não há expediente."); document.getElementById('ci-date').value = ""; return; }
+            let startH = 6, endH = 21;
+            if (day === 6) { startH = 8; endH = 11; }
             for(let h=startH; h<=endH; h++) { 
                 const opt = new Option(`${h}:00`, `${h}H`); 
                 if(!currentVal && h === new Date().getHours()) opt.selected = true; 
                 tEl.add(opt); 
             }
-            // Preserve value if valid
-            if(currentVal) {
-                const numVal = parseInt(currentVal);
-                if(numVal >= startH && numVal <= endH) tEl.value = currentVal;
-            }
+            if(currentVal) { const numVal=parseInt(currentVal); if(numVal>=startH && numVal<=endH) tEl.value = currentVal; }
         }
 
-        // --- STUDENT SEARCH (AUTOCOMPLETE) ---
         function filterStudentSearch() {
             const input = document.getElementById('ci-search-input');
             const list = document.getElementById('ci-search-results');
             const term = input.value.toLowerCase();
-            
-            // Clear logic if input is empty
-            if(!term) {
-                document.getElementById('ci-student-id').value = "";
-                handleStudentSelection(null); // Clear stats/alerts
-                list.style.display = 'none';
-                return;
-            }
-
+            if(!term) { document.getElementById('ci-student-id').value = ""; handleStudentSelection(null); list.style.display = 'none'; return; }
             list.innerHTML = '';
-            if(!term && document.activeElement !== input) {
-                list.style.display = 'none';
-                return;
-            }
-
-            const matches = db.students.filter(s => {
-                const full = getDisplayName(s).toLowerCase();
-                return full.includes(term);
-            }).sort((a,b) => getDisplayName(a).localeCompare(getDisplayName(b)));
-
+            const matches = db.students.filter(s => getDisplayName(s).toLowerCase().includes(term)).sort((a,b) => getDisplayName(a).localeCompare(getDisplayName(b)));
             if(matches.length > 0) {
                 list.style.display = 'block';
                 matches.forEach(s => {
                     const div = document.createElement('div');
                     div.className = 'search-result-item';
-                    const sGender = s.gender || inferGender(s.firstName); // Ensure we use updated logic
+                    const sGender = s.gender || inferGender(s.firstName);
                     const icon = sGender === 'F' ? '<i class="fa-solid fa-person-dress text-pink-400"></i>' : '<i class="fa-solid fa-person text-blue-400"></i>';
                     div.innerHTML = `<span>${icon} ${getDisplayName(s)}</span>`;
                     div.onclick = () => selectStudentFromSearch(s);
                     list.appendChild(div);
                 });
-            } else {
-                list.style.display = 'none';
-            }
+            } else list.style.display = 'none';
         }
 
         function selectStudentFromSearch(s) {
@@ -1231,44 +1069,27 @@
 
         document.addEventListener('click', function(e) {
             const wrapper = document.querySelector('.search-select-wrapper');
-            if (wrapper && !wrapper.contains(e.target)) {
-                document.getElementById('ci-search-results').style.display = 'none';
-            }
+            if (wrapper && !wrapper.contains(e.target)) document.getElementById('ci-search-results').style.display = 'none';
         });
 
-        // --- TIME FILTER LOGIC (MULTI-SELECT) ---
         function setupTimeDropdown() {
             const container = document.getElementById('time-checkboxes');
             if(!container) return;
             container.innerHTML = '';
             for(let h=6; h<=21; h++) {
                 const val = `${h}H`;
-                container.innerHTML += `
-                    <div class="cb-item" onclick="toggleTimeSelection('${val}')">
-                        <input type="checkbox" id="cb-${val}" value="${val}" onclick="event.stopPropagation(); toggleTimeSelection('${val}')">
-                        <label>${val}</label>
-                    </div>`;
+                container.innerHTML += `<div class="cb-item" onclick="toggleTimeSelection('${val}')"><input type="checkbox" id="cb-${val}" value="${val}" onclick="event.stopPropagation(); toggleTimeSelection('${val}')"><label>${val}</label></div>`;
             }
         }
 
-        function toggleTimeDropdown() {
-            const dd = document.getElementById('time-dropdown-content');
-            dd.classList.toggle('show');
-        }
-
+        function toggleTimeDropdown() { document.getElementById('time-dropdown-content').classList.toggle('show'); }
         function toggleTimeSelection(val) {
             const cb = document.getElementById(`cb-${val}`);
             if(event.target.tagName !== 'INPUT') cb.checked = !cb.checked;
             if(cb.checked) selectedHours.add(val); else selectedHours.delete(val);
             updateTimeButtonLabel(); renderAgenda();
         }
-
-        function clearTimeFilter() {
-            selectedHours.clear();
-            document.querySelectorAll('#time-checkboxes input').forEach(c => c.checked = false);
-            updateTimeButtonLabel(); renderAgenda();
-        }
-
+        function clearTimeFilter() { selectedHours.clear(); document.querySelectorAll('#time-checkboxes input').forEach(c => c.checked = false); updateTimeButtonLabel(); renderAgenda(); }
         function updateTimeButtonLabel() {
             const btn = document.getElementById('btn-time-filter').querySelector('span');
             if(selectedHours.size === 0) btn.innerText = "Todos Horários";
@@ -1276,17 +1097,12 @@
             else btn.innerText = `${selectedHours.size} Horários`;
         }
 
-        // --- WORKOUT MANAGEMENT ---
         function renderWorkoutsSelect() {
             const wEl = document.getElementById('ci-workout');
             const current = wEl.value;
             wEl.innerHTML = '';
             if(!db.workouts) db.workouts = INITIAL_WORKOUTS;
-            
-            // Sort Alphabetically
-            const sortedWorkouts = [...db.workouts].sort((a,b) => a.localeCompare(b));
-            
-            sortedWorkouts.forEach(w => wEl.add(new Option(w, w)));
+            [...db.workouts].sort().forEach(w => wEl.add(new Option(w, w)));
             wEl.add(new Option('OUTRO...', 'OUTRO'));
             if(current) wEl.value = current;
         }
@@ -1296,53 +1112,52 @@
         function renderWorkoutListUI() {
             const l = document.getElementById('workout-list'); l.innerHTML = '';
             [...db.workouts].sort().forEach((w, i) => {
-                // Find original index
                 const originalIdx = db.workouts.indexOf(w);
                 l.innerHTML += `<li class="flex justify-between items-center p-3 bg-slate-50 text-sm font-bold text-[#05364F] rounded-lg"><span>${w}</span><div class="flex gap-2"><i data-lucide="pencil" onclick="editWorkout(${originalIdx})" class="w-4 h-4 text-blue-400 cursor-pointer hover:text-blue-600"></i><i data-lucide="trash" onclick="deleteWorkout(${originalIdx})" class="w-4 h-4 text-red-400 cursor-pointer hover:text-red-600"></i></div></li>`;
             });
-            lucide.createIcons();
+            if(window.lucide) lucide.createIcons();
         }
-        function addWorkout() {
-            const n = document.getElementById('new-workout-name').value.toUpperCase().trim();
-            if(n && !db.workouts.includes(n)) { db.workouts.push(n); saveDB(); renderWorkoutListUI(); document.getElementById('new-workout-name').value = ''; }
-        }
+        function addWorkout() { const n = document.getElementById('new-workout-name').value.toUpperCase().trim(); if(n && !db.workouts.includes(n)) { db.workouts.push(n); saveDB(); renderWorkoutListUI(); document.getElementById('new-workout-name').value = ''; } }
         function editWorkout(index) {
             const oldName = db.workouts[index];
-            const newName = prompt("Novo nome para o treino (Alterará histórico):", oldName);
+            const newName = prompt("Novo nome:", oldName);
             if(newName && newName.toUpperCase().trim() !== oldName) {
                 const cleanName = newName.toUpperCase().trim();
                 db.workouts[index] = cleanName;
-                let count = 0;
-                db.checkins.forEach(c => { if(c.workout === oldName) { c.workout = cleanName; count++; } });
-                saveDB(); renderWorkoutListUI(); toast(`${count} registros atualizados.`);
+                db.checkins.forEach(c => { if(c.workout === oldName) c.workout = cleanName; });
+                saveDB(); renderWorkoutListUI();
             }
         }
-        function deleteWorkout(index) { if(confirm('Excluir este tipo de treino?')) { db.workouts.splice(index, 1); saveDB(); renderWorkoutListUI(); } }
+        function deleteWorkout(index) { if(confirm('Excluir?')) { db.workouts.splice(index, 1); saveDB(); renderWorkoutListUI(); } }
 
         function handleStudentSelection(id) {
             if(!id) {
                 document.getElementById('ci-alert').classList.add('hidden');
-                document.getElementById('ci-week-stats').innerHTML = "";
+                document.getElementById('ci-note-alert').classList.add('hidden');
                 document.getElementById('ci-week-stats').classList.add('hidden');
                 return;
             }
 
             const s = db.students.find(x => x.id === id);
             
-            // Alerts
+            // Limitations
             if (s && s.limitations && s.limitations !== 'NENHUMA') {
                 document.getElementById('ci-alert-text').innerText = s.limitations;
+                document.getElementById('ci-alert-meta').innerText = s.limitationsUpdate ? `Atualizado por ${s.limitationsUpdate.by} em ${new Date(s.limitationsUpdate.at).toLocaleDateString()}` : '';
                 document.getElementById('ci-alert').classList.remove('hidden');
-            } else { 
-                document.getElementById('ci-alert').classList.add('hidden'); 
-            }
+            } else document.getElementById('ci-alert').classList.add('hidden');
 
-            // --- WEEKLY FREQUENCY VISUAL (Vertical List) ---
-            renderWeeklyFrequency(id, 'ci-week-stats', 'list');
+            // Notes
+            if (s && s.notes) {
+                document.getElementById('ci-note-text').innerText = s.notes;
+                document.getElementById('ci-note-meta').innerText = s.notesUpdate ? `Atualizado por ${s.notesUpdate.by} em ${new Date(s.notesUpdate.at).toLocaleDateString()}` : '';
+                document.getElementById('ci-note-alert').classList.remove('hidden');
+            } else document.getElementById('ci-note-alert').classList.add('hidden');
+
+            renderWeeklyFrequency(id, 'ci-week-list-container', 'list');
             document.getElementById('ci-week-stats').classList.remove('hidden');
         }
 
-        // RENDER WEEKLY FREQUENCY - Supports 'grid' (Agenda Box) and 'list' (Check-in Vertical)
         function renderWeeklyFrequency(studentId, containerId, mode) {
             const container = document.getElementById(containerId);
             container.innerHTML = "";
@@ -1350,14 +1165,12 @@
             if(mode === 'list') container.className = "week-list-vertical";
             else container.className = "week-grid-box";
 
-            // Calculate Start of Current Week (Monday)
             const today = new Date();
-            const dayOfWeek = today.getDay(); // 0-6
+            const dayOfWeek = today.getDay();
             const diffToMon = (dayOfWeek === 0 ? -6 : 1) - dayOfWeek;
             const monday = new Date(today);
             monday.setDate(today.getDate() + diffToMon);
             const todayISO = today.toISOString().split('T')[0];
-
             const daysMap = ['SEG','TER','QUA','QUI','SEX','SÁB'];
 
             daysMap.forEach((label, i) => {
@@ -1365,34 +1178,20 @@
                 d.setDate(monday.getDate() + i);
                 const isoDate = d.toISOString().split('T')[0];
                 const displayDate = `${d.getDate()}/${d.getMonth()+1}`;
-                
-                // Find checkin
                 const checkin = db.checkins.find(c => c.studentId === studentId && c.isoDate === isoDate);
                 
-                let statusClass = "future"; 
-                let workoutLabel = "---";
+                let statusClass = "future"; let workoutLabel = "---";
                 if (checkin) { statusClass = "present"; workoutLabel = checkin.workout; }
-                else if (isoDate < todayISO) { statusClass = "absent"; workoutLabel = ""; } // Cleared Text
+                else if (isoDate < todayISO) { statusClass = "absent"; workoutLabel = ""; }
                 
                 if (mode === 'list') {
-                    // VERTICAL LIST FOR CHECK-IN PLAYER
-                    container.innerHTML += `
-                    <div class="wl-item ${statusClass}">
-                        <div class="wl-date">${displayDate} <span>${label}</span></div>
-                        <div class="wl-workout">${workoutLabel}</div>
-                    </div>`;
+                    container.innerHTML += `<div class="wl-item ${statusClass}"><div class="wl-date">${displayDate} <span>${label}</span></div><div class="wl-workout">${workoutLabel}</div></div>`;
                 } else {
-                    // GRID BOX FOR AGENDA DRAWER
-                    container.innerHTML += `
-                    <div class="wg-box-item ${statusClass}">
-                        <div class="day-lbl">${label} ${d.getDate()}</div>
-                        <div class="val-lbl" title="${workoutLabel}">${workoutLabel || '&nbsp;'}</div>
-                    </div>`;
+                    container.innerHTML += `<div class="wg-box-item ${statusClass}"><div class="day-lbl">${label} ${d.getDate()}</div><div class="val-lbl" title="${workoutLabel}">${workoutLabel || '&nbsp;'}</div></div>`;
                 }
             });
         }
 
-        // --- CHECKIN LOGIC ---
         function handleCheckin(e) {
             e.preventDefault();
             const sId = document.getElementById('ci-student-id').value;
@@ -1400,7 +1199,7 @@
             const sTime = document.getElementById('ci-time').value;
             const editId = document.getElementById('ci-edit-id').value;
 
-            if(!sId) return alert('Selecione um aluno da lista.');
+            if(!sId) return alert('Selecione um aluno.');
             if(!sDate) return alert('Selecione uma data');
 
             const duplicate = db.checkins.some(c => c.studentId === sId && c.isoDate === sDate && c.time === sTime && c.id !== editId);
@@ -1415,20 +1214,14 @@
             
             const s = db.students.find(x=>x.id===sId);
             const data = {
-                studentId: sId,
-                studentName: getDisplayName(s),
-                isoDate: sDate,
-                time: sTime,
-                workout: wk,
-                prof: document.getElementById('ci-prof').value
+                studentId: sId, studentName: getDisplayName(s), isoDate: sDate, time: sTime,
+                workout: wk, prof: document.getElementById('ci-prof').value
             };
 
             if(editId) {
                 const idx = db.checkins.findIndex(c => c.id === editId);
                 if(idx > -1) db.checkins[idx] = { ...db.checkins[idx], ...data };
-            } else {
-                db.checkins.push({ id: Date.now().toString(), ...data });
-            }
+            } else db.checkins.push({ id: Date.now().toString(), ...data });
 
             saveDB(); cancelEdit(); renderAgenda(); toast('Salvo!');
         }
@@ -1439,17 +1232,12 @@
             if(!item) return;
             document.getElementById('ci-edit-id').value = id;
             document.getElementById('ci-date').value = item.isoDate;
-            
-            // Handle day logic for time dropdown
             handleDateChange(item.isoDate);
-            
             document.getElementById('ci-time').value = item.time;
-            
             const s = db.students.find(x => x.id === item.studentId);
             document.getElementById('ci-search-input').value = s ? getDisplayName(s) : item.studentName;
             document.getElementById('ci-student-id').value = item.studentId;
             document.getElementById('ci-prof').value = item.prof;
-            
             if(db.workouts.includes(item.workout)) {
                 document.getElementById('ci-workout').value = item.workout;
                 document.getElementById('ci-custom').classList.add('hidden');
@@ -1471,7 +1259,7 @@
             renderWorkoutsSelect();
             document.getElementById('ci-custom').classList.add('hidden');
             document.getElementById('ci-alert').classList.add('hidden');
-            document.getElementById('ci-week-stats').innerHTML = ""; 
+            document.getElementById('ci-note-alert').classList.add('hidden');
             document.getElementById('ci-week-stats').classList.add('hidden');
             document.getElementById('form-title').innerText = "Novo Check-in";
             document.getElementById('edit-indicator').classList.add('hidden');
@@ -1485,100 +1273,73 @@
             }
         }
 
-        // --- AGENDA & DRAWER ---
         function renderAgenda() {
             const dt = document.getElementById('ag-date').value;
-            // REMOVED: const fullMonth = document.getElementById('ag-full-month').checked;
-            const specificMonth = document.getElementById('ag-month').value; // YYYY-MM
             const term = document.getElementById('ag-search').value.toLowerCase();
-
-            let list = [];
-
-            if (specificMonth) {
-                // Priority to specific month selector
-                list = db.checkins.filter(c => c.isoDate.startsWith(specificMonth));
-            } else {
-                // Day view
-                list = db.checkins.filter(c => c.isoDate === dt);
-            }
-            
-            // Apply Filters (Sunday remove logic if not filtered already)
-            list = list.filter(c => new Date(c.isoDate + 'T00:00:00').getDay() !== 0);
+            let list = db.checkins.filter(c => c.isoDate === dt && new Date(c.isoDate + 'T00:00:00').getDay() !== 0);
 
             if(selectedHours.size > 0) list = list.filter(c => selectedHours.has(c.time));
-            
-            if(term) {
-                list = list.filter(c => {
-                    const s = db.students.find(x => x.id === c.studentId);
-                    const name = s ? getDisplayName(s) : c.studentName;
-                    return name.toLowerCase().includes(term);
-                });
-            }
-            
-            list.sort((a,b) => {
-                if(a.isoDate !== b.isoDate) return a.isoDate.localeCompare(b.isoDate);
-                return parseInt(a.time) - parseInt(b.time);
+            if(term) list = list.filter(c => {
+                const s = db.students.find(x => x.id === c.studentId);
+                return (s ? getDisplayName(s) : c.studentName).toLowerCase().includes(term);
             });
+            
+            // SORT DESCENDING TIME (21H TOP)
+            list.sort((a,b) => parseInt(b.time) - parseInt(a.time));
 
             const tb = document.getElementById('agenda-body'); tb.innerHTML = '';
-            
-            if(list.length === 0) {
-                tb.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-slate-400 italic">Nenhum registro encontrado.</td></tr>';
-                return;
-            }
+            if(list.length === 0) { tb.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-slate-400 italic">Nenhum registro.</td></tr>'; return; }
 
-            let lastGroup = null; 
-            const isMonthView = !!specificMonth; 
+            let lastGroup = null;
+            
+            // Count students per hour for separator
+            const counts = {};
+            list.forEach(c => { counts[c.time] = (counts[c.time] || 0) + 1; });
 
             list.forEach(c => {
                 const s = db.students.find(x => x.id === c.studentId);
                 const displayName = getDisplayName(s);
                 const sGender = s ? (s.gender || inferGender(s.firstName)) : 'M';
-                const genderIcon = sGender === 'F' ? '<i class="fa-solid fa-person-dress text-pink-400 mr-2 text-lg"></i>' : '<i class="fa-solid fa-person text-blue-400 mr-2 text-lg"></i>';
+                const genderIcon = sGender === 'F' ? '<i class="fa-solid fa-person-dress text-pink-400 text-lg"></i>' : '<i class="fa-solid fa-person text-blue-400 text-lg"></i>';
                 
-                let groupKey = isMonthView ? c.isoDate : c.time;
-                let displayGroup = isMonthView ? c.isoDate.split('-').reverse().slice(0,2).join('/') : c.time;
-
-                if(groupKey !== lastGroup) {
-                    tb.innerHTML += `<tr class="time-separator-row"><td colspan="5"><div class="time-separator fade-in-up"><div class="time-line"></div><div class="time-pill">${displayGroup}</div><div class="time-line"></div></div></td></tr>`;
-                    lastGroup = groupKey;
+                if (c.time !== lastGroup) {
+                    tb.innerHTML += `<tr class="time-separator-row"><td colspan="5"><div class="time-separator"><div class="time-line"></div><div class="time-pill">${c.time} (${counts[c.time]} ALUNOS)</div><div class="time-line"></div></div></td></tr>`;
+                    lastGroup = c.time;
                 }
-                
-                // Prime KIDS Check
-                let rowClass = "agenda-row fade-in-up";
-                let isKids = c.time === '14H';
-                if(isKids) rowClass += " row-kids";
 
-                let timeCell = `<div class="agenda-time-box">${c.time}</div>`;
-                if(isKids) timeCell = '<span class="kids-badge">PRIME KIDS</span>'; 
-                if (isMonthView && !isKids) timeCell = `${c.time}`;
-
-                const drawerId = `drawer-${c.id}`;
-                const gridId = `wg-agenda-${c.id}`;
-                
-                // PROF BADGE
+                const timeCell = `<div class="agenda-time-box">${c.time}</div>`;
                 const profColor = getProfColor(c.prof);
-                const profBadge = `<span class="prof-badge" style="${profColor}">${c.prof}</span>`;
-
+                
                 tb.innerHTML += `
-                <tr class="${rowClass}" onclick="toggleDrawer('${c.id}', '${c.studentId}', '${gridId}')">
-                    <td class="px-6 py-4 text-center border-r border-slate-200 agenda-time bg-slate-50/30">${timeCell}</td>
-                    <td class="px-6 py-4 font-bold text-[#05364F] bg-white/20">${genderIcon}${displayName}</td>
-                    <td class="px-6 py-4 bg-teal-50/10 border-l border-teal-100"><span class="agenda-workout">${c.workout}</span></td>
-                    <td class="px-6 py-4 text-center border-l border-slate-100">${profBadge}</td>
-                    <td class="px-6 py-4 text-center flex justify-center gap-3 bg-white/30 border-l border-slate-100">
+                <tr class="agenda-row" onclick="toggleDrawer('${c.id}', '${c.studentId}', 'wg-agenda-${c.id}')">
+                    <td class="px-6 py-4 text-center border-r border-slate-200 agenda-time bg-slate-50">${timeCell}</td>
+                    <td class="px-6 py-4 font-bold text-[#05364F]">
+                        ${genderIcon} <span class="ml-2">${displayName}</span>
+                    </td>
+                    <td class="px-6 py-4 border-l border-slate-50"><span class="agenda-workout">${c.workout}</span></td>
+                    <td class="px-6 py-4 text-center border-l border-slate-50"><span class="prof-badge" style="${profColor}">${c.prof}</span></td>
+                    <td class="px-6 py-4 text-center flex justify-center gap-3 border-l border-slate-50">
                         <button onclick="openEditCheckin(event, '${c.id}')" class="text-blue-400 hover:text-blue-600 p-2 hover:bg-blue-50 rounded-full transition"><i data-lucide="pencil" class="w-4 h-4"></i></button>
                         <button onclick="removeCheckin(event, '${c.id}')" class="text-red-300 hover:text-red-500 p-2 hover:bg-red-50 rounded-full transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                     </td>
                 </tr>
                 <tr>
                     <td colspan="5" class="p-0 border-0">
-                        <div id="${drawerId}" class="drawer-content"></div>
+                        <div id="drawer-${c.id}" class="drawer-content"></div>
                     </td>
                 </tr>`;
             });
-            lucide.createIcons();
+            if(window.lucide) lucide.createIcons();
             updateStats();
+        }
+
+        // --- NEW METADATA HELPER ---
+        function formatUpdateLabel(meta) {
+            if (!meta) return '';
+            const d = new Date(meta.at);
+            const dateStr = d.toLocaleDateString('pt-BR');
+            const timeStr = d.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'});
+            return `Atualizado por <strong>${meta.by}</strong> em ${dateStr} às ${timeStr}`;
         }
 
         function toggleDrawer(cid, sid, gridId) {
@@ -1588,13 +1349,16 @@
             
             if(!isOpen) {
                 const s = db.students.find(x => x.id === sid);
-                
                 let alertsHTML = '';
-                if(s && s.limitations && s.limitations !== 'NENHUMA') alertsHTML += `<div class="bg-red-50 p-4 rounded-xl border border-red-100 flex gap-2 items-start mb-2"><i data-lucide="alert-triangle" class="w-5 h-5 text-red-500 shrink-0 mt-0.5"></i><div class="text-xs text-red-800 font-bold leading-tight">${s.limitations}</div></div>`;
-                if(s && s.notes) alertsHTML += `<div class="bg-blue-50 p-4 rounded-xl border border-blue-100 flex gap-2 items-start"><i data-lucide="info" class="w-5 h-5 text-blue-500 shrink-0 mt-0.5"></i><div class="text-xs text-blue-800 font-medium leading-tight">${s.notes}</div></div>`;
+                if(s && s.limitations && s.limitations !== 'NENHUMA') {
+                    alertsHTML += `<div class="bg-red-50 p-4 rounded-xl border border-red-100 flex gap-2 items-start mb-2"><i data-lucide="alert-triangle" class="w-5 h-5 text-red-500 shrink-0 mt-0.5"></i><div class="w-full"><div class="text-xs text-red-800 font-bold leading-tight">${s.limitations}</div><div class="last-update-lbl">${formatUpdateLabel(s.limitationsUpdate)}</div></div></div>`;
+                }
+                if(s && s.notes) {
+                    alertsHTML += `<div class="bg-blue-50 p-4 rounded-xl border border-blue-100 flex gap-2 items-start"><i data-lucide="info" class="w-5 h-5 text-blue-500 shrink-0 mt-0.5"></i><div class="w-full"><div class="text-xs text-blue-800 font-medium leading-tight">${s.notes}</div><div class="last-update-lbl">${formatUpdateLabel(s.notesUpdate)}</div></div></div>`;
+                }
 
                 drawer.innerHTML = `
-                <div class="p-6 bg-slate-50/80 border-t border-slate-100 backdrop-blur-sm">
+                <div class="p-6 bg-slate-50 border-t border-slate-100">
                     <h4 class="text-[10px] font-bold text-slate-400 uppercase mb-3 tracking-widest">Histórico da Semana</h4>
                     <div id="${gridId}"></div>
                     <div class="mt-4">${alertsHTML}</div>
@@ -1603,16 +1367,12 @@
                         <button onclick="openStudentModal('${sid}')" class="flex-1 py-3 bg-white border border-slate-200 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-100 transition shadow-sm">EDITAR DADOS</button>
                     </div>
                 </div>`;
-                
-                // RENDER GRID IN DRAWER
                 renderWeeklyFrequency(sid, gridId, 'grid');
-                
-                lucide.createIcons();
+                if(window.lucide) lucide.createIcons();
                 drawer.classList.add('open');
             }
         }
 
-        // --- STUDENTS TABLE ---
         function renderStudentsTable() {
             const term = document.getElementById('stu-search').value.toLowerCase();
             const tb = document.getElementById('stu-body'); tb.innerHTML = '';
@@ -1620,33 +1380,30 @@
             db.students.filter(s => getDisplayName(s).toLowerCase().includes(term)).sort((a,b)=>getDisplayName(a).localeCompare(getDisplayName(b))).forEach(s => {
                 const sGender = s.gender || inferGender(s.firstName);
                 const icon = sGender === 'F' ? '<i class="fa-solid fa-person-dress text-pink-400 mr-2 text-lg"></i>' : '<i class="fa-solid fa-person text-blue-400 mr-2 text-lg"></i>';
-                
-                tb.innerHTML += `
-                <tr class="hover:bg-slate-50 border-b border-slate-100 cursor-pointer transition" onclick="if(!event.target.closest('button')) openProfile('${s.id}')">
+                tb.innerHTML += `<tr class="hover:bg-slate-50 border-b border-slate-100 cursor-pointer transition" onclick="if(!event.target.closest('button')) openProfile('${s.id}')">
                     <td class="px-6 py-4 font-bold text-[#05364F]">${icon}${getDisplayName(s)}</td>
                     <td class="px-6 py-4 text-xs font-bold text-[#00A89A] uppercase">${s.objective}</td>
                     <td class="px-6 py-4 text-xs font-bold text-purple-600 uppercase">${s.plan || '-'}</td>
                     <td class="px-6 py-4">${s.limitations!=='NENHUMA'?'<span class="text-red-500 font-bold text-xs flex gap-1 items-center bg-red-50 px-2 py-1 rounded-full w-fit"><i data-lucide="alert-triangle" class="w-3 h-3"></i> Restrição</span>':'<span class="text-[#C5A059] font-bold text-xs flex gap-1 items-center bg-amber-50 px-2 py-1 rounded-full w-fit"><i data-lucide="check" class="w-3 h-3"></i> Regular</span>'}</td>
-                    <td class="px-6 py-4 text-right">
-                        <button onclick="openStudentModal('${s.id}')" class="p-2 text-blue-400 hover:bg-blue-50 rounded-lg transition"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
-                        <button onclick="deleteStudent('${s.id}')" class="p-2 text-red-400 hover:bg-red-50 rounded-lg transition"><i data-lucide="trash" class="w-4 h-4"></i></button>
-                    </td>
-                </tr>`;
+                    <td class="px-6 py-4 text-right"><button onclick="openStudentModal('${s.id}')" class="p-2 text-blue-400 hover:bg-blue-50 rounded-lg transition"><i data-lucide="edit-3" class="w-4 h-4"></i></button><button onclick="deleteStudent('${s.id}')" class="p-2 text-red-400 hover:bg-red-50 rounded-lg transition"><i data-lucide="trash" class="w-4 h-4"></i></button></td></tr>`;
             });
-            lucide.createIcons();
+            if(window.lucide) lucide.createIcons();
         }
 
-        function deleteStudent(id) {
-            if(confirm('Tem certeza? Isso apagará o histórico deste aluno.')) {
-                db.students = db.students.filter(x => x.id !== id);
-                db.checkins = db.checkins.filter(x => x.studentId !== id);
-                saveDB(); renderStudentsTable(); toast('Aluno Excluído');
-            }
-        }
+        function deleteStudent(id) { if(confirm('Tem certeza? Isso apagará o histórico.')) { db.students = db.students.filter(x => x.id !== id); db.checkins = db.checkins.filter(x => x.studentId !== id); saveDB(); renderStudentsTable(); toast('Aluno Excluído'); } }
 
         function openStudentModal(id, quick = false) {
             document.getElementById('modal-student').style.display='flex';
             document.getElementById('ms-quick-add').value = quick ? 'true' : 'false';
+            
+            // Populate Editors
+            const sel = document.getElementById('ms-editor'); sel.innerHTML = '<option value="">Selecione quem está alterando...</option>';
+            // Unified list logic similar to check-in
+            const profs = db.professors.filter(p => p.role === 'PRO').sort((a,b) => a.name.localeCompare(b.name));
+            const ests = db.professors.filter(p => p.role === 'EST').sort((a,b) => a.name.localeCompare(b.name));
+            if(profs.length) { const grp=document.createElement('optgroup'); grp.label="PROFESSORES"; profs.forEach(p=>grp.appendChild(new Option(`🎓 ${p.name}`, p.name))); sel.appendChild(grp); }
+            if(ests.length) { const grp=document.createElement('optgroup'); grp.label="ESTAGIÁRIOS"; ests.forEach(p=>grp.appendChild(new Option(`📝 ${p.name}`, p.name))); sel.appendChild(grp); }
+
             if(id) {
                 const s = db.students.find(x=>x.id===id);
                 document.getElementById('ms-title').innerText = "Editar Aluno";
@@ -1658,27 +1415,58 @@
                 document.getElementById('ms-plan').value = s.plan;
                 document.getElementById('ms-lim').value = s.limitations;
                 document.getElementById('ms-obs').value = s.notes;
+                
+                // Show metadata in edit modal
+                document.getElementById('ms-lim-meta').innerHTML = formatUpdateLabel(s.limitationsUpdate);
+                document.getElementById('ms-obs-meta').innerHTML = formatUpdateLabel(s.notesUpdate);
+                
             } else {
                 document.getElementById('ms-title').innerText = "Novo Aluno";
                 document.getElementById('ms-id').value = "NEW";
                 document.querySelector('#modal-student form').reset();
+                document.getElementById('ms-lim-meta').innerText = '';
+                document.getElementById('ms-obs-meta').innerText = '';
             }
         }
 
         function saveStudent(e) {
             e.preventDefault();
             const id = document.getElementById('ms-id').value;
+            const editor = document.getElementById('ms-editor').value;
             const firstName = document.getElementById('ms-firstname').value.toUpperCase().trim();
             const lastName = document.getElementById('ms-lastname').value.toUpperCase().trim();
-            if(!lastName) return alert("Sobrenome é obrigatório");
+            const newLim = document.getElementById('ms-lim').value.toUpperCase()||'NENHUMA';
+            const newObs = document.getElementById('ms-obs').value.toUpperCase();
+
+            if(!lastName) return alert("Sobrenome obrigatório");
+            if(!editor) return alert("Por favor, selecione o Professor Responsável.");
+            
+            // Tracking Logic
+            let limitationsUpdate = null;
+            let notesUpdate = null;
+            
+            let oldData = null;
+            if(id !== 'NEW') oldData = db.students.find(x => x.id === id);
+
+            if (oldData) {
+                if(newLim !== oldData.limitations) limitationsUpdate = { by: editor, at: new Date().toISOString() };
+                else limitationsUpdate = oldData.limitationsUpdate;
+
+                if(newObs !== oldData.notes) notesUpdate = { by: editor, at: new Date().toISOString() };
+                else notesUpdate = oldData.notesUpdate;
+            } else {
+                if(newLim !== 'NENHUMA') limitationsUpdate = { by: editor, at: new Date().toISOString() };
+                if(newObs) notesUpdate = { by: editor, at: new Date().toISOString() };
+            }
 
             const data = {
-                firstName: firstName, lastName: lastName,
+                firstName, lastName,
                 gender: document.getElementById('ms-gender').value,
                 objective: document.getElementById('ms-obj').value.toUpperCase(),
                 plan: document.getElementById('ms-plan').value,
-                limitations: document.getElementById('ms-lim').value.toUpperCase()||'NENHUMA',
-                notes: document.getElementById('ms-obs').value.toUpperCase()
+                limitations: newLim,
+                notes: newObs,
+                limitationsUpdate, notesUpdate
             };
             
             let newId = id;
@@ -1687,13 +1475,9 @@
             
             saveDB();
             document.getElementById('modal-student').style.display='none';
-            if(document.getElementById('view-students').classList.contains('hidden') === false) renderStudentsTable();
-            
+            if(!document.getElementById('view-students').classList.contains('hidden')) renderStudentsTable();
             if(document.getElementById('ms-quick-add').value === 'true') {
                 setupCheckinForm();
-                const s = db.students.find(x => x.id === newId);
-                document.getElementById('ci-search-input').value = getDisplayName(s);
-                document.getElementById('ci-student-id').value = newId;
                 handleStudentSelection(newId);
             }
             toast('Salvo');
@@ -1702,62 +1486,108 @@
         // --- PROF MANAGER ---
         function closeProfModal() { document.getElementById('prof-modal').style.display='none'; setupCheckinForm(); }
         function openProfModal() { document.getElementById('prof-modal').style.display='flex'; renderProfList(); }
-        
         function renderProfList(){ 
             const l=document.getElementById('prof-list'); l.innerHTML=''; 
-            // Sort by Role then Name
-            const list = [...db.professors].sort((a,b) => {
-                if(a.role !== b.role) return a.role === 'PRO' ? -1 : 1;
-                return a.name.localeCompare(b.name);
-            });
-
-            list.forEach((p,i)=> {
-                const badge = p.role === 'PRO' ? '<span class="bg-blue-100 text-blue-700 text-[9px] px-1 rounded font-bold">PROF</span>' : '<span class="bg-slate-200 text-slate-500 text-[9px] px-1 rounded font-bold">EST</span>';
-                l.innerHTML+=`<li class="flex justify-between p-3 bg-slate-50 text-sm font-bold text-[#05364F] rounded-lg"><span>${badge} ${p.name}</span> <i data-lucide="trash" onclick="deleteProf('${p.name}')" class="w-4 h-4 text-red-400 cursor-pointer"></i></li>`;
-            });
-            lucide.createIcons(); 
+            const list = [...db.professors].sort((a,b) => (a.role!==b.role ? (a.role==='PRO'?-1:1) : a.name.localeCompare(b.name)));
+            list.forEach((p,i)=> { l.innerHTML+=`<li class="flex justify-between p-3 bg-slate-50 text-sm font-bold text-[#05364F] rounded-lg"><span>${p.role==='PRO'?'<span class="bg-blue-100 text-blue-700 text-[9px] px-1 rounded font-bold">PROF</span>':'<span class="bg-slate-200 text-slate-500 text-[9px] px-1 rounded font-bold">EST</span>'} ${p.name}</span> <i data-lucide="trash" onclick="deleteProf('${p.name}')" class="w-4 h-4 text-red-400 cursor-pointer"></i></li>`; });
+            if(window.lucide) lucide.createIcons(); 
         }
-        
-        function addProfessor(){ 
-            const n=document.getElementById('new-prof-name').value.toUpperCase(); 
-            const r=document.getElementById('new-prof-role').value;
-            if(n){ db.professors.push({name: n, role: r}); saveDB(); renderProfList(); document.getElementById('new-prof-name').value=''; }
-        }
-        function deleteProf(name) {
-            if(confirm('Excluir?')) { db.professors = db.professors.filter(p => p.name !== name); saveDB(); renderProfList(); }
-        }
+        function addProfessor(){ const n=document.getElementById('new-prof-name').value.toUpperCase(); const r=document.getElementById('new-prof-role').value; if(n){ db.professors.push({name: n, role: r}); saveDB(); renderProfList(); document.getElementById('new-prof-name').value=''; } }
+        function deleteProf(name) { if(confirm('Excluir?')) { db.professors = db.professors.filter(p => p.name !== name); saveDB(); renderProfList(); } }
 
         // --- PROFILE ---
+        // let currentProfileId = null; 
+        
         function openProfile(id) {
             const s = db.students.find(x=>x.id===id); if(!s) return;
-            const h = db.checkins.filter(c=>c.studentId===id).sort((a,b)=>b.isoDate.localeCompare(a.isoDate));
+            const h = db.checkins.filter(c=>c.studentId===id);
             
             document.getElementById('pf-name').innerText = getDisplayName(s);
             document.getElementById('pf-obj').innerText = s.objective;
             document.getElementById('pf-plan').innerText = s.plan;
-            
             const initials = (s.firstName ? s.firstName[0] : '') + (s.lastName ? s.lastName[0] : '');
             document.getElementById('pf-avatar').innerText = initials || '##';
             document.getElementById('pf-avatar').style.background = s.gender === 'F' ? 'linear-gradient(135deg, #ec4899, #db2777)' : 'linear-gradient(135deg, #00A89A, #05364F)';
             
             document.getElementById('pf-lim-list').innerHTML = s.limitations && s.limitations!=='NENHUMA' ? s.limitations.split(',').map(l=>`<li>${l}</li>`).join('') : '<li>Sem restrições</li>';
+            document.getElementById('pf-lim-meta').innerHTML = formatUpdateLabel(s.limitationsUpdate);
+            
             document.getElementById('pf-obs-list').innerHTML = s.notes ? s.notes.split('\n').map(n=>`<li>${n}</li>`).join('') : '<li>Sem observações</li>';
+            document.getElementById('pf-obs-meta').innerHTML = formatUpdateLabel(s.notesUpdate);
 
-            renderWeeklyFrequency(id, 'pf-week-grid', 'grid');
+            // Calendar
+            currentProfileId = id;
+            profileViewDate = new Date(); 
+            // isCalendarExpanded removed
+            renderProfileCalendar(id);
 
             document.getElementById('pf-btn-edit').onclick = () => { document.getElementById('profile-modal').style.display='none'; openStudentModal(id); };
 
-            const fCtx = document.getElementById('chart-freq').getContext('2d'); if(charts.freq) charts.freq.destroy();
+            // Show Modal First
+            document.getElementById('profile-modal').style.display='flex';
+
+            // Chart Logic - AFTER DISPLAY
+            const fCtx = document.getElementById('chart-freq').getContext('2d'); 
+            if(charts.freq) charts.freq.destroy();
             const last30 = {}; for(let i=0; i<30; i++){ let d=new Date(); d.setDate(d.getDate()-i); last30[d.toISOString().split('T')[0]]=0; }
             h.forEach(c => { if(last30[c.isoDate] !== undefined) last30[c.isoDate] = 1; });
             charts.freq = new Chart(fCtx, {type:'line', data:{labels:Object.keys(last30).sort().map(l=>l.split('-')[2]), datasets:[{label:'Presença', data:Object.keys(last30).sort().map(k=>last30[k]), borderColor:'#00A89A', backgroundColor:'rgba(0,168,154,0.1)', fill:true, tension:0.4}]}, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true, max:1, ticks:{stepSize:1}}}}});
             
-            const wCtx = document.getElementById('chart-workouts').getContext('2d'); if(charts.work) charts.work.destroy();
+            const wCtx = document.getElementById('chart-workouts').getContext('2d'); 
+            if(charts.work) charts.work.destroy();
             const wMap = {}; h.forEach(c=>{ wMap[c.workout]=(wMap[c.workout]||0)+1 });
             charts.work = new Chart(wCtx, {type:'doughnut', data:{labels:Object.keys(wMap), datasets:[{data:Object.values(wMap), backgroundColor:['#05364F','#00C9B7','#C5A059','#38BDF8'], borderWidth:0}]}, options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'right', labels:{boxWidth:10, font:{size:9}}}}}});
 
-            document.getElementById('profile-modal').style.display='flex';
-            lucide.createIcons();
+            if(window.lucide) lucide.createIcons();
+        }
+
+        function changeProfileMonth(dir) {
+            profileViewDate = new Date(profileViewDate.setMonth(profileViewDate.getMonth() + dir));
+            renderProfileCalendar(currentProfileId);
+        }
+        
+        // toggleCalendarMode and updateCalendarToggle removed as per request
+        
+        function renderProfileCalendar(id) {
+            const container = document.getElementById('pf-calendar');
+            container.innerHTML = '';
+            document.getElementById('pf-selected-workout').style.display = 'none';
+            
+            const y = profileViewDate.getFullYear();
+            const m = profileViewDate.getMonth();
+            document.getElementById('pf-cal-title').innerText = profileViewDate.toLocaleDateString('pt-BR', {month:'long', year:'numeric'}).toUpperCase();
+
+            const daysInMonth = new Date(y, m + 1, 0).getDate();
+            const firstDay = new Date(y, m, 1).getDay(); // 0 Sun - 6 Sat
+            
+            const week = ['D','S','T','Q','Q','S','S'];
+            week.forEach(d => container.innerHTML += `<div class="pf-cal-head">${d}</div>`);
+
+            for(let i=0; i<firstDay; i++) container.innerHTML += `<div></div>`;
+
+            for(let d=1; d<=daysInMonth; d++) {
+                const iso = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                const checkin = db.checkins.find(c => c.studentId === id && c.isoDate === iso);
+                const activeClass = checkin ? 'active' : '';
+                
+                let content = `<span class="cal-day-num">${d}</span>`;
+                if(checkin) {
+                    content += `
+                        <span class="cal-time">${checkin.time}</span>
+                        <span class="cal-work">${checkin.workout.substring(0, 12)}</span>
+                    `;
+                }
+
+                const onclick = checkin ? `onclick="showWorkoutDetails('${iso}', '${checkin.workout}')"` : '';
+                
+                container.innerHTML += `<div class="pf-cal-day ${activeClass}" ${onclick}>${content}</div>`;
+            }
+        }
+
+        function showWorkoutDetails(date, workout) {
+            const disp = document.getElementById('pf-selected-workout');
+            disp.innerText = `${new Date(date + 'T00:00:00').toLocaleDateString('pt-BR')}: ${workout}`;
+            disp.style.display = 'block';
         }
 
         // --- REPORTS ---
@@ -1836,9 +1666,16 @@
         function toggleCustom(val) { document.getElementById('ci-custom').classList.toggle('hidden', val !== 'OUTRO'); }
         function openCloudModal() { document.getElementById('modal-cloud').style.display='flex'; }
         
-        function backupData() { const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(db)],{type:"application/json"})); a.download=`prime_backup.json`; a.click(); }
+        function backupData() { 
+            const d = new Date();
+            const ts = `_${d.getDate()}_${d.getMonth()+1}_${d.getFullYear()}_${d.getHours()}H${d.getMinutes()}`;
+            const a=document.createElement('a'); 
+            a.href=URL.createObjectURL(new Blob([JSON.stringify(db)],{type:"application/json"})); 
+            a.download=`prime_backup${ts}.json`; 
+            a.click(); 
+        }
         function restoreData(i) { const r=new FileReader(); r.onload=e=>{ try{ db=JSON.parse(e.target.result); saveDB(); location.reload(); }catch{alert('Erro');} }; r.readAsText(i.files[0]); }
-        function forceSync() { syncCloud().then(() => { renderAll(); toast('Sincronizado'); }); }
+        function forceSync() { syncCloud().then(() => { renderAgenda(); toast('Sincronizado'); }); }
         function saveManualToken() { const t = document.getElementById('manualToken').value.trim(); if(t) { localStorage.setItem(TOKEN_KEY, t); toast('Token Salvo'); syncCloud(); } }
         function removeToken() { 
             if(confirm("Deseja desconectar? O sistema ficará offline.")) {
@@ -1869,7 +1706,7 @@
                     if(j.files["prime_db.json"]) {
                         db = JSON.parse(j.files["prime_db.json"].content);
                         localStorage.setItem(DB_KEY, JSON.stringify(db));
-                        renderAll(); // FORCE UI UPDATE AFTER LOAD
+                        renderAgenda(); // FORCE UI UPDATE AFTER LOAD
                     }
                 }
                 updateCloudStatus('ok');
