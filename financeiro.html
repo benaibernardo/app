@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -772,7 +773,7 @@
 
         const DEFAULT_CATEGORIES = {
             'income': ['Salário', 'Consultoria', 'Saldo', 'Outros'],
-            'repass': ['Repasses (Terceiros)', 'Repasse (Caixinha)', 'Reembolso', 'Compartilhado', 'Passagem', 'Empréstimo', 'Outros'],
+            'repass': ['Repasses (Terceiros)', 'Repasse (Caixinha)', 'Giro de Caixa (Aplicar)', 'Giro de Caixa (Resgatar)', 'Reembolso', 'Compartilhado', 'Passagem', 'Empréstimo', 'Outros'],
             'essen': ['Mercado', 'Farmácia', 'Combustível', 'Contas', 'Celular', 'Aluguel', 'Casa'],
             'free': ['Aporte', 'Reserva', 'CDB', 'FIIs'],
             'long': ['Carro Novo', 'Casa Própria', 'Viagem Europa'],
@@ -865,12 +866,18 @@
             if(!data.categories.repass) data.categories.repass = DEFAULT_CATEGORIES.repass;
             if(!data.monthlyConfig) data.monthlyConfig = {}; // Ensure monthly config storage
             
+            // Fix categories
             if(data.categories.essen && data.categories.essen.includes('Repasse (Caixinha)')) {
                 data.categories.essen = data.categories.essen.filter(c => c !== 'Repasse (Caixinha)');
                 if(!data.categories.repass.includes('Repasse (Caixinha)')) data.categories.repass.push('Repasse (Caixinha)');
             }
-            
             if(data.categories.essen) data.categories.essen = data.categories.essen.filter(c => c !== 'Nubank (Crédito)');
+
+            // Inject Giro de Caixa
+            const giroIn = 'Giro de Caixa (Aplicar)';
+            const giroOut = 'Giro de Caixa (Resgatar)';
+            if(!data.categories.repass.includes(giroIn)) data.categories.repass.push(giroIn);
+            if(!data.categories.repass.includes(giroOut)) data.categories.repass.push(giroOut);
 
             if(!data.config.jars || data.config.jars.length === 0) {
                 data.config.jars = [{id:'essen', name:'Necessidades', perc:55}, {id:'free', name:'Lib. Financeira', perc:20}, {id:'long', name:'Sonhos', perc:10}, {id:'edu', name:'Educação', perc:5}, {id:'play', name:'Lazer', perc:10}];
@@ -1141,7 +1148,7 @@
         function isRepassCategory(name) {
             if(!name) return false;
             const n = name.toLowerCase();
-            return n.includes('repasse') || n.includes('terceiros') || n.includes('reembolso') || n.includes('compartilhado');
+            return n.includes('repasse') || n.includes('terceiros') || n.includes('reembolso') || n.includes('compartilhado') || n.includes('giro de caixa');
         }
 
         function renderJars() {
@@ -1174,6 +1181,15 @@
                 let barColor = jarBg;
                 if(pct > 100) barColor = 'bg-red-500';
 
+                // NEW: Remaining/Excess Logic
+                const leftover = limit - spent;
+                let leftoverHTML = '';
+                if(leftover >= 0) {
+                    leftoverHTML = `<div class="text-[9px] font-bold text-emerald-500 mt-1">Resta: ${fmtMoney(leftover)}</div>`;
+                } else {
+                    leftoverHTML = `<div class="text-[9px] font-bold text-red-500 mt-1">Excedido: ${fmtMoney(Math.abs(leftover))}</div>`;
+                }
+
                 container.innerHTML += `
                 <div class="glass-card jar-card">
                     <div class="flex justify-between items-start">
@@ -1187,6 +1203,7 @@
                         <div class="text-right">
                             <div class="text-lg font-mono font-bold ${info.color}">${fmtMoney(spent)}</div>
                             <div class="text-[10px] opacity-60">Meta: ${fmtMoney(limit)}</div>
+                            ${leftoverHTML}
                         </div>
                     </div>
                     <div class="jar-bar-bg">
