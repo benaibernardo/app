@@ -4,14 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Benai App | Central</title>
+    <title>BENAI OS | Central</title>
     
     <!-- LIBS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Space+Grotesk:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Fontes Modernas: Outfit (Títulos) e Inter (Leitura) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- CONFIGURAÇÃO TAILWIND -->
@@ -21,25 +20,24 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Outfit', 'sans-serif'],
-                        mono: ['Space Grotesk', 'monospace'],
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Outfit', 'sans-serif'],
                     },
                     colors: {
                         brand: {
-                            dark: '#0f172a',
-                            light: '#e0f2fe',
-                            accent: '#0ea5e9',
-                            orange: '#f97316'
+                            blue: '#0ea5e9',   // Sky 500
+                            orange: '#f97316', // Orange 500
+                            dark: '#020617',   // Slate 950
                         }
                     },
                     animation: {
-                        'float': 'float 10s infinite ease-in-out',
-                        'bounce-slow': 'bounce 3s infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                     },
                     keyframes: {
                         float: {
-                            '0%, 100%': { transform: 'translateY(0) scale(1)' },
-                            '50%': { transform: 'translateY(-20px) scale(1.05)' },
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
                         }
                     }
                 }
@@ -48,300 +46,451 @@
     </script>
 
     <style>
-        /* BASE & BACKGROUND */
-        body { transition: background-color 0.5s ease, color 0.5s ease; background-attachment: fixed; }
-        
-        .orb { position: fixed; border-radius: 50%; filter: blur(80px); z-index: -1; opacity: 0.5; animation: float 15s infinite alternate; }
-        
-        /* Glass Cards */
-        .glass-card { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.4); box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1); transition: all 0.3s ease; }
-        .dark .glass-card { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(56, 189, 248, 0.15); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); }
-        
-        .hover-lift:hover { 
-            transform: translateY(-8px); 
-            box-shadow: 0 20px 40px -5px rgba(249, 115, 22, 0.15); 
-            border-color: rgba(249, 115, 22, 0.4); 
-        }
-        .hover-lift:active { transform: scale(0.96); }
-
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: #38bdf8; border-radius: 4px; }
-        
-        .pin-digit { font-family: 'Space Grotesk', monospace; letter-spacing: 0.2em; text-align: center; }
-        .logo-b { background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%); box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.5); }
-        
-        /* Toggles */
-        .toggle-checkbox:checked { right: 0; border-color: #f97316; }
-        .toggle-checkbox:checked + .toggle-label { background-color: #f97316; }
-        
-        /* APP FRAME */
-        #app-frame-container {
-            position: fixed; inset: 0; z-index: 9000; background: #0f172a;
-            transform: translateY(100%); transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        #app-frame-container.open { transform: translateY(0); }
-        iframe { width: 100%; height: 100%; border: none; }
-
-        /* PSYDUCK CONFUSED ICON */
-        .psy-icon-wrapper { position: relative; display: inline-block; }
-        .psy-q-mark { 
-            position: absolute; top: -5px; right: -5px; 
-            font-weight: 900; color: #f97316; font-size: 1.2rem; 
-            animation: bounce-slow 2s infinite; text-shadow: 0 2px 0 rgba(0,0,0,0.2);
+        /* --- CORE THEME VARIABLES --- */
+        :root {
+            /* Modo Claro (Padrão) */
+            --bg-color: #f0f9ff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --card-border: rgba(14, 165, 233, 0.2);
+            --input-bg: #ffffff;
+            --glass-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
         }
 
-        /* CENTERED MODAL ANIMATION */
-        .modal-enter { animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        @keyframes modalPop { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        .dark {
+            /* Modo Escuro */
+            --bg-color: #020617;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --card-bg: rgba(15, 23, 42, 0.7);
+            --card-border: rgba(56, 189, 248, 0.15);
+            --input-bg: #0f172a;
+            --glass-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        body { 
+            background-color: var(--bg-color); 
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+            background-image: radial-gradient(var(--card-border) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        /* BACKGROUND ELEMENTS */
+        .orb {
+            position: fixed; border-radius: 50%; filter: blur(80px); z-index: -1; opacity: 0.4;
+            transition: opacity 0.3s ease;
+        }
+        .dark .orb { opacity: 0.2; }
+
+        /* CARD STYLES */
+        .modern-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--glass-shadow);
+        }
+        
+        .modern-card:hover {
+            transform: translateY(-5px);
+            border-color: #f97316; /* Laranja no Hover */
+            box-shadow: 0 10px 40px -10px rgba(249, 115, 22, 0.2);
+        }
+
+        /* INPUTS */
+        .modern-input {
+            background: var(--input-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .modern-input:focus {
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+            outline: none;
+        }
+
+        /* BUTTONS */
+        .btn-primary {
+            background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+            color: white; border: none; transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4); }
+
+        .btn-accent {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            color: white; border: none; transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(234, 88, 12, 0.3);
+        }
+        .btn-accent:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(234, 88, 12, 0.4); }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        .dark ::-webkit-scrollbar-thumb { background: #334155; }
+        ::-webkit-scrollbar-thumb:hover { background: #f97316; }
+
+        /* Gatekeeper Overlay */
+        #gatekeeper { background-color: var(--bg-color); transition: background-color 0.3s ease; }
     </style>
 </head>
-<body class="bg-sky-50 text-slate-800 dark:bg-[#0b1121] dark:text-sky-50 min-h-screen selection:bg-orange-400 selection:text-white overflow-x-hidden">
+<body>
 
-    <!-- BACKGROUND ANIMATION -->
-    <div class="orb w-[500px] h-[500px] bg-sky-300/30 dark:bg-blue-600/20 top-[-10%] left-[-10%]"></div>
-    <div class="orb w-[400px] h-[400px] bg-orange-200/30 dark:bg-orange-600/10 bottom-[10%] right-[-5%] animation-delay-2000"></div>
-    <div class="orb w-[300px] h-[300px] bg-indigo-300/30 dark:bg-indigo-600/20 top-[40%] left-[30%] animation-delay-4000"></div>
+    <!-- BACKGROUND ORBS -->
+    <div class="orb w-[500px] h-[500px] bg-sky-400 top-[-10%] left-[-10%]"></div>
+    <div class="orb w-[400px] h-[400px] bg-orange-400 bottom-[10%] right-[-5%] animation-delay-2000"></div>
 
-    <!-- GATEKEEPER -->
-    <div id="gatekeeper" class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-sky-50/90 dark:bg-[#0b1121]/95 backdrop-blur-xl transition-all duration-700">
-        <div class="text-center space-y-8 animate-float px-6">
-            <div class="w-24 h-24 mx-auto rounded-3xl logo-b flex items-center justify-center rotate-3 hover:rotate-0 transition-transform duration-500 ring-4 ring-white/10">
-                <span class="font-mono text-6xl font-bold text-white tracking-tighter">B.</span>
+    <!-- GATEKEEPER (LOGIN SCREEN) -->
+    <div id="gatekeeper" class="fixed inset-0 z-[9999] flex flex-col items-center justify-center p-6 transition-all duration-700">
+        <div class="relative mb-10 animate-float text-center">
+            <div class="w-24 h-24 bg-gradient-to-br from-sky-500 to-blue-600 rounded-3xl flex items-center justify-center shadow-2xl mx-auto mb-6 transform rotate-3">
+                <span class="font-heading text-5xl font-bold text-white">B.</span>
             </div>
-            <div>
-                <h1 class="text-3xl font-bold tracking-tight font-sans text-slate-700 dark:text-white">BENAI APP</h1>
+            <h1 class="text-4xl font-heading font-extrabold tracking-tight text-slate-800 dark:text-white mb-2">BENAI OS</h1>
+            <p class="text-slate-500 dark:text-slate-400 text-sm font-semibold tracking-wider uppercase">Acesso ao Sistema</p>
+        </div>
+
+        <div class="w-full max-w-xs space-y-4">
+            <div class="relative group">
+                <i data-lucide="user" class="absolute left-4 top-3.5 w-5 h-5 text-slate-400 group-focus-within:text-sky-500 transition"></i>
+                <input type="text" id="userInput" class="modern-input w-full py-3 px-12 rounded-2xl text-lg uppercase placeholder-slate-400 dark:placeholder-slate-600" placeholder="USUÁRIO" autocomplete="off">
             </div>
-            <div class="relative group flex flex-col gap-4 w-64 mx-auto">
-                <input type="text" id="userInput" class="pin-digit w-full bg-transparent border-b-2 border-slate-300 dark:border-sky-900/50 text-lg focus:outline-none focus:border-orange-500 transition-colors py-2 text-center placeholder-slate-400 dark:placeholder-slate-600 uppercase" placeholder="USUÁRIO" autocomplete="off">
-                <input type="password" id="passInput" class="pin-digit w-full bg-transparent border-b-2 border-slate-300 dark:border-sky-900/50 text-lg focus:outline-none focus:border-orange-500 transition-colors py-2 text-center placeholder-slate-400 dark:placeholder-slate-600" placeholder="SENHA" onkeyup="if(event.key==='Enter') attemptLogin()">
-                <button onclick="attemptLogin()" class="mt-4 w-full py-3 bg-sky-600 hover:bg-orange-500 text-white font-bold rounded-xl shadow-lg shadow-sky-500/20 hover:shadow-orange-500/30 transition tracking-widest text-xs">ENTRAR</button>
-                <div id="pinError" class="absolute -bottom-10 left-0 right-0 text-red-500 text-xs font-bold opacity-0 transition-opacity text-center">CREDENCIAIS INVÁLIDAS</div>
+            <div class="relative group">
+                <i data-lucide="lock" class="absolute left-4 top-3.5 w-5 h-5 text-slate-400 group-focus-within:text-sky-500 transition"></i>
+                <input type="password" id="passInput" class="modern-input w-full py-3 px-12 rounded-2xl text-lg placeholder-slate-400 dark:placeholder-slate-600" placeholder="SENHA" onkeyup="if(event.key==='Enter') attemptLogin()">
             </div>
             
-            <!-- Standard Gear Button for Config -->
-            <button onclick="openGatekeeperConfig()" class="mt-8 p-3 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition text-slate-400 hover:text-orange-500">
-                <i data-lucide="settings" class="w-5 h-5"></i>
+            <button onclick="attemptLogin()" class="btn-primary w-full py-4 rounded-2xl font-bold text-sm tracking-widest mt-4 uppercase font-heading">
+                Entrar
             </button>
+            
+            <div id="pinError" class="h-6 text-center text-red-500 font-bold text-xs opacity-0 transition-opacity uppercase tracking-wide mt-2">Credenciais Inválidas</div>
         </div>
+
+        <button onclick="openGatekeeperConfig()" class="absolute bottom-8 p-3 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition text-slate-400 hover:text-sky-500">
+            <i data-lucide="settings" class="w-6 h-6 animate-spin-slow"></i>
+        </button>
     </div>
 
-    <!-- APP CONTAINER -->
-    <div id="app-container" class="max-w-5xl mx-auto px-6 py-10 opacity-0 transition-opacity duration-1000 flex flex-col items-center">
+    <!-- MAIN APP CONTAINER -->
+    <div id="app-container" class="max-w-6xl mx-auto px-4 py-6 opacity-0 transition-opacity duration-1000">
         
         <!-- HEADER -->
-        <header class="text-center mb-16 relative w-full flex flex-col items-center">
-            <div class="absolute right-0 top-0 flex gap-3">
-                <button onclick="toggleTheme()" class="w-10 h-10 rounded-full glass-card flex items-center justify-center hover:bg-white/50 dark:hover:bg-sky-900/50 transition">
-                    <i id="themeIcon" data-lucide="moon" class="w-5 h-5 text-slate-600 dark:text-sky-300"></i>
+        <header class="flex justify-between items-center mb-12 py-4">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/20">
+                    <span class="font-heading text-2xl font-bold text-white">B.</span>
+                </div>
+                <div>
+                    <h1 class="font-heading text-2xl font-bold text-slate-800 dark:text-white leading-none">Olá, <span class="text-orange-500">Benai</span></h1>
+                    <div class="flex items-center gap-2 mt-1">
+                        <div class="h-1.5 w-16 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-green-500 w-3/4 animate-pulse"></div>
+                        </div>
+                        <span class="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider" id="dateDisplay">CARREGANDO...</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="toggleTheme()" class="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-500 dark:text-sky-400 hover:border-sky-400 transition shadow-sm">
+                    <i id="themeIcon" data-lucide="moon" class="w-5 h-5"></i>
                 </button>
-                <button id="btn-settings" onclick="openSettings()" class="w-10 h-10 rounded-full glass-card flex items-center justify-center hover:bg-white/50 dark:hover:bg-sky-900/50 transition relative group">
-                    <div id="syncIndicator" class="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-900"></div>
-                    <i data-lucide="settings-2" class="w-5 h-5 text-slate-600 dark:text-sky-300 group-hover:text-orange-500 transition"></i>
+                <button id="btn-settings" onclick="openSettings()" class="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-500 hover:text-orange-500 hover:border-orange-500 transition shadow-sm relative group">
+                    <div id="syncIndicator" class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></div>
+                    <i data-lucide="settings-2" class="w-5 h-5"></i>
                 </button>
             </div>
-            <div class="w-20 h-20 rounded-2xl logo-b flex items-center justify-center mb-6 shadow-2xl shadow-blue-500/20 ring-4 ring-white/20 dark:ring-sky-900/30">
-                <span class="font-mono text-5xl font-bold text-white tracking-tighter">B.</span>
-            </div>
-            
-            <!-- BLUE TITLE SOLID -->
-            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-2 text-sky-600 dark:text-sky-400">BENAI APP</h1>
-            
-            <div id="dateDisplay" class="mt-4 px-4 py-1.5 rounded-full bg-orange-100/50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-300 text-xs font-bold uppercase tracking-wide border border-orange-200 dark:border-orange-700/50">Carregando data...</div>
         </header>
 
-        <!-- MAIN CONTENT (SECTIONS) -->
-        <div class="w-full space-y-12">
+        <!-- MAIN GRID DASHBOARD -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-            <!-- SEÇÃO 1: VIDA PESSOAL -->
-            <section class="animate-fade-in" style="animation-delay: 100ms;">
-                <div class="flex items-center justify-center gap-4 mb-8">
-                    <div class="h-px bg-gradient-to-r from-transparent via-orange-300 dark:via-orange-700 to-transparent w-24"></div>
-                    <h2 class="text-lg font-bold text-slate-700 dark:text-sky-100 uppercase tracking-widest flex items-center gap-2"><i data-lucide="heart" class="w-4 h-4 text-orange-500"></i> Vida Pessoal</h2>
-                    <div class="h-px bg-gradient-to-r from-transparent via-orange-300 dark:via-orange-700 to-transparent w-24"></div>
+            <!-- LEFT COLUMN: PERSONAL LIFE -->
+            <div class="lg:col-span-8 space-y-8">
+                
+                <div class="flex items-center gap-4 mb-2">
+                    <div class="p-2 rounded-lg bg-orange-100 dark:bg-orange-500/10 text-orange-500"><i data-lucide="zap" class="w-5 h-5"></i></div>
+                    <h2 class="font-heading text-lg font-bold text-slate-700 dark:text-white uppercase tracking-wide">Módulos Pessoais</h2>
+                    <div class="h-px bg-slate-200 dark:bg-slate-800 flex-1"></div>
                 </div>
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 justify-center">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     
-                    <a href="#" onclick="launchApp('finance'); return false;" id="btn-finance" class="glass-card rounded-2xl p-5 hover-lift flex flex-col items-center text-center group">
-                        <div class="w-12 h-12 rounded-xl bg-violet-100 dark:bg-violet-500/20 text-violet-600 dark:text-violet-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><i data-lucide="pie-chart" class="w-6 h-6"></i></div>
-                        <h3 class="font-bold text-slate-700 dark:text-white group-hover:text-orange-500 transition">Financeiro</h3>
-                        <p class="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 mt-1">Potes & Metas</p>
-                    </a>
-
-                    <!-- CARD BUTTON UPDATED (PSYDUCK CONFUSO + LABEL "CARTÃO") -->
-                    <a href="#" onclick="launchApp('card'); return false;" id="btn-card" class="glass-card rounded-2xl p-5 hover-lift flex flex-col items-center text-center group">
-                        <div class="w-12 h-12 rounded-xl bg-yellow-100 dark:bg-yellow-500/20 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform psy-icon-wrapper">
-                            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/54.png" class="w-10 h-10 drop-shadow-sm">
-                            <span class="psy-q-mark">?</span>
+                    <!-- FINANCE -->
+                    <a href="financeiro.html" class="modern-card p-6 group hover:bg-white dark:hover:bg-slate-800">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition">
+                            <i class="fa-solid fa-coins text-6xl text-yellow-400"></i>
                         </div>
-                        <h3 class="font-bold text-slate-700 dark:text-white group-hover:text-orange-500 transition">Cartão</h3>
-                        <p class="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 mt-1">Psyduck Manager</p>
-                    </a>
-
-                    <a href="#" onclick="launchApp('diet'); return false;" id="btn-diet" class="glass-card rounded-2xl p-5 hover-lift flex flex-col items-center text-center group">
-                        <div class="w-12 h-12 rounded-xl bg-rose-100 dark:bg-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><i data-lucide="apple" class="w-6 h-6"></i></div>
-                        <h3 class="font-bold text-slate-700 dark:text-white group-hover:text-orange-500 transition">Dieta</h3>
-                        <p class="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 mt-1">Plano Alimentar</p>
-                    </a>
-
-                    <a href="#" onclick="launchApp('travel'); return false;" id="btn-travel" class="glass-card rounded-2xl p-5 hover-lift flex flex-col items-center text-center group">
-                        <div class="w-12 h-12 rounded-xl bg-fuchsia-100 dark:bg-fuchsia-500/20 text-fuchsia-600 dark:text-fuchsia-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><i data-lucide="plane" class="w-6 h-6"></i></div>
-                        <h3 class="font-bold text-slate-700 dark:text-white group-hover:text-orange-500 transition">Viagens</h3>
-                        <p class="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 mt-1">Controle & Roteiros</p>
-                    </a>
-                </div>
-            </section>
-
-            <!-- SEÇÃO 2: CONSULTORIA -->
-            <section id="sec-consultoria" class="animate-fade-in" style="animation-delay: 200ms;">
-                <div class="flex items-center justify-center gap-4 mb-8">
-                    <div class="h-px bg-gradient-to-r from-transparent via-orange-300 dark:via-orange-700 to-transparent w-24"></div>
-                    <h2 class="text-lg font-bold text-slate-700 dark:text-sky-100 uppercase tracking-widest flex items-center gap-2"><i data-lucide="dumbbell" class="w-4 h-4 text-orange-500"></i> Consultoria</h2>
-                    <div class="h-px bg-gradient-to-r from-transparent via-orange-300 dark:via-orange-700 to-transparent w-24"></div>
-                </div>
-                <div class="grid grid-cols-2 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
-                    <a href="#" onclick="launchApp('generator'); return false;" class="glass-card rounded-2xl p-6 hover-lift flex items-center gap-4 group">
-                        <div class="w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0"><i data-lucide="zap" class="w-6 h-6"></i></div>
-                        <div class="text-left"><h3 class="font-bold text-slate-700 dark:text-white group-hover:text-orange-500 transition">Gerador</h3><p class="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 mt-0.5">Criar Treinos</p></div>
-                    </a>
-                    <a href="#" class="glass-card rounded-2xl p-6 hover-lift flex items-center gap-4 group">
-                        <div class="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0"><i data-lucide="users" class="w-6 h-6"></i></div>
-                        <div class="text-left"><h3 class="font-bold text-slate-700 dark:text-white group-hover:text-orange-500 transition">Portal Aluno</h3><p class="text-[10px] uppercase font-bold text-slate-400 dark:text-slate-400 mt-0.5">Área do Cliente</p></div>
-                    </a>
-                </div>
-            </section>
-
-            <!-- SEÇÃO 3: TRABALHO -->
-            <section id="sec-trabalho" class="animate-fade-in" style="animation-delay: 300ms;">
-                <div class="flex items-center justify-center gap-4 mb-8">
-                    <div class="h-px bg-gradient-to-r from-transparent via-orange-300 dark:via-orange-700 to-transparent w-24"></div>
-                    <h2 class="text-lg font-bold text-slate-700 dark:text-sky-100 uppercase tracking-widest flex items-center gap-2"><i data-lucide="briefcase" class="w-4 h-4 text-orange-500"></i> Trabalho</h2>
-                    <div class="h-px bg-gradient-to-r from-transparent via-orange-300 dark:via-orange-700 to-transparent w-24"></div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-1 gap-4 max-w-2xl mx-auto">
-                    <a href="#" onclick="launchApp('prime'); return false;" class="glass-card rounded-2xl p-6 hover-lift flex flex-col justify-center group relative overflow-hidden border-sky-500/30 dark:border-sky-500/30">
-                        <div class="absolute inset-0 bg-gradient-to-r from-sky-500/5 to-blue-500/5 dark:from-sky-500/10 dark:to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        <div class="relative z-10 flex items-center gap-4">
-                            <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-sky-400 to-blue-600 text-white flex items-center justify-center shrink-0 shadow-lg shadow-sky-500/20"><i data-lucide="gem" class="w-7 h-7"></i></div>
-                            <div><h3 class="text-xl font-bold text-slate-800 dark:text-white group-hover:text-orange-500 transition">Prime Acquafit</h3><p class="text-xs uppercase font-bold text-sky-600 dark:text-sky-300 mt-1 flex items-center gap-1">Acessar Sistema <i data-lucide="arrow-right" class="w-3 h-3"></i></p></div>
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                                <i data-lucide="landmark" class="w-6 h-6"></i>
+                            </div>
+                            <span class="text-[10px] font-bold text-blue-500 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded-md border border-blue-200 dark:border-blue-800">PRINCIPAL</span>
+                        </div>
+                        <h3 class="font-heading text-xl font-bold text-slate-800 dark:text-white mb-1 group-hover:text-blue-500 transition">Financeiro</h3>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Gestão de Potes & Metas</p>
+                        <div class="mt-4 h-1 w-full bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                            <div class="h-full bg-blue-500 w-2/3 group-hover:w-full transition-all duration-700"></div>
                         </div>
                     </a>
+
+                    <!-- CARD -->
+                    <a href="card.html" class="modern-card p-6 group border-orange-200 dark:border-orange-500/20 hover:bg-white dark:hover:bg-slate-800">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition">
+                            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/54.png" class="w-16 h-16 grayscale group-hover:grayscale-0 transition">
+                        </div>
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="w-12 h-12 rounded-2xl bg-orange-100 dark:bg-orange-500/20 text-orange-600 dark:text-orange-400 flex items-center justify-center">
+                                <i data-lucide="credit-card" class="w-6 h-6"></i>
+                            </div>
+                            <span class="text-[10px] font-bold text-orange-500 bg-orange-50 dark:bg-orange-900/30 px-2 py-1 rounded-md border border-orange-200 dark:border-orange-800">CASAL</span>
+                        </div>
+                        <h3 class="font-heading text-xl font-bold text-slate-800 dark:text-white mb-1 group-hover:text-orange-500 transition">Cartão</h3>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Psyduck Manager & Faturas</p>
+                        <div class="mt-4 h-1 w-full bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                            <div class="h-full bg-orange-500 w-1/3 group-hover:w-full transition-all duration-700"></div>
+                        </div>
+                    </a>
+
+                    <!-- DIET -->
+                    <a href="dieta.html" class="modern-card p-6 group border-green-200 dark:border-green-500/20 hover:bg-white dark:hover:bg-slate-800">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition">
+                            <i class="fa-solid fa-leaf text-6xl text-green-400"></i>
+                        </div>
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="w-12 h-12 rounded-2xl bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400 flex items-center justify-center">
+                                <i data-lucide="apple" class="w-6 h-6"></i>
+                            </div>
+                            <span class="text-[10px] font-bold text-green-500 bg-green-50 dark:bg-green-900/30 px-2 py-1 rounded-md border border-green-200 dark:border-green-800">SAÚDE</span>
+                        </div>
+                        <h3 class="font-heading text-xl font-bold text-slate-800 dark:text-white mb-1 group-hover:text-green-500 transition">Dieta</h3>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Plano Alimentar & Nutrição</p>
+                        <div class="mt-4 h-1 w-full bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                            <div class="h-full bg-green-500 w-1/2 group-hover:w-full transition-all duration-700"></div>
+                        </div>
+                    </a>
+
+                    <!-- TRAVEL -->
+                    <a href="viagens.html" class="modern-card p-6 group border-purple-200 dark:border-purple-500/20 hover:bg-white dark:hover:bg-slate-800">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition">
+                            <i class="fa-solid fa-compass text-6xl text-purple-400"></i>
+                        </div>
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="w-12 h-12 rounded-2xl bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+                                <i data-lucide="plane" class="w-6 h-6"></i>
+                            </div>
+                            <span class="text-[10px] font-bold text-purple-500 bg-purple-50 dark:bg-purple-900/30 px-2 py-1 rounded-md border border-purple-200 dark:border-purple-800">ROTEIROS</span>
+                        </div>
+                        <h3 class="font-heading text-xl font-bold text-slate-800 dark:text-white mb-1 group-hover:text-purple-500 transition">Viagens</h3>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Controle de Viagens</p>
+                        <div class="mt-4 h-1 w-full bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                            <div class="h-full bg-purple-500 w-1/4 group-hover:w-full transition-all duration-700"></div>
+                        </div>
+                    </a>
+
                 </div>
-            </section>
+            </div>
+
+            <!-- RIGHT COLUMN: PROFESSIONAL -->
+            <div class="lg:col-span-4 space-y-8">
+                
+                <div class="flex items-center gap-4 mb-2">
+                    <div class="p-2 rounded-lg bg-sky-100 dark:bg-sky-500/10 text-sky-500"><i data-lucide="briefcase" class="w-5 h-5"></i></div>
+                    <h2 class="font-heading text-lg font-bold text-slate-700 dark:text-white uppercase tracking-wide">Área Corporativa</h2>
+                    <div class="h-px bg-slate-200 dark:bg-slate-800 flex-1"></div>
+                </div>
+
+                <!-- PRIME ACQUAFIT (FEATURED) -->
+                <a href="prime.html" class="modern-card p-6 group block relative overflow-hidden min-h-[140px] flex flex-col justify-center border-sky-200 dark:border-sky-500/30">
+                    <div class="absolute inset-0 bg-gradient-to-br from-sky-50 to-white dark:from-sky-900/20 dark:to-slate-900/90 z-0"></div>
+                    <div class="relative z-10 flex items-center gap-4">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center shadow-lg shadow-sky-500/30 group-hover:scale-110 transition duration-300">
+                            <i data-lucide="gem" class="w-8 h-8 text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-heading text-2xl font-bold text-slate-800 dark:text-white leading-none mb-1 group-hover:text-sky-500 transition">PRIME</h3>
+                            <p class="text-xs font-bold text-sky-600 dark:text-sky-400 tracking-widest uppercase">Sistema Acquafit</p>
+                        </div>
+                    </div>
+                    <div class="absolute bottom-0 left-0 h-1 bg-sky-500 w-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+                </a>
+
+                <!-- CONSULTORIA GRID -->
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="flex items-center gap-2 opacity-60 mt-2">
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Módulos de Consultoria</span>
+                        <div class="h-px bg-slate-300 dark:bg-slate-700 flex-1"></div>
+                    </div>
+
+                    <a href="gerador.html" class="modern-card p-4 flex items-center gap-4 group hover:bg-indigo-50 dark:hover:bg-slate-800/80 transition">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center border border-indigo-200 dark:border-indigo-500/20 group-hover:bg-indigo-600 group-hover:text-white transition">
+                            <i data-lucide="zap" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-heading text-sm font-bold text-slate-800 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400">Gerador</h4>
+                            <p class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase">Montagem de Treino</p>
+                        </div>
+                        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 ml-auto group-hover:text-indigo-500 group-hover:translate-x-1 transition"></i>
+                    </a>
+
+                    <a href="aluno.html" class="modern-card p-4 flex items-center gap-4 group hover:bg-emerald-50 dark:hover:bg-slate-800/80 transition">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-200 dark:border-emerald-500/20 group-hover:bg-emerald-600 group-hover:text-white transition">
+                            <i data-lucide="users" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-heading text-sm font-bold text-slate-800 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400">Portal Aluno</h4>
+                            <p class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase">Banco de Alunos</p>
+                        </div>
+                        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 ml-auto group-hover:text-emerald-500 group-hover:translate-x-1 transition"></i>
+                    </a>
+                </div>
+
+            </div>
+
         </div>
-        <footer class="mt-20 text-center text-[10px] text-slate-400/60 font-mono tracking-widest uppercase">Benai OS v3.5 • Central</footer>
+
+        <footer class="mt-16 border-t border-slate-200 dark:border-slate-800 pt-6 flex justify-between items-end opacity-60">
+            <div>
+                <p class="font-heading text-xs font-bold text-slate-500 dark:text-slate-400">BENAI OS <span class="text-orange-500">v4.1</span></p>
+                <p class="text-[10px] font-bold text-slate-400 tracking-wider">SISTEMA OTIMIZADO</p>
+            </div>
+            <div class="flex gap-4 text-slate-400">
+                <i class="fa-solid fa-code hover:text-sky-500 transition cursor-pointer"></i>
+            </div>
+        </footer>
+
     </div>
 
-    <!-- SETTINGS MODAL (CENTERED & UPDATED) -->
-    <div id="settingsModal" class="fixed inset-0 z-50 bg-slate-900/50 dark:bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4" onclick="if(event.target === this) closeSettings()">
-        <div class="bg-white dark:bg-[#0f172a] w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-200 dark:border-slate-800 modal-enter relative">
-            <div class="flex justify-between items-center mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
-                <h2 class="text-xl font-bold font-sans dark:text-white flex items-center gap-2"><i data-lucide="settings" class="text-orange-500"></i> Configurações</h2>
-                <button onclick="closeSettings()" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full dark:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+    <!-- SETTINGS MODAL -->
+    <div id="settingsModal" class="fixed inset-0 z-50 bg-slate-900/50 dark:bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-[#0f172a] w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-100 dark:border-slate-800 animate-slideUp">
+            
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="font-heading text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                    <i data-lucide="settings" class="text-orange-500"></i> CONFIGURAÇÕES
+                </h2>
+                <button onclick="closeSettings()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white transition"><i data-lucide="x"></i></button>
             </div>
             
-            <div class="space-y-6 max-h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
+            <div class="space-y-6 max-h-[70vh] overflow-y-auto pr-1 custom-scrollbar">
                 
-                <!-- GESTÃO DE USUÁRIOS (CREDENCIAIS) -->
-                <div id="user-management" class="hidden">
-                    <div class="p-5 bg-sky-50 dark:bg-sky-900/10 rounded-2xl border border-sky-200 dark:border-sky-800">
-                        <h3 class="text-sm font-bold flex items-center gap-2 mb-4 text-sky-800 dark:text-sky-400"><i data-lucide="users" class="w-4 h-4"></i> Gestão de Usuários</h3>
+                <!-- User Management -->
+                <div id="user-management" class="hidden space-y-4">
+                    <!-- Admin -->
+                    <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700">
+                        <h3 class="font-bold text-sky-600 dark:text-sky-400 text-xs tracking-widest uppercase mb-3 flex items-center gap-2"><i class="fa-solid fa-user-shield"></i> Credenciais Mestre</h3>
+                        <div class="relative">
+                            <input type="password" id="adminPinInput" class="modern-input w-full py-2 px-4 rounded-xl text-sm" placeholder="PIN Mestre Atual">
+                            <button onclick="togglePass('adminPinInput')" class="absolute right-3 top-2.5 text-slate-400 hover:text-sky-500"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                        </div>
+                        <button onclick="updateCredential('ADMIN_PIN', 'adminPinInput')" class="mt-2 w-full py-2 bg-sky-500 hover:bg-sky-600 text-white text-xs font-bold rounded-lg uppercase transition">Salvar PIN Mestre</button>
+                    </div>
+                    
+                    <!-- Guest -->
+                    <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700">
+                        <h3 class="font-bold text-orange-500 dark:text-orange-400 text-xs tracking-widest uppercase mb-3 flex items-center gap-2"><i class="fa-solid fa-user-group"></i> Credenciais de Visitante</h3>
                         
-                        <div class="space-y-4 mb-6">
+                        <div class="space-y-3">
                             <div>
-                                <label class="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 block mb-1">Seu PIN Mestre</label>
-                                <div class="flex gap-2 relative">
-                                    <input type="password" id="adminPinInput" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2 text-xs font-mono pr-8" placeholder="PIN Atual">
-                                    <button onclick="togglePass('adminPinInput')" class="absolute right-14 top-2 text-slate-400 hover:text-sky-500"><i data-lucide="eye" class="w-4 h-4"></i></button>
-                                    <button onclick="updateCredential('ADMIN_PIN', 'adminPinInput')" class="bg-sky-500 text-white px-3 rounded-lg text-[10px] font-bold hover:bg-sky-600">SALVAR</button>
+                                <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Editar Nome de Usuário (Visitante)</label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="guestUserInput" class="modern-input w-full py-2 px-4 rounded-xl text-sm uppercase" placeholder="Ex: TALITA">
+                                    <button onclick="updateCredential('GUEST_USER', 'guestUserInput')" class="px-3 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 border border-orange-200 dark:border-orange-800 rounded-lg text-xs font-bold hover:bg-orange-200 dark:hover:bg-orange-800 transition">SALVAR</button>
                                 </div>
                             </div>
                             
-                            <div class="h-px bg-slate-200 dark:bg-slate-700"></div>
-
                             <div>
-                                <label class="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 block mb-1">Usuário Convidado (Nome)</label>
-                                <div class="flex gap-2">
-                                    <input type="text" id="guestUserInput" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2 text-xs font-mono uppercase" placeholder="Padrão: TALITA">
-                                    <button onclick="updateCredential('GUEST_USER', 'guestUserInput')" class="bg-orange-500 text-white px-3 rounded-lg text-[10px] font-bold hover:bg-orange-600">SALVAR</button>
+                                <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Editar Senha (Visitante)</label>
+                                <div class="relative">
+                                    <input type="password" id="guestPassInput" class="modern-input w-full py-2 px-4 rounded-xl text-sm" placeholder="Nova Senha">
+                                    <button onclick="togglePass('guestPassInput')" class="absolute right-3 top-2.5 text-slate-400 hover:text-orange-500"><i data-lucide="eye" class="w-4 h-4"></i></button>
                                 </div>
-                            </div>
-                            <div>
-                                <label class="text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 block mb-1">Senha Convidado</label>
-                                <div class="flex gap-2 relative">
-                                    <input type="password" id="guestPassInput" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2 text-xs font-mono pr-8" placeholder="Senha Atual">
-                                    <button onclick="togglePass('guestPassInput')" class="absolute right-14 top-2 text-slate-400 hover:text-orange-500"><i data-lucide="eye" class="w-4 h-4"></i></button>
-                                    <button onclick="updateCredential('GUEST_PASS', 'guestPassInput')" class="bg-orange-500 text-white px-3 rounded-lg text-[10px] font-bold hover:bg-orange-600">SALVAR</button>
-                                </div>
+                                <button onclick="updateCredential('GUEST_PASS', 'guestPassInput')" class="mt-2 w-full py-2 bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold rounded-lg uppercase transition">Salvar Senha Visitante</button>
                             </div>
                         </div>
-
-                        <div class="border-t border-sky-200 dark:border-sky-800 pt-4">
-                            <p class="text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-3 uppercase">Permissões de Visualização (Convidado)</p>
-                            <div class="space-y-3">
-                                <label class="flex items-center justify-between cursor-pointer"><span class="text-xs font-bold text-slate-600 dark:text-slate-300">Financeiro</span><div class="relative inline-block w-10 align-middle select-none"><input type="checkbox" id="perm-btn-finance" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-slate-300"/><label for="perm-btn-finance" class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-300 cursor-pointer"></label></div></label>
-                                <!-- Renamed from Cartão C6 to Cartão -->
-                                <label class="flex items-center justify-between cursor-pointer"><span class="text-xs font-bold text-slate-600 dark:text-slate-300">Cartão</span><div class="relative inline-block w-10 align-middle select-none"><input type="checkbox" id="perm-btn-card" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-slate-300"/><label for="perm-btn-card" class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-300 cursor-pointer"></label></div></label>
-                                <label class="flex items-center justify-between cursor-pointer"><span class="text-xs font-bold text-slate-600 dark:text-slate-300">Dieta</span><div class="relative inline-block w-10 align-middle select-none"><input type="checkbox" id="perm-btn-diet" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-slate-300"/><label for="perm-btn-diet" class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-300 cursor-pointer"></label></div></label>
-                                <label class="flex items-center justify-between cursor-pointer"><span class="text-xs font-bold text-slate-600 dark:text-slate-300">Viagens</span><div class="relative inline-block w-10 align-middle select-none"><input type="checkbox" id="perm-btn-travel" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-slate-300"/><label for="perm-btn-travel" class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-300 cursor-pointer"></label></div></label>
-                            </div>
-                            <button onclick="saveGuestPermissions()" class="mt-4 w-full py-2 text-xs font-bold text-sky-600 bg-white border border-sky-200 rounded-lg hover:bg-sky-50 transition shadow-sm">ATUALIZAR PERMISSÕES</button>
+                    </div>
+                    
+                    <!-- Permissions -->
+                    <div class="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl p-3">
+                        <p class="text-xs font-bold text-slate-500 mb-2 uppercase">Permissões de Acesso (Visitante)</p>
+                        <div class="space-y-2">
+                            <label class="flex justify-between items-center text-sm font-medium text-slate-600 dark:text-slate-300 cursor-pointer p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded">
+                                <span>Acesso: Financeiro</span>
+                                <input type="checkbox" id="perm-btn-finance" class="accent-orange-500 w-4 h-4 rounded">
+                            </label>
+                            <label class="flex justify-between items-center text-sm font-medium text-slate-600 dark:text-slate-300 cursor-pointer p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded">
+                                <span>Acesso: Cartão</span>
+                                <input type="checkbox" id="perm-btn-card" class="accent-orange-500 w-4 h-4 rounded">
+                            </label>
+                            <label class="flex justify-between items-center text-sm font-medium text-slate-600 dark:text-slate-300 cursor-pointer p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded">
+                                <span>Acesso: Dieta</span>
+                                <input type="checkbox" id="perm-btn-diet" class="accent-orange-500 w-4 h-4 rounded">
+                            </label>
+                            <label class="flex justify-between items-center text-sm font-medium text-slate-600 dark:text-slate-300 cursor-pointer p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded">
+                                <span>Acesso: Viagens</span>
+                                <input type="checkbox" id="perm-btn-travel" class="accent-orange-500 w-4 h-4 rounded">
+                            </label>
+                            <button onclick="saveGuestPermissions()" class="w-full py-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold rounded uppercase tracking-wider mt-2 hover:bg-slate-200 dark:hover:bg-slate-700 transition">Atualizar Permissões</button>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Token Block -->
+
+                <!-- Cloud Token -->
                 <div>
-                    <label class="block text-xs font-bold uppercase text-slate-400 mb-2 tracking-wider">GitHub Token (Global)</label>
-                    <div class="relative"><input type="password" id="globalToken" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 pl-10 text-xs font-mono focus:ring-2 focus:ring-orange-500 outline-none dark:text-white" placeholder="ghp_..."><div class="absolute left-3 top-3"><i data-lucide="key" class="w-4 h-4 text-slate-400"></i></div></div>
-                    <button onclick="saveToken()" class="mt-2 w-full py-2 text-xs font-bold text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 rounded-lg hover:bg-orange-100 dark:hover:bg-orange-900/40 transition">SALVAR TOKEN</button>
-                </div>
-
-                <!-- Global Backup -->
-                <div class="p-5 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700">
-                    <h3 class="text-sm font-bold flex items-center gap-2 mb-2 dark:text-white"><i data-lucide="cloud" class="w-4 h-4 text-sky-500"></i> Backup Global</h3>
-                    <div class="grid grid-cols-2 gap-3">
-                        <button onclick="cloudBackupAll()" class="flex flex-col items-center justify-center gap-1 py-3 bg-sky-600 text-white rounded-xl font-bold text-[10px] hover:bg-sky-700 transition"><i data-lucide="upload-cloud" class="w-4 h-4"></i> ENVIAR</button>
-                        <button onclick="cloudRestoreAll()" class="flex flex-col items-center justify-center gap-1 py-3 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 dark:text-white rounded-xl font-bold text-[10px] hover:bg-slate-50 transition"><i data-lucide="download-cloud" class="w-4 h-4"></i> BAIXAR</button>
+                    <label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Conexão GitHub (Token)</label>
+                    <div class="flex gap-2">
+                        <input type="password" id="globalToken" class="modern-input w-full py-2 px-4 rounded-xl text-xs" placeholder="ghp_...">
+                        <button onclick="saveToken()" class="px-4 bg-slate-800 dark:bg-slate-700 text-white rounded-xl hover:bg-slate-700 dark:hover:bg-slate-600 transition"><i data-lucide="save" class="w-4 h-4"></i></button>
                     </div>
                 </div>
 
-                <div class="pt-4 border-t border-slate-100 dark:border-slate-800">
-                    <button onclick="if(confirm('Sair?')){sessionStorage.clear(); location.reload()}" class="w-full py-3 border border-red-200 dark:border-red-900/30 text-red-500 rounded-xl font-bold text-xs hover:bg-red-50 dark:hover:bg-red-900/10 transition flex items-center justify-center gap-2"><i data-lucide="lock" class="w-3 h-3"></i> BLOQUEAR TERMINAL</button>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="cloudBackupAll()" class="py-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl text-xs font-bold hover:bg-blue-100 dark:hover:bg-blue-900/40 transition flex flex-col items-center gap-1">
+                        <i data-lucide="upload-cloud" class="w-4 h-4"></i> ENVIAR DADOS
+                    </button>
+                    <button onclick="cloudRestoreAll()" class="py-3 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-900/30 text-green-600 dark:text-green-400 rounded-xl text-xs font-bold hover:bg-green-100 dark:hover:bg-green-900/40 transition flex flex-col items-center gap-1">
+                        <i data-lucide="download-cloud" class="w-4 h-4"></i> RESTAURAR DADOS
+                    </button>
                 </div>
+
+                <button onclick="if(confirm('Bloquear terminal?')){sessionStorage.clear(); location.reload()}" class="w-full py-3 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30 text-red-500 rounded-xl font-bold text-xs hover:bg-red-100 dark:hover:bg-red-900/40 transition flex items-center justify-center gap-2">
+                    <i data-lucide="lock" class="w-3 h-3"></i> BLOQUEAR TERMINAL
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- GATEKEEPER CONFIG MODAL (INITIAL) -->
-    <div id="gk-config-modal" class="fixed inset-0 z-[10001] bg-slate-900/90 backdrop-blur-md hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-[#0f172a] w-full max-w-sm rounded-3xl p-6 shadow-2xl text-center">
-            <h3 class="font-bold text-lg mb-2 dark:text-white">Configuração Inicial</h3>
-            <p class="text-xs text-slate-500 mb-4">Configure o token antes de logar para restaurar dados.</p>
-            <input type="password" id="gk-token" class="w-full bg-slate-100 dark:bg-slate-800 p-3 rounded-xl text-center text-xs mb-4 outline-none border border-transparent focus:border-orange-500 dark:text-white" placeholder="GitHub Token Global">
-            <button onclick="saveTokenFromGatekeeper()" class="w-full py-3 bg-sky-500 text-white rounded-xl font-bold text-sm shadow-lg hover:bg-sky-600 transition">SALVAR TOKEN</button>
-            <button onclick="document.getElementById('gk-config-modal').classList.add('hidden')" class="mt-4 text-xs font-bold text-slate-400 hover:text-slate-600">FECHAR</button>
+    <!-- GK CONFIG (Initial Setup) -->
+    <div id="gk-config-modal" class="fixed inset-0 z-[10001] bg-slate-900/95 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-[#0f172a] w-full max-w-sm rounded-3xl p-6 shadow-2xl text-center border border-slate-200 dark:border-slate-800">
+            <h3 class="font-heading font-bold text-lg mb-2 text-slate-800 dark:text-white">CONFIGURAÇÃO INICIAL</h3>
+            <p class="text-xs text-slate-500 mb-4">Insira o Token do GitHub para restaurar o backup.</p>
+            <input type="password" id="gk-token" class="modern-input w-full py-3 px-4 rounded-xl text-center text-xs mb-4" placeholder="GitHub Token Global">
+            <button onclick="saveTokenFromGatekeeper()" class="btn-primary w-full py-3 rounded-xl text-sm font-bold uppercase">ESTABELECER CONEXÃO</button>
+            <button onclick="document.getElementById('gk-config-modal').classList.add('hidden')" class="mt-4 text-xs font-bold text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">CANCELAR</button>
         </div>
     </div>
 
+    <!-- TOAST -->
     <div id="toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-3 rounded-full font-bold shadow-2xl translate-y-20 opacity-0 transition-all duration-300 z-[100] flex items-center gap-3 whitespace-nowrap border border-white/10">
-        <i data-lucide="info" class="w-4 h-4 text-orange-400"></i><span id="toastMsg" class="text-xs">Notificação</span>
+        <i data-lucide="info" class="w-4 h-4 text-orange-400"></i><span id="toastMsg" class="text-xs">NOTIFICAÇÃO</span>
     </div>
-
-    <!-- APP FRAME WRAPPER -->
-    <div id="app-frame-container">
-        <iframe id="os-frame" src="about:blank"></iframe>
-    </div>
-
-    <!-- TEMPLATES -->
-    <template id="tpl-finance"><style>body{margin:0;overflow:hidden;height:100vh;}</style><iframe src="financeiro.html" style="width:100%;height:100%;border:none;"></iframe></template>
-    <template id="tpl-prime"><style>body{margin:0;overflow:hidden;height:100vh;}</style><iframe src="prime.html" style="width:100%;height:100%;border:none;"></iframe></template>
-    <template id="tpl-card"><style>body{margin:0;overflow:hidden;height:100vh;}</style><iframe src="card.html" style="width:100%;height:100%;border:none;"></iframe></template>
-    <template id="tpl-diet"><style>body{margin:0;overflow:hidden;height:100vh;}</style><iframe src="dieta.html" style="width:100%;height:100%;border:none;"></iframe></template>
-    <template id="tpl-travel"><style>body{margin:0;overflow:hidden;height:100vh;}</style><iframe src="viagens.html" style="width:100%;height:100%;border:none;"></iframe></template>
-    <template id="tpl-generator"><style>body{margin:0;overflow:hidden;height:100vh;}</style><iframe src="gerador.html" style="width:100%;height:100%;border:none;"></iframe></template>
 
     <script>
-        // DEFAULT CREDENTIALS
+        // --- LOGIC & CREDENTIALS ---
         const DEFAULT_MASTER = "16359001";
         const DEFAULT_GUEST_USER = "TALITA";
         const DEFAULT_GUEST_PASS = "Melissa0107";
@@ -351,24 +500,7 @@
         const GIST_DESC_GLOBAL = "BENAI_FULL_BACKUP_V3";
         const DEFAULT_PERMS = { 'btn-finance': false, 'btn-card': true, 'btn-diet': false, 'btn-travel': true, 'sec-consultoria': false, 'sec-trabalho': false };
 
-        // --- LAUNCHER LOGIC ---
-        window.launchApp = function(appName) {
-            const frame = document.getElementById('os-frame');
-            const container = document.getElementById('app-frame-container');
-            let tplId = 'tpl-' + appName;
-            const tpl = document.getElementById(tplId);
-            if(tpl) {
-                frame.srcdoc = tpl.innerHTML;
-                container.classList.add('open');
-            }
-        };
-
-        window.closeApp = function() {
-            document.getElementById('app-frame-container').classList.remove('open');
-            setTimeout(() => { document.getElementById('os-frame').srcdoc = 'about:blank'; }, 500);
-        };
-
-        // --- AUTH & INIT ---
+        // --- INIT ---
         document.addEventListener('DOMContentLoaded', () => {
             initTheme();
             checkGatekeeper();
@@ -376,7 +508,7 @@
             lucide.createIcons();
             const t = localStorage.getItem(TOKEN_KEY);
             if(t) {
-                document.getElementById('syncIndicator').classList.replace('bg-red-500', 'bg-emerald-500');
+                document.getElementById('syncIndicator').classList.replace('bg-red-500', 'bg-green-500');
                 document.getElementById('globalToken').value = t;
                 document.getElementById('gk-token').value = t;
             }
@@ -392,7 +524,6 @@
             const p = document.getElementById('passInput').value.trim();
             const err = document.getElementById('pinError');
 
-            // Get credentials from LocalStorage or Defaults
             const adminPin = localStorage.getItem('BENAI_ADMIN_PIN') || DEFAULT_MASTER;
             const guestUser = localStorage.getItem('BENAI_GUEST_USER') || DEFAULT_GUEST_USER;
             const guestPass = localStorage.getItem('BENAI_GUEST_PASS') || DEFAULT_GUEST_PASS;
@@ -425,27 +556,47 @@
                 document.getElementById('btn-settings').style.display = 'none';
                 const saved = localStorage.getItem(PERMS_KEY);
                 const perms = saved ? JSON.parse(saved) : DEFAULT_PERMS;
+                
+                // Hide restricted buttons completely
                 Object.keys(perms).forEach(id => {
                     const el = document.getElementById(id);
-                    if(el) el.style.display = perms[id] ? '' : 'none';
+                    if(el) {
+                        if (!perms[id]) {
+                            // If element is a link card, hide its parent wrapper if necessary, or just display none
+                            if (el.classList.contains('modern-card')) {
+                                el.style.display = 'none';
+                            } else {
+                                el.classList.add('hidden'); 
+                            }
+                        } else {
+                            el.style.display = ''; // Reset
+                            el.classList.remove('hidden');
+                        }
+                    }
                 });
+                
             } else {
                 document.getElementById('user-management').classList.remove('hidden');
-                
-                // Load saved credential values into inputs for editing
                 document.getElementById('adminPinInput').value = localStorage.getItem('BENAI_ADMIN_PIN') || DEFAULT_MASTER;
                 document.getElementById('guestUserInput').value = localStorage.getItem('BENAI_GUEST_USER') || DEFAULT_GUEST_USER;
                 document.getElementById('guestPassInput').value = localStorage.getItem('BENAI_GUEST_PASS') || DEFAULT_GUEST_PASS;
-
                 loadAdminCheckboxes();
+                
+                // Ensure all items are visible for admin
                 Object.keys(DEFAULT_PERMS).forEach(id => {
                     const el = document.getElementById(id);
-                    if(el) el.style.display = '';
+                    if(el) { el.style.display = ''; el.classList.remove('hidden'); }
                 });
             }
         }
 
-        // --- CREDENTIAL MANAGEMENT ---
+        // --- SETTINGS LOGIC ---
+        function togglePass(id) {
+            const inp = document.getElementById(id);
+            if(inp.type === 'password') inp.type = 'text';
+            else inp.type = 'password';
+        }
+
         function updateCredential(key, inputId) {
             const val = document.getElementById(inputId).value.trim();
             if(key.includes('USER')) {
@@ -455,13 +606,7 @@
                 if(val.length < 3) return alert("Senha muito curta");
                 localStorage.setItem('BENAI_' + key, val);
             }
-            showToast('Atualizado!');
-        }
-
-        function togglePass(id) {
-            const inp = document.getElementById(id);
-            if(inp.type === 'password') inp.type = 'text';
-            else inp.type = 'password';
+            showToast('CREDENCIAL ATUALIZADA');
         }
 
         function loadAdminCheckboxes() {
@@ -480,17 +625,16 @@
                 if(cb) perms[id] = cb.checked;
             });
             localStorage.setItem(PERMS_KEY, JSON.stringify(perms));
-            showToast('Permissões de Visitante Atualizadas!');
+            showToast('PERMISSÕES ATUALIZADAS');
         }
 
-        // --- CLOUD SYNC GLOBAL ---
         function openGatekeeperConfig() { document.getElementById('gk-config-modal').classList.remove('hidden'); }
         function saveTokenFromGatekeeper() {
             const t = document.getElementById('gk-token').value.trim();
             if(t) {
                 localStorage.setItem(TOKEN_KEY, t);
                 document.getElementById('globalToken').value = t;
-                showToast('Token Global Salvo!');
+                showToast('CONEXÃO ESTABELECIDA');
                 document.getElementById('gk-config-modal').classList.add('hidden');
             }
         }
@@ -499,15 +643,16 @@
             const val = document.getElementById('globalToken').value.trim();
             if(val) {
                 localStorage.setItem(TOKEN_KEY, val);
-                document.getElementById('syncIndicator').classList.replace('bg-red-500', 'bg-emerald-500');
-                showToast('Token Global Salvo!');
+                document.getElementById('syncIndicator').classList.replace('bg-red-500', 'bg-green-500');
+                showToast('TOKEN SALVO');
             }
         }
 
+        // --- CLOUD ---
         async function cloudBackupAll() {
             const token = localStorage.getItem(TOKEN_KEY);
-            if(!token) return showToast('Configure o Token primeiro!');
-            showToast('Iniciando Backup Global...');
+            if(!token) return showToast('TOKEN NECESSÁRIO');
+            showToast('ENVIANDO DADOS...');
 
             const backupData = {};
             for (let i = 0; i < localStorage.length; i++) {
@@ -516,94 +661,78 @@
             }
 
             try {
-                // 1. Check if Gist exists
                 const gists = await fetch('https://api.github.com/gists', { headers: { 'Authorization': `token ${token}` } }).then(r => r.json());
                 const existing = gists.find(g => g.description === GIST_DESC_GLOBAL);
-                
-                const payload = {
-                    description: GIST_DESC_GLOBAL,
-                    public: false,
-                    files: { "benai_full_backup.json": { content: JSON.stringify(backupData) } }
-                };
+                const payload = { description: GIST_DESC_GLOBAL, public: false, files: { "benai_full_backup.json": { content: JSON.stringify(backupData) } } };
+                let url = 'https://api.github.com/gists'; let method = 'POST';
+                if(existing) { url += '/' + existing.id; method = 'PATCH'; }
 
-                let url = 'https://api.github.com/gists';
-                let method = 'POST';
-
-                if(existing) {
-                    url += '/' + existing.id;
-                    method = 'PATCH';
-                }
-
-                const res = await fetch(url, {
-                    method: method,
-                    headers: { 'Authorization': `token ${token}` },
-                    body: JSON.stringify(payload)
-                });
-
-                if(res.ok) showToast('Backup Global Concluído!');
-                else throw new Error('Falha na API');
-
-            } catch(e) { console.error(e); showToast('Erro ao salvar na nuvem'); }
+                const res = await fetch(url, { method: method, headers: { 'Authorization': `token ${token}` }, body: JSON.stringify(payload) });
+                if(res.ok) showToast('BACKUP CONCLUÍDO');
+                else throw new Error('Falha API');
+            } catch(e) { console.error(e); showToast('FALHA NO ENVIO'); }
         }
 
         async function cloudRestoreAll() {
             const token = localStorage.getItem(TOKEN_KEY);
-            if(!token) return showToast('Configure o Token primeiro!');
-            if(!confirm('Isso substituirá TODOS os dados locais pelos da nuvem. Continuar?')) return;
+            if(!token) return showToast('TOKEN NECESSÁRIO');
+            if(!confirm('SOBRESCREVER DADOS LOCAIS?')) return;
 
-            showToast('Buscando dados...');
+            showToast('BUSCANDO DADOS...');
             try {
                 const gists = await fetch('https://api.github.com/gists', { headers: { 'Authorization': `token ${token}` } }).then(r => r.json());
                 const backupGist = gists.find(g => g.description === GIST_DESC_GLOBAL);
-                if(!backupGist) return showToast('Nenhum backup encontrado.');
+                if(!backupGist) return showToast('NENHUM BACKUP');
 
                 const fileUrl = backupGist.files['benai_full_backup.json'].raw_url;
                 const data = await fetch(fileUrl).then(r => r.json());
 
                 Object.keys(data).forEach(key => localStorage.setItem(key, data[key]));
-                showToast('Sistema Restaurado! Recarregando...');
+                showToast('SISTEMA RESTAURADO. REINICIANDO...');
                 setTimeout(() => location.reload(), 1500);
-            } catch(e) { console.error(e); showToast('Erro ao restaurar'); }
+            } catch(e) { console.error(e); showToast('FALHA NA RESTAURAÇÃO'); }
         }
 
         // --- UTILS ---
         function initTheme() {
-            if (localStorage.getItem('theme') === 'light') {
+            const t = localStorage.getItem('theme');
+            if (t === 'light') {
                 document.documentElement.classList.remove('dark');
                 document.getElementById('themeIcon').setAttribute('data-lucide', 'sun');
+            } else {
+                document.documentElement.classList.add('dark');
+                document.getElementById('themeIcon').setAttribute('data-lucide', 'moon');
             }
         }
+
         function toggleTheme() {
-            const html = document.documentElement;
-            if (html.classList.contains('dark')) {
-                html.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-                document.getElementById('themeIcon').setAttribute('data-lucide', 'sun');
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            
+            const icon = document.getElementById('themeIcon');
+            if(isDark) {
+                icon.setAttribute('data-lucide', 'moon');
             } else {
-                html.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-                document.getElementById('themeIcon').setAttribute('data-lucide', 'moon');
+                icon.setAttribute('data-lucide', 'sun');
             }
             lucide.createIcons();
         }
+
         function updateDate() {
             const now = new Date();
-            const options = { weekday: 'long', day: 'numeric', month: 'long' };
-            document.getElementById('dateDisplay').innerText = now.toLocaleDateString('pt-BR', options);
+            const options = { weekday: 'short', day: 'numeric', month: 'short' };
+            document.getElementById('dateDisplay').innerText = now.toLocaleDateString('pt-BR', options).toUpperCase();
         }
         function openSettings() {
             if(sessionStorage.getItem('benai_role') === 'admin') {
                 loadAdminCheckboxes();
-                // Load values into inputs when opening
                 document.getElementById('adminPinInput').value = localStorage.getItem('BENAI_ADMIN_PIN') || DEFAULT_MASTER;
                 document.getElementById('guestUserInput').value = localStorage.getItem('BENAI_GUEST_USER') || DEFAULT_GUEST_USER;
                 document.getElementById('guestPassInput').value = localStorage.getItem('BENAI_GUEST_PASS') || DEFAULT_GUEST_PASS;
             }
             document.getElementById('settingsModal').classList.remove('hidden');
         }
-        function closeSettings() {
-            document.getElementById('settingsModal').classList.add('hidden');
-        }
+        function closeSettings() { document.getElementById('settingsModal').classList.add('hidden'); }
         function showToast(msg) {
             const t = document.getElementById('toast');
             document.getElementById('toastMsg').innerText = msg;
