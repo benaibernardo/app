@@ -1,0 +1,2244 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Benai Travel | Nossas Aventuras</title>
+    
+    <!-- LIBS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- FONTES -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Nunito:wght@400;600;700;800&family=Patrick+Hand&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            /* TROPICAL PALETTE */
+            --bg-gradient-start: #38bdf8; 
+            --bg-gradient-end: #bae6fd;
+            
+            --card-white: rgba(255, 255, 255, 0.95);
+            --card-border: rgba(255, 255, 255, 0.6);
+            
+            --primary: #ea580c; 
+            --secondary: #f59e0b; 
+            --accent: #fbbf24;
+            
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+
+            --font-display: 'Fredoka', sans-serif;
+            --font-body: 'Nunito', sans-serif;
+            --font-hand: 'Patrick Hand', cursive;
+        }
+
+        [data-theme="dark"] {
+            --bg-gradient-start: #0f172a;
+            --bg-gradient-end: #1e293b;
+            --card-white: rgba(30, 41, 59, 0.95);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --primary: #f97316;
+            --secondary: #fbbf24;
+        }
+
+        body { 
+            font-family: var(--font-body); 
+            background: linear-gradient(180deg, var(--bg-gradient-start), var(--bg-gradient-end));
+            color: var(--text-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+            transition: background 0.5s;
+        }
+
+        h1, h2, h3, h4, .font-display { font-family: var(--font-display); }
+        .font-hand { font-family: var(--font-hand); }
+
+        /* --- BACKGROUND ANIMATION --- */
+        .sky-scene { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+        .cloud { position: absolute; color: rgba(255,255,255,0.6); animation: floatCloud linear infinite; }
+        [data-theme="dark"] .cloud { color: rgba(255,255,255,0.05); }
+        
+        .c1 { top: 10%; left: -20%; font-size: 5rem; animation-duration: 45s; }
+        .c2 { top: 30%; left: -10%; font-size: 8rem; animation-duration: 65s; animation-delay: 5s; }
+        .c3 { top: 60%; left: -15%; font-size: 3rem; animation-duration: 55s; animation-delay: 15s; }
+        
+        .bird { position: absolute; color: rgba(255,255,255,0.8); font-size: 1.5rem; animation: flyBird linear infinite; }
+        .b1 { top: 20%; left: -10%; animation-duration: 20s; animation-delay: 2s; }
+        .b2 { top: 25%; left: -10%; animation-duration: 25s; animation-delay: 10s; font-size: 1rem; }
+
+        .plane-toy {
+            position: absolute; top: 15%; left: -20%; font-size: 3rem; color: white;
+            animation: flyPlane 30s linear infinite; z-index: 0; 
+            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.1));
+        }
+
+        .sun-anim {
+            position: absolute; top: -50px; right: -50px; font-size: 10rem; color: #fbbf24;
+            opacity: 0.9; animation: spinSun 80s linear infinite; filter: drop-shadow(0 0 20px rgba(251, 191, 36, 0.4));
+        }
+        
+        @keyframes floatCloud { 0% { transform: translateX(0); } 100% { transform: translateX(120vw); } }
+        @keyframes flyPlane {
+            0% { transform: translateX(0) translateY(0) rotate(5deg); }
+            50% { transform: translateX(60vw) translateY(-30px) rotate(5deg); }
+            100% { transform: translateX(120vw) translateY(0) rotate(5deg); }
+        }
+        @keyframes flyBird {
+            0% { transform: translateX(0) translateY(0); }
+            25% { transform: translateX(25vw) translateY(-10px); }
+            50% { transform: translateX(50vw) translateY(0); }
+            75% { transform: translateX(75vw) translateY(10px); }
+            100% { transform: translateX(120vw) translateY(0); }
+        }
+        @keyframes spinSun { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        /* --- UI COMPONENTS --- */
+        .glass-panel {
+            background: var(--card-white);
+            backdrop-filter: blur(12px);
+            border: 2px solid var(--card-border);
+            border-radius: 24px;
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1);
+        }
+
+        .btn-login-sunset {
+            background: linear-gradient(135deg, #ea580c 0%, #f59e0b 100%);
+            color: white; border: none;
+            border-radius: 16px; font-family: var(--font-display);
+            font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(234, 88, 12, 0.4);
+            transition: 0.2s; cursor: pointer;
+            border-bottom: 4px solid #c2410c;
+        }
+        .btn-login-sunset:active { transform: translateY(2px); border-bottom-width: 0; margin-top: 4px; box-shadow: none; }
+
+        .btn-tropical {
+            background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+            color: #78350f; border: none;
+            border-radius: 16px; font-family: var(--font-display);
+            font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+            transition: 0.2s; cursor: pointer;
+            border-bottom: 4px solid #d97706;
+        }
+        .btn-tropical:active { transform: translateY(2px); border-bottom-width: 0; margin-top: 4px; box-shadow: none; }
+
+        .btn-icon {
+            width: 42px; height: 42px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.2); color: white;
+            border: 2px solid rgba(255,255,255,0.3); transition: 0.2s; cursor: pointer;
+        }
+        .btn-icon:hover { background: white; color: var(--primary); }
+
+        .input-fun {
+            background: rgba(255,255,255,0.8);
+            border: 2px solid #e2e8f0;
+            border-radius: 14px; padding: 12px 16px;
+            font-family: var(--font-body); font-weight: 700;
+            color: var(--text-main); width: 100%; outline: none;
+            transition: 0.3s;
+        }
+        [data-theme="dark"] .input-fun { background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.1); color: white; }
+        .input-fun:focus { border-color: var(--secondary); background: white; }
+
+        .input-login {
+            background: rgba(255,255,255,0.3);
+            border: 2px solid rgba(255,255,255,0.5);
+            border-radius: 16px; padding: 14px 16px;
+            font-family: var(--font-display); font-weight: 700;
+            color: white; width: 100%; outline: none;
+            transition: 0.3s;
+            text-align: center;
+            font-size: 1.5rem;
+            letter-spacing: 0.5em;
+        }
+        .input-login::placeholder { color: rgba(255,255,255,0.6); letter-spacing: normal; font-size: 1rem; font-family: var(--font-body); }
+        .input-login:focus { background: rgba(255,255,255,0.5); border-color: white; }
+
+        .trip-header {
+            height: 240px; border-radius: 24px; position: relative; overflow: hidden;
+            background-size: cover; background-position: center;
+            box-shadow: 0 15px 35px -10px rgba(0,0,0,0.3);
+            border: 4px solid white;
+        }
+        [data-theme="dark"] .trip-header { border-color: #334155; }
+        
+        .trip-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(15,23,42,0.95) 10%, transparent);
+            display: flex; flex-direction: column; justify-content: flex-end; padding: 24px;
+        }
+
+        .budget-container { margin-top: 10px; }
+        .budget-track { height: 14px; background: rgba(255,255,255,0.2); border-radius: 7px; overflow: hidden; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.3); }
+        .budget-fill { height: 100%; border-radius: 7px; transition: width 1s ease; background-image: linear-gradient(45deg,rgba(255,255,255,.15) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.15) 75%,transparent 75%,transparent); background-size: 1rem 1rem; }
+
+        .filter-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; margin-bottom: 15px; scrollbar-width: none; }
+        .filter-chip { 
+            flex-shrink: 0; background: var(--card-white); border: 2px solid #e2e8f0;
+            padding: 8px 14px; border-radius: 12px; font-size: 0.75rem; font-weight: 800;
+            color: var(--text-muted); transition: 0.2s; appearance: none;
+        }
+        .filter-chip:focus { border-color: var(--secondary); color: #b45309; background: #fffbeb; }
+
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(5px); z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-box { 
+            background: #fff; width: 100%; max-width: 500px; 
+            border-radius: 30px; padding: 25px; position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); border: 4px solid #cbd5e1;
+            max-height: 90vh; overflow-y: auto;
+        }
+        [data-theme="dark"] .modal-box { background: #1e293b; border-color: #334155; }
+
+        .modal-close-abs {
+            position: absolute; top: 15px; right: 15px;
+            width: 32px; height: 32px; border-radius: 50%;
+            background: rgba(0,0,0,0.05); color: #64748b;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.2s;
+        }
+        .modal-close-abs:hover { background: #ef4444; color: white; }
+
+        .action-tile {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 15px; border-radius: 16px; border: 2px solid transparent;
+            font-weight: 800; font-size: 0.75rem; text-transform: uppercase;
+            cursor: pointer; transition: 0.2s; height: 100px;
+        }
+        .tile-sync { background: #f0f9ff; color: #0ea5e9; border-color: #bae6fd; }
+        .tile-sync:hover { background: #0ea5e9; color: white; }
+        .tile-backup { background: #f0fdf4; color: #10b981; border-color: #86efac; }
+        .tile-backup:hover { background: #10b981; color: white; }
+        .tile-restore { background: #fff7ed; color: #f97316; border-color: #fdba74; }
+        .tile-restore:hover { background: #f97316; color: white; }
+
+        .roteiro-paper {
+            background: #fffdf5; 
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 20px 20px;
+            position: relative;
+        }
+        .roteiro-paper::before {
+            content: ''; position: absolute; top: 0; bottom: 0; left: 30px; width: 2px; background: #fee2e2; border-right: 1px solid #fecaca;
+        }
+        [data-theme="dark"] .roteiro-paper { background: #1e293b; background-image: radial-gradient(#334155 1px, transparent 1px); border-color: #334155; }
+        [data-theme="dark"] .roteiro-paper::before { background: #334155; border-color: #475569; }
+
+        .timeline-container { position: relative; padding-left: 20px; margin-left: 15px; border-left: 2px dashed #cbd5e1; }
+        .timeline-node { position: relative; margin-bottom: 20px; padding-bottom: 10px; }
+        .timeline-marker { width: 12px; height: 12px; border-radius: 50%; background: var(--secondary); border: 2px solid white; position: absolute; left: -27px; top: 4px; box-shadow: 0 0 0 2px var(--secondary); z-index: 10; }
+        
+        /* MALA STYLES */
+        .check-card { 
+            display: flex; align-items: center; gap: 12px; padding: 12px 14px; 
+            background: white; border-radius: 16px; border: 1px solid #e2e8f0; 
+            margin-bottom: 8px; cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+            box-shadow: 0 2px 0 rgba(0,0,0,0.02);
+        }
+        .check-card:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .check-card:active { transform: scale(0.98); }
+        
+        .check-card.checked { opacity: 0.6; background: #f8fafc; border-style: dashed; }
+        .checkbox-custom { width: 24px; height: 24px; border-radius: 8px; border: 2px solid #cbd5e1; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .check-card.checked .checkbox-custom { background: #10b981; border-color: #10b981; color: white; transform: scale(1.1); }
+
+        .mala-section-card {
+            background: var(--card-white);
+            border: 2px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 16px;
+            break-inside: avoid; /* Prevents breaking in columns */
+        }
+        .mala-grid {
+            column-count: 1;
+            column-gap: 16px;
+        }
+        @media (min-width: 768px) { .mala-grid { column-count: 2; } }
+
+        /* DOCS CARD STYLES */
+        .doc-card {
+            display: flex; align-items: center; gap: 15px; padding: 16px;
+            background: var(--card-white); border-radius: 18px; border: 1px solid #e2e8f0;
+            transition: all 0.2s; cursor: pointer; position: relative;
+            box-shadow: 0 2px 0 rgba(0,0,0,0.02);
+        }
+        .doc-card:hover { transform: translateY(-2px); box-shadow: 0 8px 15px -3px rgba(0,0,0,0.05); border-color: var(--secondary); }
+        
+        .doc-icon-box {
+            width: 48px; height: 48px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; flex-shrink: 0;
+        }
+        .doc-type-link { background: #e0f2fe; color: #0284c7; }
+        .doc-type-text { background: #fef9c3; color: #a16207; }
+        .doc-type-image { background: #fce7f3; color: #be185d; }
+
+        .doc-content { flex: 1; min-width: 0; }
+        .doc-title { font-weight: 800; color: var(--text-main); font-size: 0.95rem; margin-bottom: 2px; }
+        .doc-meta { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+
+        .doc-action-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #cbd5e1; transition: 0.2s; }
+        .doc-card:hover .doc-action-icon { background: #f1f5f9; color: var(--text-main); }
+        
+        .image-preview-modal { max-width: 90vw; max-height: 80vh; object-fit: contain; border-radius: 10px; }
+
+        #gatekeeper { 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            min-height: 100vh; width: 100%; position: fixed; inset: 0; z-index: 10000; 
+            background: transparent; 
+        }
+
+        /* NEW RADIO BUTTONS */
+        .radio-box { cursor: pointer; flex: 1; text-align: center; padding: 12px; border-radius: 14px; border: 2px solid #e2e8f0; transition: 0.2s; background: white; color: #64748b; font-weight: 700; font-size: 0.8rem; display: flex; flex-direction: column; align-items: center; gap: 4px; box-shadow: 0 2px 0 #e2e8f0; }
+        [data-theme="dark"] .radio-box { background: #1e293b; border-color: #334155; color: #94a3b8; box-shadow: 0 2px 0 #0f172a; }
+        .radio-box:hover { transform: translateY(-2px); }
+        .radio-box.active { transform: translateY(2px); box-shadow: none; border-width: 2px; }
+        
+        .radio-box.rb-benai.active { border-color: #3b82f6; background: #eff6ff; color: #1d4ed8; }
+        [data-theme="dark"] .radio-box.rb-benai.active { background: #172554; color: #60a5fa; }
+        
+        .radio-box.rb-talita.active { border-color: #f97316; background: #fff7ed; color: #c2410c; }
+        [data-theme="dark"] .radio-box.rb-talita.active { background: #431407; color: #fdba74; }
+        
+        .radio-box.rb-both.active { border-color: #a855f7; background: #faf5ff; color: #7e22ce; }
+        [data-theme="dark"] .radio-box.rb-both.active { background: #3b0764; color: #d8b4fe; }
+
+        /* ICONS FOR FILTERS */
+        .fi-icon { font-size: 0.8rem; margin-right: 4px; }
+
+    </style>
+</head>
+<body>
+
+    <!-- BACKGROUND ANIMATION -->
+    <div class="sky-scene">
+        <i class="fa-solid fa-sun sun-anim"></i>
+        <i class="fa-solid fa-cloud cloud c1"></i>
+        <i class="fa-solid fa-cloud cloud c2"></i>
+        <i class="fa-solid fa-cloud cloud c3"></i>
+        <i class="fa-solid fa-crow bird b1"></i>
+        <i class="fa-solid fa-crow bird b2"></i>
+        <i class="fa-solid fa-plane plane-toy"></i>
+    </div>
+
+    <!-- GATEKEEPER -->
+    <div id="gatekeeper">
+        <div class="text-center max-w-xs w-full mx-4 relative overflow-visible">
+            
+            <div class="w-24 h-24 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-2 text-white text-4xl shadow-lg animate-bounce border-4 border-white/30">
+                <i class="fa-solid fa-earth-americas"></i>
+            </div>
+            
+            <h1 class="font-display text-4xl font-bold text-orange-900 mb-0 drop-shadow-md">Viagens App</h1>
+            <p class="font-hand text-2xl font-bold text-white mb-8 tracking-widest drop-shadow-sm">Nossas Aventuras</p>
+            
+            <div class="relative w-full mb-4">
+                <input type="password" id="passInput" class="input-login w-full" placeholder="••••" onkeyup="if(event.key==='Enter') attemptLogin()">
+                <button onclick="togglePass()" class="absolute right-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition">
+                    <i class="fa-solid fa-eye" id="passIcon"></i>
+                </button>
+            </div>
+
+            <button onclick="attemptLogin()" class="btn-login-sunset w-full py-4 text-sm font-bold shadow-lg">DECOLAR</button>
+            <div id="loginError" class="h-5 mt-2 text-red-500 font-bold text-xs bg-white/80 rounded px-2 inline-block shadow-sm hidden"></div>
+            
+            <button onclick="document.getElementById('gk-config').style.display='flex'" class="mt-6 text-white/70 hover:text-white transition hover:scale-110">
+                <i class="fa-solid fa-paper-plane fa-bounce text-xl"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- APP CONTENT -->
+    <div id="app-content" style="display: none;">
+        
+        <header class="max-w-4xl mx-auto px-4 py-6 flex justify-between items-center relative z-20">
+            <div class="flex-1 flex items-center relative mr-2">
+                <button onclick="closeActiveTrip()" id="back-btn" class="mr-4 w-10 h-10 rounded-full bg-white/30 hover:bg-white flex items-center justify-center text-sky-900 transition hidden shadow-sm backdrop-blur-sm">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <h1 class="font-display text-3xl font-bold text-sky-950 tracking-tight drop-shadow-sm text-left">Nossas Aventuras</h1>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="toggleTheme()" class="btn-icon"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
+                <button onclick="openCloudModal()" class="btn-icon relative">
+                    <div id="cloudStatusDot" class="w-3 h-3 rounded-full bg-slate-300 absolute top-2 right-2 border-2 border-white shadow-sm"></div>
+                    <i class="fa-solid fa-cloud"></i>
+                </button>
+                <button onclick="window.location.href='index.html'" class="btn-icon text-slate-400"><i class="fa-solid fa-arrow-left"></i></button>
+            </div>
+        </header>
+
+        <main class="max-w-4xl mx-auto px-4 pb-32">
+            
+            <!-- LISTA DE VIAGENS -->
+            <div id="trip-selector" class="animate-fade-in">
+                <div class="text-center mb-8 mt-2">
+                    <button onclick="openTripModal()" class="bg-gradient-to-r from-orange-400 to-amber-400 text-white px-8 py-3 rounded-full font-display font-bold shadow-lg border-2 border-orange-200 hover:scale-105 hover:from-orange-500 hover:to-amber-500 transition uppercase tracking-wide flex items-center gap-2 mx-auto">
+                        <i class="fa-solid fa-ticket"></i> Nova Aventura
+                    </button>
+                </div>
+                
+                <div id="trip-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- JS Rendered -->
+                </div>
+                <div id="empty-state" class="hidden text-center py-20 text-white/70 font-bold opacity-80">
+                    <i class="fa-solid fa-plane-slash text-6xl mb-4"></i><br>Nenhuma viagem encontrada.<br>Crie a primeira!
+                </div>
+            </div>
+
+            <!-- DETALHES DA VIAGEM -->
+            <div id="active-trip-view" class="hidden animate-fade-in">
+                
+                <!-- HERO CARD -->
+                <div class="trip-header mb-6" id="hero-bg">
+                    <button class="absolute top-4 right-4 bg-black/30 backdrop-blur-md p-2 rounded-full text-white hover:bg-white hover:text-orange-500 transition z-10 border border-white/20" onclick="editCurrentTrip()">
+                        <i class="fa-solid fa-pencil"></i>
+                    </button>
+                    <div class="trip-overlay">
+                        <div class="flex justify-between items-end mb-2">
+                            <div>
+                                <span id="hero-status" class="text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase shadow-lg mb-2 inline-block border border-white/20"></span>
+                                <h2 id="hero-title" class="font-display text-4xl font-bold text-white leading-none drop-shadow-lg"></h2>
+                                <p id="hero-dates" class="text-sm text-white/90 font-bold flex items-center gap-2 mt-2 drop-shadow-md font-hand tracking-wide"><i class="fa-regular fa-calendar"></i> --/--</p>
+                            </div>
+                            <div class="text-right text-white drop-shadow-md">
+                                <div class="text-[10px] opacity-90 font-bold uppercase tracking-widest">Orçamento</div>
+                                <div id="hero-budget" class="font-display text-3xl font-bold">R$ 0</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Budget Bar (OVERLAY) -->
+                        <div class="budget-container">
+                            <div class="budget-track">
+                                <div id="hero-bar" class="budget-fill bg-green-400" style="width: 0%"></div>
+                            </div>
+                            <div class="flex justify-between mt-1 text-[10px] font-bold text-white/90 drop-shadow-md uppercase tracking-wider">
+                                <span>Gasto: <span id="hero-spent">R$ 0</span></span>
+                                <span id="hero-left">Resta: R$ 0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TABS -->
+                <div class="flex gap-2 mb-6 p-1 glass-panel rounded-2xl overflow-x-auto no-scrollbar">
+                    <button class="flex-1 py-3 px-4 rounded-xl font-bold text-sm bg-orange-500 text-white shadow-md transition whitespace-nowrap" id="tab-gastos" onclick="switchTab('gastos')"><i class="fa-solid fa-wallet mr-2"></i> Gastos</button>
+                    <button class="flex-1 py-3 px-4 rounded-xl font-bold text-sm text-slate-500 hover:bg-white/50 transition whitespace-nowrap" id="tab-roteiro" onclick="switchTab('roteiro')"><i class="fa-solid fa-map-location-dot mr-2"></i> Roteiro</button>
+                    <button class="flex-1 py-3 px-4 rounded-xl font-bold text-sm text-slate-500 hover:bg-white/50 transition whitespace-nowrap" id="tab-mala" onclick="switchTab('mala')"><i class="fa-solid fa-suitcase mr-2"></i> Mala</button>
+                    <button class="flex-1 py-3 px-4 rounded-xl font-bold text-sm text-slate-500 hover:bg-white/50 transition whitespace-nowrap" id="tab-docs" onclick="switchTab('docs')"><i class="fa-solid fa-folder mr-2"></i> Docs</button>
+                </div>
+
+                <!-- CONTENT: GASTOS -->
+                <div id="content-gastos">
+                    <button onclick="openTxModal()" class="w-full py-4 mb-6 btn-tropical rounded-2xl shadow-xl flex items-center justify-center gap-2 text-sm group">
+                        <i class="fa-solid fa-plus-circle group-hover:rotate-90 transition"></i> Novo Gasto
+                    </button>
+                    
+                    <!-- Filters -->
+                    <div class="filter-scroll">
+                        <input id="searchTx" class="filter-chip w-24 focus:w-48" placeholder="🔍 Buscar..." onkeyup="renderTxList()">
+                        <select id="filt-date" class="filter-chip" onchange="renderTxList()"><option value="all">📅 Data: Todas</option></select>
+                        <select id="filt-cat" class="filter-chip" onchange="renderTxList()"><option value="all">📁 Categoria: Todas</option></select>
+                        <select id="filt-pay" class="filter-chip" onchange="renderTxList()">
+                            <option value="all">💳 Pagamento: Todos</option>
+                            <option value="credit">💳 Crédito</option>
+                            <option value="debit">💳 Débito</option>
+                            <option value="pix">💠 Pix</option>
+                            <option value="cash">💵 Dinheiro</option>
+                        </select>
+                        <select id="filt-who" class="filter-chip" onchange="renderTxList()"><option value="all">👤 Quem: Todos</option><option value="benai">💙 Benai</option><option value="talita">🧡 Talita</option></select>
+                    </div>
+
+                    <div id="tx-list" class="space-y-3"></div>
+                </div>
+
+                <!-- CONTENT: ROTEIRO -->
+                <div id="content-roteiro" class="hidden">
+                    <div class="roteiro-paper mb-6">
+                        <div class="flex justify-between items-center mb-6 pl-4 border-b border-slate-200 pb-2">
+                            <h3 class="font-display font-bold text-xl text-slate-700 dark:text-slate-200">Diário de Bordo</h3>
+                            <button onclick="openRoteiroModal()" class="text-orange-500 font-bold text-sm bg-orange-50 border border-orange-100 px-4 py-2 rounded-xl hover:bg-orange-100 shadow-sm">+ Evento</button>
+                        </div>
+                        <div id="roteiro-list"></div>
+                    </div>
+                </div>
+
+                <!-- CONTENT: MALA -->
+                <div id="content-mala" class="hidden">
+                    <div class="glass-panel p-5 mb-6">
+                        <h3 class="font-display font-bold text-xl text-slate-700 dark:text-white mb-4">Minha Mala</h3>
+                        
+                        <!-- ADD FORM -->
+                        <div class="bg-slate-50 dark:bg-white/5 p-4 rounded-xl border border-slate-200 dark:border-white/10 mb-4">
+                            <div class="mb-3 relative">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase ml-1 mb-1 block">Título da Seção</label>
+                                <div class="flex gap-2">
+                                    <input id="mala-sec-input" class="input-fun !py-2 !text-sm flex-1" placeholder="Ex: Higiene" list="mala-sec-list">
+                                    <datalist id="mala-sec-list"></datalist>
+                                    <button onclick="openMalaSectionManager()" class="w-10 bg-slate-200 text-slate-500 rounded-xl hover:bg-slate-300 flex items-center justify-center"><i class="fa-solid fa-gear"></i></button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-400 uppercase ml-1 mb-1 block">Item</label>
+                                <div class="flex gap-2">
+                                    <input id="new-mala" class="input-fun !py-2 !text-sm flex-1" placeholder="Ex: Escova de Dentes" onkeyup="if(event.key==='Enter') addMalaItem()">
+                                    <button onclick="addMalaItem()" class="bg-green-500 text-white rounded-xl px-4 hover:bg-green-600 shadow-md border-b-4 border-green-600 active:border-b-0 active:mt-1 font-bold text-sm uppercase">Adicionar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- GRID LAYOUT FOR LISTS -->
+                    <div id="mala-list" class="mala-grid"></div>
+                </div>
+
+                <!-- CONTENT: DOCS (UPDATED) -->
+                <div id="content-docs" class="hidden">
+                    <h3 class="font-display font-bold text-xl text-white mb-3 drop-shadow-md">Carteira & Documentos</h3>
+                    
+                    <button onclick="openDocModal()" class="w-full py-4 mb-6 bg-white/20 backdrop-blur-md rounded-2xl shadow-xl flex items-center justify-center gap-2 text-sm text-white font-bold border border-white/30 hover:bg-white/30 transition">
+                        <i class="fa-solid fa-plus-circle"></i> Adicionar Doc / Info
+                    </button>
+
+                    <div id="doc-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- JS RENDERED -->
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL DOCS (UPDATED) -->
+    <div id="modal-docs" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close-abs" onclick="closeModals()"><i class="fa-solid fa-xmark"></i></button>
+            <h3 class="font-display text-2xl font-bold text-slate-700 dark:text-white mb-6" id="doc-modal-title">Novo Documento</h3>
+            
+            <form onsubmit="saveDoc(event)">
+                <input type="hidden" id="doc-id">
+                
+                <div class="mb-4">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-2 mb-1 block">Tipo de Informação</label>
+                    <select id="doc-type" class="input-fun text-sm" onchange="toggleDocFields()">
+                        <option value="link">🔗 Link Externo (Drive/PDF)</option>
+                        <option value="text">📝 Texto / Código (Copiar)</option>
+                        <option value="image">📷 Imagem (Ticket/Foto)</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-2 mb-1 block">Título</label>
+                    <input type="text" id="doc-title" class="input-fun text-sm" placeholder="Ex: Reserva Booking" required>
+                </div>
+
+                <!-- DYNAMIC FIELDS -->
+                <div id="field-link" class="mb-4">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-2 mb-1 block">URL do Arquivo</label>
+                    <input type="url" id="doc-url" class="input-fun text-sm" placeholder="https://drive.google.com/...">
+                </div>
+
+                <div id="field-text" class="mb-4 hidden">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-2 mb-1 block">Informação (Para Copiar)</label>
+                    <textarea id="doc-text-val" class="input-fun text-sm resize-none" rows="3" placeholder="Ex: Código do portão: 1234"></textarea>
+                </div>
+
+                <div id="field-image" class="mb-4 hidden">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-2 mb-1 block">Imagem (Será Comprimida)</label>
+                    <input type="file" id="doc-file" accept="image/*" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100 mb-2">
+                    <input type="hidden" id="doc-img-base64">
+                    <div id="doc-img-preview" class="w-full h-32 bg-slate-100 rounded-xl bg-contain bg-center bg-no-repeat border border-slate-200 hidden"></div>
+                </div>
+
+                <div class="mb-6">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-2 mb-1 block">Ícone</label>
+                    <select id="doc-icon" class="input-fun text-sm">
+                        <option value="fa-file">📄 Genérico</option>
+                        <option value="fa-plane">✈️ Voo</option>
+                        <option value="fa-hotel">🏨 Hotel</option>
+                        <option value="fa-ticket">🎟️ Ingresso</option>
+                        <option value="fa-passport">🛂 Passaporte</option>
+                        <option value="fa-wifi">📶 Wi-Fi</option>
+                        <option value="fa-key">🔑 Chave/Senha</option>
+                        <option value="fa-car">🚗 Carro</option>
+                    </select>
+                </div>
+
+                <div class="flex gap-3">
+                    <button type="button" id="btn-del-doc" onclick="delDoc()" class="w-14 bg-red-100 text-red-500 rounded-xl font-bold flex items-center justify-center border border-red-200 hidden"><i class="fa-solid fa-trash"></i></button>
+                    <button type="submit" class="btn-tropical w-full py-4 shadow-lg text-sm font-bold uppercase">Salvar Doc</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL IMAGE VIEW -->
+    <div id="modal-img-view" class="modal-overlay" style="z-index: 200;">
+        <div class="relative max-w-lg w-full p-4">
+            <button class="absolute -top-12 right-0 text-white hover:text-red-400" onclick="document.getElementById('modal-img-view').style.display='none'"><i class="fa-solid fa-xmark text-3xl"></i></button>
+            <img id="full-image-src" src="" class="w-full rounded-2xl shadow-2xl border-4 border-white">
+        </div>
+    </div>
+
+    <!-- EXISTING MODALS (TX, ROTEIRO, TRIP, CAT, ETC...) KEPT AS IS -->
+    <!-- MODAL TRANSACTION -->
+    <div id="modal-tx" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close-abs" onclick="closeModals()"><i class="fa-solid fa-xmark"></i></button>
+            <h3 class="font-display text-2xl font-bold text-slate-700 dark:text-white mb-6" id="tx-modal-title">Gasto</h3>
+            
+            <form onsubmit="saveTx(event)">
+                <input type="hidden" id="tx-id">
+                
+                <div class="bg-orange-50 dark:bg-slate-800 p-6 rounded-3xl mb-6 flex flex-col items-center border-2 border-orange-100 dark:border-slate-700 shadow-inner">
+                    <label class="text-[10px] font-bold text-orange-400 uppercase mb-1 tracking-widest">Valor Total</label>
+                    <div class="flex items-center gap-1">
+                        <span class="text-2xl font-bold text-orange-300">R$</span>
+                        <input type="tel" id="tx-val" class="text-4xl font-display font-bold text-slate-800 dark:text-white bg-transparent w-48 text-center outline-none placeholder-slate-200" placeholder="0,00" oninput="maskMoney(this)" required>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-2 mb-1 block">Data</label>
+                        <input type="date" id="tx-date" class="input-fun text-sm" required>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-2 mb-1 block">Categoria</label>
+                        <div class="flex gap-2">
+                            <select id="tx-cat" class="input-fun text-sm flex-1" onchange="toggleTransportFields()"></select>
+                            <button type="button" onclick="openCatManager()" class="bg-slate-100 dark:bg-slate-700 rounded-xl px-3 text-slate-400 hover:bg-slate-200"><i class="fa-solid fa-gear"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4"><label class="text-[10px] font-bold text-slate-400 uppercase ml-2 mb-1 block">Local</label><input type="text" id="tx-loc" class="input-fun text-sm" placeholder="Ex: Duty Free"></div>
+                
+                <!-- ORIGIN/DESTINATION FIELDS (HIDDEN BY DEFAULT) -->
+                <div id="transport-fields" class="grid grid-cols-2 gap-4 mb-4 hidden bg-sky-50 dark:bg-sky-900/10 p-3 rounded-2xl border border-sky-100 dark:border-sky-800">
+                    <div>
+                        <label class="text-[9px] font-bold text-sky-500 uppercase ml-1 block">De Onde?</label>
+                        <input type="text" id="tx-origin" class="input-fun text-xs" placeholder="Origem">
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-bold text-sky-500 uppercase ml-1 block">Para Onde?</label>
+                        <input type="text" id="tx-dest" class="input-fun text-xs" placeholder="Destino">
+                    </div>
+                </div>
+
+                <div class="mb-4"><label class="text-[10px] font-bold text-slate-400 uppercase ml-2 mb-1 block">Descrição</label>
+                    <textarea id="tx-desc" class="input-fun text-sm resize-none" placeholder="Ex: Lembrancinhas para família..." rows="2" required></textarea>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-2 mb-1 block">Pagamento</label>
+                        <select id="tx-method" class="input-fun text-sm" onchange="toggleInstallments()">
+                            <option value="Débito">💳 Débito</option>
+                            <option value="Crédito">💳 Crédito</option>
+                            <option value="Pix">💠 Pix</option>
+                            <option value="Dinheiro">💵 Dinheiro</option>
+                        </select>
+                    </div>
+                    <div>
+                        <!-- WHO PAID CUSTOM SELECT -->
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-2 mb-1 block">Quem Pagou?</label>
+                        <div class="flex gap-2">
+                            <div onclick="selectWho('benai')" id="btn-who-benai" class="radio-box rb-benai"><i class="fa-solid fa-person"></i> Benai</div>
+                            <div onclick="selectWho('talita')" id="btn-who-talita" class="radio-box rb-talita"><i class="fa-solid fa-person-dress"></i> Talita</div>
+                            <div onclick="selectWho('both')" id="btn-who-both" class="radio-box rb-both active"><i class="fa-solid fa-users"></i> Ambos</div>
+                        </div>
+                        <input type="hidden" id="tx-who" value="both">
+                    </div>
+                </div>
+
+                <!-- Installments -->
+                <div id="installments-group" class="hidden mb-4 p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl border border-indigo-100">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[9px] font-bold text-indigo-400 uppercase mb-1 block ml-1">Parcelas</label>
+                            <select id="tx-inst" class="input-fun text-sm border-indigo-200">
+                                <option value="1">1x</option><option value="2">2x</option><option value="3">3x</option><option value="4">4x</option><option value="5">5x</option><option value="6">6x</option><option value="7">7x</option><option value="8">8x</option><option value="9">9x</option><option value="10">10x</option><option value="11">11x</option><option value="12">12x</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-bold text-indigo-400 uppercase mb-1 block ml-1">Cartão</label>
+                            <select id="tx-card-type" class="input-fun text-sm border-indigo-200">
+                                <option value="physical">💳 Físico</option>
+                                <option value="virtual">📱 Virtual</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- OPTIONS GRID (PAID + INTEGRATION) -->
+                <div class="grid grid-cols-1 gap-3 mb-6">
+                    <!-- Paid Status -->
+                    <div class="p-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl">
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" id="tx-paid" class="accent-emerald-500 w-4 h-4" checked>
+                            <div class="leading-tight">
+                                <span class="text-xs font-bold text-slate-700 dark:text-slate-300 block">Já está pago?</span>
+                                <span class="text-[9px] text-slate-400">Marque se o dinheiro já saiu da conta.</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Card App Integration -->
+                    <div class="p-3 bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-800 rounded-xl">
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" id="tx-integrate" class="accent-indigo-500 w-4 h-4">
+                            <div class="leading-tight">
+                                <span class="text-xs font-bold text-indigo-600 dark:text-indigo-300 block">Enviar para Card App?</span>
+                                <span class="text-[9px] text-indigo-400">Sincroniza este gasto com seu controle mensal.</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="flex gap-3">
+                    <button type="button" id="btn-del-tx" onclick="deleteTx()" class="w-14 bg-red-100 text-red-500 rounded-xl font-bold flex items-center justify-center border border-red-200 hidden"><i class="fa-solid fa-trash"></i></button>
+                    <button type="submit" class="btn-tropical w-full py-4 shadow-lg text-sm font-bold uppercase">Salvar Gasto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL ROTEIRO -->
+    <div id="modal-roteiro" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close-abs" onclick="closeModals()"><i class="fa-solid fa-xmark"></i></button>
+            <h3 class="font-display text-2xl font-bold text-slate-700 dark:text-white mb-6">Evento Roteiro</h3>
+            
+            <form onsubmit="saveRoteiroEvent(event)">
+                <input type="hidden" id="rot-id">
+                
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-2 mb-1 block">Data</label>
+                        <input type="date" id="rot-date" class="input-fun text-sm" required>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-2 mb-1 block">Hora</label>
+                        <input type="time" id="rot-time" class="input-fun text-sm" required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-2 mb-1 block">Título da Atividade</label>
+                    <input type="text" id="rot-title" class="input-fun text-sm" placeholder="Ex: Passeio de Barco" required>
+                </div>
+
+                <div class="mb-6">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-2 mb-1 block">Observações (Opcional)</label>
+                    <textarea id="rot-desc" class="input-fun text-sm resize-none" placeholder="Detalhes, endereço, o que levar..." rows="3"></textarea>
+                </div>
+
+                <div class="flex gap-3">
+                    <button type="button" id="btn-del-rot" onclick="delRoteiro()" class="w-14 bg-red-100 text-red-500 rounded-xl font-bold flex items-center justify-center border border-red-200 hidden"><i class="fa-solid fa-trash"></i></button>
+                    <button type="submit" class="btn-tropical w-full py-4 shadow-lg text-sm font-bold uppercase">Salvar Evento</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL TRIP -->
+    <div id="modal-trip" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close-abs" onclick="closeModals()"><i class="fa-solid fa-xmark"></i></button>
+            <h3 class="font-display text-2xl font-bold mb-6 text-sky-900" id="trip-modal-title">Viagem</h3>
+            <form onsubmit="saveTrip(event)">
+                <input type="hidden" id="trip-id">
+                
+                <div class="mb-4">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-2 mb-1 block">Nome da Viagem</label>
+                    <input type="text" id="trip-title" class="input-fun" placeholder="Ex: Férias 2024" required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-2 mb-1 block">Destino (Local)</label>
+                    <input type="text" id="trip-dest" class="input-fun" placeholder="Ex: Cancún, México" required>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-2 mb-1 block">Início</label><input type="date" id="trip-start" class="input-fun text-sm"></div>
+                    <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-2 mb-1 block">Fim</label><input type="date" id="trip-end" class="input-fun text-sm"></div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-2 mb-1 block">Orçamento</label>
+                        <input type="tel" id="trip-budget" class="input-fun" placeholder="0,00" oninput="maskMoney(this)">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-2 mb-1 block">Status</label>
+                        <select id="trip-status" class="input-fun text-sm">
+                            <option value="planning">Planejamento</option>
+                            <option value="active">Em Viagem</option>
+                            <option value="ended">Encerrada</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-2 mb-1 block">Imagem Capa (URL ou Arquivo)</label>
+                    <input type="text" id="trip-img" class="input-fun text-xs mb-2" placeholder="https://..." onchange="previewBg(this.value)">
+                    <label class="block w-full py-2 bg-slate-100 text-slate-500 rounded-xl text-center text-xs font-bold cursor-pointer hover:bg-slate-200 border border-slate-200">
+                        <i class="fa-solid fa-upload mr-1"></i> Carregar Foto
+                        <input type="file" hidden accept="image/*" onchange="handleImageFile(this)">
+                    </label>
+                    <div id="trip-preview" class="h-24 w-full rounded-2xl mt-3 bg-slate-100 bg-cover bg-center hidden border-2 border-slate-200"></div>
+                </div>
+                
+                <div class="flex gap-2">
+                    <button type="button" id="btn-del-trip" onclick="deleteTrip()" class="hidden w-14 bg-red-100 text-red-500 rounded-xl font-bold flex items-center justify-center border border-red-200"><i class="fa-solid fa-trash"></i></button>
+                    <button type="submit" class="btn-login-sunset w-full py-4 uppercase text-sm font-bold shadow-lg">Salvar Viagem</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL CAT MANAGER -->
+    <div id="modal-cat" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close-abs" onclick="document.getElementById('modal-cat').style.display='none'"><i class="fa-solid fa-xmark"></i></button>
+            <h3 class="font-display text-xl font-bold mb-4 text-slate-700 dark:text-white" id="cat-modal-title">Categorias</h3>
+            <div class="flex gap-2 mb-4">
+                <input id="new-cat-name" class="input-fun py-2 text-sm" placeholder="Nova...">
+                <button onclick="addCategory()" class="bg-green-500 text-white rounded-xl px-4 hover:bg-green-600"><i class="fa-solid fa-plus"></i></button>
+            </div>
+            <div id="cat-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <!-- MODAL MALA SECTION MANAGER -->
+    <div id="modal-mala-sections" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close-abs" onclick="document.getElementById('modal-mala-sections').style.display='none'"><i class="fa-solid fa-xmark"></i></button>
+            <h3 class="font-display text-xl font-bold mb-4 text-slate-700 dark:text-white">Gerenciar Seções da Mala</h3>
+            <div id="mala-sec-manager-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
+            <p class="text-[10px] text-slate-400 mt-4 text-center">Nota: Ao renomear uma seção, todos os itens associados serão atualizados.</p>
+        </div>
+    </div>
+
+    <!-- MODAL CLOUD (REFORMULATED) -->
+    <div id="modal-cloud" class="modal-overlay">
+        <div class="modal-box text-center">
+            <button class="modal-close-abs" onclick="closeModals()"><i class="fa-solid fa-xmark"></i></button>
+            <i class="fa-solid fa-cloud text-5xl text-sky-400 mb-2 animate-bounce"></i>
+            <h3 class="font-display text-xl font-bold mb-6 text-slate-700 dark:text-white">Dados & Nuvem</h3>
+            
+            <div class="mb-4">
+                <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Token de Acesso</label>
+                <input type="password" id="gk-token" class="input-fun text-center text-xs" placeholder="ghp_...">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <div class="action-tile tile-sync" onclick="pushToCloud()">
+                    <i class="fa-solid fa-rotate text-2xl mb-2"></i>
+                    Sincronizar
+                </div>
+                <div class="action-tile tile-backup" onclick="backupJSON()">
+                    <i class="fa-solid fa-download text-2xl mb-2"></i>
+                    Backup
+                </div>
+            </div>
+            
+            <label class="block w-full">
+                <div class="action-tile tile-restore w-full h-auto py-3">
+                    <i class="fa-solid fa-upload text-xl mb-1"></i>
+                    Restaurar Arquivo
+                </div>
+                <input type="file" hidden onchange="restoreJSON(this)">
+            </label>
+            
+            <button onclick="saveToken()" class="mt-4 text-xs font-bold text-slate-400 hover:text-sky-500 underline">Salvar Token Manualmente</button>
+        </div>
+    </div>
+
+    <!-- GK CONFIG (Original, kept for compatibility if needed, but cloud modal now handles) -->
+    <div id="gk-config" class="modal-overlay" style="z-index: 10001;">
+        <div class="modal-box text-center">
+            <h3 class="font-display text-xl font-bold mb-2 text-sky-900">Token GitHub</h3>
+            <input type="password" id="gk-token-legacy" class="config-input mb-4 text-xs" placeholder="ghp_...">
+            <button onclick="saveTokenLegacy()" class="btn-login-sunset w-full py-3 text-xs uppercase">Salvar</button>
+            <button onclick="document.getElementById('gk-config').style.display='none'" class="mt-4 text-xs font-bold text-sky-400 hover:text-sky-600">Cancelar</button>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full shadow-xl opacity-0 transition-opacity z-50 font-bold text-sm pointer-events-none whitespace-nowrap flex items-center gap-2">
+        <i class="fa-solid fa-circle-check text-green-400"></i> <span id="toast-text">Ação realizada</span>
+    </div>
+
+    <script>
+        // --- CONFIG ---
+        const DB_KEY = 'BENAI_TRAVEL_DB';
+        const CARD_GIST_DESC = 'BENAI_CARD_DB'; // Constant from card.html
+        const CARD_GIST_FILE = 'card_psy_db.json'; // Constant from card.html
+        const TOKEN_KEY = 'BENAI_GLOBAL_TOKEN';
+        const MASTER_PIN = "16359001";
+        const GIST_DESC = "BENAI_TRAVEL_BACKUP";
+        const GIST_FILE = "travel_db.json";
+
+        const DEFAULT_CATS = ['🏨 Hospedagem', '🍔 Alimentação', '✈️ Transporte', '🎟️ Lazer', '🛍️ Compras', '🏷️ Outros'];
+
+        // --- STATE ---
+        let db = { trips: [], categories: DEFAULT_CATS };
+        let currentTripId = null;
+        let currentTab = 'gastos';
+        let gistId = null;
+        let editingCatType = 'cats'; // Compatibility for manager
+
+        // --- INIT ---
+        window.onload = () => {
+            lucide.createIcons();
+            initTheme();
+            const t = localStorage.getItem(TOKEN_KEY);
+            if(t) {
+                document.getElementById('gk-token').value = t;
+                document.getElementById('gk-token-legacy').value = t;
+            }
+            
+            if(sessionStorage.getItem('benai_auth') === 'true') {
+                document.getElementById('gatekeeper').style.display = 'none';
+                document.getElementById('app-content').style.display = 'block';
+                initApp();
+            }
+        };
+
+        function attemptLogin() {
+            if(document.getElementById('passInput').value === MASTER_PIN) {
+                sessionStorage.setItem('benai_auth', 'true');
+                document.getElementById('gatekeeper').style.display = 'none';
+                document.getElementById('app-content').style.display = 'block';
+                initApp();
+            } else {
+                document.getElementById('loginError').innerText = "Senha Incorreta";
+                document.getElementById('loginError').classList.remove('hidden');
+                setTimeout(() => {
+                    document.getElementById('loginError').innerText='';
+                    document.getElementById('loginError').classList.add('hidden');
+                }, 2000);
+            }
+        }
+
+        function togglePass() {
+            const input = document.getElementById('passInput');
+            const icon = document.getElementById('passIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+
+        async function initApp() {
+            // Load Local
+            const local = localStorage.getItem(DB_KEY);
+            if(local) { try { db = JSON.parse(local); } catch(e){} }
+            
+            // Safe Defaults
+            if(!db.trips) db.trips = [];
+            if(!db.categories) db.categories = DEFAULT_CATS;
+
+            // Sync Cloud
+            const token = localStorage.getItem(TOKEN_KEY);
+            if(token) {
+                updateCloudStatus('sync');
+                await pullFromCloud();
+            } else {
+                updateCloudStatus('offline');
+            }
+
+            // Create Demo Trip if Empty
+            if(db.trips.length === 0) {
+                createDemoTrip();
+            }
+
+            renderApp();
+        }
+
+        function createDemoTrip() {
+            const demoTrip = {
+                id: Date.now(),
+                title: "Férias dos Sonhos",
+                dest: "Fernando de Noronha",
+                start: new Date().toISOString().split('T')[0],
+                end: new Date(new Date().setDate(new Date().getDate() + 7)).toISOString().split('T')[0],
+                budget: 5000,
+                status: "active",
+                img: "https://images.unsplash.com/photo-1544665679-b003c2a934ba",
+                transactions: [
+                    { id: 1, val: 1200, date: new Date().toISOString().split('T')[0], cat: "🏨 Hospedagem", desc: "Resort All Inclusive", loc: "NORONHA RESORT", method: "Crédito", whoPaid: "benai", paid: true, installments: 3, cardType: "virtual" },
+                    { id: 2, val: 350, date: new Date().toISOString().split('T')[0], cat: "✈️ Transporte", desc: "Uber Aeroporto", loc: "AEROPORTO", origin: "Casa", dest: "Aeroporto", method: "Débito", whoPaid: "both", paid: true },
+                    { id: 3, val: 80, date: new Date().toISOString().split('T')[0], cat: "🍔 Alimentação", desc: "Lanche Voo", loc: "GOL LINHAS AEREAS", method: "Pix", whoPaid: "talita", paid: true }
+                ],
+                itinerary: [
+                    { date: new Date().toISOString().split('T')[0], time: "08:00", title: "Chegada no Aeroporto", desc: "Check-in e despachar malas" },
+                    { date: new Date().toISOString().split('T')[0], time: "14:00", title: "Check-in Hotel", desc: "Deixar malas e ir para a praia" },
+                    { date: new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0], time: "09:00", title: "Passeio de Barco", desc: "Ver golfinhos e mergulho" }
+                ],
+                packing: [
+                    // HIGIENE
+                    { name: "Escova de Dentes", sec: "Higiene", checked: true },
+                    { name: "Pasta de Dente", sec: "Higiene", checked: true },
+                    { name: "Fio Dental", sec: "Higiene", checked: true },
+                    { name: "Shampoo / Condicionador", sec: "Higiene", checked: false },
+                    { name: "Sabonete Líquido", sec: "Higiene", checked: false },
+                    { name: "Desodorante", sec: "Higiene", checked: true },
+                    { name: "Perfume", sec: "Higiene", checked: false },
+                    { name: "Protetor Solar", sec: "Higiene", checked: true },
+                    
+                    // ROUPAS
+                    { name: "Camisetas (5x)", sec: "Roupas", checked: false },
+                    { name: "Shorts / Bermudas (3x)", sec: "Roupas", checked: false },
+                    { name: "Roupas Íntimas (7x)", sec: "Roupas", checked: false },
+                    { name: "Meias (4x)", sec: "Roupas", checked: false },
+                    { name: "Chinelo", sec: "Roupas", checked: true },
+                    { name: "Tênis Confortável", sec: "Roupas", checked: true },
+                    { name: "Roupa de Banho (Sunga/Biquíni)", sec: "Roupas", checked: true },
+                    { name: "Pijama", sec: "Roupas", checked: false },
+                    
+                    // ELETRÔNICOS
+                    { name: "Celular", sec: "Eletrônicos", checked: true },
+                    { name: "Carregador Celular", sec: "Eletrônicos", checked: true },
+                    { name: "Powerbank", sec: "Eletrônicos", checked: false },
+                    { name: "Fones de Ouvido", sec: "Eletrônicos", checked: true },
+                    { name: "Câmera / GoPro", sec: "Eletrônicos", checked: true },
+                    { name: "Adaptador de Tomada", sec: "Eletrônicos", checked: false },
+                    
+                    // DOCUMENTOS
+                    { name: "RG / CNH", sec: "Documentos", checked: true },
+                    { name: "Cartões de Crédito", sec: "Documentos", checked: true },
+                    { name: "Dinheiro em Espécie", sec: "Documentos", checked: false },
+                    { name: "Passagens Impressas/PDF", sec: "Documentos", checked: true },
+                    
+                    // FARMÁCIA
+                    { name: "Analgésico", sec: "Farmácia", checked: false },
+                    { name: "Antialérgico", sec: "Farmácia", checked: false },
+                    { name: "Band-aid", sec: "Farmácia", checked: false }
+                ],
+                links: [
+                    { type: 'link', title: "Reserva Hotel", value: "#", icon: "fa-hotel" },
+                    { type: 'link', title: "Passagens Aéreas", value: "#", icon: "fa-plane" }
+                ]
+            };
+            db.trips.push(demoTrip);
+            saveData();
+        }
+
+        // --- RENDER LOGIC ---
+        function renderApp() {
+            if(currentTripId) renderActiveTrip();
+            else renderTripList();
+        }
+
+        function renderTripList() {
+            document.getElementById('trip-selector').classList.remove('hidden');
+            document.getElementById('active-trip-view').classList.add('hidden');
+            document.getElementById('back-btn').classList.add('hidden');
+            
+            const grid = document.getElementById('trip-grid');
+            grid.innerHTML = '';
+            
+            if(db.trips.length === 0) {
+                document.getElementById('empty-state').classList.remove('hidden');
+            } else {
+                document.getElementById('empty-state').classList.add('hidden');
+                db.trips.sort((a,b) => new Date(b.start) - new Date(a.start)); // Newest first
+                
+                db.trips.forEach(t => {
+                    const spent = (t.transactions||[]).reduce((a,b)=>a+b.val,0);
+                    const dStart = t.start ? new Date(t.start+'T12:00:00').toLocaleDateString('pt-BR') : '--';
+                    
+                    // Logic for display title (Title or Destination)
+                    const displayTitle = t.title || t.dest || "Sem Nome";
+                    const displayDest = t.dest && t.title !== t.dest ? t.dest : "";
+
+                    let statusLabel = "Planejamento";
+                    let statusClass = "bg-slate-100 text-slate-500";
+                    if(t.status === 'active') { statusLabel = "Em Viagem"; statusClass = "bg-green-100 text-green-600"; }
+                    if(t.status === 'ended') { statusLabel = "Encerrada"; statusClass = "bg-gray-200 text-gray-600"; }
+
+                    grid.innerHTML += `
+                    <div class="glass-panel p-4 flex gap-4 items-center cursor-pointer hover:bg-white/80 transition relative overflow-hidden group" onclick="openTrip(${t.id})">
+                        <div class="w-20 h-20 rounded-2xl bg-cover bg-center shadow-md flex-shrink-0 border-2 border-white group-hover:scale-105 transition duration-500" style="background-image:url('${t.img||'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800'}')"></div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-display font-bold text-xl text-slate-800 dark:text-white truncate">${displayTitle}</h3>
+                                    ${displayDest ? `<p class="text-[10px] text-slate-500 uppercase font-bold truncate"><i class="fa-solid fa-location-dot"></i> ${displayDest}</p>` : ''}
+                                </div>
+                                <span class="text-[9px] font-bold uppercase ${statusClass} px-2 py-1 rounded-lg border border-white/50">${statusLabel}</span>
+                            </div>
+                            <div class="flex justify-between items-end mt-2">
+                                <div>
+                                    <p class="text-[10px] opacity-60 font-bold uppercase tracking-wider flex items-center gap-1"><i class="fa-regular fa-calendar"></i> ${dStart}</p>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300 font-black mt-1">Gasto: ${fmtMoney(spent)}</p>
+                                </div>
+                                <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-orange-100 group-hover:text-orange-500 transition"><i class="fa-solid fa-chevron-right text-xs"></i></div>
+                            </div>
+                        </div>
+                    </div>`;
+                });
+            }
+        }
+
+        function openTrip(id) { currentTripId = id; renderApp(); }
+        function closeActiveTrip() { currentTripId = null; renderApp(); }
+
+        function renderActiveTrip() {
+            const t = db.trips.find(x=>x.id===currentTripId);
+            if(!t) { closeActiveTrip(); return; }
+
+            document.getElementById('trip-selector').classList.add('hidden');
+            document.getElementById('active-trip-view').classList.remove('hidden');
+            document.getElementById('back-btn').classList.remove('hidden');
+
+            document.getElementById('hero-title').innerHTML = `${t.title} <span class="block text-sm font-hand opacity-80 mt-1">${t.dest||''}</span>`;
+            document.getElementById('hero-bg').style.backgroundImage = `url('${t.img||'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1'}')`;
+            document.getElementById('hero-budget').innerText = fmtMoney(t.budget);
+            
+            // Status Logic Fix
+            const statusConfig = {
+                'planning': { label: 'Planejamento', class: 'bg-yellow-500' },
+                'active': { label: 'Em Viagem', class: 'bg-green-500' },
+                'ended': { label: 'Encerrada', class: 'bg-slate-500' }
+            };
+            const st = statusConfig[t.status] || statusConfig['planning'];
+            const heroStatus = document.getElementById('hero-status');
+            heroStatus.innerText = st.label;
+            heroStatus.className = `text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase shadow-lg mb-2 inline-block border border-white/20 ${st.class}`;
+
+            const dStart = t.start ? new Date(t.start+'T12:00:00').toLocaleDateString('pt-BR') : '--';
+            const dEnd = t.end ? new Date(t.end+'T12:00:00').toLocaleDateString('pt-BR') : '--';
+            document.getElementById('hero-dates').innerHTML = `<i class="fa-regular fa-calendar"></i> ${dStart} - ${dEnd}`;
+
+            const spent = (t.transactions||[]).reduce((a,b)=>a+b.val,0);
+            const left = t.budget - spent;
+            const pct = t.budget > 0 ? (spent/t.budget)*100 : 0;
+
+            document.getElementById('hero-spent').innerText = fmtMoney(spent);
+            document.getElementById('hero-left').innerText = (left>=0 ? 'Resta: ' : 'Excedeu: ') + fmtMoney(Math.abs(left));
+            
+            const bar = document.getElementById('hero-bar');
+            bar.style.width = Math.min(pct,100)+'%';
+            bar.className = 'budget-fill ' + (pct>100?'bg-red-500':(pct>80?'bg-orange-400':'bg-green-400'));
+
+            switchTab(currentTab);
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('#active-trip-view button[id^="tab-"]').forEach(b => {
+                b.classList.remove('bg-orange-500', 'text-white', 'shadow-md');
+                b.classList.add('text-slate-500', 'hover:bg-white/50');
+            });
+            document.getElementById('tab-'+tab).classList.add('bg-orange-500', 'text-white', 'shadow-md');
+            document.getElementById('tab-'+tab).classList.remove('text-slate-500', 'hover:bg-white/50');
+
+            ['gastos','roteiro','mala','docs'].forEach(id => document.getElementById('content-'+id).classList.add('hidden'));
+            document.getElementById('content-'+tab).classList.remove('hidden');
+
+            if(tab === 'gastos') renderTxList();
+            if(tab === 'roteiro') renderRoteiro();
+            if(tab === 'mala') renderMala();
+            if(tab === 'docs') renderDocs();
+        }
+
+        // --- EXPENSES ---
+        function renderTxList() {
+            const t = db.trips.find(x => x.id === currentTripId);
+            const list = document.getElementById('tx-list');
+            list.innerHTML = '';
+            
+            // Filter Elements
+            const dateSel = document.getElementById('filt-date');
+            const catSel = document.getElementById('filt-cat');
+            
+            // Populate Cats
+            if(catSel.options.length <= 1) db.categories.forEach(c => catSel.add(new Option(c,c)));
+
+            // Extract Unique Dates
+            let txs = t.transactions || [];
+            const uniqueDates = [...new Set(txs.map(x => x.date))].sort();
+            
+            // Populate Dates
+            const currentFiltDate = dateSel.value;
+            dateSel.innerHTML = '<option value="all">📅 Todas Datas</option>';
+            uniqueDates.forEach(d => {
+                const dateObj = new Date(d + 'T12:00:00');
+                const label = dateObj.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
+                dateSel.add(new Option(label, d));
+            });
+            dateSel.value = currentFiltDate;
+
+            // Apply Filters
+            const term = document.getElementById('searchTx').value.toLowerCase();
+            const fCat = catSel.value;
+            const fPay = document.getElementById('filt-pay').value;
+            const fWho = document.getElementById('filt-who').value;
+            const fDate = dateSel.value;
+
+            if(term) txs = txs.filter(x => x.desc.toLowerCase().includes(term));
+            if(fDate !== 'all') txs = txs.filter(x => x.date === fDate);
+            if(fCat !== 'all') txs = txs.filter(x => x.cat === fCat);
+            
+            // Updated Payment Filter Logic
+            if(fPay !== 'all') {
+                if(fPay === 'credit') txs = txs.filter(x => x.method === 'Crédito');
+                else if(fPay === 'debit') txs = txs.filter(x => x.method === 'Débito');
+                else if(fPay === 'pix') txs = txs.filter(x => x.method === 'Pix');
+                else if(fPay === 'cash') txs = txs.filter(x => x.method === 'Dinheiro');
+            }
+
+            if(fWho !== 'all') txs = txs.filter(x => x.whoPaid === fWho);
+
+            if(txs.length === 0) { list.innerHTML = '<div class="text-center text-white/50 text-sm py-10 font-bold bg-black/10 rounded-2xl border border-white/10 mx-4">Nenhum gasto encontrado.</div>'; return; }
+
+            txs.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+            txs.forEach(tx => {
+                const d = new Date(tx.date+'T12:00:00');
+                const day = d.getDate();
+                const month = d.toLocaleDateString('pt-BR',{month:'short'}).toUpperCase().replace('.','');
+                const weekday = d.toLocaleDateString('pt-BR',{weekday:'short'}).toUpperCase().replace('.','');
+                
+                const catStyle = getCategoryStyle(tx.cat);
+                const catIcon = catStyle.icon;
+                const catColorClass = catStyle.color;
+
+                let whoBadgeClass = tx.whoPaid==='benai' ? 'who-benai' : (tx.whoPaid==='talita'?'who-talita':'who-both');
+                let whoText = tx.whoPaid==='benai' ? 'BENAI' : (tx.whoPaid==='talita'?'TALITA':'AMBOS');
+                
+                let payIcon = 'fa-money-bill';
+                if(tx.method === 'Crédito') payIcon = 'fa-credit-card';
+                if(tx.method === 'Pix') payIcon = 'fa-qrcode';
+                if(tx.method === 'Débito') payIcon = 'fa-credit-card text-blue-500';
+                
+                let statusClass = tx.paid ? 'bg-emerald-50 border-emerald-200' : 'bg-red-50 border-red-200';
+                
+                // Transport Special Layout (Origin -> Dest)
+                let transportHtml = '';
+                if(tx.cat.toLowerCase().includes('transporte') && (tx.origin || tx.destination)) {
+                    transportHtml = `<span class="text-[10px] font-bold text-sky-600 bg-sky-50 px-2 py-0.5 rounded ml-2 border border-sky-100 flex items-center gap-1"><i class="fa-solid fa-route"></i> ${tx.origin || '?'} <i class="fa-solid fa-arrow-right text-[8px]"></i> ${tx.destination || '?'}</span>`;
+                }
+
+                let installBar = '';
+                if(tx.method === 'Crédito' && tx.installments > 1) {
+                    installBar = renderInstallmentBar(tx.date, tx.installments);
+                }
+
+                // Layout Update: Location First, then Description
+                list.innerHTML += `
+                <div class="rounded-2xl p-4 mb-3 border flex gap-3 cursor-pointer relative shadow-sm ${statusClass}" onclick="editTx(${tx.id})">
+                    <div class="flex flex-col items-center justify-center w-12 h-12 bg-white rounded-xl border border-slate-100 shadow-sm shrink-0">
+                        <span class="text-xs font-bold text-slate-400 uppercase leading-none">${weekday}</span>
+                        <span class="text-xl font-bold text-slate-700 leading-none">${day}</span>
+                        <span class="text-[8px] font-bold text-slate-300 uppercase leading-none">${month}</span>
+                    </div>
+                    
+                    <div class="flex-1 min-w-0 flex flex-col justify-center">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="font-bold text-slate-800 text-sm uppercase truncate max-w-[60%]">${tx.loc || 'LOCAL'}</span>
+                            <span class="text-slate-300 text-xs">|</span>
+                            <span class="text-xs text-slate-500 font-semibold truncate">${tx.desc}</span>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="text-[9px] text-white px-2 py-0.5 rounded font-bold uppercase" style="background:${catColorClass}"><i class="fa-solid ${catIcon}"></i> ${tx.cat}</span>
+                            ${transportHtml}
+                        </div>
+                    </div>
+
+                    <div class="text-right flex flex-col justify-center items-end shrink-0">
+                        <div class="font-bold text-slate-800 text-sm">R$ ${fmtMoneyNoR(tx.val)}</div>
+                        <div class="flex items-center gap-1 mt-1">
+                            <i class="fa-solid ${payIcon} text-slate-400 text-xs"></i>
+                            <span class="who-pill ${whoBadgeClass}" style="font-size:8px; padding:1px 4px;">${whoText}</span>
+                        </div>
+                        ${installBar}
+                    </div>
+                </div>`;
+            });
+        }
+
+        function renderInstallmentBar(dateStr, total) {
+            if(total <= 1) return '';
+            
+            const start = new Date(dateStr);
+            const now = new Date();
+            let monthsDiff = (now.getFullYear() - start.getFullYear()) * 12;
+            monthsDiff -= start.getMonth();
+            monthsDiff += now.getMonth();
+            // Assume 1st installment is immediate/same month
+            let current = Math.max(1, Math.min(monthsDiff + 1, total));
+            
+            let segments = '';
+            for(let i=0; i<total; i++) {
+                let color = i < current ? 'bg-emerald-400' : 'bg-slate-200';
+                segments += `<div class="flex-1 h-full rounded-sm ${color}"></div>`;
+            }
+            
+            return `
+            <div class="mt-2 w-full min-w-[60px]">
+                <div class="flex justify-between text-[8px] font-bold text-slate-400 mb-0.5 uppercase tracking-wide">
+                    <span>Parcelado</span>
+                    <span>${current}/${total}</span>
+                </div>
+                <div class="flex gap-0.5 h-1.5 w-full bg-slate-50 rounded overflow-hidden border border-slate-100">
+                    ${segments}
+                </div>
+            </div>`;
+        }
+
+        // --- CATEGORY STYLE HELPER ---
+        function getCategoryStyle(name) {
+            const n = name.toLowerCase();
+            if(n.includes('hospedagem')||n.includes('hotel')) return { icon: 'fa-hotel', color: '#6366f1' }; // Indigo
+            if(n.includes('aliment')||n.includes('comida')||n.includes('restaurante')) return { icon: 'fa-utensils', color: '#f97316' }; // Orange
+            if(n.includes('transporte')||n.includes('uber')||n.includes('voo')) return { icon: 'fa-plane', color: '#3b82f6' }; // Blue
+            if(n.includes('lazer')||n.includes('passeio')||n.includes('ticket')) return { icon: 'fa-ticket', color: '#8b5cf6' }; // Purple
+            if(n.includes('compra')||n.includes('shop')) return { icon: 'fa-bag-shopping', color: '#ec4899' }; // Pink
+            if(n.includes('saúde')||n.includes('farmácia')) return { icon: 'fa-heart-pulse', color: '#ef4444' }; // Red
+            return { icon: 'fa-tag', color: '#64748b' }; // Slate (Default)
+        }
+
+        function getCategoryEmoji(name) {
+            const n = name.toLowerCase();
+            if(n.includes('hospedagem')||n.includes('hotel')) return '🏨';
+            if(n.includes('aliment')||n.includes('comida')||n.includes('restaurante')) return '🍔';
+            if(n.includes('transporte')||n.includes('uber')||n.includes('voo')) return '✈️';
+            if(n.includes('lazer')||n.includes('passeio')||n.includes('ticket')) return '🎟️';
+            if(n.includes('compra')||n.includes('shop')) return '🛍️';
+            if(n.includes('saúde')||n.includes('farmácia')) return '💊';
+            return '🏷️';
+        }
+
+        function openTxModal() {
+            document.getElementById('modal-tx').style.display = 'flex';
+            document.getElementById('tx-modal-title').innerText = "Novo Gasto";
+            document.getElementById('tx-id').value = '';
+            document.getElementById('tx-val').value = '';
+            document.getElementById('tx-desc').value = '';
+            document.getElementById('tx-loc').value = '';
+            document.getElementById('tx-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('tx-method').value = 'Débito';
+            
+            // Transport Reset
+            document.getElementById('tx-origin').value = '';
+            document.getElementById('tx-dest').value = '';
+            document.getElementById('transport-fields').classList.add('hidden');
+
+            // Reset Radio Buttons
+            selectWho('both');
+            
+            document.getElementById('tx-paid').checked = true;
+            document.getElementById('tx-integrate').checked = false;
+            document.getElementById('btn-del-tx').classList.add('hidden');
+            
+            // Populate Cats
+            const catSel = document.getElementById('tx-cat');
+            catSel.innerHTML = '';
+            db.categories.forEach(c => catSel.add(new Option(c, c)));
+            
+            toggleInstallments();
+        }
+
+        function editTx(id) {
+            const t = db.trips.find(x => x.id === currentTripId);
+            const tx = t.transactions.find(x => x.id === id);
+            if(!tx) return;
+            
+            openTxModal();
+            document.getElementById('tx-modal-title').innerText = "Editar Gasto";
+            document.getElementById('tx-id').value = tx.id;
+            document.getElementById('tx-val').value = fmtMoneyNoR(tx.val);
+            document.getElementById('tx-desc').value = tx.desc;
+            document.getElementById('tx-loc').value = tx.loc || '';
+            document.getElementById('tx-date').value = tx.date;
+            document.getElementById('tx-cat').value = tx.cat;
+            document.getElementById('tx-method').value = tx.method;
+            
+            // Transport
+            if(tx.cat.toLowerCase().includes('transporte')) {
+                document.getElementById('transport-fields').classList.remove('hidden');
+                document.getElementById('tx-origin').value = tx.origin || '';
+                document.getElementById('tx-dest').value = tx.destination || '';
+            }
+
+            // Set Radio
+            const who = tx.whoPaid === 'benai' || tx.whoPaid === 'talita' ? tx.whoPaid : 'both';
+            selectWho(who);
+
+            document.getElementById('tx-paid').checked = tx.paid;
+            
+            if(tx.method === 'Crédito') {
+                document.getElementById('installments-group').classList.remove('hidden');
+                document.getElementById('tx-inst').value = tx.installments || 1;
+                document.getElementById('tx-card-type').value = tx.cardType || 'physical';
+            }
+            
+            document.getElementById('btn-del-tx').classList.remove('hidden');
+        }
+
+        function toggleTransportFields() {
+            const cat = document.getElementById('tx-cat').value.toLowerCase();
+            const fields = document.getElementById('transport-fields');
+            if(cat.includes('transporte') || cat.includes('uber') || cat.includes('voo')) {
+                fields.classList.remove('hidden');
+            } else {
+                fields.classList.add('hidden');
+            }
+        }
+
+        // --- SELECT WHO UI HELPER ---
+        function selectWho(who) {
+            document.getElementById('tx-who').value = who;
+            document.querySelectorAll('.radio-box').forEach(el => el.classList.remove('active'));
+            document.getElementById('btn-who-'+who).classList.add('active');
+        }
+
+        function toggleInstallments() {
+            const m = document.getElementById('tx-method').value;
+            const g = document.getElementById('installments-group');
+            // Logic updated: Integration option is now always visible
+            if(m === 'Crédito') {
+                g.classList.remove('hidden');
+            } else {
+                g.classList.add('hidden');
+            }
+        }
+
+        function saveTx(e) {
+            e.preventDefault();
+            const trip = db.trips.find(x => x.id === currentTripId);
+            const id = document.getElementById('tx-id').value;
+            const val = parseMoney(document.getElementById('tx-val').value);
+            const method = document.getElementById('tx-method').value;
+            const isCredit = method === 'Crédito';
+            const cat = document.getElementById('tx-cat').value;
+            
+            const whoPaid = document.getElementById('tx-who').value;
+
+            const txData = {
+                id: id ? parseInt(id) : Date.now(),
+                val: val,
+                date: document.getElementById('tx-date').value,
+                cat: cat,
+                desc: document.getElementById('tx-desc').value,
+                loc: document.getElementById('tx-loc').value.toUpperCase(),
+                origin: document.getElementById('tx-origin').value,
+                destination: document.getElementById('tx-dest').value,
+                method: method,
+                whoPaid: whoPaid,
+                paid: document.getElementById('tx-paid').checked,
+                installments: isCredit ? parseInt(document.getElementById('tx-inst').value) : 1,
+                cardType: isCredit ? document.getElementById('tx-card-type').value : null
+            };
+
+            if(id) {
+                const idx = trip.transactions.findIndex(x=>x.id==id);
+                trip.transactions[idx] = txData;
+            } else {
+                trip.transactions.push(txData);
+            }
+
+            // INTEGRATION WITH CARD APP (GIST) - Now checks checkbox regardless of payment method
+            if(document.getElementById('tx-integrate').checked) {
+                integrateWithCardGist(txData, trip.title);
+            }
+
+            saveData();
+            closeModals();
+            renderActiveTrip();
+        }
+
+        function deleteTx() {
+            if(confirm("Excluir?")) {
+                const t = db.trips.find(x=>x.id===currentTripId);
+                t.transactions = t.transactions.filter(x=>x.id != document.getElementById('tx-id').value);
+                saveData(); closeModals(); renderActiveTrip();
+            }
+        }
+
+        async function integrateWithCardGist(tx, tripTitle) {
+            const token = localStorage.getItem(TOKEN_KEY);
+            if(!token) return;
+
+            showToast("Integrando com Card App...", "wait");
+
+            try {
+                // 1. Find Gist by Description
+                const gists = await fetch('https://api.github.com/gists', {
+                    headers: { 'Authorization': `token ${token}` }
+                }).then(r => r.json());
+
+                const cardGist = gists.find(g => g.description === CARD_GIST_DESC);
+                if(!cardGist) { alert("Banco Card App não encontrado."); return; }
+
+                // 2. Fetch Content
+                const rawUrl = cardGist.files[CARD_GIST_FILE].raw_url;
+                const cardDB = await fetch(rawUrl).then(r => r.json());
+
+                // 3. Add Transaction
+                const newTx = {
+                    id: Date.now() + 500, // Offset
+                    type: 'credit', // Usually Card App tracks credit/debit alike, often categorized as 'credit' type structurally
+                    val: tx.val,
+                    desc: `Viagem ${tripTitle}: ${tx.desc}`,
+                    date: tx.date,
+                    cat: 'Viagem',
+                    loc: tx.loc,
+                    inst: tx.installments,
+                    method: tx.method === 'Crédito' ? 'credit' : 'debit', // Pass actual method if supported or map
+                    cardType: tx.cardType,
+                    whoPaid: tx.whoPaid === 'both' ? 'benai' : tx.whoPaid,
+                    paid: false
+                };
+
+                if(!cardDB.transactions) cardDB.transactions = [];
+                cardDB.transactions.push(newTx);
+
+                // 4. Update Gist
+                await fetch(`https://api.github.com/gists/${cardGist.id}`, {
+                    method: 'PATCH',
+                    headers: { 'Authorization': `token ${token}` },
+                    body: JSON.stringify({
+                        files: { [CARD_GIST_FILE]: { content: JSON.stringify(cardDB) } }
+                    })
+                });
+
+                showToast("Sucesso no Card App!");
+
+            } catch(e) {
+                console.error(e);
+                alert("Erro ao integrar: " + e.message);
+            }
+        }
+
+        // --- SUB-FEATURES ---
+        function renderRoteiro() {
+            const t = db.trips.find(x=>x.id===currentTripId);
+            const l = document.getElementById('roteiro-list'); l.innerHTML='';
+            
+            if(!t.itinerary) t.itinerary = [];
+            t.itinerary.sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time));
+            
+            let lastDate = '';
+            t.itinerary.forEach((it, i) => {
+                if(it.date !== lastDate) {
+                    const d = new Date(it.date+'T12:00:00');
+                    const label = d.toLocaleDateString('pt-BR', {weekday:'short', day:'numeric', month:'short'});
+                    l.innerHTML += `<div class="font-display font-bold text-lg text-slate-600 mt-6 mb-3 pl-2 border-l-4 border-orange-400 uppercase tracking-wide bg-orange-50/50 rounded-r-lg py-1">${label}</div>`;
+                    lastDate = it.date;
+                }
+                const hasNote = it.desc && it.desc.trim().length > 0;
+                
+                // Enhanced Item Visuals
+                l.innerHTML += `
+                <div class="timeline-container">
+                    <div class="timeline-node flex justify-between items-start group relative" onclick="openRoteiroModal(${i})">
+                        <div class="timeline-marker group-hover:scale-125 transition"></div>
+                        
+                        <div class="w-full mr-2 cursor-pointer bg-white/80 hover:bg-white border border-slate-200 hover:border-orange-200 p-3 rounded-xl transition shadow-sm hover:shadow-md relative overflow-hidden">
+                            <!-- Time Badge -->
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="bg-sky-600 text-white px-2 py-0.5 rounded text-xs font-bold font-mono shadow-sm"><i class="fa-regular fa-clock mr-1"></i>${it.time}</span>
+                            </div>
+                            
+                            <!-- Title -->
+                            <div class="font-display font-bold text-slate-800 text-lg leading-tight mb-1">${it.title}</div>
+                            
+                            <!-- Notes (Post-it Style) -->
+                            ${hasNote ? `
+                            <div class="mt-2 p-2 bg-yellow-50 text-slate-700 text-xs font-medium rounded border-l-4 border-yellow-300 shadow-sm flex items-start gap-2">
+                                <i class="fa-solid fa-note-sticky text-yellow-400 mt-0.5"></i>
+                                <span class="leading-relaxed">${it.desc}</span>
+                            </div>` : ''}
+                        </div>
+
+                        <!-- Delete Action (Hover) -->
+                        <div class="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button class="w-8 h-8 flex items-center justify-center bg-white rounded-full text-red-400 hover:text-red-600 hover:bg-red-50 shadow-md border border-red-100" onclick="event.stopPropagation(); delRoteiro(${i})">
+                                <i class="fa-solid fa-trash text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
+            });
+        }
+
+        function openRoteiroModal(idx = null) {
+            const t = db.trips.find(x=>x.id===currentTripId);
+            document.getElementById('modal-roteiro').style.display = 'flex';
+            document.getElementById('rot-id').value = (idx === null) ? 'NEW' : idx;
+            document.getElementById('btn-del-rot').classList.add('hidden');
+
+            if (idx !== null) {
+                const item = t.itinerary[idx];
+                document.getElementById('rot-date').value = item.date;
+                document.getElementById('rot-time').value = item.time;
+                document.getElementById('rot-title').value = item.title;
+                document.getElementById('rot-desc').value = item.desc || '';
+            } else {
+                // Default to next day or today
+                const lastDate = t.itinerary.length > 0 ? t.itinerary[t.itinerary.length-1].date : new Date().toISOString().split('T')[0];
+                document.getElementById('rot-date').value = lastDate;
+                document.getElementById('rot-time').value = "09:00";
+                document.getElementById('rot-title').value = "";
+                document.getElementById('rot-desc').value = "";
+            }
+        }
+
+        function saveRoteiroEvent(e) {
+            e.preventDefault();
+            const t = db.trips.find(x=>x.id===currentTripId);
+            if(!t.itinerary) t.itinerary = [];
+            
+            const idx = document.getElementById('rot-id').value;
+            const data = {
+                date: document.getElementById('rot-date').value,
+                time: document.getElementById('rot-time').value,
+                title: document.getElementById('rot-title').value,
+                desc: document.getElementById('rot-desc').value
+            };
+
+            if (idx === 'NEW') {
+                t.itinerary.push(data);
+            } else {
+                t.itinerary[idx] = data;
+            }
+            saveData();
+            closeModals();
+            renderRoteiro();
+        }
+
+        function addRoteiroItem() { openRoteiroModal(); } // Redirect to new modal logic
+
+        function delRoteiro(i) {
+            const t = db.trips.find(x=>x.id===currentTripId);
+            if(confirm('Apagar evento?')) { t.itinerary.splice(i, 1); saveData(); renderRoteiro(); }
+        }
+
+        // --- MALA (PACKING LIST) ---
+        function renderMala() {
+            const t = db.trips.find(x => x.id === currentTripId);
+            const listContainer = document.getElementById('mala-list'); 
+            listContainer.innerHTML = '';
+            
+            // Populate Datalist for Sections
+            const secList = document.getElementById('mala-sec-list');
+            secList.innerHTML = '';
+            const existingSections = new Set(t.packing.map(x => x.sec));
+            existingSections.forEach(s => secList.appendChild(new Option(s)));
+
+            // Group Items
+            const groups = {};
+            t.packing.forEach((it, i) => {
+                const s = it.sec || 'Geral';
+                if (!groups[s]) groups[s] = [];
+                groups[s].push({ item: it, idx: i });
+            });
+
+            // Render Sections in Grid
+            Object.keys(groups).sort().forEach(g => {
+                let itemsHTML = '';
+                groups[g].forEach(obj => {
+                    itemsHTML += `
+                    <div class="check-card ${obj.item.checked ? 'checked' : ''}" onclick="toggleMala(${obj.idx})">
+                        <div class="checkbox-custom"><i class="fa-solid fa-check text-xs ${obj.item.checked ? '' : 'hidden'}"></i></div>
+                        <span class="flex-1 text-sm font-bold text-slate-700">${obj.item.name}</span>
+                        <i class="fa-solid fa-trash text-slate-200 hover:text-red-400 text-xs transition p-2" onclick="event.stopPropagation(); delMala(${obj.idx})"></i>
+                    </div>`;
+                });
+
+                listContainer.innerHTML += `
+                <div class="mala-section-card">
+                    <h4 class="font-display font-bold text-lg text-orange-500 mb-3 border-b border-slate-100 pb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-suitcase-rolling text-sm"></i> ${g}
+                        <span class="text-xs text-slate-300 font-normal ml-auto">${groups[g].length} itens</span>
+                    </h4>
+                    <div>${itemsHTML}</div>
+                </div>`;
+            });
+        }
+
+        function addMalaItem() {
+            const nameInput = document.getElementById('new-mala');
+            const secInput = document.getElementById('mala-sec-input');
+            const name = nameInput.value.trim();
+            const sec = secInput.value.trim() || 'Geral';
+
+            if (name) {
+                const t = db.trips.find(x => x.id === currentTripId);
+                if (!t.packing) t.packing = [];
+                t.packing.push({ name: name, sec: sec, checked: false });
+                saveData();
+                nameInput.value = ''; // Clear item only, keep section
+                nameInput.focus();
+                renderMala();
+            }
+        }
+
+        function toggleMala(i) { 
+            const t = db.trips.find(x => x.id === currentTripId); 
+            t.packing[i].checked = !t.packing[i].checked; 
+            saveData(); 
+            renderMala(); 
+        }
+
+        function delMala(i) { 
+            const t = db.trips.find(x => x.id === currentTripId); 
+            t.packing.splice(i, 1); 
+            saveData(); 
+            renderMala(); 
+        }
+
+        // Mala Section Manager
+        function openMalaSectionManager() {
+            document.getElementById('modal-mala-sections').style.display = 'flex';
+            renderMalaSectionManager();
+        }
+
+        function renderMalaSectionManager() {
+            const t = db.trips.find(x => x.id === currentTripId);
+            const list = document.getElementById('mala-sec-manager-list');
+            list.innerHTML = '';
+            
+            const sections = [...new Set(t.packing.map(x => x.sec))].sort();
+            
+            sections.forEach(s => {
+                list.innerHTML += `
+                <div class="flex justify-between items-center p-3 bg-slate-50 rounded-lg border border-slate-200">
+                    <span class="font-bold text-sm text-slate-700">${s}</span>
+                    <div class="flex gap-2">
+                        <button onclick="editMalaSection('${s}')" class="text-blue-400 hover:text-blue-600"><i class="fa-solid fa-pencil"></i></button>
+                        <button onclick="delMalaSection('${s}')" class="text-red-400 hover:text-red-600"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>`;
+            });
+        }
+
+        function editMalaSection(oldName) {
+            const newName = prompt("Novo nome para a seção:", oldName);
+            if (newName && newName !== oldName) {
+                const t = db.trips.find(x => x.id === currentTripId);
+                let count = 0;
+                t.packing.forEach(item => {
+                    if (item.sec === oldName) {
+                        item.sec = newName;
+                        count++;
+                    }
+                });
+                saveData();
+                renderMalaSectionManager();
+                renderMala();
+                // Update input if it matches
+                const secInput = document.getElementById('mala-sec-input');
+                if(secInput.value === oldName) secInput.value = newName;
+                showToast(`${count} itens movidos.`);
+            }
+        }
+
+        function delMalaSection(secName) {
+            if(confirm(`Excluir a seção "${secName}" e TODOS os seus itens?`)) {
+                const t = db.trips.find(x => x.id === currentTripId);
+                const initialLen = t.packing.length;
+                t.packing = t.packing.filter(item => item.sec !== secName);
+                const removed = initialLen - t.packing.length;
+                saveData();
+                renderMalaSectionManager();
+                renderMala();
+                showToast(`${removed} itens removidos.`);
+            }
+        }
+
+        // --- DOCS (NEW WALLET & CARDS) ---
+        function renderDocs() {
+            const t = db.trips.find(x => x.id === currentTripId);
+            const l = document.getElementById('doc-list');
+            l.innerHTML = '';
+            
+            // Handle legacy structure (just in case)
+            if(!t.links) t.links = [];
+            
+            t.links.forEach((d, i) => {
+                // Determine icon style
+                let boxClass = 'doc-type-text';
+                let iconClass = d.icon || 'fa-file';
+                let clickAction = '';
+                
+                if (d.type === 'link') {
+                    boxClass = 'doc-type-link';
+                    clickAction = `window.open('${d.value}', '_blank')`;
+                } else if (d.type === 'image') {
+                    boxClass = 'doc-type-image';
+                    clickAction = `viewImage('${d.value}')`;
+                } else { // text
+                    boxClass = 'doc-type-text';
+                    clickAction = `copyToClipboard('${d.value}')`;
+                }
+
+                // Default icon logic if not set
+                if (!d.icon) {
+                    if(d.type === 'link') iconClass = 'fa-link';
+                    else if(d.type === 'image') iconClass = 'fa-image';
+                    else iconClass = 'fa-copy';
+                }
+
+                l.innerHTML += `
+                <div class="doc-card" onclick="${clickAction}">
+                    <div class="doc-icon-box ${boxClass}">
+                        <i class="fa-solid ${iconClass}"></i>
+                    </div>
+                    <div class="doc-content">
+                        <div class="doc-title">${d.title}</div>
+                        <div class="doc-meta">
+                            ${d.type === 'text' ? '<i class="fa-solid fa-copy"></i> Copiar' : 
+                              (d.type === 'image' ? '<i class="fa-solid fa-eye"></i> Visualizar' : '<i class="fa-solid fa-arrow-up-right-from-square"></i> Abrir')}
+                        </div>
+                    </div>
+                    <div class="doc-action-icon" onclick="event.stopPropagation(); editDoc(${i})">
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                    </div>
+                </div>`;
+            });
+        }
+
+        function openDocModal() {
+            document.getElementById('modal-docs').style.display = 'flex';
+            document.getElementById('doc-modal-title').innerText = "Novo Item";
+            document.getElementById('doc-id').value = "NEW";
+            // Reset Form
+            document.getElementById('doc-title').value = "";
+            document.getElementById('doc-url').value = "";
+            document.getElementById('doc-text-val').value = "";
+            document.getElementById('doc-file').value = "";
+            document.getElementById('doc-img-base64').value = "";
+            document.getElementById('doc-img-preview').style.display = 'none';
+            document.getElementById('doc-type').value = 'link';
+            document.getElementById('btn-del-doc').classList.add('hidden');
+            toggleDocFields();
+        }
+
+        function editDoc(idx) {
+            const t = db.trips.find(x => x.id === currentTripId);
+            const doc = t.links[idx];
+            openDocModal();
+            document.getElementById('doc-modal-title').innerText = "Editar Item";
+            document.getElementById('doc-id').value = idx;
+            document.getElementById('doc-type').value = doc.type || 'link'; // Legacy fix
+            document.getElementById('doc-title').value = doc.title;
+            document.getElementById('doc-icon').value = doc.icon || 'fa-file';
+            
+            // If legacy data has 'url' but no 'value', map it
+            const val = doc.value || doc.url; 
+
+            if (doc.type === 'link' || !doc.type) {
+                document.getElementById('doc-url').value = val;
+            } else if (doc.type === 'text') {
+                document.getElementById('doc-text-val').value = val;
+            } else if (doc.type === 'image') {
+                document.getElementById('doc-img-base64').value = val;
+                const prev = document.getElementById('doc-img-preview');
+                prev.style.backgroundImage = `url('${val}')`;
+                prev.style.display = 'block';
+            }
+            toggleDocFields();
+            document.getElementById('btn-del-doc').classList.remove('hidden');
+        }
+
+        function toggleDocFields() {
+            const type = document.getElementById('doc-type').value;
+            document.getElementById('field-link').classList.add('hidden');
+            document.getElementById('field-text').classList.add('hidden');
+            document.getElementById('field-image').classList.add('hidden');
+            
+            if (type === 'link') document.getElementById('field-link').classList.remove('hidden');
+            else if (type === 'text') document.getElementById('field-text').classList.remove('hidden');
+            else if (type === 'image') document.getElementById('field-image').classList.remove('hidden');
+        }
+
+        // Image Compression Logic
+        document.getElementById('doc-file').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+                        
+                        // Resize if too big (max 800px width)
+                        const MAX_WIDTH = 800;
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        // Compress to JPEG 0.7 quality
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                        document.getElementById('doc-img-base64').value = dataUrl;
+                        
+                        const prev = document.getElementById('doc-img-preview');
+                        prev.style.backgroundImage = `url('${dataUrl}')`;
+                        prev.style.display = 'block';
+                    }
+                    img.src = event.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function saveDoc(e) {
+            e.preventDefault();
+            const t = db.trips.find(x => x.id === currentTripId);
+            const idx = document.getElementById('doc-id').value;
+            const type = document.getElementById('doc-type').value;
+            const title = document.getElementById('doc-title').value;
+            const icon = document.getElementById('doc-icon').value;
+            
+            let val = "";
+            if (type === 'link') val = document.getElementById('doc-url').value;
+            else if (type === 'text') val = document.getElementById('doc-text-val').value;
+            else if (type === 'image') val = document.getElementById('doc-img-base64').value;
+
+            if (!title) return alert("Título obrigatório.");
+            if (!val && type !== 'image') return alert("Conteúdo obrigatório.");
+            // Image might be empty if editing and not changing
+
+            const docObj = { type, title, value: val, icon };
+
+            if (idx === 'NEW') {
+                t.links.push(docObj);
+            } else {
+                // Keep image if not changed
+                if (type === 'image' && val === "") {
+                    docObj.value = t.links[idx].value; 
+                }
+                t.links[idx] = docObj;
+            }
+            
+            saveData();
+            closeModals();
+            renderDocs();
+        }
+
+        function delDoc() {
+            if(confirm("Excluir este item?")) {
+                const t = db.trips.find(x => x.id === currentTripId);
+                const idx = document.getElementById('doc-id').value;
+                t.links.splice(idx, 1);
+                saveData();
+                closeModals();
+                renderDocs();
+            }
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast("Copiado!", "ok");
+            });
+        }
+
+        function viewImage(base64) {
+            const modal = document.getElementById('modal-img-view');
+            const img = document.getElementById('full-image-src');
+            img.src = base64;
+            modal.style.display = 'flex';
+        }
+
+        // --- TRIP CRUD ---
+        function openTripModal() {
+            document.getElementById('modal-trip').style.display='flex';
+            document.getElementById('trip-modal-title').innerText = "Planejar Viagem";
+            document.getElementById('trip-id').value = '';
+            document.querySelector('#modal-trip form').reset();
+            document.getElementById('btn-del-trip').classList.add('hidden');
+            document.getElementById('trip-preview').classList.add('hidden');
+        }
+        function editCurrentTrip() {
+            const t = db.trips.find(x=>x.id===currentTripId);
+            document.getElementById('modal-trip').style.display='flex';
+            document.getElementById('trip-modal-title').innerText = "Editar Viagem";
+            document.getElementById('trip-id').value = t.id;
+            document.getElementById('trip-dest').value = t.dest || ''; 
+            document.getElementById('trip-title').value = t.title; 
+            document.getElementById('trip-start').value = t.start||'';
+            document.getElementById('trip-end').value = t.end||'';
+            document.getElementById('trip-budget').value = fmtMoneyNoR(t.budget);
+            document.getElementById('trip-status').value = t.status;
+            document.getElementById('trip-img').value = t.img||'';
+            previewBg(t.img);
+            document.getElementById('btn-del-trip').classList.remove('hidden');
+        }
+        function saveTrip(e) {
+            e.preventDefault();
+            const id = document.getElementById('trip-id').value;
+            
+            const data = {
+                title: document.getElementById('trip-title').value,
+                dest: document.getElementById('trip-dest').value,
+                start: document.getElementById('trip-start').value,
+                end: document.getElementById('trip-end').value,
+                budget: parseMoney(document.getElementById('trip-budget').value),
+                status: document.getElementById('trip-status').value,
+                img: document.getElementById('trip-img').value
+            };
+            if(id) {
+                const i = db.trips.findIndex(x=>x.id==id);
+                db.trips[i] = {...db.trips[i], ...data};
+                currentTripId = parseInt(id); 
+            } else {
+                const newId = Date.now();
+                db.trips.push({id:newId, ...data, transactions:[], itinerary:[], packing:[], links:[]});
+                currentTripId = newId; 
+            }
+            saveData(); closeModals(); renderApp();
+        }
+        function deleteTrip() {
+            if(confirm('Apagar viagem e todos os dados?')) {
+                db.trips = db.trips.filter(x=>x.id != document.getElementById('trip-id').value);
+                currentTripId = null;
+                saveData(); closeModals(); renderApp();
+            }
+        }
+        
+        function handleImageFile(input) {
+            const file = input.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const base64 = e.target.result;
+                    document.getElementById('trip-img').value = base64;
+                    previewBg(base64);
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // --- CLOUD & SYNC ---
+        async function saveData() {
+            localStorage.setItem(DB_KEY, JSON.stringify(db));
+            await pushToCloud();
+        }
+
+        async function pullFromCloud() {
+            const token = localStorage.getItem(TOKEN_KEY);
+            if(!token) return;
+            try {
+                const gists = await fetch('https://api.github.com/gists',{headers:{'Authorization':`token ${token}`}}).then(r=>r.json());
+                const file = gists.find(g=>g.description===GIST_DESC);
+                if(file) {
+                    gistId = file.id;
+                    const content = await fetch(file.files[GIST_FILE].raw_url).then(r=>r.json());
+                    db = content;
+                    localStorage.setItem(DB_KEY, JSON.stringify(db));
+                    updateCloudStatus('ok');
+                }
+            } catch(e) { console.error(e); updateCloudStatus('error'); }
+        }
+
+        async function pushToCloud() {
+            const token = localStorage.getItem(TOKEN_KEY);
+            if(!token) return;
+            updateCloudStatus('sync');
+            try {
+                if(!gistId) {
+                    const gists = await fetch('https://api.github.com/gists',{headers:{'Authorization':`token ${token}`}}).then(r=>r.json());
+                    const existing = gists.find(g=>g.description===GIST_DESC);
+                    if(existing) gistId = existing.id;
+                }
+                const body = JSON.stringify({description:GIST_DESC, public:false, files:{[GIST_FILE]:{content:JSON.stringify(db)}}});
+                let url = 'https://api.github.com/gists'; let m = 'POST';
+                if(gistId) { url+=`/${gistId}`; m='PATCH'; }
+                await fetch(url, {method:m, headers:{'Authorization':`token ${token}`}, body});
+                updateCloudStatus('ok');
+                showToast('Nuvem Sincronizada');
+            } catch(e) { updateCloudStatus('error'); }
+        }
+
+        // --- UTILS ---
+        function updateCloudStatus(s) {
+            const el = document.getElementById('cloudStatusDot');
+            if(s==='ok') el.className = 'w-3 h-3 rounded-full bg-green-500 absolute top-2 right-2 border-2 border-white shadow-sm';
+            else if(s==='sync') el.className = 'w-3 h-3 rounded-full bg-sky-400 absolute top-2 right-2 border-2 border-white animate-pulse shadow-sm';
+            else el.className = 'w-3 h-3 rounded-full bg-slate-300 absolute top-2 right-2 border-2 border-white shadow-sm';
+        }
+        function showToast(msg, type='ok') { 
+            const t=document.getElementById('toast'); 
+            document.getElementById('toast-text').innerText=msg; 
+            t.classList.add('show'); 
+            setTimeout(()=>t.classList.remove('show'),3000); 
+        }
+        function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m=>m.style.display='none'); }
+        function maskMoney(i) { let v=i.value.replace(/\D/g,""); v=(v/100).toFixed(2)+""; v=v.replace(".",","); v=v.replace(/(\d)(?=(\d{3})+(?!\d))/g,"$1."); i.value=v; }
+        function parseMoney(s) { if(!s) return 0; return parseFloat(s.replace(/[^0-9,]/g,'').replace(',','.')); }
+        function fmtMoney(n) { return n.toLocaleString('pt-BR', {style:'currency', currency:'BRL'}); }
+        function fmtMoneyNoR(n) { return n.toLocaleString('pt-BR', {minimumFractionDigits:2}); }
+        function previewBg(u) { const p=document.getElementById('trip-preview'); if(u){p.style.backgroundImage=`url('${u}')`; p.classList.remove('hidden');}else p.classList.add('hidden'); }
+        
+        // Cat Manager (EDIT & STYLE)
+        function openCatManager() { document.getElementById('modal-cat').style.display='flex'; renderCatList(); }
+        
+        function getCategoryEmoji(name) {
+            const n = name.toLowerCase();
+            if(n.includes('hospedagem')||n.includes('hotel')) return '🏨';
+            if(n.includes('aliment')||n.includes('comida')||n.includes('restaurante')) return '🍔';
+            if(n.includes('transporte')||n.includes('uber')||n.includes('voo')) return '✈️';
+            if(n.includes('lazer')||n.includes('passeio')||n.includes('ticket')) return '🎟️';
+            if(n.includes('compra')||n.includes('shop')) return '🛍️';
+            if(n.includes('saúde')||n.includes('farmácia')) return '💊';
+            return '🏷️';
+        }
+
+        function renderCatList() { 
+            const l=document.getElementById('cat-list'); l.innerHTML=''; 
+            db.categories.forEach((c,i)=>{ 
+                const st = getCategoryStyle(c);
+                l.innerHTML+=`
+                <div class="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
+                    <span class="flex items-center gap-2"><div class="w-6 h-6 rounded flex items-center justify-center text-white" style="background:${st.color}"><i class="fa-solid ${st.icon} text-xs"></i></div> ${c}</span> 
+                    <div class="flex gap-2">
+                        <i class="fa-solid fa-pencil text-blue-300 cursor-pointer hover:text-blue-500" onclick="editCategory(${i})"></i>
+                        <i class="fa-solid fa-trash text-red-300 cursor-pointer hover:text-red-500" onclick="if(confirm('Excluir?')){db.categories.splice(${i},1); saveData(); renderCatList();}"></i>
+                    </div>
+                </div>`; 
+            }); 
+        }
+        
+        function addCategory() { 
+            const rawName = document.getElementById('new-cat-name').value.trim(); 
+            if(rawName) { 
+                const emoji = getCategoryEmoji(rawName);
+                // Only prepend emoji if not already present
+                const finalName = rawName.match(/[\p{Emoji}]/u) ? rawName : `${emoji} ${rawName}`;
+                db.categories.push(finalName); 
+                saveData(); renderCatList(); document.getElementById('new-cat-name').value=''; 
+            } 
+        }
+        
+        function editCategory(idx) {
+            const oldName = db.categories[idx];
+            const newName = prompt("Novo nome:", oldName);
+            if(newName && newName !== oldName) {
+                db.categories[idx] = newName;
+                // Update Transactions
+                db.trips.forEach(t => {
+                    t.transactions.forEach(tx => {
+                        if(tx.cat === oldName) tx.cat = newName;
+                    });
+                });
+                saveData(); 
+                renderCatList();
+                renderActiveTrip(); // Refresh screen
+            }
+        }
+
+        // Cloud & Config
+        function openCloudModal() { document.getElementById('modal-cloud').style.display='flex'; document.getElementById('gk-token').value = localStorage.getItem(TOKEN_KEY) || ''; }
+        function saveToken() { localStorage.setItem(TOKEN_KEY, document.getElementById('gk-token').value); location.reload(); }
+        function backupJSON() { const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(db)],{type:"application/json"})); a.download="travel_backup.json"; a.click(); }
+        function restoreJSON(i) { const r=new FileReader(); r.onload=e=>{ try{db=JSON.parse(e.target.result);saveData();location.reload();}catch{alert('Erro');} }; r.readAsText(i.files[0]); }
+
+        function initTheme() { if(localStorage.getItem('theme')==='dark'){document.documentElement.setAttribute('data-theme','dark'); document.getElementById('themeIcon').classList.replace('fa-moon','fa-sun');} }
+        function toggleTheme() {
+            if(document.documentElement.getAttribute('data-theme')==='dark') { document.documentElement.removeAttribute('data-theme'); localStorage.setItem('theme','light'); document.getElementById('themeIcon').classList.replace('fa-sun','fa-moon'); }
+            else { document.documentElement.setAttribute('data-theme','dark'); localStorage.setItem('theme','dark'); document.getElementById('themeIcon').classList.replace('fa-moon','fa-sun'); }
+        }
+
+    </script>
+    <style>
+        .show { opacity: 1 !important; transform: translate(-50%, 0) !important; }
+        #toast { transform: translate(-50%, 20px); transition: 0.3s; opacity: 0; }
+        .modal-close-abs {
+            position: absolute; top: 15px; right: 15px;
+            width: 32px; height: 32px; border-radius: 50%;
+            background: rgba(0,0,0,0.05); color: #64748b;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.2s;
+        }
+        .modal-close-abs:hover { background: #ef4444; color: white; }
+        
+        .action-tile {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 15px; border-radius: 16px; border: 2px solid transparent;
+            font-weight: 800; font-size: 0.75rem; text-transform: uppercase;
+            cursor: pointer; transition: 0.2s; height: 100px;
+        }
+        .tile-sync { background: #f0f9ff; color: #0ea5e9; border-color: #bae6fd; }
+        .tile-sync:hover { background: #0ea5e9; color: white; }
+        .tile-backup { background: #f0fdf4; color: #10b981; border-color: #86efac; }
+        .tile-backup:hover { background: #10b981; color: white; }
+        .tile-restore { background: #fff7ed; color: #f97316; border-color: #fdba74; }
+        .tile-restore:hover { background: #f97316; color: white; }
+
+        .roteiro-paper {
+            background: #fffdf5; 
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 20px 20px;
+            position: relative;
+        }
+        .roteiro-paper::before {
+            content: ''; position: absolute; top: 0; bottom: 0; left: 30px; width: 2px; background: #fee2e2; border-right: 1px solid #fecaca;
+        }
+        [data-theme="dark"] .roteiro-paper { background: #1e293b; background-image: radial-gradient(#334155 1px, transparent 1px); border-color: #334155; }
+        [data-theme="dark"] .roteiro-paper::before { background: #334155; border-color: #475569; }
+
+        /* DOCS CARD STYLES */
+        .doc-card {
+            display: flex; align-items: center; gap: 15px; padding: 16px;
+            background: var(--card-white); border-radius: 18px; border: 1px solid #e2e8f0;
+            transition: all 0.2s; cursor: pointer; position: relative;
+            box-shadow: 0 2px 0 rgba(0,0,0,0.02);
+        }
+        .doc-card:hover { transform: translateY(-2px); box-shadow: 0 8px 15px -3px rgba(0,0,0,0.05); border-color: var(--secondary); }
+        [data-theme="dark"] .doc-card { border-color: #334155; }
+        
+        .doc-icon-box {
+            width: 48px; height: 48px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; flex-shrink: 0;
+        }
+        .doc-type-link { background: #e0f2fe; color: #0284c7; }
+        .doc-type-text { background: #fef9c3; color: #a16207; }
+        .doc-type-image { background: #fce7f3; color: #be185d; }
+        
+        [data-theme="dark"] .doc-type-link { background: rgba(2, 132, 199, 0.2); }
+        [data-theme="dark"] .doc-type-text { background: rgba(202, 138, 4, 0.2); }
+        [data-theme="dark"] .doc-type-image { background: rgba(190, 24, 93, 0.2); }
+
+        .doc-content { flex: 1; min-width: 0; }
+        .doc-title { font-weight: 800; color: var(--text-main); font-size: 0.95rem; margin-bottom: 2px; }
+        .doc-meta { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+
+        .doc-action-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #cbd5e1; transition: 0.2s; }
+        .doc-card:hover .doc-action-icon { background: #f1f5f9; color: var(--text-main); }
+        
+    </style>
+</body>
+</html>
