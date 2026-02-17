@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -647,9 +648,12 @@
         if(m === 'iso') methodClass = 'm-Iso';
         if(m === 'pyr') methodClass = 'm-Pyr';
 
+        // ROBUST VIDEO CHECK: Checks 'link' OR 'video' property
+        const videoUrl = item.link || item.video || "";
         let titleHtml = '';
-        if(item.link && item.link.length > 5) {
-            titleHtml = `<a href="${item.link}" target="_blank" class="ex-title has-video">${item.name} <div class="play-badge"><i class="fa-solid fa-play"></i> VÍDEO</div></a>`;
+        
+        if(videoUrl && videoUrl.length > 5) {
+            titleHtml = `<a href="${videoUrl}" target="_blank" class="ex-title has-video">${item.name} <div class="play-badge"><i class="fa-solid fa-play"></i> VÍDEO</div></a>`;
         } else {
             titleHtml = `<span class="ex-title">${item.name}</span>`;
         }
