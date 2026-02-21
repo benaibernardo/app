@@ -221,6 +221,7 @@
         .animate-bounce-slow { animation: bounce-slow 3s infinite ease-in-out; }
         @keyframes bounce-slow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
     </style>
+<link rel="stylesheet" href="/index.css">
 </head>
 <body id="main-body">
 
@@ -256,6 +257,7 @@
     </div>
 
     <!-- MAIN APP CONTAINER -->
+    <!-- Updated: Removed Prime Module -->
     <div id="app-container" class="max-w-6xl mx-auto px-4 py-6 opacity-0 transition-opacity duration-1000">
         
         <!-- HEADER -->
@@ -401,24 +403,6 @@
                         <h2 class="font-heading text-lg font-bold text-slate-700 dark:text-white uppercase tracking-wide">Trabalho</h2>
                         <div class="h-px bg-slate-200 dark:bg-slate-800 flex-1"></div>
                     </div>
-
-                    <!-- PRIME ACQUAFIT -->
-                    <a href="prime.html" id="card-prime" class="modern-card p-6 group block relative overflow-hidden min-h-[140px] flex flex-col justify-center border-sky-200 dark:border-sky-500/30 tilt-card mb-4">
-                        <div class="absolute inset-0 bg-gradient-to-br from-sky-50 to-white dark:from-sky-900/20 dark:to-slate-900/90 z-0"></div>
-                        <div class="bg-icon-large group-hover:opacity-10 opacity-[0.05] transition top-[-10px] right-[-10px]">
-                            <i class="fa-solid fa-dumbbell text-sky-400"></i>
-                        </div>
-                        <div class="relative z-10 flex items-center gap-4">
-                            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center shadow-lg shadow-sky-500/30 group-hover:scale-110 transition duration-300">
-                                <i data-lucide="gem" class="w-8 h-8 text-white"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-heading text-2xl font-bold text-slate-800 dark:text-white leading-none mb-1 group-hover:text-sky-500 transition">PRIME</h3>
-                                <p class="text-xs font-bold text-sky-600 dark:text-sky-400 tracking-widest uppercase">Sistema Acquafit</p>
-                            </div>
-                        </div>
-                        <div class="absolute bottom-0 left-0 h-1 bg-sky-500 w-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
-                    </a>
 
                     <!-- CONSULTORIA GRID -->
                     <div class="grid grid-cols-1 gap-4">
@@ -584,10 +568,7 @@
                                 <span>Acesso: Viagens</span>
                                 <input type="checkbox" id="perm-card-travel" class="accent-orange-500 w-4 h-4 rounded">
                             </label>
-                            <label class="flex justify-between items-center text-sm font-medium text-slate-600 dark:text-slate-300 cursor-pointer p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded">
-                                <span>Acesso: Prime (Trabalho)</span>
-                                <input type="checkbox" id="perm-card-prime" class="accent-orange-500 w-4 h-4 rounded">
-                            </label>
+
                             <label class="flex justify-between items-center text-sm font-medium text-slate-600 dark:text-slate-300 cursor-pointer p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded">
                                 <span>Acesso: Consultoria</span>
                                 <input type="checkbox" id="perm-card-consult" class="accent-orange-500 w-4 h-4 rounded">
@@ -654,7 +635,7 @@
         // IDs that can be toggled
         const PERMISSION_IDS = [
             'card-finance', 'card-credit', 'card-diet', 'card-travel', 
-            'card-prime', 'card-generator', 'card-student'
+            'card-generator', 'card-student'
         ];
         
         const PERM_MAP = {
@@ -662,7 +643,6 @@
             'perm-card-credit': ['card-credit'],
             'perm-card-diet': ['card-diet'],
             'perm-card-travel': ['card-travel'],
-            'perm-card-prime': ['card-prime'],
             'perm-card-consult': ['card-generator', 'card-student']
         };
 
@@ -671,7 +651,6 @@
             'perm-card-credit': true,
             'perm-card-diet': false,
             'perm-card-travel': true,
-            'perm-card-prime': false,
             'perm-card-consult': false
         };
 
@@ -1121,5 +1100,6 @@
             document.getElementById('construction-overlay').classList.add('hidden');
         }
     </script>
+<script type="module" src="/index.tsx"></script>
 </body>
 </html>
