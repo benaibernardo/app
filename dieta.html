@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Benai - Nutrição Cloud</title>
     
+    <link rel="manifest" href="manifest.json">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -12,20 +14,21 @@
     
     <style>
         :root {
-            /* Organic Fresh Theme */
+            /* Organic Fresh Theme -> Modificado para Azul Predominante conforme gosto do usuário */
             --bg: #f8fafc; 
             --card: #ffffff; 
             --text: #334155;
             --text-muted: #94a3b8;
             
-            --primary: #16a34a; /* Green 600 */
-            --primary-light: #dcfce7;
+            --primary: #1e3a8a; /* Azul Escuro Moderno */
+            --primary-light: #dbeafe; /* Azul Claro */
             
-            --accent: #ea580c; /* Orange 600 */
-            --accent-light: #ffedd5;
+            --accent: #2563eb; /* Azul Vibrante */
+            --accent-light: #eff6ff;
             
             --border: #e2e8f0;
             --danger: #ef4444; 
+            --alert: #ef4444; /* Vermelho para a Pizza */
             
             /* Food Type Colors */
             --prot: #3b82f6; --prot-bg: #eff6ff;
@@ -47,11 +50,11 @@
             --text: #f1f5f9;
             --text-muted: #64748b;
             
-            --primary: #4ade80; /* Green 400 */
-            --primary-light: rgba(22, 163, 74, 0.2);
+            --primary: #3b82f6; /* Azul 500 */
+            --primary-light: rgba(59, 130, 246, 0.2);
             
-            --accent: #fb923c; /* Orange 400 */
-            --accent-light: rgba(234, 88, 12, 0.2);
+            --accent: #60a5fa; /* Azul 400 */
+            --accent-light: rgba(96, 165, 250, 0.2);
             
             --border: #334155;
             --shadow: 0 10px 30px -5px rgba(0,0,0,0.3);
@@ -69,7 +72,7 @@
         .container { max-width:600px; margin:0 auto; padding: 15px; animation:fadeIn 0.5s ease; }
 
         /* HEADER */
-        header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; sticky: top; }
+        header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; position: sticky; top: 0; z-index: 10; background: var(--bg); padding-top: 10px;}
         .logo { font-size:1.2rem; font-weight:800; color:var(--primary); letter-spacing:-0.5px; display:flex; align-items:center; gap:8px; font-family:var(--font-num); }
         .logo i { background:var(--primary-light); color:var(--primary); padding:6px; border-radius:10px; font-size:0.9rem; }
         
@@ -81,45 +84,51 @@
         /* TAB NAVIGATION */
         .tabs { display: flex; background: var(--card); padding: 4px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 20px; box-shadow: var(--shadow); }
         .tab-item { flex: 1; text-align: center; padding: 10px; border-radius: 10px; font-weight: 700; color: var(--text-muted); cursor: pointer; transition: 0.2s; font-size: 0.85rem; }
-        .tab-item.active { background: var(--primary); color: white; shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        [data-theme="dark"] .tab-item.active { color: #020617; }
+        .tab-item.active { background: var(--primary); color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        [data-theme="dark"] .tab-item.active { color: white; }
+
+        /* NOVOS MÓDULOS (Biofeedback e Água) */
+        .painel-modulo {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            border-left: 5px solid var(--primary);
+            border-right: 1px solid var(--border);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .bottle-container { display: flex; justify-content: space-around; margin-top: 15px; }
+        .bottle {
+            width: 70px; height: 110px; border: 3px solid var(--text-muted); border-radius: 8px 8px 15px 15px;
+            position: relative; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; flex-direction: column; background: var(--bg);
+        }
+        .bottle.filled { border-color: var(--accent); background: var(--primary-light); }
+        .bottle-label { font-size: 0.75rem; font-weight: bold; margin-top: 5px; text-align: center; color: var(--text); }
+        .bottle i { font-size: 1.5rem; transition: 0.3s; }
+        
+        .slider-container { margin-bottom: 12px; }
+        .slider-container label { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; color: var(--text); }
+        input[type=range] { width: 100%; accent-color: var(--primary); }
+        
+        details.painel-modulo { padding: 12px 16px; cursor: pointer; }
+        summary { font-weight: 700; color: var(--primary); cursor: pointer; outline: none; list-style: none; display: flex; align-items: center; gap: 8px; font-size: 0.95rem; }
+        summary::-webkit-details-marker { display: none; }
+        .explicacao-texto { font-size: 0.85rem; color: var(--text); margin-top: 12px; line-height: 1.6; border-top: 1px dashed var(--border); padding-top: 10px;}
+        .explicacao-texto ul { padding-left: 20px; }
+        .explicacao-texto li { margin-bottom: 8px; }
 
         /* MEAL CARD */
         .meal-card { background: var(--card); border-radius: 16px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 15px; box-shadow: var(--shadow); transition: 0.2s; position: relative; }
         
-        /* NEW MEAL HEADER DESIGN - COMPACT */
-        .meal-header { 
-            background: linear-gradient(to right, var(--bg), var(--card)); 
-            padding: 10px 15px; 
-            border-bottom: 1px solid var(--border); 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-        }
-        .meal-title { 
-            font-weight: 800; 
-            font-family: var(--font-num); 
-            font-size: 1rem; 
-            color: var(--primary); 
-            display: flex; 
-            align-items: center; 
-            gap: 8px; 
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+        .meal-header { background: linear-gradient(to right, var(--bg), var(--card)); padding: 10px 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .meal-title { font-weight: 800; font-family: var(--font-num); font-size: 1rem; color: var(--primary); display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
         .meal-right { display: flex; align-items: center; gap: 8px; }
         
-        .meal-time { 
-            font-size: 0.85rem; 
-            font-weight: 800; 
-            color: var(--text); 
-            background: var(--primary-light); 
-            padding: 4px 10px; 
-            border-radius: 8px; 
-            border: 1px solid var(--border); 
-            font-family: var(--font-num);
-        }
-        [data-theme="dark"] .meal-time { color: var(--primary); }
+        .meal-time { font-size: 0.85rem; font-weight: 800; color: var(--text); background: var(--primary-light); padding: 4px 10px; border-radius: 8px; border: 1px solid var(--border); font-family: var(--font-num); }
+        [data-theme="dark"] .meal-time { color: var(--primary); border-color: var(--primary); }
         
         .meal-body { padding: 0; }
 
@@ -138,39 +147,21 @@
         .food-row.type-veg::before { background: var(--veg); }
         .food-row.type-fruit::before { background: var(--fruit); }
         .food-row.type-drink::before { background: #a16207; }
+        .food-row.type-alert::before { background: var(--alert); } /* For Pizza */
 
         .food-info { flex: 1; margin-left: 8px; }
         .food-name { font-weight: 700; font-size: 0.95rem; color: var(--text); margin-bottom: 2px; display: flex; align-items: center; gap: 6px; }
         .food-icon { font-size: 0.9rem; opacity: 0.9; }
         
-        /* Sub Trigger */
         .sub-trigger { font-size: 0.65rem; color: var(--accent); background: var(--accent-light); padding: 2px 6px; border-radius: 4px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
-        [data-theme="dark"] .sub-trigger { background: rgba(234, 88, 12, 0.2); }
 
         .food-qty { font-family: var(--font-num); font-weight: 800; font-size: 0.95rem; color: var(--primary); background: var(--primary-light); padding: 4px 10px; border-radius: 8px; min-width: 65px; text-align: center; margin-left: 10px; }
 
         /* DRAWER (Vertical List) */
-        .sub-drawer { 
-            max-height: 0; 
-            overflow: hidden; 
-            transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out; 
-            background: #fdfdfd; 
-            opacity: 0;
-        }
+        .sub-drawer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out; background: #fdfdfd; opacity: 0; }
         [data-theme="dark"] .sub-drawer { background: #151e2e; }
-        
         .sub-drawer.open { max-height: 800px; opacity: 1; border-top: 1px solid var(--border); }
-        
-        .sub-content { 
-            padding: 12px 15px 12px 30px; 
-            font-size: 0.85rem; 
-            color: var(--text-muted); 
-            line-height: 1.6; /* Increased for vertical list readability */
-            border-left: 3px solid var(--accent);
-            background: linear-gradient(to right, var(--accent-light), transparent 20%);
-            margin: 5px 0 0 0;
-        }
-        [data-theme="dark"] .sub-content { background: linear-gradient(to right, rgba(234,88,12,0.1), transparent 20%); }
+        .sub-content { padding: 12px 15px 12px 30px; font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; border-left: 3px solid var(--accent); background: linear-gradient(to right, var(--accent-light), transparent 20%); margin: 5px 0 0 0; }
 
         /* EDIT MODE STYLES */
         .edit-controls { display: none; gap: 5px; margin-left: 5px; }
@@ -206,16 +197,15 @@
         
         /* GATEKEEPER & STATUS */
         .cloud-dot { width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; position:absolute; top:8px; right:8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
-        .cloud-dot.ok { background: var(--success); box-shadow: 0 0 8px var(--success); }
+        .cloud-dot.ok { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
         .cloud-dot.error { background: var(--danger); }
         .cloud-dot.sync { background: #38bdf8; animation: pulse 1s infinite; }
 
         #gatekeeper { position: fixed; inset: 0; z-index: 100000; background: radial-gradient(circle at center, #1e293b 0%, #020617 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--font-num); }
         .pin-input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; letter-spacing: 4px; font-size: 1.2rem; text-align: center; padding: 1rem; border-radius: 1rem; width: 260px; outline: none; transition: 0.3s; margin-bottom: 1rem; }
-        .pin-input:focus { border-color: var(--primary); box-shadow: 0 0 20px rgba(34, 197, 94, 0.3); }
+        .pin-input:focus { border-color: var(--primary); box-shadow: 0 0 20px var(--primary-light); }
         .btn-action { background: var(--primary); color: white; font-weight: 700; border-radius: 0.8rem; padding: 0.8rem; transition: 0.3s; width: 260px; display: flex; align-items: center; justify-content: center; gap: 8px; border:none; cursor: pointer; }
-        [data-theme="dark"] .btn-action { color: #020617; }
-
+        
         #gk-config-modal { z-index: 100001; }
 
         @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
@@ -225,7 +215,6 @@
 </head>
 <body id="body-lock">
 
-    <!-- GATEKEEPER CONFIG MODAL -->
     <div id="gk-config-modal" class="modal" style="background: rgba(2,6,23,0.95);">
         <div class="modal-box" style="text-align: center;">
             <div style="margin-bottom: 20px;">
@@ -247,11 +236,10 @@
         </div>
     </div>
 
-    <!-- GATEKEEPER -->
     <div id="gatekeeper">
         <div style="margin-bottom:30px; text-align:center;">
-            <i class="fa-solid fa-leaf" style="font-size: 3rem; color: #4ade80; margin-bottom: 15px;"></i>
-            <h2 style="font-size: 2rem; font-weight: 900; color: white;">BENAI <span style="color:#4ade80">NUTRI</span></h2>
+            <i class="fa-solid fa-leaf" style="font-size: 3rem; color: #3b82f6; margin-bottom: 15px;"></i>
+            <h2 style="font-size: 2rem; font-weight: 900; color: white;">BENAI <span style="color:#3b82f6">NUTRI</span></h2>
             <p style="opacity: 0.6; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; color: white;">Acesso Restrito</p>
         </div>
         <input type="text" id="userInput" class="pin-input uppercase" placeholder="USUÁRIO" autocomplete="off" style="font-size:1rem; letter-spacing:2px;">
@@ -259,13 +247,11 @@
         <button onclick="attemptLogin()" class="btn-action">ENTRAR</button>
         <div id="loginError" style="color:#ef4444; font-size:0.8rem; font-weight:700; margin-top:15px; min-height: 20px;"></div>
         
-        <!-- CONFIG BUTTON -->
         <button onclick="openGatekeeperConfig()" style="margin-top: 20px; background: rgba(255,255,255,0.1); border: none; width: 40px; height: 40px; border-radius: 50%; color: rgba(255,255,255,0.5); cursor: pointer; transition:0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)';this.style.color='white'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.5)'">
             <i class="fa-solid fa-gear"></i>
         </button>
     </div>
 
-    <!-- APP CONTENT -->
     <div id="app-content" style="display: none;">
         <div class="container">
             <header>
@@ -288,10 +274,53 @@
                 <div class="tab-item" onclick="switchTab('sunday')" id="tab-sunday">Domingo</div>
             </div>
 
-            <!-- MEALS CONTAINER -->
-            <div id="meals-container">
-                <!-- RENDERED BY JS -->
+            <details class="painel-modulo">
+                <summary><i class="fa-solid fa-book-medical"></i> Regras da Máquina Biológica</summary>
+                <div class="explicacao-texto">
+                    <ul>
+                        <li><b>O Escudo Noturno:</b> O carbo à noite (Arroz/Batata) é inegociável. Ele não engorda, ele derruba o cortisol e aumenta a serotonina para o seu SNC desligar e evitar o ataque à geladeira.</li>
+                        <li><b>Hidratação (4L):</b> A desidratação confunde o cérebro e mimetiza a fome. Mapeie as garrafas.</li>
+                        <li><b>A Pizza no Sábado:</b> O limite de 3 a 4 pedaços mata a vontade psicológica, mantém o déficit semanal e evita o efeito rebote no domingo.</li>
+                        <li><b>Autocontrole:</b> Se a nota de Estresse/Fadiga Mental estiver alta ao sair do estúdio, redobre o cuidado à noite. A compulsão é gerada pelo cansaço, não pela fome.</li>
+                    </ul>
+                </div>
+            </details>
+
+            <div class="painel-modulo">
+                <h3 style="font-size: 1rem; color: var(--primary); margin: 0;"><i class="fa-solid fa-bottle-water"></i> Hidratação Diária (Meta: 4L)</h3>
+                <div class="bottle-container">
+                    <div class="bottle" id="bottle1" onclick="toggleBottle(1)">
+                        <i class="fa-solid fa-droplet" style="color: var(--text-muted);" id="drop1"></i>
+                        <span class="bottle-label">Garrafa 1 (2L)<br>Fit Studio</span>
+                    </div>
+                    <div class="bottle" id="bottle2" onclick="toggleBottle(2)">
+                        <i class="fa-solid fa-droplet" style="color: var(--text-muted);" id="drop2"></i>
+                        <span class="bottle-label">Garrafa 2 (2L)<br>Casa/Tarde</span>
+                    </div>
+                </div>
             </div>
+
+            <div class="painel-modulo">
+                <h3 style="font-size: 1rem; color: var(--primary); margin: 0 0 15px 0;"><i class="fa-solid fa-brain"></i> Rastreador do SNC (Preencher à noite)</h3>
+                
+                <div class="slider-container">
+                    <label><span>Qualidade do Sono (Banho Gelado 04:00)</span> <span id="valSono">3</span></label>
+                    <input type="range" min="1" max="5" value="3" id="rngSono" oninput="document.getElementById('valSono').innerText = this.value; saveBiofeedback();">
+                </div>
+                
+                <div class="slider-container">
+                    <label><span>Estresse/Fadiga Mental (Pós-Trabalho)</span> <span id="valEstresse">3</span></label>
+                    <input type="range" min="1" max="5" value="3" id="rngEstresse" oninput="document.getElementById('valEstresse').innerText = this.value; saveBiofeedback();">
+                </div>
+                
+                <div class="slider-container">
+                    <label><span>Vontade de Compulsão Hoje</span> <span id="valCompulsao">3</span></label>
+                    <input type="range" min="1" max="5" value="3" id="rngCompulsao" oninput="document.getElementById('valCompulsao').innerText = this.value; saveBiofeedback();">
+                </div>
+            </div>
+
+            <div id="meals-container">
+                </div>
 
             <button class="add-meal-btn" onclick="openMealModal()">
                 <i class="fa-solid fa-plus-circle"></i> ADICIONAR REFEIÇÃO
@@ -299,7 +328,6 @@
         </div>
     </div>
 
-    <!-- MODAL: ADD/EDIT FOOD -->
     <div id="modal-food" class="modal">
         <div class="modal-box">
             <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
@@ -335,6 +363,7 @@
                     <option value="veg">Vegetal/Salada</option>
                     <option value="fruit">Fruta</option>
                     <option value="drink">Bebida</option>
+                    <option value="alert">Alerta (Vermelho)</option>
                 </select>
             </div>
 
@@ -348,7 +377,6 @@
         </div>
     </div>
 
-    <!-- MODAL: MEAL MANAGER -->
     <div id="modal-meal" class="modal">
         <div class="modal-box">
             <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
@@ -372,7 +400,6 @@
         </div>
     </div>
 
-    <!-- MODAL CLOUD -->
     <div id="modal-cloud" class="modal">
         <div class="modal-box" style="text-align:center;">
             <div style="width:50px; height:50px; background:var(--bg); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px; color:var(--primary);">
@@ -435,7 +462,6 @@
             initTheme();
             lucide.createIcons();
             
-            // Check pre-filled token
             const t = localStorage.getItem(TOKEN_KEY);
             if(t) {
                 document.getElementById('manualToken').value = t;
@@ -443,6 +469,7 @@
             }
             
             checkAuth();
+            initBiofeedbackAndBottles();
         };
 
         function checkAuth() {
@@ -475,28 +502,72 @@
                 localStorage.setItem(TOKEN_KEY, t);
                 document.getElementById('gk-config-modal').style.display = 'none';
                 alert("Token salvo. Tente entrar.");
-                initApp(); // Try background sync
+                initApp(); 
+            }
+        }
+
+        // --- MÓDULOS DE ROTINA DIÁRIA (Água e SNC) ---
+        function toggleBottle(num) {
+            const bottle = document.getElementById('bottle' + num);
+            const drop = document.getElementById('drop' + num);
+            const today = new Date().toLocaleDateString();
+            
+            bottle.classList.toggle('filled');
+            
+            if (bottle.classList.contains('filled')) {
+                drop.style.color = "var(--accent)"; 
+                localStorage.setItem('bottle' + num + '_' + today, 'true');
+            } else {
+                drop.style.color = "var(--text-muted)";
+                localStorage.removeItem('bottle' + num + '_' + today);
+            }
+        }
+
+        function saveBiofeedback() {
+            const today = new Date().toLocaleDateString();
+            const data = {
+                sono: document.getElementById('rngSono').value,
+                estresse: document.getElementById('rngEstresse').value,
+                compulsao: document.getElementById('rngCompulsao').value
+            };
+            localStorage.setItem('biofeedback_' + today, JSON.stringify(data));
+        }
+
+        function initBiofeedbackAndBottles() {
+            const today = new Date().toLocaleDateString();
+            
+            // Garrafas
+            if(localStorage.getItem('bottle1_' + today)) toggleBottle(1);
+            if(localStorage.getItem('bottle2_' + today)) toggleBottle(2);
+            
+            // Biofeedback
+            const savedBio = localStorage.getItem('biofeedback_' + today);
+            if(savedBio) {
+                const data = JSON.parse(savedBio);
+                document.getElementById('rngSono').value = data.sono;
+                document.getElementById('valSono').innerText = data.sono;
+                
+                document.getElementById('rngEstresse').value = data.estresse;
+                document.getElementById('valEstresse').innerText = data.estresse;
+                
+                document.getElementById('rngCompulsao').value = data.compulsao;
+                document.getElementById('valCompulsao').innerText = data.compulsao;
             }
         }
 
         // --- DATA ENGINE ---
         async function initApp() {
-            // 1. Load Local
             const local = localStorage.getItem(DB_KEY);
             if(local) {
-                try { 
-                    appData = JSON.parse(local);
-                } catch(e) { console.error(e); }
+                try { appData = JSON.parse(local); } catch(e) { console.error(e); }
             }
             
-            // Validate Data / Populate Dummy if empty
             if(!appData.routine || appData.routine.length === 0) {
                 populateDummyData();
             }
 
             renderAll();
 
-            // 2. Cloud Sync
             const token = localStorage.getItem(TOKEN_KEY);
             if(token) {
                 updateStatus('sync');
@@ -507,118 +578,80 @@
         }
 
         function populateDummyData() {
-            // PLANO ALIMENTAR DETALHADO
+            // PLANO ALIMENTAR ANTICOMPULSÃO (Abril)
             appData.routine = [
                 {
-                    id: 1, name: "Café da Manhã", time: "05:00",
+                    id: 1, name: "Ativação Pré-Trabalho", time: "04:30",
                     foods: [
-                        { name: "Ovos Inteiros (Mexidos ou Cozidos)", qty: "3", unit: "unid", type: "prot", sub: "Substituição Líquida:<br>• 30g Whey Protein Growth (Morango)<br>• 200ml Leite Semi-desnatado (Bater c/ Whey)<br>• 15g Pasta de Amendoim (1 col. sopa)<br>• 5g Creatina Growth" },
-                        { name: "Requeijão Tradicional (Misturar nos ovos)", qty: "20", unit: "g", type: "fat", sub: "" },
-                        { name: "Café Coado (Sem açúcar)", qty: "200", unit: "ml", type: "drink", sub: "" },
-                        { name: "Leite Semi-desnatado", qty: "50", unit: "ml", type: "carb", sub: "" },
-                        { name: "Creatina Growth", qty: "5", unit: "g", type: "fat", sub: "" }
+                        { name: "Ovos Inteiros", qty: "3", unit: "unid", type: "prot", sub: "" },
+                        { name: "Requeijão Light", qty: "15", unit: "g", type: "fat", sub: "" },
+                        { name: "Goma de Tapioca (Crepioca)", qty: "40", unit: "g", type: "carb", sub: "" },
+                        { name: "Maçã ou Mamão", qty: "100", unit: "g", type: "fruit", sub: "" },
+                        { name: "Café + Leite Desnatado", qty: "200", unit: "ml", type: "drink", sub: "" },
+                        { name: "Creatina", qty: "5", unit: "g", type: "prot", sub: "" }
                     ]
                 },
                 {
-                    id: 2, name: "Pré-Treino (Colação)", time: "09:15",
+                    id: 2, name: "Recarga e Pré-Treino", time: "09:15",
                     foods: [
-                        { name: "Banana Prata (Amassada)", qty: "1", unit: "méd", type: "fruit", sub: "Substituição Sólida:<br>• 3 Unidades Claras de Ovo Cozidas<br>• 1 Unidade Média Banana Prata<br>• 20g Farelo de Aveia<br>• Canela a gosto" },
-                        { name: "Farelo de Aveia (2 col. sopa rasas)", qty: "20", unit: "g", type: "carb", sub: "" },
-                        { name: "Whey Growth (Morango)", qty: "30", unit: "g", type: "prot", sub: "" },
-                        { name: "Cacau 70% (Misturar c/ água até virar creme)", qty: "1", unit: "col chá", type: "fat", sub: "" }
+                        { name: "Iogurte Natural", qty: "170", unit: "g", type: "prot", sub: "Substituição: Bater tudo num shake com água caso não tenha o iogurte." },
+                        { name: "Whey Protein", qty: "30", unit: "g", type: "prot", sub: "" },
+                        { name: "Banana", qty: "100", unit: "g", type: "fruit", sub: "" },
+                        { name: "Aveia em flocos", qty: "30", unit: "g", type: "carb", sub: "" }
                     ]
                 },
                 {
-                    id: 3, name: "Almoço (Pós-Treino)", time: "12:00",
+                    id: 3, name: "Almoço", time: "12:00",
                     foods: [
-                        { name: "Peito de Frango OU Patinho Moído (Pronto)", qty: "150", unit: "g", type: "prot", sub: "Substituição (Com Arroz):<br>• 150g Peito de Frango OU Patinho Moído<br>• 130g Arroz Branco ou Integral (Peso Cozido)<br>• 5g Manteiga<br>• 100g Legumes + Salada Livre" },
-                        { name: "Batata Inglesa (Cozida/Assada/Airfryer)", qty: "280", unit: "g", type: "carb", sub: "Ou 220g Mandioquinha (Batata Baroa)" },
-                        { name: "Manteiga (Usar no preparo ou sobre o carbo)", qty: "5", unit: "g", type: "fat", sub: "" },
-                        { name: "Legumes Cozidos (Brócolis, Cenoura, Vagem...)", qty: "100", unit: "g", type: "veg", sub: "" },
-                        { name: "Salada de Folhas Verdes", qty: "Livre", unit: "", type: "veg", sub: "" }
+                        { name: "Peito de Frango / Carne magra", qty: "150", unit: "g", type: "prot", sub: "Substituição: 4 ovos inteiros" },
+                        { name: "Arroz Integral", qty: "150", unit: "g", type: "carb", sub: "Substituição: 300g batata doce ou inglesa" },
+                        { name: "Legumes no vapor", qty: "100", unit: "g", type: "veg", sub: "Brócolis, couve-flor, cenoura" }
                     ]
                 },
                 {
-                    id: 4, name: "Lanche da Tarde", time: "16:00",
+                    id: 4, name: "Lanche Psicológico", time: "16:00",
                     foods: [
-                        { name: "Iogurte Grego Zero Gordura (aprox. 1/3 pote)", qty: "170", unit: "g", type: "prot", sub: "Substituição Salgada:<br>• 2 Unidades Ovos Cozidos<br>• 150g Fruta (Morango, Melão ou Mamão)<br>• 10g Sementes de Chia" },
-                        { name: "Whey Growth (1/2 scoop - misturar no iogurte)", qty: "15", unit: "g", type: "prot", sub: "" },
-                        { name: "Sementes de Chia", qty: "10", unit: "g", type: "fat", sub: "" },
-                        { name: "Morangos Picados", qty: "150", unit: "g", type: "fruit", sub: "Ou 150g Melão / Ou 150g Mamão" }
+                        { name: "Pão Integral", qty: "50", unit: "g", type: "carb", sub: "Substituição: 1 pão francês sem miolo" },
+                        { name: "Ovos Inteiros", qty: "2", unit: "unid", type: "prot", sub: "" },
+                        { name: "Requeijão Light", qty: "15", unit: "g", type: "fat", sub: "" },
+                        { name: "Café Preto (Sem açúcar)", qty: "Livre", unit: "ml", type: "drink", sub: "" }
                     ]
                 },
                 {
-                    id: 5, name: "Jantar (Acquafit)", time: "19:00",
+                    id: 5, name: "Escudo Noturno", time: "18:30",
                     foods: [
-                        { name: "Patê de Frango (Desfiado + Requeijão)", qty: "150", unit: "g", type: "prot", sub: "Substituição (Sanduíche):<br>• 1 Unidade Rap10 Integral OU 1 fatia Pão Integral<br>• 140g Patê de Frango<br>• Salada de Folhas Livre" },
-                        { name: "Cenoura Crua (Ralada/Bastonetes)", qty: "Livre", unit: "", type: "veg", sub: "" },
-                        { name: "Salada de Folhas", qty: "Livre", unit: "", type: "veg", sub: "Comer no pote com talher (Zero Carbo)" }
+                        { name: "Peito de Frango ou Carne Magra", qty: "150", unit: "g", type: "prot", sub: "" },
+                        { name: "Arroz Integral", qty: "100", unit: "g", type: "carb", sub: "Obrigatório para o SNC. Substituição: 200g batata." },
+                        { name: "Legumes no vapor", qty: "Livre", unit: "g", type: "veg", sub: "Comer em abundância até atingir saciedade plena" }
                     ]
                 }
             ];
 
             appData.saturday = [
                 {
-                    id: 1, name: "Café da Manhã", time: "09:00",
+                    id: 1, name: "Dia Livre com Moderação", time: "09:00",
                     foods: [
-                        { name: "Ovos Inteiros (Mexidos)", qty: "4", unit: "unid", type: "prot", sub: "" },
-                        { name: "Requeijão Tradicional", qty: "20", unit: "g", type: "fat", sub: "" },
-                        { name: "Café Preto (Sem açúcar)", qty: "Livre", unit: "", type: "drink", sub: "" }
+                        { name: "Base de Proteínas", qty: "Alta", unit: "-", type: "prot", sub: "Manter refeições parecidas com a semana até a noite." }
                     ]
                 },
                 {
-                    id: 2, name: "Almoço Zero Carbo", time: "12:30",
+                    id: 2, name: "Refeição Livre (Alerta)", time: "20:00",
                     foods: [
-                        { name: "Carne Bovina, Frango ou Churrasco Magro", qty: "200", unit: "g", type: "prot", sub: "" },
-                        { name: "Salada Variada e Legumes", qty: "Livre", unit: "", type: "veg", sub: "" },
-                        { name: "Arroz, Batata, Farofa ou Macarrão", qty: "0", unit: "g", type: "carb", sub: "Zero Carbo nesta refeição" }
-                    ]
-                },
-                {
-                    id: 3, name: "Lanche da Tarde", time: "16:00",
-                    foods: [
-                        { name: "Iogurte Grego Zero Gordura", qty: "170", unit: "g", type: "prot", sub: "" },
-                        { name: "Whey Protein (Opcional)", qty: "15", unit: "g", type: "prot", sub: "" }
-                    ]
-                },
-                {
-                    id: 4, name: "Jantar Sagrado (Pizza)", time: "20:00",
-                    foods: [
-                        { name: "Pizza (Sabor de preferência)", qty: "3-4", unit: "fatias", type: "carb", sub: "" },
-                        { name: "Refrigerante Zero ou Água com gás", qty: "Livre", unit: "", type: "drink", sub: "" }
+                        { name: "Pizza com a namorada", qty: "3-4", unit: "pedaços", type: "alert", sub: "Aproveite o momento. O limite de 4 pedaços garante o déficit semanal sem gerar compulsão." }
                     ]
                 }
             ];
 
             appData.sunday = [
                 {
-                    id: 1, name: "Brunch / Café", time: "10:00",
+                    id: 1, name: "Retorno ao Foco", time: "Dia Todo",
                     foods: [
-                        { name: "Ovos (Mexidos ou Cozidos)", qty: "3", unit: "unid", type: "prot", sub: "" },
-                        { name: "Fruta (Melão, Mamão ou Morangos)", qty: "1", unit: "unid", type: "fruit", sub: "" },
-                        { name: "Café Preto", qty: "Livre", unit: "", type: "drink", sub: "" }
-                    ]
-                },
-                {
-                    id: 2, name: "Almoço em Família", time: "13:00",
-                    foods: [
-                        { name: "Proteína (Carne, Frango ou Peixe)", qty: "1", unit: "Porção", type: "prot", sub: "" },
-                        { name: "Arroz OU Batata OU Macarrão", qty: "1", unit: "Porção", type: "carb", sub: "Escolha apenas UM carbo" },
-                        { name: "Salada Verde", qty: "Livre", unit: "", type: "veg", sub: "" }
-                    ]
-                },
-                {
-                    id: 3, name: "Jantar Reset", time: "20:00",
-                    foods: [
-                        { name: "Ovos Cozidos", qty: "3", unit: "unid", type: "prot", sub: "Ou 150g Patê de Frango (Sem pão)" },
-                        { name: "Vegetais", qty: "Livre", unit: "", type: "veg", sub: "" },
-                        { name: "Carboidratos (Para desinchar)", qty: "0", unit: "g", type: "carb", sub: "" }
+                        { name: "Protocolo Anticompulsão", qty: "100", unit: "%", type: "prot", sub: "Voltar rigorosamente à rotina de segunda a sexta para limpar a retenção." }
                     ]
                 }
             ];
             
-            // Meta Data
-            appData.meta = { kcal: 1750, weight: 76.3, water: 4.0 };
+            appData.meta = { kcal: 1800, weight: 80.0, water: 4.0 };
             
             localStorage.setItem(DB_KEY, JSON.stringify(appData));
         }
@@ -694,6 +727,7 @@
                 case 'veg': return '<i class="fa-solid fa-carrot" style="color:var(--veg);"></i>';
                 case 'fruit': return '<i class="fa-solid fa-apple-whole" style="color:var(--fruit);"></i>';
                 case 'drink': return '<i class="fa-solid fa-mug-hot" style="color:#a16207;"></i>';
+                case 'alert': return '<i class="fa-solid fa-triangle-exclamation" style="color:var(--alert);"></i>';
                 default: return '<i class="fa-solid fa-utensils"></i>';
             }
         }
@@ -725,7 +759,7 @@
                     const typeClass = `type-${food.type || 'prot'}`;
                     
                     const subTriggerHTML = hasSub ? 
-                        `<div class="sub-trigger"><i class="fa-solid fa-rotate"></i> Substituição</div>` : '';
+                        `<div class="sub-trigger"><i class="fa-solid fa-rotate"></i> Detalhes</div>` : '';
                     
                     const subDrawerHTML = hasSub ? 
                         `<div id="drawer-${subId}" class="sub-drawer">
@@ -780,7 +814,6 @@
             } else {
                 document.body.classList.remove('editing');
                 document.getElementById('btnEditMode').classList.remove('edit-active');
-                // Close all drawers when entering normal mode to avoid visual clutter
                 document.querySelectorAll('.sub-drawer').forEach(d => d.classList.remove('open'));
             }
         }
@@ -789,7 +822,7 @@
             document.getElementById('modal-meal').style.display = 'flex';
             document.getElementById('meal-name').value = '';
             document.getElementById('meal-time').value = '12:00';
-            document.getElementById('edit-meal-idx-only').value = ""; // Clear ID for new
+            document.getElementById('edit-meal-idx-only').value = "";
         }
 
         function editMeal(mIdx) {
@@ -806,15 +839,12 @@
             const idx = document.getElementById('edit-meal-idx-only').value;
             
             if(!name) return alert("Nome obrigatório");
-            
             if(!appData[currentTab]) appData[currentTab] = [];
 
             if (idx !== "") {
-                // Edit existing
                 appData[currentTab][idx].name = name;
                 appData[currentTab][idx].time = time;
             } else {
-                // Create new
                 appData[currentTab].push({
                     id: Date.now(),
                     name: name,
@@ -839,7 +869,6 @@
             document.getElementById('edit-meal-idx').value = mIdx;
             
             if(fIdx !== null) {
-                // Edit
                 const food = appData[currentTab][mIdx].foods[fIdx];
                 document.getElementById('edit-food-idx').value = fIdx;
                 document.getElementById('inp-name').value = food.name;
@@ -848,7 +877,6 @@
                 document.getElementById('inp-sub').value = food.sub;
                 document.getElementById('inp-type').value = food.type || 'prot';
             } else {
-                // Add
                 document.getElementById('edit-food-idx').value = "NEW";
                 document.getElementById('inp-name').value = "";
                 document.getElementById('inp-qty').value = "";
@@ -893,7 +921,7 @@
         function saveAndRender() {
             localStorage.setItem(DB_KEY, JSON.stringify(appData));
             renderAll();
-            syncCloud(); // Auto sync
+            syncCloud();
         }
 
         // --- CLOUD UTILS ---
