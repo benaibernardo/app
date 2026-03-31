@@ -14,131 +14,130 @@
     
     <style>
         :root {
-            /* Organic Fresh Theme -> Modificado para Azul Predominante conforme gosto do usuário */
+            /* Health & Organic Theme */
             --bg: #f8fafc; 
             --card: #ffffff; 
             --text: #334155;
             --text-muted: #94a3b8;
             
-            --primary: #1e3a8a; /* Azul Escuro Moderno */
-            --primary-light: #dbeafe; /* Azul Claro */
+            --primary: #10b981; /* Verde Esmeralda Moderno */
+            --primary-light: #d1fae5;
             
-            --accent: #2563eb; /* Azul Vibrante */
-            --accent-light: #eff6ff;
+            --accent: #f59e0b; /* Laranja/Âmbar (Vitalidade) */
+            --accent-light: #fef3c7;
             
             --border: #e2e8f0;
             --danger: #ef4444; 
-            --alert: #ef4444; /* Vermelho para a Pizza */
+            --alert: #ef4444; 
             
             /* Food Type Colors */
             --prot: #3b82f6; --prot-bg: #eff6ff;
             --carb: #eab308; --carb-bg: #fefce8;
             --fat: #f59e0b; --fat-bg: #fffbeb;
-            --veg: #22c55e; --veg-bg: #f0fdf4;
+            --veg: #10b981; --veg-bg: #d1fae5;
             --fruit: #ec4899; --fruit-bg: #fdf2f8;
             
             --radius: 16px; 
             --font: 'Plus Jakarta Sans', sans-serif; 
             --font-num: 'Outfit', sans-serif;
-            --shadow: 0 2px 10px -2px rgba(0,0,0,0.05);
+            --shadow: 0 4px 15px -3px rgba(0,0,0,0.05);
         }
 
-        /* Dark Theme Overrides */
         [data-theme="dark"] {
             --bg: #020617; 
-            --card: #1e293b; 
+            --card: #0f172a; 
             --text: #f1f5f9;
             --text-muted: #64748b;
             
-            --primary: #3b82f6; /* Azul 500 */
-            --primary-light: rgba(59, 130, 246, 0.2);
+            --primary: #10b981; 
+            --primary-light: rgba(16, 185, 129, 0.15);
             
-            --accent: #60a5fa; /* Azul 400 */
-            --accent-light: rgba(96, 165, 250, 0.2);
+            --accent: #fbbf24;
+            --accent-light: rgba(251, 191, 36, 0.15);
             
-            --border: #334155;
+            --border: #1e293b;
             --shadow: 0 10px 30px -5px rgba(0,0,0,0.3);
             
-            --prot: #60a5fa; --prot-bg: rgba(59, 130, 246, 0.1);
-            --carb: #facc15; --carb-bg: rgba(234, 179, 8, 0.1);
-            --fat: #fbbf24; --fat-bg: rgba(245, 158, 11, 0.1);
-            --veg: #4ade80; --veg-bg: rgba(34, 197, 94, 0.1);
-            --fruit: #f472b6; --fruit-bg: rgba(236, 72, 153, 0.1);
+            --veg: #34d399; --veg-bg: rgba(52, 211, 153, 0.1);
         }
 
         * { margin:0; padding:0; box-sizing:border-box; font-family:var(--font); outline:none; -webkit-tap-highlight-color:transparent; }
-        body { background:var(--bg); color:var(--text); padding:0; font-size:13px; transition: background 0.3s, color 0.3s; padding-bottom: 80px; }
+        body { background:var(--bg); color:var(--text); padding:0; font-size:14px; transition: background 0.4s ease, color 0.4s ease; padding-bottom: 80px; }
         
-        .container { max-width:600px; margin:0 auto; padding: 15px; animation:fadeIn 0.5s ease; }
+        .container { max-width:600px; margin:0 auto; padding: 20px 15px; animation:fadeIn 0.5s ease; }
 
         /* HEADER */
-        header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; position: sticky; top: 0; z-index: 10; background: var(--bg); padding-top: 10px;}
-        .logo { font-size:1.2rem; font-weight:800; color:var(--primary); letter-spacing:-0.5px; display:flex; align-items:center; gap:8px; font-family:var(--font-num); }
-        .logo i { background:var(--primary-light); color:var(--primary); padding:6px; border-radius:10px; font-size:0.9rem; }
+        header { display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; position: sticky; top: 0; z-index: 10; background: var(--bg); padding: 15px 0; backdrop-filter: blur(10px); }
+        .logo { font-size:1.25rem; font-weight:800; color:var(--text); letter-spacing:-0.5px; display:flex; align-items:center; gap:10px; font-family:var(--font-num); }
+        .logo i { background:var(--primary); color:white; padding:8px; border-radius:12px; font-size:1rem; box-shadow: 0 4px 10px var(--primary-light); }
         
-        .header-actions { display:flex; gap:8px; }
-        .action-btn { width:38px; height:38px; border-radius:10px; border:1px solid var(--border); background:var(--card); color:var(--text); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:0.2s; box-shadow:var(--shadow); position: relative; }
-        .action-btn:hover { color:var(--primary); border-color:var(--primary); transform:translateY(-2px); }
-        .action-btn.edit-active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 0 10px var(--primary-light); }
+        .header-actions { display:flex; gap:10px; }
+        .action-btn { width:42px; height:42px; border-radius:12px; border:1px solid var(--border); background:var(--card); color:var(--text); display:flex; align-items:center; justify-content:center; cursor:pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); box-shadow:var(--shadow); position: relative; }
+        .action-btn:active { transform: scale(0.92); } /* Feedback Tátil */
+        .action-btn.edit-active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 0 15px var(--primary-light); }
 
-        /* TAB NAVIGATION */
-        .tabs { display: flex; background: var(--card); padding: 4px; border-radius: 14px; border: 1px solid var(--border); margin-bottom: 20px; box-shadow: var(--shadow); }
-        .tab-item { flex: 1; text-align: center; padding: 10px; border-radius: 10px; font-weight: 700; color: var(--text-muted); cursor: pointer; transition: 0.2s; font-size: 0.85rem; }
-        .tab-item.active { background: var(--primary); color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        [data-theme="dark"] .tab-item.active { color: white; }
-
-        /* NOVOS MÓDULOS (Biofeedback e Água) */
+        /* MÓDULOS DE INSTRUÇÃO E BIOFEEDBACK */
         .painel-modulo {
             background: var(--card);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 20px;
+            border-radius: var(--radius);
+            padding: 18px;
+            margin-bottom: 25px;
             box-shadow: var(--shadow);
+            border: 1px solid var(--border);
             border-left: 5px solid var(--primary);
-            border-right: 1px solid var(--border);
-            border-top: 1px solid var(--border);
-            border-bottom: 1px solid var(--border);
+            transition: transform 0.2s ease;
         }
         
-        .bottle-container { display: flex; justify-content: space-around; margin-top: 15px; }
+        /* HIDRATAÇÃO */
+        .bottle-container { display: flex; justify-content: space-around; margin-top: 20px; }
         .bottle {
-            width: 70px; height: 110px; border: 3px solid var(--text-muted); border-radius: 8px 8px 15px 15px;
-            position: relative; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; flex-direction: column; background: var(--bg);
+            width: 75px; height: 120px; border: 3px solid var(--text-muted); border-radius: 10px 10px 20px 20px;
+            position: relative; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; flex-direction: column; background: var(--bg);
         }
-        .bottle.filled { border-color: var(--accent); background: var(--primary-light); }
-        .bottle-label { font-size: 0.75rem; font-weight: bold; margin-top: 5px; text-align: center; color: var(--text); }
-        .bottle i { font-size: 1.5rem; transition: 0.3s; }
+        .bottle:active { transform: scale(0.9); } /* Feedback Tátil */
+        .bottle.filled { border-color: var(--primary); background: var(--primary-light); }
+        .bottle-label { font-size: 0.75rem; font-weight: 700; margin-top: 8px; text-align: center; color: var(--text); line-height: 1.2; }
+        .bottle i { font-size: 1.8rem; transition: 0.3s; }
+        .bottle.filled i { color: var(--primary) !important; animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         
-        .slider-container { margin-bottom: 12px; }
-        .slider-container label { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; color: var(--text); }
-        input[type=range] { width: 100%; accent-color: var(--primary); }
-        
-        details.painel-modulo { padding: 12px 16px; cursor: pointer; }
-        summary { font-weight: 700; color: var(--primary); cursor: pointer; outline: none; list-style: none; display: flex; align-items: center; gap: 8px; font-size: 0.95rem; }
+        /* SLIDERS */
+        .slider-container { margin-bottom: 15px; }
+        .slider-container label { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+        input[type=range] { width: 100%; accent-color: var(--primary); height: 6px; border-radius: 5px; background: var(--border); outline: none; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--primary); cursor: pointer; transition: transform 0.1s; }
+        input[type=range]::-webkit-slider-thumb:active { transform: scale(1.3); }
+
+        /* SANFONA REGRAS */
+        details.painel-modulo { padding: 15px 18px; cursor: pointer; }
+        summary { font-weight: 800; color: var(--primary); cursor: pointer; outline: none; list-style: none; display: flex; align-items: center; gap: 10px; font-size: 1rem; }
         summary::-webkit-details-marker { display: none; }
-        .explicacao-texto { font-size: 0.85rem; color: var(--text); margin-top: 12px; line-height: 1.6; border-top: 1px dashed var(--border); padding-top: 10px;}
+        .explicacao-texto { font-size: 0.85rem; color: var(--text); margin-top: 15px; line-height: 1.7; border-top: 1px dashed var(--border); padding-top: 15px;}
         .explicacao-texto ul { padding-left: 20px; }
-        .explicacao-texto li { margin-bottom: 8px; }
+        .explicacao-texto li { margin-bottom: 10px; }
 
         /* MEAL CARD */
-        .meal-card { background: var(--card); border-radius: 16px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 15px; box-shadow: var(--shadow); transition: 0.2s; position: relative; }
+        .meal-card { 
+            background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); 
+            overflow: hidden; margin-bottom: 20px; box-shadow: var(--shadow); 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; 
+            animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        .meal-card:active { transform: scale(0.98); } /* Feedback Tátil Geral */
         
-        .meal-header { background: linear-gradient(to right, var(--bg), var(--card)); padding: 10px 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-        .meal-title { font-weight: 800; font-family: var(--font-num); font-size: 1rem; color: var(--primary); display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .meal-header { background: linear-gradient(to right, var(--bg), var(--card)); padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .meal-title { font-weight: 800; font-family: var(--font-num); font-size: 1.05rem; color: var(--text); display: flex; align-items: center; gap: 10px; letter-spacing: 0.5px; }
+        .meal-title i { color: var(--primary); }
         .meal-right { display: flex; align-items: center; gap: 8px; }
         
-        .meal-time { font-size: 0.85rem; font-weight: 800; color: var(--text); background: var(--primary-light); padding: 4px 10px; border-radius: 8px; border: 1px solid var(--border); font-family: var(--font-num); }
-        [data-theme="dark"] .meal-time { color: var(--primary); border-color: var(--primary); }
+        .meal-time { font-size: 0.85rem; font-weight: 800; color: var(--primary); background: var(--primary-light); padding: 5px 12px; border-radius: 10px; font-family: var(--font-num); letter-spacing: 0.5px; }
         
-        .meal-body { padding: 0; }
-
         /* FOOD ITEM */
         .food-row-container { border-bottom: 1px dashed var(--border); transition:0.2s; }
         .food-row-container:last-child { border-bottom: none; }
 
-        .food-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; position: relative; cursor: pointer; transition: 0.2s; }
-        .food-row:hover { background: var(--bg); }
-        .food-row::before { content: ''; position: absolute; left: 0; top: 10px; bottom: 10px; width: 3px; border-radius: 0 3px 3px 0; background: var(--border); }
+        .food-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 18px; position: relative; cursor: pointer; transition: all 0.2s ease; }
+        .food-row:active { background: var(--bg); transform: translateX(4px); } /* Tátil no item */
+        .food-row::before { content: ''; position: absolute; left: 0; top: 12px; bottom: 12px; width: 4px; border-radius: 0 4px 4px 0; background: var(--border); }
         
         /* Type Indicators */
         .food-row.type-prot::before { background: var(--prot); }
@@ -147,69 +146,68 @@
         .food-row.type-veg::before { background: var(--veg); }
         .food-row.type-fruit::before { background: var(--fruit); }
         .food-row.type-drink::before { background: #a16207; }
-        .food-row.type-alert::before { background: var(--alert); } /* For Pizza */
+        .food-row.type-alert::before { background: var(--alert); }
 
-        .food-info { flex: 1; margin-left: 8px; }
-        .food-name { font-weight: 700; font-size: 0.95rem; color: var(--text); margin-bottom: 2px; display: flex; align-items: center; gap: 6px; }
-        .food-icon { font-size: 0.9rem; opacity: 0.9; }
+        .food-info { flex: 1; margin-left: 12px; }
+        .food-name { font-weight: 700; font-size: 0.95rem; color: var(--text); margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
         
-        .sub-trigger { font-size: 0.65rem; color: var(--accent); background: var(--accent-light); padding: 2px 6px; border-radius: 4px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .sub-trigger { font-size: 0.65rem; color: var(--accent); background: var(--accent-light); padding: 3px 8px; border-radius: 6px; font-weight: 800; display: inline-flex; align-items: center; gap: 5px; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        .food-qty { font-family: var(--font-num); font-weight: 800; font-size: 0.95rem; color: var(--primary); background: var(--primary-light); padding: 4px 10px; border-radius: 8px; min-width: 65px; text-align: center; margin-left: 10px; }
+        .food-qty { font-family: var(--font-num); font-weight: 800; font-size: 1rem; color: var(--text); background: var(--bg); border: 1px solid var(--border); padding: 5px 12px; border-radius: 10px; min-width: 70px; text-align: center; margin-left: 12px; }
 
-        /* DRAWER (Vertical List) */
-        .sub-drawer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out; background: #fdfdfd; opacity: 0; }
-        [data-theme="dark"] .sub-drawer { background: #151e2e; }
-        .sub-drawer.open { max-height: 800px; opacity: 1; border-top: 1px solid var(--border); }
-        .sub-content { padding: 12px 15px 12px 30px; font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; border-left: 3px solid var(--accent); background: linear-gradient(to right, var(--accent-light), transparent 20%); margin: 5px 0 0 0; }
+        /* DRAWER */
+        .sub-drawer { max-height: 0; overflow: hidden; transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s; background: var(--bg); opacity: 0; }
+        .sub-drawer.open { max-height: 300px; opacity: 1; border-top: 1px solid var(--border); }
+        .sub-content { padding: 14px 18px 14px 35px; font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; border-left: 4px solid var(--accent); background: linear-gradient(to right, var(--accent-light), transparent 40%); margin: 0; }
 
         /* EDIT MODE STYLES */
-        .edit-controls { display: none; gap: 5px; margin-left: 5px; }
+        .edit-controls { display: none; gap: 6px; margin-left: 8px; }
         body.editing .edit-controls { display: flex; }
-        body.editing .food-qty { display: none; } 
-        body.editing .sub-trigger { display: none; } 
+        body.editing .food-qty, body.editing .sub-trigger { display: none; } 
         body.editing .meal-card { border-style: dashed; border-color: var(--text-muted); }
         
-        .btn-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
+        .btn-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
+        .btn-icon:active { transform: scale(0.85); }
         .btn-edit { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
-        .btn-edit:hover { border-color: var(--primary); color: var(--primary); }
         .btn-delete { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); }
         
-        .add-item-btn { display: none; width: 100%; padding: 10px; text-align: center; font-weight: 700; color: var(--text-muted); border-top: 1px dashed var(--border); cursor: pointer; transition: 0.2s; font-size: 0.8rem; }
+        .add-item-btn { display: none; width: 100%; padding: 12px; text-align: center; font-weight: 800; color: var(--primary); border-top: 1px dashed var(--border); cursor: pointer; transition: 0.2s; font-size: 0.85rem; background: var(--primary-light); }
         body.editing .add-item-btn { display: block; }
-        .add-item-btn:hover { background: var(--bg); color: var(--primary); }
+        .add-item-btn:active { background: var(--primary); color: white; }
 
-        .add-meal-btn { display: none; width: 100%; padding: 15px; border: 2px dashed var(--border); border-radius: 16px; color: var(--text-muted); font-weight: 700; cursor: pointer; margin-top: 15px; text-align: center; transition: 0.2s; font-size: 0.9rem; }
+        .add-meal-btn { display: none; width: 100%; padding: 18px; border: 2px dashed var(--border); border-radius: var(--radius); color: var(--text-muted); font-weight: 800; cursor: pointer; margin-top: 20px; text-align: center; transition: 0.2s; font-size: 0.95rem; }
         body.editing .add-meal-btn { display: block; }
-        .add-meal-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+        .add-meal-btn:active { transform: scale(0.95); border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
 
         /* MODAL */
-        .modal { display:none; position:fixed; inset:0; background:rgba(2, 6, 23, 0.85); z-index:2000; align-items:center; justify-content:center; backdrop-filter:blur(5px); }
-        .modal-box { background:var(--card); width:90%; max-width:380px; padding:20px; border-radius:20px; animation:slideUp 0.3s; box-shadow:0 25px 60px rgba(0,0,0,0.3); border: 1px solid var(--border); }
+        .modal { display:none; position:fixed; inset:0; background:rgba(2, 6, 23, 0.85); z-index:2000; align-items:center; justify-content:center; backdrop-filter:blur(8px); }
+        .modal-box { background:var(--card); width:90%; max-width:400px; padding:25px; border-radius:24px; animation:modalPop 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow:0 25px 60px rgba(0,0,0,0.4); border: 1px solid var(--border); }
         
-        .inp-group { margin-bottom: 12px; }
-        .inp-label { display: block; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
-        .inp-field { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-weight: 600; outline: none; transition: 0.3s; font-size: 0.9rem; }
-        .inp-field:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); background: var(--card); }
+        .inp-group { margin-bottom: 15px; }
+        .inp-label { display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; }
+        .inp-field { width: 100%; padding: 12px 15px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-weight: 600; outline: none; transition: 0.3s; font-size: 0.95rem; }
+        .inp-field:focus { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-light); background: var(--card); }
 
-        .btn-save { width: 100%; padding: 12px; border-radius: 12px; background: var(--primary); color: white; font-weight: 800; font-size: 0.95rem; border: none; cursor: pointer; margin-top: 5px; transition: 0.2s; }
-        .btn-save:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-save { width: 100%; padding: 15px; border-radius: 14px; background: var(--primary); color: white; font-weight: 800; font-size: 1rem; border: none; cursor: pointer; margin-top: 10px; transition: 0.2s; letter-spacing: 0.5px; }
+        .btn-save:active { transform: scale(0.95); opacity: 0.9; }
         
         /* GATEKEEPER & STATUS */
-        .cloud-dot { width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; position:absolute; top:8px; right:8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
-        .cloud-dot.ok { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
+        .cloud-dot { width: 10px; height: 10px; border-radius: 50%; background: #94a3b8; position:absolute; top:6px; right:6px; border: 2px solid var(--card); }
+        .cloud-dot.ok { background: #10b981; }
         .cloud-dot.error { background: var(--danger); }
-        .cloud-dot.sync { background: #38bdf8; animation: pulse 1s infinite; }
+        .cloud-dot.sync { background: #3b82f6; animation: pulse 1s infinite; }
 
-        #gatekeeper { position: fixed; inset: 0; z-index: 100000; background: radial-gradient(circle at center, #1e293b 0%, #020617 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--font-num); }
+        #gatekeeper { position: fixed; inset: 0; z-index: 100000; background: radial-gradient(circle at center, #0f172a 0%, #020617 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--font-num); }
         .pin-input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; letter-spacing: 4px; font-size: 1.2rem; text-align: center; padding: 1rem; border-radius: 1rem; width: 260px; outline: none; transition: 0.3s; margin-bottom: 1rem; }
-        .pin-input:focus { border-color: var(--primary); box-shadow: 0 0 20px var(--primary-light); }
-        .btn-action { background: var(--primary); color: white; font-weight: 700; border-radius: 0.8rem; padding: 0.8rem; transition: 0.3s; width: 260px; display: flex; align-items: center; justify-content: center; gap: 8px; border:none; cursor: pointer; }
-        
-        #gk-config-modal { z-index: 100001; }
+        .pin-input:focus { border-color: var(--primary); box-shadow: 0 0 20px rgba(16, 185, 129, 0.3); }
+        .btn-action { background: var(--primary); color: white; font-weight: 800; border-radius: 1rem; padding: 1rem; transition: 0.3s; width: 260px; display: flex; align-items: center; justify-content: center; gap: 8px; border:none; cursor: pointer; font-size: 1rem; }
+        .btn-action:active { transform: scale(0.95); }
 
+        /* ANIMAÇÕES */
         @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
-        @keyframes slideUp { from{transform:translateY(20px); opacity:0;} to{transform:translateY(0); opacity:1;} }
+        @keyframes slideUp { from{transform:translateY(30px); opacity:0;} to{transform:translateY(0); opacity:1;} }
+        @keyframes modalPop { 0%{transform:scale(0.9); opacity:0;} 100%{transform:scale(1); opacity:1;} }
+        @keyframes popIn { 0%{transform:scale(0.5); opacity:0;} 50%{transform:scale(1.2);} 100%{transform:scale(1); opacity:1;} }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
     </style>
 </head>
@@ -218,36 +216,34 @@
     <div id="gk-config-modal" class="modal" style="background: rgba(2,6,23,0.95);">
         <div class="modal-box" style="text-align: center;">
             <div style="margin-bottom: 20px;">
-                <div style="width:60px; height:60px; background:var(--primary); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px; color:white;">
+                <div style="width:65px; height:65px; background:var(--primary); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px; color:white;">
                     <i data-lucide="settings-2" class="w-8 h-8"></i>
                 </div>
                 <h3 style="color:var(--text); font-weight: 800; font-family:var(--font-num); font-size:1.2rem;">Configuração Inicial</h3>
-                <p style="font-size: 0.8rem; color:var(--text-muted); margin-top:5px;">Configure o acesso antes de entrar.</p>
+                <p style="font-size: 0.85rem; color:var(--text-muted); margin-top:5px;">Configure o acesso à nuvem.</p>
             </div>
             
             <div class="inp-group">
-                <label class="inp-label">Token GitHub</label>
-                <input type="password" id="gk-token" placeholder="ghp_..." class="inp-field" style="text-align:center;">
+                <input type="password" id="gk-token" placeholder="Token GitHub (ghp_...)" class="inp-field" style="text-align:center;">
             </div>
             <button onclick="saveTokenFromGatekeeper()" class="btn-save" style="margin-bottom:15px;">
-                <i class="fa-solid fa-save"></i> SALVAR E SINCRONIZAR
+                <i class="fa-solid fa-save"></i> SALVAR
             </button>
-            <button onclick="document.getElementById('gk-config-modal').style.display='none'" style="background:transparent; border:none; color:var(--text-muted); font-weight:700; cursor:pointer;">FECHAR</button>
+            <button onclick="document.getElementById('gk-config-modal').style.display='none'" style="background:transparent; border:none; color:var(--text-muted); font-weight:800; cursor:pointer; padding: 10px;">FECHAR</button>
         </div>
     </div>
 
     <div id="gatekeeper">
         <div style="margin-bottom:30px; text-align:center;">
-            <i class="fa-solid fa-leaf" style="font-size: 3rem; color: #3b82f6; margin-bottom: 15px;"></i>
-            <h2 style="font-size: 2rem; font-weight: 900; color: white;">BENAI <span style="color:#3b82f6">NUTRI</span></h2>
-            <p style="opacity: 0.6; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; color: white;">Acesso Restrito</p>
+            <i class="fa-solid fa-leaf" style="font-size: 3.5rem; color: #10b981; margin-bottom: 15px; filter: drop-shadow(0 0 15px rgba(16,185,129,0.4));"></i>
+            <h2 style="font-size: 2.2rem; font-weight: 900; color: white;">BENAI <span style="color:#10b981">NUTRI</span></h2>
         </div>
         <input type="text" id="userInput" class="pin-input uppercase" placeholder="USUÁRIO" autocomplete="off" style="font-size:1rem; letter-spacing:2px;">
         <input type="password" id="passInput" class="pin-input" placeholder="SENHA" onkeyup="if(event.key==='Enter') attemptLogin()">
         <button onclick="attemptLogin()" class="btn-action">ENTRAR</button>
-        <div id="loginError" style="color:#ef4444; font-size:0.8rem; font-weight:700; margin-top:15px; min-height: 20px;"></div>
+        <div id="loginError" style="color:#ef4444; font-size:0.85rem; font-weight:800; margin-top:15px; min-height: 20px;"></div>
         
-        <button onclick="openGatekeeperConfig()" style="margin-top: 20px; background: rgba(255,255,255,0.1); border: none; width: 40px; height: 40px; border-radius: 50%; color: rgba(255,255,255,0.5); cursor: pointer; transition:0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)';this.style.color='white'" onmouseout="this.style.background='rgba(255,255,255,0.1)';this.style.color='rgba(255,255,255,0.5)'">
+        <button onclick="openGatekeeperConfig()" style="margin-top: 25px; background: rgba(255,255,255,0.05); border: none; width: 45px; height: 45px; border-radius: 50%; color: rgba(255,255,255,0.5); cursor: pointer; transition:0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)';this.style.color='white'" onmouseout="this.style.background='rgba(255,255,255,0.05)';this.style.color='rgba(255,255,255,0.5)'">
             <i class="fa-solid fa-gear"></i>
         </button>
     </div>
@@ -267,54 +263,53 @@
                     </button>
                 </div>
             </header>
-            
-            <div class="tabs">
-                <div class="tab-item active" onclick="switchTab('routine')" id="tab-routine">Rotina (Seg-Sex)</div>
-                <div class="tab-item" onclick="switchTab('saturday')" id="tab-saturday">Sábado</div>
-                <div class="tab-item" onclick="switchTab('sunday')" id="tab-sunday">Domingo</div>
+
+            <div style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                <h2 style="font-family: var(--font-num); font-weight: 800; color: var(--text); font-size: 1.5rem;">🔥 Rotina Diária</h2>
+                <div style="flex: 1; height: 2px; background: var(--border); border-radius: 2px;"></div>
             </div>
 
             <details class="painel-modulo">
                 <summary><i class="fa-solid fa-book-medical"></i> Regras da Máquina Biológica</summary>
                 <div class="explicacao-texto">
                     <ul>
-                        <li><b>O Escudo Noturno:</b> O carbo à noite (Arroz/Batata) é inegociável. Ele não engorda, ele derruba o cortisol e aumenta a serotonina para o seu SNC desligar e evitar o ataque à geladeira.</li>
-                        <li><b>Hidratação (4L):</b> A desidratação confunde o cérebro e mimetiza a fome. Mapeie as garrafas.</li>
-                        <li><b>A Pizza no Sábado:</b> O limite de 3 a 4 pedaços mata a vontade psicológica, mantém o déficit semanal e evita o efeito rebote no domingo.</li>
-                        <li><b>Autocontrole:</b> Se a nota de Estresse/Fadiga Mental estiver alta ao sair do estúdio, redobre o cuidado à noite. A compulsão é gerada pelo cansaço, não pela fome.</li>
+                        <li><b>O Escudo Noturno:</b> O carbo à noite (Arroz/Batata) é inegociável. Ele derruba o cortisol e prepara o SNC para desligar.</li>
+                        <li><b>A Pizza de Sábado:</b> O limite de 3 a 4 pedaços com a namorada mata a vontade psicológica, mantém o déficit semanal e evita o efeito rebote no domingo.</li>
+                        <li><b>Hidratação (4L):</b> A desidratação mimetiza a fome no cérebro. Controle os litros!</li>
+                        <li><b>Autocontrole:</b> Se o estresse pós-estúdio estiver alto, redobre a atenção. A compulsão vem do cansaço, não do estômago vazio.</li>
                     </ul>
                 </div>
             </details>
 
             <div class="painel-modulo">
-                <h3 style="font-size: 1rem; color: var(--primary); margin: 0;"><i class="fa-solid fa-bottle-water"></i> Hidratação Diária (Meta: 4L)</h3>
+                <h3 style="font-size: 1.05rem; font-family: var(--font-num); font-weight: 800; color: var(--text); margin: 0;"><i class="fa-solid fa-bottle-water" style="color:var(--primary);"></i> Hidratação Meta: 4L</h3>
                 <div class="bottle-container">
                     <div class="bottle" id="bottle1" onclick="toggleBottle(1)">
                         <i class="fa-solid fa-droplet" style="color: var(--text-muted);" id="drop1"></i>
-                        <span class="bottle-label">Garrafa 1 (2L)<br>Fit Studio</span>
+                        <span class="bottle-label">Garrafa 1<br>(2L)</span>
                     </div>
                     <div class="bottle" id="bottle2" onclick="toggleBottle(2)">
                         <i class="fa-solid fa-droplet" style="color: var(--text-muted);" id="drop2"></i>
-                        <span class="bottle-label">Garrafa 2 (2L)<br>Casa/Tarde</span>
+                        <span class="bottle-label">Garrafa 2<br>(2L)</span>
                     </div>
                 </div>
             </div>
 
             <div class="painel-modulo">
-                <h3 style="font-size: 1rem; color: var(--primary); margin: 0 0 15px 0;"><i class="fa-solid fa-brain"></i> Rastreador do SNC (Preencher à noite)</h3>
+                <h3 style="font-size: 1.05rem; font-family: var(--font-num); font-weight: 800; color: var(--text); margin: 0 0 18px 0;"><i class="fa-solid fa-brain" style="color:var(--primary);"></i> Rastreador do SNC</h3>
                 
                 <div class="slider-container">
-                    <label><span>Qualidade do Sono (Banho Gelado 04:00)</span> <span id="valSono">3</span></label>
+                    <label><span>Sono Acordar (04:00)</span> <span id="valSono" style="color:var(--primary);">3</span></label>
                     <input type="range" min="1" max="5" value="3" id="rngSono" oninput="document.getElementById('valSono').innerText = this.value; saveBiofeedback();">
                 </div>
                 
                 <div class="slider-container">
-                    <label><span>Estresse/Fadiga Mental (Pós-Trabalho)</span> <span id="valEstresse">3</span></label>
+                    <label><span>Fadiga Pós-Trabalho</span> <span id="valEstresse" style="color:var(--primary);">3</span></label>
                     <input type="range" min="1" max="5" value="3" id="rngEstresse" oninput="document.getElementById('valEstresse').innerText = this.value; saveBiofeedback();">
                 </div>
                 
                 <div class="slider-container">
-                    <label><span>Vontade de Compulsão Hoje</span> <span id="valCompulsao">3</span></label>
+                    <label><span>Vontade de Compulsão</span> <span id="valCompulsao" style="color:var(--primary);">3</span></label>
                     <input type="range" min="1" max="5" value="3" id="rngCompulsao" oninput="document.getElementById('valCompulsao').innerText = this.value; saveBiofeedback();">
                 </div>
             </div>
@@ -330,9 +325,9 @@
 
     <div id="modal-food" class="modal">
         <div class="modal-box">
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-                <h3 style="font-weight:800; font-size:1.1rem; color:var(--primary);">Item do Cardápio</h3>
-                <i class="fa-solid fa-xmark" style="font-size:1.2rem; cursor:pointer;" onclick="closeModal('food')"></i>
+            <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+                <h3 style="font-weight:800; font-family:var(--font-num); font-size:1.2rem; color:var(--text);">Item do Cardápio</h3>
+                <i class="fa-solid fa-xmark" style="font-size:1.4rem; cursor:pointer; color:var(--text-muted);" onclick="closeModal('food')"></i>
             </div>
             
             <input type="hidden" id="edit-meal-idx">
@@ -343,7 +338,7 @@
                 <input type="text" id="inp-name" class="inp-field" placeholder="Ex: Ovos Mexidos">
             </div>
 
-            <div style="display:flex; gap:10px;">
+            <div style="display:flex; gap:12px;">
                 <div class="inp-group" style="flex:1;">
                     <label class="inp-label">Quantidade</label>
                     <input type="text" id="inp-qty" class="inp-field" placeholder="Ex: 3">
@@ -355,7 +350,7 @@
             </div>
             
             <div class="inp-group">
-                <label class="inp-label">Tipo (Ícone)</label>
+                <label class="inp-label">Tipo (Ícone da Esquerda)</label>
                 <select id="inp-type" class="inp-field">
                     <option value="prot">Proteína (Carne/Ovo)</option>
                     <option value="carb">Carboidrato (Pão/Arroz)</option>
@@ -363,25 +358,24 @@
                     <option value="veg">Vegetal/Salada</option>
                     <option value="fruit">Fruta</option>
                     <option value="drink">Bebida</option>
-                    <option value="alert">Alerta (Vermelho)</option>
+                    <option value="alert">Alerta</option>
                 </select>
             </div>
 
             <div class="inp-group">
-                <label class="inp-label" style="color:var(--accent);">Substituição (Aparece na gaveta)</label>
-                <textarea id="inp-sub" class="inp-field" rows="4" placeholder="Detalhes da substituição..."></textarea>
+                <label class="inp-label" style="color:var(--accent);">Substituição (Gaveta Oculta)</label>
+                <textarea id="inp-sub" class="inp-field" rows="3" placeholder="Detalhes da substituição..."></textarea>
             </div>
 
             <button class="btn-save" onclick="saveFood()">SALVAR ITEM</button>
-            <button onclick="closeModal('food')" style="width:100%; margin-top:5px; background:transparent; border:none; color:var(--text-muted); font-weight:700; cursor:pointer; font-size:0.8rem;">CANCELAR</button>
         </div>
     </div>
 
     <div id="modal-meal" class="modal">
         <div class="modal-box">
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-                <h3 style="font-weight:800; font-size:1.1rem; color:var(--primary);">Configurar Refeição</h3>
-                <i class="fa-solid fa-xmark" style="font-size:1.2rem; cursor:pointer;" onclick="closeModal('meal')"></i>
+            <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+                <h3 style="font-weight:800; font-family:var(--font-num); font-size:1.2rem; color:var(--text);">Configurar Refeição</h3>
+                <i class="fa-solid fa-xmark" style="font-size:1.4rem; cursor:pointer; color:var(--text-muted);" onclick="closeModal('meal')"></i>
             </div>
             
             <input type="hidden" id="edit-meal-idx-only">
@@ -402,37 +396,37 @@
 
     <div id="modal-cloud" class="modal">
         <div class="modal-box" style="text-align:center;">
-            <div style="width:50px; height:50px; background:var(--bg); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px; color:var(--primary);">
-                <i data-lucide="database" class="w-6 h-6"></i>
+            <div style="width:60px; height:60px; background:var(--bg); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px; color:var(--primary); box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);">
+                <i data-lucide="database" class="w-8 h-8"></i>
             </div>
-            <h3 style="color:var(--text); font-weight: 800; font-family:var(--font-num); font-size:1.1rem;">Central de Dados</h3>
-            <p style="font-size: 0.8rem; color:var(--text-muted); margin:5px 0 20px;">Sincronização e Backup</p>
+            <h3 style="color:var(--text); font-weight: 800; font-family:var(--font-num); font-size:1.2rem;">Central de Dados</h3>
+            <p style="font-size: 0.85rem; color:var(--text-muted); margin:5px 0 20px;">Sincronização e Backup</p>
             
             <div class="inp-group">
                 <input type="password" id="manualToken" placeholder="Token GitHub (ghp_...)" class="inp-field" style="text-align:center;">
             </div>
             
             <div style="display:flex; gap:10px; margin-bottom:20px;">
-                <button onclick="saveManualToken()" style="flex:1; padding:10px; border-radius:10px; background:var(--primary); color:white; border:none; font-weight:700; font-size:0.8rem; cursor:pointer;">SALVAR</button>
-                <button onclick="removeToken()" style="flex:1; padding:10px; border-radius:10px; background:rgba(239,68,68,0.1); color:var(--danger); border:1px solid rgba(239,68,68,0.2); font-weight:700; font-size:0.8rem; cursor:pointer;">DESCONECTAR</button>
+                <button onclick="saveManualToken()" style="flex:1; padding:12px; border-radius:12px; background:var(--primary); color:white; border:none; font-weight:800; font-size:0.85rem; cursor:pointer;">SALVAR</button>
+                <button onclick="removeToken()" style="flex:1; padding:12px; border-radius:12px; background:rgba(239,68,68,0.1); color:var(--danger); border:1px solid rgba(239,68,68,0.2); font-weight:800; font-size:0.85rem; cursor:pointer;">DESCONECTAR</button>
             </div>
             
             <div style="height:1px; background:var(--border); margin-bottom:20px;"></div>
             
-            <button onclick="forceSync()" style="width:100%; padding:10px; border-radius:10px; border:1px solid var(--accent); color:var(--accent); background:transparent; font-weight:700; margin-bottom:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; font-size:0.8rem;">
+            <button onclick="forceSync()" style="width:100%; padding:14px; border-radius:12px; border:2px dashed var(--accent); color:var(--accent); background:transparent; font-weight:800; margin-bottom:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; font-size:0.9rem;">
                 <i class="fa-solid fa-sync"></i> FORÇAR SINCRONIZAÇÃO
             </button>
 
-            <button onclick="backupData()" style="width:100%; padding:10px; border-radius:10px; border:1px solid var(--text-muted); color:var(--text); background:transparent; font-weight:700; margin-bottom:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; font-size:0.8rem;">
+            <button onclick="backupData()" style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--text-muted); color:var(--text); background:transparent; font-weight:800; margin-bottom:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; font-size:0.9rem;">
                 <i class="fa-solid fa-download"></i> FAZER BACKUP (JSON)
             </button>
             
-            <label style="width:100%; padding:10px; border-radius:10px; border:1px solid var(--text-muted); color:var(--text); background:transparent; font-weight:700; margin-bottom:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; font-size:0.8rem;">
+            <label style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--text-muted); color:var(--text); background:var(--bg); font-weight:800; margin-bottom:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; font-size:0.9rem;">
                 <i class="fa-solid fa-upload"></i> RESTAURAR BACKUP
                 <input type="file" hidden onchange="restoreData(this)">
             </label>
 
-            <button onclick="closeModal('cloud')" style="margin-top:5px; background:transparent; border:none; color:var(--text-muted); font-weight:700; cursor:pointer; font-size:0.8rem;">FECHAR</button>
+            <button onclick="closeModal('cloud')" style="margin-top:10px; background:transparent; border:none; color:var(--text-muted); font-weight:800; cursor:pointer; font-size:0.9rem; padding: 10px;">FECHAR</button>
         </div>
     </div>
 
@@ -447,13 +441,7 @@
         const STAFF_PASS = "123";
 
         // --- STATE ---
-        let appData = {
-            routine: [],
-            saturday: [],
-            sunday: [],
-            lastUpdated: 0
-        };
-        let currentTab = 'routine';
+        let appData = { routine: [], lastUpdated: 0 };
         let isEditMode = false;
         let gistId = null;
 
@@ -492,21 +480,18 @@
             }
         }
 
-        function openGatekeeperConfig() {
-            document.getElementById('gk-config-modal').style.display = 'flex';
-        }
+        function openGatekeeperConfig() { document.getElementById('gk-config-modal').style.display = 'flex'; }
 
         function saveTokenFromGatekeeper() {
             const t = document.getElementById('gk-token').value.trim();
             if(t) {
                 localStorage.setItem(TOKEN_KEY, t);
                 document.getElementById('gk-config-modal').style.display = 'none';
-                alert("Token salvo. Tente entrar.");
                 initApp(); 
             }
         }
 
-        // --- MÓDULOS DE ROTINA DIÁRIA (Água e SNC) ---
+        // --- MÓDULOS ---
         function toggleBottle(num) {
             const bottle = document.getElementById('bottle' + num);
             const drop = document.getElementById('drop' + num);
@@ -515,7 +500,7 @@
             bottle.classList.toggle('filled');
             
             if (bottle.classList.contains('filled')) {
-                drop.style.color = "var(--accent)"; 
+                drop.style.color = "var(--primary)"; 
                 localStorage.setItem('bottle' + num + '_' + today, 'true');
             } else {
                 drop.style.color = "var(--text-muted)";
@@ -536,22 +521,15 @@
         function initBiofeedbackAndBottles() {
             const today = new Date().toLocaleDateString();
             
-            // Garrafas
             if(localStorage.getItem('bottle1_' + today)) toggleBottle(1);
             if(localStorage.getItem('bottle2_' + today)) toggleBottle(2);
             
-            // Biofeedback
             const savedBio = localStorage.getItem('biofeedback_' + today);
             if(savedBio) {
                 const data = JSON.parse(savedBio);
-                document.getElementById('rngSono').value = data.sono;
-                document.getElementById('valSono').innerText = data.sono;
-                
-                document.getElementById('rngEstresse').value = data.estresse;
-                document.getElementById('valEstresse').innerText = data.estresse;
-                
-                document.getElementById('rngCompulsao').value = data.compulsao;
-                document.getElementById('valCompulsao').innerText = data.compulsao;
+                document.getElementById('rngSono').value = data.sono; document.getElementById('valSono').innerText = data.sono;
+                document.getElementById('rngEstresse').value = data.estresse; document.getElementById('valEstresse').innerText = data.estresse;
+                document.getElementById('rngCompulsao').value = data.compulsao; document.getElementById('valCompulsao').innerText = data.compulsao;
             }
         }
 
@@ -562,9 +540,7 @@
                 try { appData = JSON.parse(local); } catch(e) { console.error(e); }
             }
             
-            if(!appData.routine || appData.routine.length === 0) {
-                populateDummyData();
-            }
+            if(!appData.routine || appData.routine.length === 0) populateDummyData();
 
             renderAll();
 
@@ -572,40 +548,35 @@
             if(token) {
                 updateStatus('sync');
                 await pullFromCloud();
-            } else {
-                updateStatus('offline');
-            }
+            } else updateStatus('offline');
         }
 
         function populateDummyData() {
-            // PLANO ALIMENTAR ANTICOMPULSÃO (Abril)
             appData.routine = [
                 {
                     id: 1, name: "Ativação Pré-Trabalho", time: "04:30",
                     foods: [
                         { name: "Ovos Inteiros", qty: "3", unit: "unid", type: "prot", sub: "" },
                         { name: "Requeijão Light", qty: "15", unit: "g", type: "fat", sub: "" },
-                        { name: "Goma de Tapioca (Crepioca)", qty: "40", unit: "g", type: "carb", sub: "" },
+                        { name: "Goma de Tapioca", qty: "40", unit: "g", type: "carb", sub: "" },
                         { name: "Maçã ou Mamão", qty: "100", unit: "g", type: "fruit", sub: "" },
-                        { name: "Café + Leite Desnatado", qty: "200", unit: "ml", type: "drink", sub: "" },
+                        { name: "Café + Leite", qty: "200", unit: "ml", type: "drink", sub: "" },
                         { name: "Creatina", qty: "5", unit: "g", type: "prot", sub: "" }
                     ]
                 },
                 {
                     id: 2, name: "Recarga e Pré-Treino", time: "09:15",
                     foods: [
-                        { name: "Iogurte Natural", qty: "170", unit: "g", type: "prot", sub: "Substituição: Bater tudo num shake com água caso não tenha o iogurte." },
-                        { name: "Whey Protein", qty: "30", unit: "g", type: "prot", sub: "" },
-                        { name: "Banana", qty: "100", unit: "g", type: "fruit", sub: "" },
-                        { name: "Aveia em flocos", qty: "30", unit: "g", type: "carb", sub: "" }
+                        { name: "Iogurte Natural + Whey", qty: "1", unit: "porc", type: "prot", sub: "170g Iogurte + 30g Whey" },
+                        { name: "Banana + Aveia", qty: "1", unit: "porc", type: "carb", sub: "100g Banana + 30g Aveia" }
                     ]
                 },
                 {
                     id: 3, name: "Almoço", time: "12:00",
                     foods: [
-                        { name: "Peito de Frango / Carne magra", qty: "150", unit: "g", type: "prot", sub: "Substituição: 4 ovos inteiros" },
-                        { name: "Arroz Integral", qty: "150", unit: "g", type: "carb", sub: "Substituição: 300g batata doce ou inglesa" },
-                        { name: "Legumes no vapor", qty: "100", unit: "g", type: "veg", sub: "Brócolis, couve-flor, cenoura" }
+                        { name: "Frango / Carne", qty: "150", unit: "g", type: "prot", sub: "Substituição: 4 ovos" },
+                        { name: "Arroz Integral", qty: "150", unit: "g", type: "carb", sub: "Substituição: 300g batata" },
+                        { name: "Legumes vapor", qty: "100", unit: "g", type: "veg", sub: "Brócolis, couve-flor, cenoura" }
                     ]
                 },
                 {
@@ -614,44 +585,22 @@
                         { name: "Pão Integral", qty: "50", unit: "g", type: "carb", sub: "Substituição: 1 pão francês sem miolo" },
                         { name: "Ovos Inteiros", qty: "2", unit: "unid", type: "prot", sub: "" },
                         { name: "Requeijão Light", qty: "15", unit: "g", type: "fat", sub: "" },
-                        { name: "Café Preto (Sem açúcar)", qty: "Livre", unit: "ml", type: "drink", sub: "" }
+                        { name: "Café Preto", qty: "Livre", unit: "ml", type: "drink", sub: "Sem açúcar" }
                     ]
                 },
                 {
                     id: 5, name: "Escudo Noturno", time: "18:30",
                     foods: [
-                        { name: "Peito de Frango ou Carne Magra", qty: "150", unit: "g", type: "prot", sub: "" },
-                        { name: "Arroz Integral", qty: "100", unit: "g", type: "carb", sub: "Obrigatório para o SNC. Substituição: 200g batata." },
-                        { name: "Legumes no vapor", qty: "Livre", unit: "g", type: "veg", sub: "Comer em abundância até atingir saciedade plena" }
-                    ]
-                }
-            ];
-
-            appData.saturday = [
-                {
-                    id: 1, name: "Dia Livre com Moderação", time: "09:00",
-                    foods: [
-                        { name: "Base de Proteínas", qty: "Alta", unit: "-", type: "prot", sub: "Manter refeições parecidas com a semana até a noite." }
-                    ]
-                },
-                {
-                    id: 2, name: "Refeição Livre (Alerta)", time: "20:00",
-                    foods: [
-                        { name: "Pizza com a namorada", qty: "3-4", unit: "pedaços", type: "alert", sub: "Aproveite o momento. O limite de 4 pedaços garante o déficit semanal sem gerar compulsão." }
-                    ]
-                }
-            ];
-
-            appData.sunday = [
-                {
-                    id: 1, name: "Retorno ao Foco", time: "Dia Todo",
-                    foods: [
-                        { name: "Protocolo Anticompulsão", qty: "100", unit: "%", type: "prot", sub: "Voltar rigorosamente à rotina de segunda a sexta para limpar a retenção." }
+                        { name: "Frango / Carne", qty: "150", unit: "g", type: "prot", sub: "" },
+                        { name: "Arroz Integral", qty: "100", unit: "g", type: "carb", sub: "Obrigatório para o SNC." },
+                        { name: "Legumes", qty: "Livre", unit: "g", type: "veg", sub: "Comer em abundância até atingir saciedade plena." }
                     ]
                 }
             ];
             
-            appData.meta = { kcal: 1800, weight: 80.0, water: 4.0 };
+            // Removendo referências antigas de fds caso existam no localstorage do usuário
+            delete appData.saturday;
+            delete appData.sunday;
             
             localStorage.setItem(DB_KEY, JSON.stringify(appData));
         }
@@ -659,7 +608,6 @@
         async function pullFromCloud() {
             const token = localStorage.getItem(TOKEN_KEY);
             if(!token) return;
-            
             try {
                 const res = await fetch('https://api.github.com/gists', { headers: { 'Authorization': `token ${token}` } });
                 const gists = await res.json();
@@ -680,7 +628,7 @@
 
         async function syncCloud() {
             const token = localStorage.getItem(TOKEN_KEY);
-            if(!token) return alert("Configure o Token primeiro.");
+            if(!token) return;
             
             updateStatus('sync');
             localStorage.setItem(DB_KEY, JSON.stringify(appData));
@@ -712,13 +660,6 @@
         }
 
         // --- RENDER LOGIC ---
-        function switchTab(tab) {
-            currentTab = tab;
-            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-            document.getElementById('tab-'+tab).classList.add('active');
-            renderAll();
-        }
-
         function getFoodIcon(type) {
             switch(type) {
                 case 'prot': return '<i class="fa-solid fa-drumstick-bite" style="color:var(--prot);"></i>';
@@ -741,15 +682,8 @@
             const container = document.getElementById('meals-container');
             container.innerHTML = '';
             
-            const meals = appData[currentTab] || [];
+            const meals = appData.routine || [];
             
-            if(meals.length === 0) {
-                container.innerHTML = `<div style="text-align:center; padding:40px; color:var(--text-muted); font-style:italic;">
-                    <i class="fa-solid fa-plate-wheat" style="font-size:3rem; margin-bottom:15px; opacity:0.3;"></i><br>
-                    Nenhuma refeição neste dia.
-                </div>`;
-            }
-
             meals.forEach((meal, mIdx) => {
                 let foodsHTML = '';
                 meal.foods.forEach((food, fIdx) => {
@@ -758,14 +692,8 @@
                     const hasSub = food.sub && food.sub.trim() !== "";
                     const typeClass = `type-${food.type || 'prot'}`;
                     
-                    const subTriggerHTML = hasSub ? 
-                        `<div class="sub-trigger"><i class="fa-solid fa-rotate"></i> Detalhes</div>` : '';
-                    
-                    const subDrawerHTML = hasSub ? 
-                        `<div id="drawer-${subId}" class="sub-drawer">
-                            <div class="sub-content">${food.sub}</div>
-                         </div>` : '';
-
+                    const subTriggerHTML = hasSub ? `<div class="sub-trigger"><i class="fa-solid fa-info-circle"></i> Info</div>` : '';
+                    const subDrawerHTML = hasSub ? `<div id="drawer-${subId}" class="sub-drawer"><div class="sub-content">${food.sub}</div></div>` : '';
                     const onclickAttr = hasSub ? `onclick="toggleSub('${subId}')"` : '';
 
                     foodsHTML += `
@@ -785,10 +713,13 @@
                     </div>`;
                 });
 
+                // Staggered Animation
+                const delay = mIdx * 0.1;
+
                 container.innerHTML += `
-                <div class="meal-card">
+                <div class="meal-card" style="animation-delay: ${delay}s">
                     <div class="meal-header">
-                        <div class="meal-title"><i class="fa-solid fa-utensils" style="color:var(--primary);"></i> ${meal.name}</div>
+                        <div class="meal-title"><i class="fa-solid fa-utensils"></i> ${meal.name}</div>
                         <div class="meal-right">
                             <span class="meal-time">${meal.time}</span>
                             <div class="edit-controls">
@@ -827,7 +758,7 @@
 
         function editMeal(mIdx) {
             document.getElementById('modal-meal').style.display = 'flex';
-            const meal = appData[currentTab][mIdx];
+            const meal = appData.routine[mIdx];
             document.getElementById('meal-name').value = meal.name;
             document.getElementById('meal-time').value = meal.time;
             document.getElementById('edit-meal-idx-only').value = mIdx;
@@ -838,30 +769,20 @@
             const time = document.getElementById('meal-time').value;
             const idx = document.getElementById('edit-meal-idx-only').value;
             
-            if(!name) return alert("Nome obrigatório");
-            if(!appData[currentTab]) appData[currentTab] = [];
+            if(!name) return;
+            if(!appData.routine) appData.routine = [];
 
             if (idx !== "") {
-                appData[currentTab][idx].name = name;
-                appData[currentTab][idx].time = time;
+                appData.routine[idx].name = name; appData.routine[idx].time = time;
             } else {
-                appData[currentTab].push({
-                    id: Date.now(),
-                    name: name,
-                    time: time,
-                    foods: []
-                });
+                appData.routine.push({ id: Date.now(), name: name, time: time, foods: [] });
             }
             
-            closeModal('meal');
-            saveAndRender();
+            closeModal('meal'); saveAndRender();
         }
 
         function deleteMeal(idx) {
-            if(confirm("Apagar esta refeição?")) {
-                appData[currentTab].splice(idx, 1);
-                saveAndRender();
-            }
+            if(confirm("Apagar esta refeição?")) { appData.routine.splice(idx, 1); saveAndRender(); }
         }
 
         function openFoodModal(mIdx, fIdx) {
@@ -869,7 +790,7 @@
             document.getElementById('edit-meal-idx').value = mIdx;
             
             if(fIdx !== null) {
-                const food = appData[currentTab][mIdx].foods[fIdx];
+                const food = appData.routine[mIdx].foods[fIdx];
                 document.getElementById('edit-food-idx').value = fIdx;
                 document.getElementById('inp-name').value = food.name;
                 document.getElementById('inp-qty').value = food.qty;
@@ -878,12 +799,9 @@
                 document.getElementById('inp-type').value = food.type || 'prot';
             } else {
                 document.getElementById('edit-food-idx').value = "NEW";
-                document.getElementById('inp-name').value = "";
-                document.getElementById('inp-qty').value = "";
-                document.getElementById('inp-unit').value = "";
-                document.getElementById('inp-sub').value = "";
-                document.getElementById('inp-type').value = 'prot';
-                document.getElementById('inp-name').focus();
+                document.getElementById('inp-name').value = ""; document.getElementById('inp-qty').value = "";
+                document.getElementById('inp-unit').value = ""; document.getElementById('inp-sub').value = "";
+                document.getElementById('inp-type').value = 'prot'; document.getElementById('inp-name').focus();
             }
         }
 
@@ -892,37 +810,23 @@
             const fIdx = document.getElementById('edit-food-idx').value;
             
             const food = {
-                name: document.getElementById('inp-name').value,
-                qty: document.getElementById('inp-qty').value,
-                unit: document.getElementById('inp-unit').value,
-                sub: document.getElementById('inp-sub').value,
+                name: document.getElementById('inp-name').value, qty: document.getElementById('inp-qty').value,
+                unit: document.getElementById('inp-unit').value, sub: document.getElementById('inp-sub').value,
                 type: document.getElementById('inp-type').value
             };
 
-            if(!food.name) return alert("Nome é obrigatório");
-
-            if(fIdx === "NEW") {
-                appData[currentTab][mIdx].foods.push(food);
-            } else {
-                appData[currentTab][mIdx].foods[fIdx] = food;
-            }
+            if(!food.name) return;
+            if(fIdx === "NEW") appData.routine[mIdx].foods.push(food);
+            else appData.routine[mIdx].foods[fIdx] = food;
             
-            closeModal('food');
-            saveAndRender();
+            closeModal('food'); saveAndRender();
         }
 
         function deleteFood(mIdx, fIdx) {
-            if(confirm("Remover este item?")) {
-                appData[currentTab][mIdx].foods.splice(fIdx, 1);
-                saveAndRender();
-            }
+            if(confirm("Remover este item?")) { appData.routine[mIdx].foods.splice(fIdx, 1); saveAndRender(); }
         }
 
-        function saveAndRender() {
-            localStorage.setItem(DB_KEY, JSON.stringify(appData));
-            renderAll();
-            syncCloud();
-        }
+        function saveAndRender() { localStorage.setItem(DB_KEY, JSON.stringify(appData)); renderAll(); syncCloud(); }
 
         // --- CLOUD UTILS ---
         function openCloudModal() { 
@@ -930,9 +834,9 @@
             if(t) document.getElementById('manualToken').value = t;
             document.getElementById('modal-cloud').style.display='flex'; 
         }
-        function saveManualToken() { const t=document.getElementById('manualToken').value.trim(); if(t){ localStorage.setItem(TOKEN_KEY, t); alert('Token Salvo'); syncCloud(); } }
+        function saveManualToken() { const t=document.getElementById('manualToken').value.trim(); if(t){ localStorage.setItem(TOKEN_KEY, t); syncCloud(); } }
         function removeToken() { if(confirm('Desconectar?')) { localStorage.removeItem(TOKEN_KEY); location.reload(); } }
-        function forceSync() { syncCloud().then(() => alert('Sincronização forçada concluída.')); }
+        function forceSync() { syncCloud(); }
         
         function backupData() { const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(appData)],{type:"application/json"})); a.download="benai_diet_backup.json"; a.click(); }
         function restoreData(i) { 
@@ -941,22 +845,15 @@
             r.onload=e=>{
                 try {
                     const j=JSON.parse(e.target.result);
-                    if(confirm("Restaurar backup? Isso substituirá os dados atuais.")) {
-                        appData = j;
-                        saveAndRender();
-                        alert("Restaurado com sucesso!");
-                    }
-                } catch(e){ alert("Erro no arquivo."); }
+                    if(confirm("Restaurar backup?")) { appData = j; saveAndRender(); }
+                } catch(e){}
             };
             r.readAsText(f);
         }
 
         // --- UTILS ---
         function closeModal(id) { document.getElementById('modal-'+id).style.display = 'none'; }
-        function updateStatus(status) {
-            const el = document.getElementById('cloudDot');
-            if(el) el.className = 'cloud-dot ' + status;
-        }
+        function updateStatus(status) { const el = document.getElementById('cloudDot'); if(el) el.className = 'cloud-dot ' + status; }
         
         function initTheme() {
             const t = localStorage.getItem('theme');
