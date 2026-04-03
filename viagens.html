@@ -320,6 +320,10 @@
     </style>
 </head>
 <body>
+    <!-- BENAI AUTH GUARD -->
+    <script>window.BENAI_ALLOW_GUEST = true;</script>
+    <script src="auth.js"></script>
+
 
     <!-- BACKGROUND ANIMATION -->
     <div class="sky-scene">
@@ -333,31 +337,7 @@
     </div>
 
     <!-- GATEKEEPER -->
-    <div id="gatekeeper">
-        <div class="text-center max-w-xs w-full mx-4 relative overflow-visible">
-            
-            <div class="w-24 h-24 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-2 text-white text-4xl shadow-lg animate-bounce border-4 border-white/30">
-                <i class="fa-solid fa-earth-americas"></i>
-            </div>
-            
-            <h1 class="font-display text-4xl font-bold text-orange-900 mb-0 drop-shadow-md">Viagens App</h1>
-            <p class="font-hand text-2xl font-bold text-white mb-8 tracking-widest drop-shadow-sm">Nossas Aventuras</p>
-            
-            <div class="relative w-full mb-4">
-                <input type="password" id="passInput" class="input-login w-full" placeholder="••••" onkeyup="if(event.key==='Enter') attemptLogin()">
-                <button onclick="togglePass()" class="absolute right-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition">
-                    <i class="fa-solid fa-eye" id="passIcon"></i>
-                </button>
-            </div>
-
-            <button onclick="attemptLogin()" class="btn-login-sunset w-full py-4 text-sm font-bold shadow-lg">DECOLAR</button>
-            <div id="loginError" class="h-5 mt-2 text-red-500 font-bold text-xs bg-white/80 rounded px-2 inline-block shadow-sm hidden"></div>
-            
-            <button onclick="document.getElementById('gk-config').style.display='flex'" class="mt-6 text-white/70 hover:text-white transition hover:scale-110">
-                <i class="fa-solid fa-paper-plane fa-bounce text-xl"></i>
-            </button>
-        </div>
-    </div>
+    
 
     <!-- APP CONTENT -->
     <div id="app-content" style="display: none;">
@@ -887,7 +867,6 @@
         const CARD_GIST_DESC = 'BENAI_CARD_DB'; // Constant from card.html
         const CARD_GIST_FILE = 'card_psy_db.json'; // Constant from card.html
         const TOKEN_KEY = 'BENAI_GLOBAL_TOKEN';
-        const MASTER_PIN = "16359001";
         const GIST_DESC = "BENAI_TRAVEL_BACKUP";
         const GIST_FILE = "travel_db.json";
 
@@ -910,40 +889,8 @@
                 document.getElementById('gk-token-legacy').value = t;
             }
             
-            if(sessionStorage.getItem('benai_auth') === 'true') {
-                document.getElementById('gatekeeper').style.display = 'none';
-                document.getElementById('app-content').style.display = 'block';
-                initApp();
-            }
+            initApp();
         };
-
-        function attemptLogin() {
-            if(document.getElementById('passInput').value === MASTER_PIN) {
-                sessionStorage.setItem('benai_auth', 'true');
-                document.getElementById('gatekeeper').style.display = 'none';
-                document.getElementById('app-content').style.display = 'block';
-                initApp();
-            } else {
-                document.getElementById('loginError').innerText = "Senha Incorreta";
-                document.getElementById('loginError').classList.remove('hidden');
-                setTimeout(() => {
-                    document.getElementById('loginError').innerText='';
-                    document.getElementById('loginError').classList.add('hidden');
-                }, 2000);
-            }
-        }
-
-        function togglePass() {
-            const input = document.getElementById('passInput');
-            const icon = document.getElementById('passIcon');
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.classList.replace('fa-eye', 'fa-eye-slash');
-            } else {
-                input.type = 'password';
-                icon.classList.replace('fa-eye-slash', 'fa-eye');
-            }
-        }
 
         async function initApp() {
             // Load Local

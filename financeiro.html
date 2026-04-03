@@ -26,9 +26,6 @@
             /* Category Colors */
             --c-essen: #3b82f6; --c-essen-bg: rgba(59, 130, 246, 0.15);
             --c-free: #10b981; --c-free-bg: rgba(16, 185, 129, 0.15);
-            --c-long: #a855f7; --c-long-bg: rgba(168, 85, 247, 0.15);
-            --c-edu: #06b6d4; --c-edu-bg: rgba(6, 182, 212, 0.15);
-            --c-play: #f59e0b; --c-play-bg: rgba(245, 158, 11, 0.15);
             --c-repass: #ef4444; --c-repass-bg: rgba(239, 68, 68, 0.15);
             --c-income: #22c55e; --c-income-bg: rgba(34, 197, 94, 0.15);
         }
@@ -181,9 +178,6 @@
         
         .bg-essen { background: var(--c-essen-bg); color: var(--c-essen); }
         .bg-free { background: var(--c-free-bg); color: var(--c-free); }
-        .bg-long { background: var(--c-long-bg); color: var(--c-long); }
-        .bg-edu { background: var(--c-edu-bg); color: var(--c-edu); }
-        .bg-play { background: var(--c-play-bg); color: var(--c-play); }
         .bg-repass { background: var(--c-repass-bg); color: var(--c-repass); }
         .bg-income { background: var(--c-income-bg); color: var(--c-income); }
         
@@ -285,6 +279,9 @@
     </style>
 </head>
 <body>
+    <!-- BENAI AUTH GUARD -->
+    <script src="auth.js"></script>
+
 
     <div id="cloud-shield" style="position:fixed; inset:0; z-index:99999; background:#020617; display:flex; flex-direction:column; align-items:center; justify-content:center; color:white;">
         <div style="width:40px; height:40px; border:4px solid rgba(255,255,255,0.1); border-top-color:#0ea5e9; border-radius:50%; animation:spin 1s linear infinite;"></div>
@@ -772,21 +769,17 @@
         const GIST_FILENAME = 'finance_db.json';
 
         const DEFAULT_CATEGORIES = {
-            'income': ['Salário', 'Consultoria', 'Saldo', 'Outros'],
+            'income': ['Salário', 'Consultoria', 'Saldo', 'Outros', 'Rendimentos/Dividendos'],
             'repass': ['Repasses (Terceiros)', 'Repasse (Caixinha)', 'Giro de Caixa (Aplicar)', 'Giro de Caixa (Resgatar)', 'Reembolso', 'Compartilhado', 'Passagem', 'Empréstimo', 'Outros'],
-            'essen': ['Mercado', 'Farmácia', 'Combustível', 'Contas', 'Celular', 'Aluguel', 'Casa'],
-            'free': ['Aporte', 'Reserva', 'CDB', 'FIIs'],
-            'long': ['Carro Novo', 'Casa Própria', 'Viagem Europa'],
-            'edu': ['Livros', 'Cursos', 'Mentoria', 'Inglês'],
-            'play': ['Restaurante', 'Cinema', 'Streaming', 'Ifood', 'Uber Lazer', 'Cartão C6 (Lazer)']
+            'custo_vida': ['Mercado', 'Farmácia', 'Combustível', 'Contas', 'Celular', 'Aluguel', 'Casa', 'Restaurante', 'Cinema', 'Streaming', 'Ifood', 'Uber Lazer', 'Cartão C6 (Lazer)', 'Assinaturas', 'Cuidados Pessoais', 'Emergência', 'Plano Alimentar', 'Bobeiras', 'Pessoal', 'Presentes'],
+            'aporte': ['Aporte', 'Reserva de Emergência', 'CDB', 'FIIs', 'Giro de Caixa'],
+            'projetos': ['Carro Novo', 'Casa Própria', 'Viagem', 'Livros', 'Cursos', 'Mentoria', 'Inglês', 'Faculdade']
         };
 
         const JARS_INFO = {
-            'essen': { icon: 'home', color: 'text-blue-500', desc: 'Necessidades Básicas' },
-            'free': { icon: 'trending-up', color: 'text-emerald-500', desc: 'Liberdade Financeira' },
-            'long': { icon: 'plane', color: 'text-purple-500', desc: 'Sonhos Médio/Longo' },
-            'edu': { icon: 'book-open', color: 'text-cyan-500', desc: 'Educação' },
-            'play': { icon: 'gamepad-2', color: 'text-amber-500', desc: 'Lazer e Diversão' }
+            'custo_vida': { icon: 'home', color: 'text-blue-500', desc: 'O Chão (Necessidades e Lazer)' },
+            'aporte': { icon: 'trending-up', color: 'text-emerald-500', desc: 'A Pá (Investimentos e Reserva)' },
+            'projetos': { icon: 'rocket', color: 'text-purple-500', desc: 'A Semente (Curto Prazo e Educação)' }
         };
 
         let db = {
@@ -866,21 +859,36 @@
             if(!data.categories.repass) data.categories.repass = DEFAULT_CATEGORIES.repass;
             if(!data.monthlyConfig) data.monthlyConfig = {}; // Ensure monthly config storage
             
-            // Fix categories
-            if(data.categories.essen && data.categories.essen.includes('Repasse (Caixinha)')) {
-                data.categories.essen = data.categories.essen.filter(c => c !== 'Repasse (Caixinha)');
-                if(!data.categories.repass.includes('Repasse (Caixinha)')) data.categories.repass.push('Repasse (Caixinha)');
+            // Fix categories for new 3-block system
+            if(data.categories.essen) {
+                data.categories.custo_vida = [...new Set([...(data.categories.essen || []), ...(data.categories.play || [])])];
+                data.categories.aporte = [...new Set([...(data.categories.free || [])])];
+                data.categories.projetos = [...new Set([...(data.categories.long || []), ...(data.categories.edu || [])])];
+                
+                delete data.categories.essen;
+                delete data.categories.play;
+                delete data.categories.free;
+                delete data.categories.long;
+                delete data.categories.edu;
             }
-            if(data.categories.essen) data.categories.essen = data.categories.essen.filter(c => c !== 'Nubank (Crédito)');
+            
+            if(!data.categories.income.includes('Rendimentos/Dividendos')) {
+                data.categories.income.push('Rendimentos/Dividendos');
+            }
 
-            // Inject Giro de Caixa
-            const giroIn = 'Giro de Caixa (Aplicar)';
-            const giroOut = 'Giro de Caixa (Resgatar)';
-            if(!data.categories.repass.includes(giroIn)) data.categories.repass.push(giroIn);
-            if(!data.categories.repass.includes(giroOut)) data.categories.repass.push(giroOut);
+            // Map old transactions to new jars
+            data.transactions.forEach(t => {
+                if(t.catJar === 'essen' || t.catJar === 'play') t.catJar = 'custo_vida';
+                if(t.catJar === 'free') t.catJar = 'aporte';
+                if(t.catJar === 'long' || t.catJar === 'edu') t.catJar = 'projetos';
+            });
 
-            if(!data.config.jars || data.config.jars.length === 0) {
-                data.config.jars = [{id:'essen', name:'Necessidades', perc:55}, {id:'free', name:'Lib. Financeira', perc:20}, {id:'long', name:'Sonhos', perc:10}, {id:'edu', name:'Educação', perc:5}, {id:'play', name:'Lazer', perc:10}];
+            if(!data.config.jars || data.config.jars.length === 0 || data.config.jars[0].id === 'essen') {
+                data.config.jars = [
+                    {id:'custo_vida', name:'Custo de Vida', type:'fixed'}, 
+                    {id:'aporte', name:'O Aporte', type:'surplus'}, 
+                    {id:'projetos', name:'Projetos', type:'variable'}
+                ];
             }
 
             return data;
@@ -1006,7 +1014,7 @@
                     date: date,
                     place: 'C6 FATURA (MINHA PARTE)',
                     method: 'Pix',
-                    catJar: 'play',
+                    catJar: 'custo_vida',
                     catName: 'Cartão C6 (Lazer)',
                     notes: 'Parte Benai - Ação Rápida',
                     thirdParty: false,
@@ -1077,7 +1085,7 @@
             
             let current = 0;
             db.transactions.forEach(t => {
-                if (t.catJar === 'free' && t.paid) {
+                if (t.catJar === 'aporte' && t.paid) {
                     if (t.type === 'out') current += t.val; // Investment
                     if (t.type === 'in') current -= t.val; // Withdrawal
                 }
@@ -1085,8 +1093,13 @@
             
             const pct = target > 0 ? (current / target) * 100 : 0;
             
+            let progressColor = 'bg-red-500';
+            if (pct >= 100) progressColor = 'bg-emerald-500';
+            else if (pct >= 50) progressColor = 'bg-yellow-500';
+
             document.getElementById('res-current').innerText = fmtMoney(current);
             document.getElementById('res-target').innerText = fmtMoney(target);
+            document.getElementById('res-progress').className = `h-full transition-all duration-1000 ${progressColor}`;
             document.getElementById('res-progress').style.width = Math.min(pct, 100) + '%';
             document.getElementById('res-pct').innerText = pct.toFixed(1) + '% Concluído';
         }
@@ -1104,7 +1117,7 @@
                 date: date,
                 place: 'RESERVA DE EMERGÊNCIA',
                 method: 'Pix',
-                catJar: 'free',
+                catJar: 'aporte',
                 catName: 'Reserva de Emergência',
                 notes: 'Aporte Ref. ' + new Date().toLocaleDateString('pt-BR', {month:'long', year:'numeric'}),
                 thirdParty: false,
@@ -1126,18 +1139,24 @@
         }
 
         function calculateBalances() {
-            const allIn = db.transactions.filter(t => t.type === 'in').reduce((a,b)=>a+b.val,0);
-            const realOut = db.transactions.filter(t => t.type === 'out' && t.paid).reduce((a,b)=>a+b.val,0);
+            const mStr = viewDate.toISOString().slice(0, 7);
+            
+            // Entradas do mês
+            const allIn = db.transactions.filter(t => t.type === 'in' && t.date.startsWith(mStr)).reduce((a,b)=>a+b.val,0);
+            
+            // Saídas do mês (incluindo cartão de crédito não pago - TRAVA DO CARTÃO)
+            // O cartão é apenas meio de pagamento, o dinheiro já está comprometido
+            const realOut = db.transactions.filter(t => t.type === 'out' && t.date.startsWith(mStr)).reduce((a,b)=>a+b.val,0);
             
             const totalOut = db.transactions
-                .filter(t => t.type === 'out' && !isRepassCategory(t.catName) && !t.thirdParty)
+                .filter(t => t.type === 'out' && t.date.startsWith(mStr) && !isRepassCategory(t.catName) && !t.thirdParty)
                 .reduce((a,b)=>a+b.val,0);
             
             document.getElementById('dsp-total-expenses').innerText = fmtMoney(totalOut);
             document.getElementById('dsp-balance-real').innerText = fmtMoney(allIn - realOut);
 
-            const myIn = db.transactions.filter(t => t.type === 'in' && !isRepassCategory(t.catName)).reduce((a,b)=>a+b.val,0);
-            const myOut = db.transactions.filter(t => t.type === 'out').reduce((acc, t) => {
+            const myIn = db.transactions.filter(t => t.type === 'in' && t.date.startsWith(mStr) && !isRepassCategory(t.catName)).reduce((a,b)=>a+b.val,0);
+            const myOut = db.transactions.filter(t => t.type === 'out' && t.date.startsWith(mStr)).reduce((acc, t) => {
                     if (isRepassCategory(t.catName) || t.thirdParty) return acc; 
                     return acc + t.val;
                 }, 0);
@@ -1155,22 +1174,39 @@
             const container = document.getElementById('jarsContainer');
             container.innerHTML = '';
             
-            const cfg = getMonthConfig(viewDate); // Use monthly config
-            const baseForJars = Math.max(0, cfg.income - cfg.fixed);
+            const cfg = getMonthConfig(viewDate); 
             const mStr = viewDate.toISOString().slice(0, 7);
             
             const monthOutTxs = db.transactions.filter(t => t.type === 'out' && t.date.startsWith(mStr));
+            const monthInTxs = db.transactions.filter(t => t.type === 'in' && t.date.startsWith(mStr) && !isRepassCategory(t.catName));
+            
+            const totalIncome = monthInTxs.reduce((a,b)=>a+b.val,0);
+            const fixedCostLimit = cfg.fixed || 0; // Teto de Custo de Vida
+            
+            // O que sobra após o custo de vida fixo vai para Aporte e Projetos
+            const surplus = Math.max(0, totalIncome - fixedCostLimit);
 
             cfg.jars.forEach(jar => {
                 let jarBg = 'bg-slate-500';
-                if(jar.id === 'essen') jarBg = 'bg-blue-500';
-                if(jar.id === 'free') jarBg = 'bg-emerald-500';
-                if(jar.id === 'long') jarBg = 'bg-purple-500';
-                if(jar.id === 'edu') jarBg = 'bg-cyan-500';
-                if(jar.id === 'play') jarBg = 'bg-amber-500';
+                if(jar.id === 'custo_vida') jarBg = 'bg-blue-500';
+                if(jar.id === 'aporte') jarBg = 'bg-emerald-500';
+                if(jar.id === 'projetos') jarBg = 'bg-purple-500';
 
                 const info = JARS_INFO[jar.id] || { icon: 'box', color: 'text-slate-500', desc: '' };
-                const limit = (baseForJars * jar.perc) / 100;
+                
+                if (jar.id === 'aporte') {
+                    info.icon = 'lock';
+                    info.desc = 'Intocável (Pague-se Primeiro)';
+                }
+                
+                let limit = 0;
+                if (jar.id === 'custo_vida') {
+                    limit = fixedCostLimit; // Teto Fixo
+                } else if (jar.id === 'aporte') {
+                    limit = surplus * 0.7; // 70% da sobra vai para aporte massivo
+                } else if (jar.id === 'projetos') {
+                    limit = surplus * 0.3; // 30% da sobra para projetos
+                }
                 
                 const spent = monthOutTxs.filter(t => t.catJar === jar.id).reduce((acc, t) => {
                     if (isRepassCategory(t.catName) || t.thirdParty) return acc; 
@@ -1181,7 +1217,6 @@
                 let barColor = jarBg;
                 if(pct > 100) barColor = 'bg-red-500';
 
-                // NEW: Remaining/Excess Logic
                 const leftover = limit - spent;
                 let leftoverHTML = '';
                 if(leftover >= 0) {
@@ -1196,13 +1231,13 @@
                         <div class="flex gap-3 items-center">
                             <div class="jar-icon ${jarBg} text-white"><i data-lucide="${info.icon}"></i></div>
                             <div>
-                                <h4 class="font-bold uppercase tracking-wider text-xs">${jar.name} <span class="text-[9px] opacity-60 ml-1">(${jar.perc}%)</span></h4>
+                                <h4 class="font-bold uppercase tracking-wider text-xs">${jar.name}</h4>
                                 <div class="text-[10px] opacity-60">${info.desc}</div>
                             </div>
                         </div>
                         <div class="text-right">
                             <div class="text-lg font-mono font-bold ${info.color}">${fmtMoney(spent)}</div>
-                            <div class="text-[10px] opacity-60">Meta: ${fmtMoney(limit)}</div>
+                            <div class="text-[10px] opacity-60">Meta/Teto: ${fmtMoney(limit)}</div>
                             ${leftoverHTML}
                         </div>
                     </div>
@@ -1211,7 +1246,40 @@
                     </div>
                 </div>`;
             });
+            
+            renderSnowball(cfg.fixed, mStr);
             lucide.createIcons();
+        }
+
+        function renderSnowball(fixedCost, mStr) {
+            const container = document.getElementById('jarsContainer');
+            
+            const passiveIncome = db.transactions
+                .filter(t => t.type === 'in' && t.date.startsWith(mStr) && t.catName === 'Rendimentos/Dividendos')
+                .reduce((a,b)=>a+b.val,0);
+                
+            const pct = fixedCost > 0 ? (passiveIncome / fixedCost) * 100 : 0;
+            
+            container.innerHTML += `
+            <div class="glass-card jar-card col-span-1 md:col-span-2 border-l-4 border-sky-500">
+                <div class="flex justify-between items-start">
+                    <div class="flex gap-3 items-center">
+                        <div class="jar-icon bg-sky-500 text-white"><i data-lucide="snowflake"></i></div>
+                        <div>
+                            <h4 class="font-bold uppercase tracking-wider text-xs text-sky-500">Efeito Bola de Neve</h4>
+                            <div class="text-[10px] opacity-60">Renda Passiva vs Custo de Vida</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-lg font-mono font-bold text-sky-500">${fmtMoney(passiveIncome)}</div>
+                        <div class="text-[10px] opacity-60">Custo de Vida: ${fmtMoney(fixedCost)}</div>
+                    </div>
+                </div>
+                <div class="w-full bg-slate-200 dark:bg-white/10 h-3 rounded-full overflow-hidden mt-3">
+                    <div class="h-full bg-sky-500 transition-all duration-1000" style="width: ${Math.min(pct, 100)}%"></div>
+                </div>
+                <div class="text-center mt-1 text-[10px] font-bold text-sky-500">${pct.toFixed(2)}% da Liberdade Financeira atingida</div>
+            </div>`;
         }
 
         function renderTransactions() {
@@ -1266,27 +1334,40 @@
                 if(noteMatch) {
                     const current = parseInt(noteMatch[1]);
                     const total = parseInt(noteMatch[2]);
-                    installBadge = `<div class="tx-installments">${noteMatch[0]}</div>`;
+                    
+                    let badgeColor = 'rgba(139, 92, 246, 0.15)';
+                    let textColor = '#a78bfa';
+                    let borderColor = 'rgba(139, 92, 246, 0.3)';
+                    let alertIcon = '';
+                    let debtBarColor = '#a78bfa';
+                    
+                    if (total > 3) {
+                        badgeColor = 'rgba(239, 68, 68, 0.15)';
+                        textColor = '#ef4444';
+                        borderColor = 'rgba(239, 68, 68, 0.3)';
+                        alertIcon = '<i data-lucide="alert-triangle" class="w-3 h-3 inline-block mr-1"></i>';
+                        debtBarColor = '#ef4444';
+                    }
+                    
+                    installBadge = `<div class="tx-installments inline-flex items-center gap-1" style="background: ${badgeColor}; color: ${textColor}; border-color: ${borderColor}">${alertIcon}${noteMatch[0]}</div>`;
                     
                     const pct = (current / total) * 100;
                     const remainingDebt = (total - current) * t.val;
                     
                     debtHTML = `
                     <div class="debt-progress-container">
-                        <div class="debt-bar-bg"><div class="debt-bar-fill" style="width:${pct}%"></div></div>
+                        <div class="debt-bar-bg"><div class="debt-bar-fill" style="width:${pct}%; background: ${debtBarColor}"></div></div>
                         <div class="debt-text">
-                            <span>Parcela ${current} de ${total}</span>
+                            <span style="color: ${textColor}">Parcela ${current} de ${total}</span>
                             <span>Resta: ${fmtMoney(remainingDebt)}</span>
                         </div>
                     </div>`;
                 }
 
                 let badgeClass = 'bg-slate-100 text-slate-600';
-                if(t.catJar === 'essen') badgeClass = 'bg-essen';
-                if(t.catJar === 'free') badgeClass = 'bg-free';
-                if(t.catJar === 'long') badgeClass = 'bg-long';
-                if(t.catJar === 'edu') badgeClass = 'bg-edu';
-                if(t.catJar === 'play') badgeClass = 'bg-play';
+                if(t.catJar === 'custo_vida') badgeClass = 'bg-essen';
+                if(t.catJar === 'aporte') badgeClass = 'bg-free';
+                if(t.catJar === 'projetos') badgeClass = 'bg-purple-500 text-white';
                 if(t.catJar === 'repass' || isRepassCat) badgeClass = 'bg-repass';
                 if(t.catJar === 'income') badgeClass = 'bg-income';
 
@@ -1584,6 +1665,15 @@
             const groupId = Date.now().toString(); 
             const isCredit = method === 'Crédito';
             
+            if(currentType === 'out' && catJar === 'aporte') {
+                const allowedInvestments = ['Aporte', 'Reserva de Emergência', 'CDB', 'FIIs', 'Giro de Caixa'];
+                if (!allowedInvestments.includes(catName)) {
+                    if (!confirm(`ALERTA DE SARDINHA!\n\nO pote "Aporte" é intocável para despesas comuns. Você está prestes a gastar dinheiro do seu futuro com "${catName}".\n\nTem certeza que deseja continuar?`)) {
+                        return;
+                    }
+                }
+            }
+
             if(id) {
                 const idx = db.transactions.findIndex(t=>t.id == id);
                 if(idx > -1) {
@@ -1623,6 +1713,33 @@
                         origin: origin, destination: dest,
                         paid: !isCredit 
                     });
+                }
+
+                // Automação Pague-se Primeiro
+                if (currentType === 'in' && !isTP) {
+                    const investVal = valTotal * 0.20;
+                    setTimeout(() => {
+                        if (confirm(`PAGUE-SE PRIMEIRO!\n\nDeseja separar 20% (R$ ${investVal.toFixed(2).replace('.', ',')}) desta entrada para a sua Liberdade Financeira agora?`)) {
+                            db.transactions.push({
+                                id: Date.now() + 100,
+                                groupId: Date.now().toString() + '_aporte',
+                                type: 'out',
+                                val: investVal,
+                                date: baseDate,
+                                place: 'APORTE AUTOMÁTICO',
+                                method: 'Pix',
+                                notes: 'Pague-se Primeiro (20% de ' + place + ')',
+                                thirdParty: false,
+                                catJar: 'aporte',
+                                catName: 'Aporte',
+                                origin: '', destination: '',
+                                paid: true
+                            });
+                            saveData();
+                            renderAll();
+                            toast('Aporte de 20% realizado com sucesso!');
+                        }
+                    }, 500);
                 }
             }
 
@@ -1773,9 +1890,13 @@
         function renderJarConfigList(jars) {
             const l = document.getElementById('jarConfigList');
             l.innerHTML = '';
-            // Render from argument (jars of the month)
+            
+            l.innerHTML += `
+                <div class="text-xs text-sky-500 font-bold mb-2">A nova metodologia utiliza 3 blocos principais. O Custo de Vida é definido pelo valor fixo acima. O restante da renda é distribuído entre Aporte e Projetos.</div>
+            `;
+            
             jars.forEach((j, i) => {
-                const info = JARS_INFO[j.id] || JARS_INFO['essen'];
+                const info = JARS_INFO[j.id] || JARS_INFO['custo_vida'];
                 l.innerHTML += `
                 <div class="flex items-center gap-2 p-2 bg-slate-100 dark:bg-white/5 rounded-lg border border-slate-200 dark:border-white/10">
                     <div class="w-8 h-8 rounded flex items-center justify-center ${info.color.replace('text-','bg-')} text-white"><i data-lucide="${info.icon}"></i></div>
@@ -1783,34 +1904,19 @@
                         <div class="text-xs font-bold uppercase">${j.name}</div>
                         <div class="text-[9px] opacity-50">${info.desc}</div>
                     </div>
-                    <!-- IDs for extraction during save -->
                     <input class="hidden" id="jar-id-${i}" value="${j.id}">
-                    <input type="text" class="w-20 p-1 rounded bg-white dark:bg-black/20 text-center font-bold text-xs border border-slate-200 dark:border-white/10" value="${j.name}" id="jar-name-${i}">
-                    <input type="number" class="w-12 p-1 rounded bg-white dark:bg-black/20 text-center font-bold text-xs border border-slate-200 dark:border-white/10" value="${j.perc}" id="jar-perc-${i}">
-                    <span class="text-xs font-bold">%</span>
-                    <button class="text-red-400 hover:text-red-600" onclick="removeJar(${i})"><i class="fa-solid fa-trash"></i></button>
+                    <input type="text" class="w-24 p-1 rounded bg-white dark:bg-black/20 text-center font-bold text-xs border border-slate-200 dark:border-white/10" value="${j.name}" id="jar-name-${i}">
                 </div>`;
             });
             lucide.createIcons();
         }
 
-        // function updateJarPerc - Removed, logic moved to saveConfig extraction
-
         function applyPreset(type) {
-            // Apply to view only until saved
-            const cfg = getMonthConfig(viewDate); // Get current to modify structure
-            // Just simulate new structure for rendering, don't save yet?
-            // To be safe, we just modify the current object reference (db is mutable)
-            // But better: Create new jar list and re-render.
-            
-            let newJars = [];
-            if(type === 'standard') {
-                newJars = [{id:'essen', name:'Necessidades', perc:55}, {id:'free', name:'Lib. Financeira', perc:20}, {id:'long', name:'Sonhos', perc:10}, {id:'edu', name:'Educação', perc:5}, {id:'play', name:'Lazer', perc:10}];
-            } else if (type === 'debt') {
-                newJars = [{id:'essen', name:'Contas/Dívidas', perc:80}, {id:'free', name:'Reserva Emergência', perc:10}, {id:'play', name:'Lazer Mínimo', perc:10}, {id:'long', name:'Sonhos', perc:0}, {id:'edu', name:'Educação', perc:0}];
-            } else if (type === 'invest') {
-                newJars = [{id:'essen', name:'Custo de Vida', perc:40}, {id:'free', name:'Investimentos', perc:40}, {id:'play', name:'Lazer', perc:10}, {id:'long', name:'Sonhos', perc:5}, {id:'edu', name:'Educação', perc:5}];
-            }
+            let newJars = [
+                {id:'custo_vida', name:'Custo de Vida', type:'fixed'}, 
+                {id:'aporte', name:'O Aporte', type:'surplus'}, 
+                {id:'projetos', name:'Projetos', type:'variable'}
+            ];
             renderJarConfigList(newJars);
         }
 
@@ -1859,8 +1965,7 @@
             while(document.getElementById(`jar-id-${i}`)) {
                 newJars.push({
                     id: document.getElementById(`jar-id-${i}`).value,
-                    name: document.getElementById(`jar-name-${i}`).value,
-                    perc: parseFloat(document.getElementById(`jar-perc-${i}`).value)
+                    name: document.getElementById(`jar-name-${i}`).value
                 });
                 i++;
             }
@@ -1949,13 +2054,21 @@
             let totalSurplus = 0;
 
             cfg.jars.forEach(jar => {
-                const limit = (baseBudget * jar.perc) / 100;
+                let limit = 0;
+                if (jar.id === 'custo_vida') {
+                    limit = cfg.fixed;
+                } else if (jar.id === 'aporte') {
+                    limit = baseBudget * 0.7;
+                } else if (jar.id === 'projetos') {
+                    limit = baseBudget * 0.3;
+                }
+                
                 const spent = db.transactions
                     .filter(t => t.catJar === jar.id && t.date.startsWith(mStr) && !isRepassCategory(t.catName) && !t.thirdParty)
                     .reduce((a,b)=>a+b.val,0);
                 
                 const leftover = limit - spent;
-                if (leftover > 0 && jar.id !== 'essen') totalSurplus += leftover;
+                if (leftover > 0 && jar.id !== 'custo_vida') totalSurplus += leftover;
 
                 const colorClass = leftover >= 0 ? 'positive' : 'negative';
                 
@@ -1971,13 +2084,28 @@
             // Advice
             const adviceEl = document.getElementById('rpt-advice');
             if (totalSurplus > 0) {
-                adviceEl.innerHTML = `Parabéns! Você tem <strong>${fmtMoney(totalSurplus)}</strong> de sobras nos potes não essenciais.`;
+                adviceEl.innerHTML = `
+                    Parabéns! Você tem <strong>${fmtMoney(totalSurplus)}</strong> de sobras nos potes não essenciais.
+                    <button onclick="transferSurplus(${totalSurplus})" class="mt-3 w-full py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-sky-500/30">
+                        <i data-lucide="arrow-right-circle" class="w-4 h-4"></i> TRANSFERIR SOBRA PARA INVESTIMENTOS
+                    </button>
+                `;
             } else {
                 adviceEl.innerHTML = `Neste mês não houve sobras significativas nos potes de metas.`;
             }
 
             document.getElementById('modal-closing').style.display = 'flex';
             lucide.createIcons();
+        }
+
+        function transferSurplus(amount) {
+            closeModal('modal-closing');
+            openTxModal();
+            document.getElementById('txVal').value = fmtMoney(amount);
+            setTxType('out');
+            document.getElementById('txCatUnified').value = 'aporte|Aporte';
+            document.getElementById('txPlace').value = 'APORTE DE SOBRAS';
+            document.getElementById('txNotes').value = 'Transferência de sobras do mês';
         }
 
         function updateStatus(s) {

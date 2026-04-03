@@ -212,6 +212,9 @@
     </style>
 </head>
 <body id="body-lock">
+    <!-- BENAI AUTH GUARD -->
+    <script src="auth.js"></script>
+
 
     <div id="gk-config-modal" class="modal" style="background: rgba(2,6,23,0.95);">
         <div class="modal-box" style="text-align: center;">
@@ -233,20 +236,7 @@
         </div>
     </div>
 
-    <div id="gatekeeper">
-        <div style="margin-bottom:30px; text-align:center;">
-            <i class="fa-solid fa-leaf" style="font-size: 3.5rem; color: #10b981; margin-bottom: 15px; filter: drop-shadow(0 0 15px rgba(16,185,129,0.4));"></i>
-            <h2 style="font-size: 2.2rem; font-weight: 900; color: white;">BENAI <span style="color:#10b981">NUTRI</span></h2>
-        </div>
-        <input type="text" id="userInput" class="pin-input uppercase" placeholder="USUÁRIO" autocomplete="off" style="font-size:1rem; letter-spacing:2px;">
-        <input type="password" id="passInput" class="pin-input" placeholder="SENHA" onkeyup="if(event.key==='Enter') attemptLogin()">
-        <button onclick="attemptLogin()" class="btn-action">ENTRAR</button>
-        <div id="loginError" style="color:#ef4444; font-size:0.85rem; font-weight:800; margin-top:15px; min-height: 20px;"></div>
-        
-        <button onclick="openGatekeeperConfig()" style="margin-top: 25px; background: rgba(255,255,255,0.05); border: none; width: 45px; height: 45px; border-radius: 50%; color: rgba(255,255,255,0.5); cursor: pointer; transition:0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)';this.style.color='white'" onmouseout="this.style.background='rgba(255,255,255,0.05)';this.style.color='rgba(255,255,255,0.5)'">
-            <i class="fa-solid fa-gear"></i>
-        </button>
-    </div>
+    
 
     <div id="app-content" style="display: none;">
         <div class="container">
@@ -436,9 +426,6 @@
         const TOKEN_KEY = 'BENAI_GLOBAL_TOKEN';
         const GIST_DESC = 'BENAI_DIET_DB';
         const GIST_FILENAME = 'diet_master.json';
-        const MASTER_PIN = "16359001";
-        const STAFF_USER = "BENAI";
-        const STAFF_PASS = "123";
 
         // --- STATE ---
         let appData = { routine: [], lastUpdated: 0 };
@@ -456,40 +443,9 @@
                 document.getElementById('gk-token').value = t;
             }
             
-            checkAuth();
+            initApp();
             initBiofeedbackAndBottles();
         };
-
-        function checkAuth() {
-            if (sessionStorage.getItem("benai_auth") === "true") {
-                document.getElementById('gatekeeper').style.display = 'none';
-                document.getElementById('app-content').style.display = 'block';
-                initApp();
-            }
-        }
-
-        function attemptLogin() {
-            const u = document.getElementById('userInput').value.toUpperCase().trim();
-            const p = document.getElementById('passInput').value.trim();
-            if (p === MASTER_PIN || (u === STAFF_USER && p === STAFF_PASS)) {
-                sessionStorage.setItem("benai_auth", "true");
-                checkAuth();
-            } else {
-                document.getElementById('loginError').innerText = "Código Incorreto";
-                setTimeout(()=>document.getElementById('loginError').innerText="", 2000);
-            }
-        }
-
-        function openGatekeeperConfig() { document.getElementById('gk-config-modal').style.display = 'flex'; }
-
-        function saveTokenFromGatekeeper() {
-            const t = document.getElementById('gk-token').value.trim();
-            if(t) {
-                localStorage.setItem(TOKEN_KEY, t);
-                document.getElementById('gk-config-modal').style.display = 'none';
-                initApp(); 
-            }
-        }
 
         // --- MÓDULOS ---
         function toggleBottle(num) {
