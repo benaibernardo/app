@@ -561,6 +561,19 @@
         async function syncToGist() {
             const { token } = getGistConfig();
             if (!token) return;
+            // ★ GUARD — nunca sobrescrever a nuvem com dados vazios
+            if (!exercises || exercises.length === 0) {
+                const existing = localStorage.getItem(DB_KEY);
+                if (existing) {
+                    try {
+                        const parsed = JSON.parse(existing);
+                        if (parsed.exercises && parsed.exercises.length > 0) {
+                            console.warn('[BENAI] syncToGist bloqueado: exercises vazio. Nuvem preservada.');
+                            return;
+                        }
+                    } catch(e) {}
+                }
+            }
 
             updateCloudStatus('syncing', 'Salvando na nuvem...');
             try {

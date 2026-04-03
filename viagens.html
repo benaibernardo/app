@@ -1984,6 +1984,19 @@
 
         // --- CLOUD & SYNC ---
         async function saveData() {
+            // ★ GUARD — nunca sobrescrever a nuvem com dados vazios
+            if (!db.trips || db.trips.length === 0) {
+                const existing = localStorage.getItem(DB_KEY);
+                if (existing) {
+                    try {
+                        const parsed = JSON.parse(existing);
+                        if (parsed.trips && parsed.trips.length > 0) {
+                            console.warn('[BENAI] saveData bloqueado: db vazio mas localStorage tem dados. Nuvem preservada.');
+                            return;
+                        }
+                    } catch(e) {}
+                }
+            }
             localStorage.setItem(DB_KEY, JSON.stringify(db));
             await pushToCloud();
         }

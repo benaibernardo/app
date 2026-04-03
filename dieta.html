@@ -573,6 +573,11 @@
         async function syncCloud() {
             const token = localStorage.getItem(TOKEN_KEY);
             if(!token) return;
+            // ★ GUARD — nunca sobrescrever a nuvem com dados vazios
+            if (!appData.routine || appData.routine.length === 0) {
+                console.warn('[BENAI] syncCloud bloqueado: routine vazia. Nuvem preservada.');
+                return;
+            }
             
             updateStatus('sync');
             localStorage.setItem(DB_KEY, JSON.stringify(appData));
@@ -770,7 +775,24 @@
             if(confirm("Remover este item?")) { appData.routine[mIdx].foods.splice(fIdx, 1); saveAndRender(); }
         }
 
-        function saveAndRender() { localStorage.setItem(DB_KEY, JSON.stringify(appData)); renderAll(); syncCloud(); }
+        function saveAndRender() {
+            // ★ GUARD — nunca sobrescrever a nuvem com dados vazios
+            if (!appData.routine || appData.routine.length === 0) {
+                const existing = localStorage.getItem(DB_KEY);
+                if (existing) {
+                    try {
+                        const parsed = JSON.parse(existing);
+                        if (parsed.routine && parsed.routine.length > 0) {
+                            console.warn('[BENAI] saveAndRender bloqueado: dados vazios. Nuvem preservada.');
+                            return;
+                        }
+                    } catch(e) {}
+                }
+            }
+            localStorage.setItem(DB_KEY, JSON.stringify(appData));
+            renderAll();
+            syncCloud();
+        }
 
         // --- CLOUD UTILS ---
         function openCloudModal() { document.getElementById('modal-cloud').style.display='flex'; }

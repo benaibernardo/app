@@ -1062,6 +1062,19 @@
         }
 
         async function saveDB() {
+            // ★ GUARD — nunca sobrescrever a nuvem com dados vazios
+            if (!db.transactions || db.transactions.length === 0) {
+                const existing = localStorage.getItem(DB_KEY);
+                if (existing) {
+                    try {
+                        const parsed = JSON.parse(existing);
+                        if (parsed.transactions && parsed.transactions.length > 0) {
+                            console.warn('[BENAI] saveDB bloqueado: db local vazio mas localStorage tem dados. Nuvem preservada.');
+                            return;
+                        }
+                    } catch(e) {}
+                }
+            }
             localStorage.setItem(DB_KEY, JSON.stringify(db));
             const token = localStorage.getItem(TOKEN_KEY);
             if(token) {
@@ -1109,7 +1122,7 @@
             const colors = { online: '#34d399', sync: '#38bdf8', error: '#f87171', offline: '#94a3b8' };
             d.style.background = colors[s] || colors.offline;
         }
-        function saveToken() { const t=document.getElementById('ghToken').value; if(t) { localStorage.setItem(TOKEN_KEY, t); saveDB(); closeModals(); } }
+        function saveToken() { const t=document.getElementById('ghToken').value; if(t) { localStorage.setItem(TOKEN_KEY, t); closeModals(); initApp(); } }
         function saveTokenGK() { const t=document.getElementById('gk-token').value; if(t) { localStorage.setItem(TOKEN_KEY, t); location.reload(); } }
         function forceSync() { initApp(); closeModals(); }
 
