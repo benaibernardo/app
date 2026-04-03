@@ -819,11 +819,6 @@
             <i class="fa-solid fa-cloud text-5xl text-sky-400 mb-2 animate-bounce"></i>
             <h3 class="font-display text-xl font-bold mb-6 text-slate-700 dark:text-white">Dados & Nuvem</h3>
             
-            <div class="mb-4">
-                <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Token de Acesso</label>
-                <input type="password" id="gk-token" class="input-fun text-center text-xs" placeholder="ghp_...">
-            </div>
-
             <div class="grid grid-cols-2 gap-3 mb-4">
                 <div class="action-tile tile-sync" onclick="pushToCloud()">
                     <i class="fa-solid fa-rotate text-2xl mb-2"></i>
@@ -843,19 +838,11 @@
                 <input type="file" hidden onchange="restoreJSON(this)">
             </label>
             
-            <button onclick="saveToken()" class="mt-4 text-xs font-bold text-slate-400 hover:text-sky-500 underline">Salvar Token Manualmente</button>
         </div>
     </div>
 
     <!-- GK CONFIG (Original, kept for compatibility if needed, but cloud modal now handles) -->
-    <div id="gk-config" class="modal-overlay" style="z-index: 10001;">
-        <div class="modal-box text-center">
-            <h3 class="font-display text-xl font-bold mb-2 text-sky-900">Token GitHub</h3>
-            <input type="password" id="gk-token-legacy" class="config-input mb-4 text-xs" placeholder="ghp_...">
-            <button onclick="saveTokenLegacy()" class="btn-login-sunset w-full py-3 text-xs uppercase">Salvar</button>
-            <button onclick="document.getElementById('gk-config').style.display='none'" class="mt-4 text-xs font-bold text-sky-400 hover:text-sky-600">Cancelar</button>
-        </div>
-    </div>
+    
 
     <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full shadow-xl opacity-0 transition-opacity z-50 font-bold text-sm pointer-events-none whitespace-nowrap flex items-center gap-2">
         <i class="fa-solid fa-circle-check text-green-400"></i> <span id="toast-text">Ação realizada</span>
@@ -883,37 +870,30 @@
         window.onload = () => {
             lucide.createIcons();
             initTheme();
-            const t = localStorage.getItem(TOKEN_KEY);
-            if(t) {
-                document.getElementById('gk-token').value = t;
-                document.getElementById('gk-token-legacy').value = t;
-            }
-            
             initApp();
         };
 
         async function initApp() {
-            // Load Local
-            const local = localStorage.getItem(DB_KEY);
-            if(local) { try { db = JSON.parse(local); } catch(e){} }
-            
             // Safe Defaults
             if(!db.trips) db.trips = [];
             if(!db.categories) db.categories = DEFAULT_CATS;
 
-            // Sync Cloud
+            // NUVEM PRIMEIRO — local só como fallback
             const token = localStorage.getItem(TOKEN_KEY);
+            let loaded = false;
             if(token) {
                 updateCloudStatus('sync');
-                await pullFromCloud();
-            } else {
-                updateCloudStatus('offline');
+                try { loaded = await pullFromCloud(); } catch(e) {}
+            }
+
+            if(!loaded) {
+                const local = localStorage.getItem(DB_KEY);
+                if(local) { try { db = JSON.parse(local); } catch(e){} }
+                updateCloudStatus(token ? 'error' : 'offline');
             }
 
             // Create Demo Trip if Empty
-            if(db.trips.length === 0) {
-                createDemoTrip();
-            }
+            if(!db.trips || db.trips.length === 0) createDemoTrip();
 
             renderApp();
         }
@@ -1992,7 +1972,7 @@
 
         async function pullFromCloud() {
             const token = localStorage.getItem(TOKEN_KEY);
-            if(!token) return;
+            if(!token) return false;
             try {
                 const gists = await fetch('https://api.github.com/gists',{headers:{'Authorization':`token ${token}`}}).then(r=>r.json());
                 const file = gists.find(g=>g.description===GIST_DESC);
@@ -2001,9 +1981,11 @@
                     const content = await fetch(file.files[GIST_FILE].raw_url).then(r=>r.json());
                     db = content;
                     localStorage.setItem(DB_KEY, JSON.stringify(db));
-                    updateCloudStatus('ok');
+                    return true;
                 }
-            } catch(e) { console.error(e); updateCloudStatus('error'); }
+            } catch(e) { console.error('Cloud pull error:', e); }
+            return false;
+        
         }
 
         async function pushToCloud() {
@@ -2104,7 +2086,6 @@
 
         // Cloud & Config
         function openCloudModal() { document.getElementById('modal-cloud').style.display='flex'; document.getElementById('gk-token').value = localStorage.getItem(TOKEN_KEY) || ''; }
-        function saveToken() { localStorage.setItem(TOKEN_KEY, document.getElementById('gk-token').value); location.reload(); }
         function backupJSON() { const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(db)],{type:"application/json"})); a.download="travel_backup.json"; a.click(); }
         function restoreJSON(i) { const r=new FileReader(); r.onload=e=>{ try{db=JSON.parse(e.target.result);saveData();location.reload();}catch{alert('Erro');} }; r.readAsText(i.files[0]); }
 

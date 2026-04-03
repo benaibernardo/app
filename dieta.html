@@ -216,25 +216,7 @@
     <script src="auth.js"></script>
 
 
-    <div id="gk-config-modal" class="modal" style="background: rgba(2,6,23,0.95);">
-        <div class="modal-box" style="text-align: center;">
-            <div style="margin-bottom: 20px;">
-                <div style="width:65px; height:65px; background:var(--primary); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px; color:white;">
-                    <i data-lucide="settings-2" class="w-8 h-8"></i>
-                </div>
-                <h3 style="color:var(--text); font-weight: 800; font-family:var(--font-num); font-size:1.2rem;">Configuração Inicial</h3>
-                <p style="font-size: 0.85rem; color:var(--text-muted); margin-top:5px;">Configure o acesso à nuvem.</p>
-            </div>
-            
-            <div class="inp-group">
-                <input type="password" id="gk-token" placeholder="Token GitHub (ghp_...)" class="inp-field" style="text-align:center;">
-            </div>
-            <button onclick="saveTokenFromGatekeeper()" class="btn-save" style="margin-bottom:15px;">
-                <i class="fa-solid fa-save"></i> SALVAR
-            </button>
-            <button onclick="document.getElementById('gk-config-modal').style.display='none'" style="background:transparent; border:none; color:var(--text-muted); font-weight:800; cursor:pointer; padding: 10px;">FECHAR</button>
-        </div>
-    </div>
+    
 
     
 
@@ -391,24 +373,13 @@
             </div>
             <h3 style="color:var(--text); font-weight: 800; font-family:var(--font-num); font-size:1.2rem;">Central de Dados</h3>
             <p style="font-size: 0.85rem; color:var(--text-muted); margin:5px 0 20px;">Sincronização e Backup</p>
-            
-            <div class="inp-group">
-                <input type="password" id="manualToken" placeholder="Token GitHub (ghp_...)" class="inp-field" style="text-align:center;">
-            </div>
-            
-            <div style="display:flex; gap:10px; margin-bottom:20px;">
-                <button onclick="saveManualToken()" style="flex:1; padding:12px; border-radius:12px; background:var(--primary); color:white; border:none; font-weight:800; font-size:0.85rem; cursor:pointer;">SALVAR</button>
-                <button onclick="removeToken()" style="flex:1; padding:12px; border-radius:12px; background:rgba(239,68,68,0.1); color:var(--danger); border:1px solid rgba(239,68,68,0.2); font-weight:800; font-size:0.85rem; cursor:pointer;">DESCONECTAR</button>
-            </div>
-            
-            <div style="height:1px; background:var(--border); margin-bottom:20px;"></div>
-            
+
             <button onclick="forceSync()" style="width:100%; padding:14px; border-radius:12px; border:2px dashed var(--accent); color:var(--accent); background:transparent; font-weight:800; margin-bottom:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; font-size:0.9rem;">
-                <i class="fa-solid fa-sync"></i> FORÇAR SINCRONIZAÇÃO
+                <i class="fa-solid fa-rotate"></i> SINCRONIZAR
             </button>
 
             <button onclick="backupData()" style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--text-muted); color:var(--text); background:transparent; font-weight:800; margin-bottom:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; font-size:0.9rem;">
-                <i class="fa-solid fa-download"></i> FAZER BACKUP (JSON)
+                <i class="fa-solid fa-download"></i> BACKUP LOCAL (JSON)
             </button>
             
             <label style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--text-muted); color:var(--text); background:var(--bg); font-weight:800; margin-bottom:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; font-size:0.9rem;">
@@ -437,11 +408,7 @@
             initTheme();
             lucide.createIcons();
             
-            const t = localStorage.getItem(TOKEN_KEY);
-            if(t) {
-                document.getElementById('manualToken').value = t;
-                document.getElementById('gk-token').value = t;
-            }
+            
             
             initApp();
             initBiofeedbackAndBottles();
@@ -491,20 +458,22 @@
 
         // --- DATA ENGINE ---
         async function initApp() {
-            const local = localStorage.getItem(DB_KEY);
-            if(local) {
-                try { appData = JSON.parse(local); } catch(e) { console.error(e); }
-            }
-            
-            if(!appData.routine || appData.routine.length === 0) populateDummyData();
-
-            renderAll();
-
+            // NUVEM PRIMEIRO — local só como fallback
             const token = localStorage.getItem(TOKEN_KEY);
+            let loaded = false;
             if(token) {
                 updateStatus('sync');
-                await pullFromCloud();
-            } else updateStatus('offline');
+                try { loaded = await pullFromCloud(); } catch(e) {}
+            }
+
+            if(!loaded) {
+                const local = localStorage.getItem(DB_KEY);
+                if(local) { try { appData = JSON.parse(local); } catch(e) { console.error(e); } }
+                updateStatus(token ? 'error' : 'offline');
+            }
+
+            if(!appData.routine || appData.routine.length === 0) populateDummyData();
+            renderAll();
         }
 
         function populateDummyData() {
@@ -563,7 +532,7 @@
 
         async function pullFromCloud() {
             const token = localStorage.getItem(TOKEN_KEY);
-            if(!token) return;
+            if(!token) return false;
             try {
                 const res = await fetch('https://api.github.com/gists', { headers: { 'Authorization': `token ${token}` } });
                 const gists = await res.json();
@@ -575,11 +544,12 @@
                     if(d.files[GIST_FILENAME]) {
                         appData = JSON.parse(d.files[GIST_FILENAME].content);
                         localStorage.setItem(DB_KEY, JSON.stringify(appData));
-                        renderAll();
+                        updateStatus('ok');
+                        return true;
                     }
                 }
-                updateStatus('ok');
             } catch(e) { updateStatus('error'); }
+            return false;
         }
 
         async function syncCloud() {
@@ -787,11 +757,9 @@
         // --- CLOUD UTILS ---
         function openCloudModal() { 
             const t = localStorage.getItem(TOKEN_KEY);
-            if(t) document.getElementById('manualToken').value = t;
+            if(t)
             document.getElementById('modal-cloud').style.display='flex'; 
         }
-        function saveManualToken() { const t=document.getElementById('manualToken').value.trim(); if(t){ localStorage.setItem(TOKEN_KEY, t); syncCloud(); } }
-        function removeToken() { if(confirm('Desconectar?')) { localStorage.removeItem(TOKEN_KEY); location.reload(); } }
         function forceSync() { syncCloud(); }
         
         function backupData() { const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(appData)],{type:"application/json"})); a.download="benai_diet_backup.json"; a.click(); }

@@ -262,31 +262,25 @@
         </div>
     </div>
 
-    <!-- MODAL: CONFIGURAÇÕES (GIST) -->
+    <!-- MODAL: NUVEM & BACKUP -->
     <div id="settingsModal" class="fixed inset-0 z-[70] hidden flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-fit-black/60 backdrop-blur-sm" onclick="closeSettingsModal()"></div>
         <div class="relative w-full max-w-md bg-white rounded-2xl shadow-2xl p-6">
             <div class="flex justify-between items-center mb-5">
-                <h3 class="text-xl font-head font-bold text-fit-black flex items-center gap-2"><i data-lucide="cloud" class="w-5 h-5 text-fit-blue"></i> Nuvem (Gist)</h3>
+                <h3 class="text-xl font-head font-bold text-fit-black flex items-center gap-2"><i data-lucide="cloud" class="w-5 h-5 text-fit-blue"></i> Nuvem & Backup</h3>
                 <button onclick="closeSettingsModal()" class="text-zinc-400 hover:text-fit-orange"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1.5">GitHub Token</label>
-                    <input type="password" id="gistToken" class="w-full px-4 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl focus:ring-2 focus:ring-fit-blue outline-none text-sm font-mono" placeholder="ghp_...">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-zinc-500 uppercase tracking-wider mb-1.5">Gist ID</label>
-                    <input type="text" id="gistId" class="w-full px-4 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl focus:ring-2 focus:ring-fit-blue outline-none text-sm font-mono" placeholder="ID do Gist">
-                </div>
-                
-                <div class="pt-4 flex gap-3">
-                    <button onclick="saveSettings()" class="flex-1 bg-fit-black text-white py-2.5 rounded-xl font-bold text-sm hover:bg-zinc-800 transition-colors">Salvar</button>
-                    <button onclick="forceSync()" class="flex-1 bg-fit-blue text-white py-2.5 rounded-xl font-bold text-sm hover:bg-fit-bluehover transition-colors flex items-center justify-center gap-2">
-                        <i data-lucide="refresh-cw" class="w-4 h-4"></i> Sincronizar
-                    </button>
-                </div>
+            <div class="space-y-3">
+                <button onclick="forceSync()" class="w-full flex items-center justify-center gap-2 bg-fit-blue text-white py-3 rounded-xl font-bold text-sm hover:bg-fit-bluehover transition-colors">
+                    <i data-lucide="refresh-cw" class="w-4 h-4"></i> Sincronizar com Nuvem
+                </button>
+                <button onclick="backupJSON()" class="w-full flex items-center justify-center gap-2 border border-zinc-200 text-zinc-700 py-3 rounded-xl font-bold text-sm hover:bg-zinc-50 transition-colors">
+                    <i data-lucide="download" class="w-4 h-4"></i> Backup Local (JSON)
+                </button>
+                <label class="w-full flex items-center justify-center gap-2 border border-zinc-200 text-zinc-700 py-3 rounded-xl font-bold text-sm hover:bg-zinc-50 transition-colors cursor-pointer">
+                    <i data-lucide="upload" class="w-4 h-4"></i> Restaurar Backup
+                    <input type="file" hidden onchange="restoreJSON(this)">
+                </label>
             </div>
         </div>
     </div>
@@ -349,6 +343,12 @@
 
     <script>
         // --- ESTADO DA APLICAÇÃO ---
+        const TOKEN_KEY = 'BENAI_GLOBAL_TOKEN';
+        const GIST_DESC = 'BENAI_STUDIO_DB';
+        const GIST_FILENAME = 'studio_db.json';
+        const DB_KEY = 'BENAI_STUDIO_LOCAL';
+        let gistId = null;
+
         let exercises = [];
         let isStarFilterActive = false;
         
@@ -360,15 +360,21 @@
         };
 
         // --- INICIALIZAÇÃO ---
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             lucide.createIcons();
-            loadLocalData();
             renderCategoryOptions();
             setupEventListeners();
-            
-            // Tenta sincronizar com a nuvem silenciosamente ao abrir
-            if(getGistConfig().token && getGistConfig().id) {
-                syncFromGist(true);
+
+            // NUVEM PRIMEIRO — local só como fallback
+            const { token } = getGistConfig();
+            let loaded = false;
+            if(token) {
+                updateCloudStatus('syncing', 'Sincronizando...');
+                try { loaded = await syncFromGist(true); } catch(e) {}
+            }
+            if(!loaded) {
+                loadLocalData();
+                renderCategoryOptions();
             }
         });
 
@@ -427,33 +433,39 @@
 
         // --- LÓGICA DE DADOS (LOCAL & GIST) ---
         function getGistConfig() {
-            return {
-                token: localStorage.getItem('fit_gist_token') || '',
-                id: localStorage.getItem('fit_gist_id') || ''
-            };
+            return { token: localStorage.getItem(TOKEN_KEY) || '' };
         }
 
         function loadLocalData() {
-            const localData = localStorage.getItem('fit_exercises');
-            if (localData) {
-                exercises = JSON.parse(localData);
+            const saved = localStorage.getItem(DB_KEY);
+            if(saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    if(parsed.exercises) exercises = parsed.exercises;
+                    if(parsed.categories) categories = parsed.categories;
+                } catch(e) {}
+                renderGallery();
+                return;
             }
-            
-            const localCategories = localStorage.getItem('fit_categories');
-            if (localCategories) {
-                categories = JSON.parse(localCategories);
-            }
+            // legado: migrar chaves antigas para o novo formato unificado
+            const legacyEx = localStorage.getItem('fit_exercises');
+            if (legacyEx) exercises = JSON.parse(legacyEx);
+            const legacyCat = localStorage.getItem('fit_categories');
+            if (legacyCat) categories = JSON.parse(legacyCat);
+            // salvar no novo formato e limpar as chaves antigas
+            saveLocalData();
+            localStorage.removeItem('fit_exercises');
+            localStorage.removeItem('fit_categories');
             
             renderGallery();
         }
 
         function saveLocalData() {
-            localStorage.setItem('fit_exercises', JSON.stringify(exercises));
-            localStorage.setItem('fit_categories', JSON.stringify(categories));
+            localStorage.setItem(DB_KEY, JSON.stringify({ exercises, categories }));
             renderGallery();
             
             // Sincroniza com a nuvem em background se configurado
-            if(getGistConfig().token && getGistConfig().id) {
+            if(getGistConfig().token) {
                 syncToGist();
             }
         }
@@ -528,28 +540,37 @@
 
         // --- INTEGRAÇÃO GIST ---
         async function syncToGist() {
-            const config = getGistConfig();
-            if (!config.token || !config.id) return;
+            const { token } = getGistConfig();
+            if (!token) return;
 
             updateCloudStatus('syncing', 'Salvando na nuvem...');
             try {
-                const response = await fetch(`https://api.github.com/gists/${config.id}`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Authorization': `token ${config.token}`,
-                        'Accept': 'application/vnd.github.v3+json',
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        files: {
-                            'fitstudio_db.json': {
-                                content: JSON.stringify({ exercises, categories }, null, 2)
-                            }
-                        }
-                    })
+                // Descobrir gistId se ainda não temos
+                if(!gistId) {
+                    const list = await fetch('https://api.github.com/gists', {
+                        headers: { 'Authorization': `token ${token}` }
+                    }).then(r => r.json());
+                    const found = list.find(g => g.description === GIST_DESC);
+                    if(found) gistId = found.id;
+                }
+
+                const payload = {
+                    description: GIST_DESC,
+                    public: false,
+                    files: { [GIST_FILENAME]: { content: JSON.stringify({ exercises, categories }) } }
+                };
+                let url = 'https://api.github.com/gists';
+                let method = 'POST';
+                if(gistId) { url += '/' + gistId; method = 'PATCH'; }
+
+                const response = await fetch(url, {
+                    method,
+                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
                 });
 
                 if (response.ok) {
+                    if(method === 'POST') { const j = await response.json(); gistId = j.id; }
                     updateCloudStatus('success', 'Salvo na nuvem');
                 } else {
                     throw new Error('Falha ao salvar');
@@ -561,48 +582,46 @@
         }
 
         async function syncFromGist(silent = false) {
-            const config = getGistConfig();
-            if (!config.token || !config.id) {
-                if(!silent) Swal.fire('Atenção', 'Configure o Token e ID do Gist primeiro.', 'warning');
-                return;
+            const { token } = getGistConfig();
+            if (!token) {
+                if(!silent) Swal.fire('Token necessário', 'Configure o Token GitHub no índice (index.html).', 'warning');
+                return false;
             }
 
             if(!silent) updateCloudStatus('syncing', 'Baixando da nuvem...');
             try {
-                const response = await fetch(`https://api.github.com/gists/${config.id}`, {
-                    headers: {
-                        'Authorization': `token ${config.token}`,
-                        'Accept': 'application/vnd.github.v3+json'
-                    }
-                });
+                const list = await fetch('https://api.github.com/gists', {
+                    headers: { 'Authorization': `token ${token}` }
+                }).then(r => r.json());
 
-                if (response.ok) {
-                    const gist = await response.json();
-                    const fileContent = gist.files['fitstudio_db.json']?.content;
-                    if (fileContent) {
-                        const data = JSON.parse(fileContent);
-                        if(data.exercises) {
-                            exercises = data.exercises;
-                            categories = data.categories || categories;
-                        } else {
-                            // Retrocompatibilidade
-                            exercises = data;
-                        }
-                        localStorage.setItem('fit_exercises', JSON.stringify(exercises));
-                        localStorage.setItem('fit_categories', JSON.stringify(categories));
-                        renderCategoryOptions();
-                        renderGallery();
-                        updateCloudStatus('success', 'Sincronizado');
-                        if(!silent) Swal.fire({icon: 'success', title: 'Sucesso', text: 'Dados baixados da nuvem!', timer: 1500, showConfirmButton: false});
-                    }
-                } else {
-                    throw new Error('Falha ao baixar');
+                const found = list.find(g => g.description === GIST_DESC);
+                if(!found) {
+                    if(!silent) updateCloudStatus('error', 'Nenhum dado na nuvem');
+                    return false;
+                }
+
+                gistId = found.id;
+                const gist = await fetch(found.url, {
+                    headers: { 'Authorization': `token ${token}` }
+                }).then(r => r.json());
+
+                const fileContent = gist.files[GIST_FILENAME]?.content;
+                if (fileContent) {
+                    const data = JSON.parse(fileContent);
+                    if (data.exercises) exercises = data.exercises;
+                    if (data.categories) categories = data.categories;
+                    saveLocalData();
+                    renderGallery();
+                    renderCategoryOptions();
+                    if(!silent) updateCloudStatus('success', 'Sincronizado com sucesso');
+                    return true;
                 }
             } catch (error) {
                 console.error(error);
-                updateCloudStatus('error', 'Erro de conexão');
+                if(!silent) updateCloudStatus('error', 'Erro de conexão');
                 if(!silent) Swal.fire('Erro', 'Não foi possível baixar os dados.', 'error');
             }
+            return false;
         }
 
         function updateCloudStatus(state, msg) {
@@ -875,9 +894,6 @@
         }
 
         function openSettingsModal() {
-            const config = getGistConfig();
-            document.getElementById('gistToken').value = config.token;
-            document.getElementById('gistId').value = config.id;
             document.getElementById('settingsModal').classList.remove('hidden');
         }
 
@@ -885,16 +901,34 @@
             document.getElementById('settingsModal').classList.add('hidden');
         }
 
-        function saveSettings() {
-            localStorage.setItem('fit_gist_token', document.getElementById('gistToken').value.trim());
-            localStorage.setItem('fit_gist_id', document.getElementById('gistId').value.trim());
+        function forceSync() {
             closeSettingsModal();
-            Swal.fire({icon: 'success', title: 'Salvo!', text: 'Configurações de nuvem salvas.', timer: 1500, showConfirmButton: false});
-            syncFromGist();
+            syncFromGist(false);
         }
 
-        function forceSync() {
-            saveSettings(); // Salva e já tenta sincronizar
+        function backupJSON() {
+            const data = JSON.stringify({ exercises, categories }, null, 2);
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([data], { type: 'application/json' }));
+            a.download = 'studio_backup.json';
+            a.click();
+        }
+
+        function restoreJSON(input) {
+            const r = new FileReader();
+            r.onload = e => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if(data.exercises) exercises = data.exercises;
+                    if(data.categories) categories = data.categories;
+                    saveLocalData();
+                    syncToGist();
+                    renderGallery();
+                    renderCategoryOptions();
+                    Swal.fire({icon:'success', title:'Restaurado!', timer:1500, showConfirmButton:false});
+                } catch { Swal.fire('Erro', 'Arquivo inválido.', 'error'); }
+            };
+            r.readAsText(input.files[0]);
         }
     </script>
 </body>
