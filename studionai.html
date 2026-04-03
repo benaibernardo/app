@@ -66,7 +66,28 @@
         
         .play-overlay { position: absolute; inset: 0; display: flex; items-center; justify-content: center; background: rgba(0,0,0,0.3); opacity: 0; transition: opacity 0.3s; }
         .card-hover:hover .play-overlay { opacity: 1; }
-    </style>
+    
+        /* ★ BENAI CLOUD FAB ★ */
+        .benai-fab {
+            position: fixed; bottom: 24px; right: 24px; z-index: 90;
+            width: 52px; height: 52px; border-radius: 50%;
+            background: #3b82f6; color: white;
+            border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 20px rgba(59,130,246,0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-size: 1.1rem;
+        }
+        .benai-fab:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(59,130,246,0.4); }
+        .benai-fab:active { transform: scale(0.96); }
+        .benai-fab-dot {
+            position: absolute; top: 3px; right: 3px;
+            width: 12px; height: 12px; border-radius: 50%;
+            background: #94a3b8; border: 2px solid white;
+            transition: background 0.3s;
+        }
+    
+</style>
 </head>
 <body class="text-fit-black font-sans min-h-screen flex flex-col">
     <!-- BENAI AUTH GUARD -->
@@ -87,9 +108,7 @@
             </div>
             
             <div class="flex items-center gap-3">
-                <button onclick="openSettingsModal()" class="p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors" title="Configurações (Nuvem e Categorias)">
-                    <i data-lucide="settings" class="w-5 h-5"></i>
-                </button>
+                
                 <button onclick="openAddModal()" class="btn-tactile bg-fit-blue hover:bg-fit-bluehover text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 shadow-lg shadow-fit-blue/30">
                     <i data-lucide="plus" class="w-4 h-4"></i> Novo Exercício
                 </button>
@@ -625,6 +644,12 @@
         }
 
         function updateCloudStatus(state, msg) {
+            // Atualizar ponto de status no FAB
+            const dot = document.getElementById('fabStatusDot');
+            if(dot) {
+                const colors = { syncing: '#38bdf8', success: '#34d399', error: '#f87171' };
+                dot.style.background = colors[state] || '#94a3b8';
+            }
             const el = document.getElementById('cloudStatus');
             el.classList.remove('hidden', 'bg-blue-50', 'text-blue-600', 'bg-emerald-50', 'text-emerald-600', 'bg-red-50', 'text-red-600');
             
@@ -931,5 +956,11 @@
             r.readAsText(input.files[0]);
         }
     </script>
+
+    <!-- ★ BENAI CLOUD FAB ★ -->
+    <button onclick="openSettingsModal()" class="benai-fab" title="Nuvem &amp; Backup">
+        <div id="fabStatusDot" class="benai-fab-dot"></div>
+        <i class="fa-solid fa-cloud"></i>
+    </button>
 </body>
 </html>

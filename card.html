@@ -277,7 +277,28 @@
         
         #gatekeeper { position: fixed; inset: 0; z-index: 10000; background: #fffbeb; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; background-image: radial-gradient(#fbbf24 1px, transparent 1px); background-size: 20px 20px; }
         #cloud-shield { position: fixed; inset: 0; z-index: 9999; background: #0f172a; color: white; display: none; flex-direction: column; align-items: center; justify-content: center; }
-    </style>
+    
+        /* ★ BENAI CLOUD FAB ★ */
+        .benai-fab {
+            position: fixed; bottom: 24px; right: 24px; z-index: 90;
+            width: 52px; height: 52px; border-radius: 50%;
+            background: #eab308; color: white;
+            border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 20px rgba(234,179,8,0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-size: 1.1rem;
+        }
+        .benai-fab:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(234,179,8,0.4); }
+        .benai-fab:active { transform: scale(0.96); }
+        .benai-fab-dot {
+            position: absolute; top: 3px; right: 3px;
+            width: 12px; height: 12px; border-radius: 50%;
+            background: #94a3b8; border: 2px solid white;
+            transition: background 0.3s;
+        }
+    
+</style>
 </head>
 <body>
     <!-- BENAI AUTH GUARD -->
@@ -309,10 +330,7 @@
                 <div class="flex gap-2">
                     <button onclick="openReportModal()" class="head-btn hb-report"><i class="fa-brands fa-telegram text-xl"></i></button>
                     <button onclick="openConfig()" class="head-btn hb-config"><i data-lucide="settings-2" class="w-6 h-6"></i></button>
-                    <button onclick="openCloudModal()" class="head-btn hb-cloud relative">
-                        <div id="cloudStatusDot" class="w-3 h-3 rounded-full bg-slate-300 absolute top-2 right-2 border-2 border-white shadow-sm"></div>
-                        <i data-lucide="cloud" class="w-6 h-6"></i>
-                    </button>
+
                 </div>
             </div>
         </header>
@@ -1085,7 +1103,12 @@
         function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display='none'); }
         function openCloudModal() { document.getElementById('modalCloud').style.display='flex'; }
         function openGatekeeperConfig() { document.getElementById('gk-config-modal').style.display='flex'; }
-        function updateStatus(s) { const d=document.getElementById('cloudStatusDot'); if(d) d.className = 'w-3 h-3 rounded-full absolute top-2 right-2 border-2 border-white shadow-sm ' + (s==='online'?'bg-emerald-400':(s==='sync'?'bg-sky-400 animate-pulse':'bg-slate-300')); }
+        function updateStatus(s) {
+            const d = document.getElementById('cloudStatusDot');
+            if(!d) return;
+            const colors = { online: '#34d399', sync: '#38bdf8', error: '#f87171', offline: '#94a3b8' };
+            d.style.background = colors[s] || colors.offline;
+        }
         function saveToken() { const t=document.getElementById('ghToken').value; if(t) { localStorage.setItem(TOKEN_KEY, t); saveDB(); closeModals(); } }
         function saveTokenGK() { const t=document.getElementById('gk-token').value; if(t) { localStorage.setItem(TOKEN_KEY, t); location.reload(); } }
         function forceSync() { initApp(); closeModals(); }
@@ -1143,5 +1166,11 @@
             reader.readAsText(file);
         }
     </script>
+
+    <!-- ★ BENAI CLOUD FAB ★ -->
+    <button onclick="openCloudModal()" class="benai-fab" title="Nuvem &amp; Backup">
+        <div id="cloudStatusDot" class="benai-fab-dot"></div>
+        <i class="fa-solid fa-cloud"></i>
+    </button>
 </body>
 </html>

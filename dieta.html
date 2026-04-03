@@ -209,7 +209,28 @@
         @keyframes modalPop { 0%{transform:scale(0.9); opacity:0;} 100%{transform:scale(1); opacity:1;} }
         @keyframes popIn { 0%{transform:scale(0.5); opacity:0;} 50%{transform:scale(1.2);} 100%{transform:scale(1); opacity:1;} }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-    </style>
+    
+        /* ★ BENAI CLOUD FAB ★ */
+        .benai-fab {
+            position: fixed; bottom: 24px; right: 24px; z-index: 90;
+            width: 52px; height: 52px; border-radius: 50%;
+            background: #10b981; color: white;
+            border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 20px rgba(16,185,129,0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-size: 1.1rem;
+        }
+        .benai-fab:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(16,185,129,0.4); }
+        .benai-fab:active { transform: scale(0.96); }
+        .benai-fab-dot {
+            position: absolute; top: 3px; right: 3px;
+            width: 12px; height: 12px; border-radius: 50%;
+            background: #94a3b8; border: 2px solid white;
+            transition: background 0.3s;
+        }
+    
+</style>
 </head>
 <body id="body-lock">
     <!-- BENAI AUTH GUARD -->
@@ -229,10 +250,7 @@
                         <i data-lucide="chef-hat"></i>
                     </button>
                     <button class="action-btn" onclick="toggleLocalTheme()"><i id="themeIcon" data-lucide="moon"></i></button>
-                    <button class="action-btn sync" onclick="openCloudModal()" title="Dados">
-                        <i class="fa-solid fa-cloud"></i>
-                        <div id="cloudDot" class="cloud-dot"></div>
-                    </button>
+
                 </div>
             </header>
 
@@ -755,11 +773,7 @@
         function saveAndRender() { localStorage.setItem(DB_KEY, JSON.stringify(appData)); renderAll(); syncCloud(); }
 
         // --- CLOUD UTILS ---
-        function openCloudModal() { 
-            const t = localStorage.getItem(TOKEN_KEY);
-            if(t)
-            document.getElementById('modal-cloud').style.display='flex'; 
-        }
+        function openCloudModal() { document.getElementById('modal-cloud').style.display='flex'; }
         function forceSync() { syncCloud(); }
         
         function backupData() { const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(appData)],{type:"application/json"})); a.download="benai_diet_backup.json"; a.click(); }
@@ -777,7 +791,12 @@
 
         // --- UTILS ---
         function closeModal(id) { document.getElementById('modal-'+id).style.display = 'none'; }
-        function updateStatus(status) { const el = document.getElementById('cloudDot'); if(el) el.className = 'cloud-dot ' + status; }
+        function updateStatus(status) {
+            const el = document.getElementById('cloudDot');
+            if(!el) return;
+            const colors = { ok: '#34d399', sync: '#38bdf8', error: '#f87171', offline: '#94a3b8' };
+            el.style.background = colors[status] || colors.offline;
+        }
         
         function initTheme() {
             const t = localStorage.getItem('theme');
@@ -799,5 +818,11 @@
             lucide.createIcons();
         }
     </script>
+
+    <!-- ★ BENAI CLOUD FAB ★ -->
+    <button onclick="openCloudModal()" class="benai-fab" title="Nuvem &amp; Backup">
+        <div id="cloudDot" class="benai-fab-dot"></div>
+        <i class="fa-solid fa-cloud"></i>
+    </button>
 </body>
 </html>

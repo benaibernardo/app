@@ -317,7 +317,28 @@
         /* ICONS FOR FILTERS */
         .fi-icon { font-size: 0.8rem; margin-right: 4px; }
 
-    </style>
+    
+        /* ★ BENAI CLOUD FAB ★ */
+        .benai-fab {
+            position: fixed; bottom: 24px; right: 24px; z-index: 90;
+            width: 52px; height: 52px; border-radius: 50%;
+            background: #ea580c; color: white;
+            border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 20px rgba(234,88,12,0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-size: 1.1rem;
+        }
+        .benai-fab:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(234,88,12,0.4); }
+        .benai-fab:active { transform: scale(0.96); }
+        .benai-fab-dot {
+            position: absolute; top: 3px; right: 3px;
+            width: 12px; height: 12px; border-radius: 50%;
+            background: #94a3b8; border: 2px solid white;
+            transition: background 0.3s;
+        }
+    
+</style>
 </head>
 <body>
     <!-- BENAI AUTH GUARD -->
@@ -351,10 +372,7 @@
             </div>
             <div class="flex gap-2">
                 <button onclick="toggleTheme()" class="btn-icon"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
-                <button onclick="openCloudModal()" class="btn-icon relative">
-                    <div id="cloudStatusDot" class="w-3 h-3 rounded-full bg-slate-300 absolute top-2 right-2 border-2 border-white shadow-sm"></div>
-                    <i class="fa-solid fa-cloud"></i>
-                </button>
+
                 <button onclick="window.location.href='index.html'" class="btn-icon text-slate-400"><i class="fa-solid fa-arrow-left"></i></button>
             </div>
         </header>
@@ -2085,7 +2103,7 @@
         }
 
         // Cloud & Config
-        function openCloudModal() { document.getElementById('modal-cloud').style.display='flex'; document.getElementById('gk-token').value = localStorage.getItem(TOKEN_KEY) || ''; }
+        function openCloudModal() { document.getElementById('modal-cloud').style.display='flex'; }
         function backupJSON() { const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(db)],{type:"application/json"})); a.download="travel_backup.json"; a.click(); }
         function restoreJSON(i) { const r=new FileReader(); r.onload=e=>{ try{db=JSON.parse(e.target.result);saveData();location.reload();}catch{alert('Erro');} }; r.readAsText(i.files[0]); }
 
@@ -2168,5 +2186,11 @@
         .doc-card:hover .doc-action-icon { background: #f1f5f9; color: var(--text-main); }
         
     </style>
+
+    <!-- ★ BENAI CLOUD FAB ★ -->
+    <button onclick="openCloudModal()" class="benai-fab" title="Nuvem &amp; Backup">
+        <div id="cloudStatusDot" class="benai-fab-dot"></div>
+        <i class="fa-solid fa-cloud"></i>
+    </button>
 </body>
 </html>
