@@ -1,12 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BENAI FIN | Gestão Inteligente</title>
-    
-    <!-- LIBS -->
+    <title>BENAI FIN | Controle Pessoal</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
@@ -14,1997 +12,458 @@
 
     <style>
         :root {
-            --primary: #0f172a;
-            --accent: #0ea5e9;
-            --accent-glow: rgba(14, 165, 233, 0.5);
-            --card-glass: rgba(15, 23, 42, 0.95);
-            --glass-border: rgba(56, 189, 248, 0.15);
+            --bg-grad: linear-gradient(-45deg, #020617, #0f172a, #1e293b, #172554);
+            --card-glass: rgba(15,23,42,0.95);
+            --glass-border: rgba(56,189,248,0.15);
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --bg-grad: linear-gradient(-45deg, #020617, #0f172a, #1e293b, #172554);
-            
-            /* Category Colors */
-            --c-essen: #3b82f6; --c-essen-bg: rgba(59, 130, 246, 0.15);
-            --c-free: #10b981; --c-free-bg: rgba(16, 185, 129, 0.15);
-            --c-repass: #ef4444; --c-repass-bg: rgba(239, 68, 68, 0.15);
-            --c-income: #22c55e; --c-income-bg: rgba(34, 197, 94, 0.15);
+            --accent: #0ea5e9;
+            --accent-glow: rgba(14,165,233,0.4);
+            --obr: #38bdf8; --obr-bg: rgba(56,189,248,0.12);
+            --res: #34d399; --res-bg: rgba(52,211,153,0.12);
+            --laz: #fb923c; --laz-bg: rgba(251,146,60,0.12);
+            --inc: #a3e635; --inc-bg: rgba(163,230,53,0.10);
         }
-
         [data-theme="light"] {
-            --primary: #ffffff;
-            --accent: #0284c7;
-            --accent-glow: rgba(2, 132, 199, 0.3);
-            --card-glass: rgba(255, 255, 255, 0.95);
-            --glass-border: rgba(203, 213, 225, 0.8);
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --bg-grad: linear-gradient(-45deg, #f0f9ff, #e0f2fe, #bae6fd, #f1f5f9);
+            --bg-grad: linear-gradient(-45deg,#f0f9ff,#e0f2fe,#bae6fd,#f1f5f9);
+            --card-glass: rgba(255,255,255,0.95);
+            --glass-border: rgba(148,163,184,0.3);
+            --text-main: #0f172a; --text-muted: #64748b;
         }
+        @keyframes oceanMove { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+        @keyframes pulse     { 0%,100%{opacity:1} 50%{opacity:.4} }
+        @keyframes spin      { to{transform:rotate(360deg)} }
 
-        @keyframes oceanMove {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body { font-family:'Inter',sans-serif; color:var(--text-main); min-height:100vh; background:var(--bg-grad); background-size:400% 400%; animation:oceanMove 15s ease infinite; overflow-x:hidden; }
+        h1,h2,h3,h4{font-family:'Outfit',sans-serif;}
+        .mono{font-family:'Space Grotesk',monospace;}
+        ::-webkit-scrollbar{width:4px;} ::-webkit-scrollbar-thumb{background:var(--accent);border-radius:3px;}
 
-        body { 
-            font-family: 'Inter', sans-serif; 
-            color: var(--text-main); 
-            overflow-x: hidden; 
-            min-height: 100vh;
-            background: var(--bg-grad);
-            background-size: 400% 400%;
-            animation: oceanMove 15s ease infinite;
-            transition: color 0.3s;
-        }
+        /* GLASS */
+        .glass { background:var(--card-glass); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid var(--glass-border); border-radius:1.2rem; }
 
-        h1, h2, h3, h4, .font-heading { font-family: 'Outfit', sans-serif; }
-        .font-mono { font-family: 'Space Grotesk', monospace; }
+        /* TOP BAR */
+        .top-bar { position:sticky;top:0;z-index:50; background:var(--card-glass); backdrop-filter:blur(20px); border-bottom:1px solid var(--glass-border); padding:.75rem 1.25rem; display:flex;align-items:center;justify-content:space-between;gap:12px; }
+        .hbtn { width:36px;height:36px;border-radius:10px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.05);color:var(--text-muted);transition:.2s; }
+        .hbtn:hover { background:rgba(14,165,233,.2);color:var(--accent); }
 
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 4px; height: 4px; }
-        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); }
-        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+        /* MONTH NAV */
+        .month-nav { display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.05);border-radius:10px;padding:4px 8px; }
+        .month-nav button { background:none;border:none;color:var(--text-muted);cursor:pointer;width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;transition:.2s; }
+        .month-nav button:hover { background:rgba(14,165,233,.2);color:var(--accent); }
+        #monthLabel { font-family:'Outfit',sans-serif;font-weight:800;font-size:.9rem;min-width:110px;text-align:center; }
 
-        /* UI COMPONENTS */
-        .glass-card {
-            background: var(--card-glass);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--glass-border);
-            border-radius: 1.2rem;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-            transition: 0.2s;
-        }
+        /* STATUS DOT */
+        .sdot { width:8px;height:8px;border-radius:50%;background:#94a3b8;transition:background .3s; }
+        .sdot.online { background:#34d399;box-shadow:0 0 8px #34d399; }
+        .sdot.sync   { background:#38bdf8;animation:pulse 1s infinite; }
+        .sdot.error  { background:#f87171; }
 
-        .input-prime {
-            background: rgba(255, 255, 255, 0.8);
-            border: 1px solid var(--glass-border);
-            color: #0f172a; padding: 0.8rem 1rem;
-            border-radius: 0.8rem; width: 100%;
-            outline: none; transition: all 0.3s;
-            font-size: 0.9rem; font-weight: 600;
-        }
-        [data-theme="dark"] .input-prime { 
-            background: rgba(15, 23, 42, 0.8); 
-            color: white;
-            border-color: rgba(255,255,255,0.1);
-        }
-        .input-prime:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
-        [data-theme="dark"] select.input-prime { background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); }
+        /* RECEITA BAR */
+        .receita-bar { display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.1rem;margin-bottom:14px;border-radius:1rem;border:1px solid rgba(163,230,53,.22);background:rgba(163,230,53,.06); }
 
-        .btn-action {
-            background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
-            color: white; font-weight: 700; border-radius: 0.8rem;
-            padding: 0.8rem; transition: 0.3s;
-            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-        }
-        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(14, 165, 233, 0.5); }
+        /* POTE CARDS */
+        .pote-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px; }
+        @media(max-width:560px){.pote-grid{grid-template-columns:1fr;}}
+        .pote-card { padding:1rem;border-radius:1rem;border:1px solid; }
+        .pote-card.obr { background:var(--obr-bg);border-color:rgba(56,189,248,.25); }
+        .pote-card.res { background:var(--res-bg);border-color:rgba(52,211,153,.25); }
+        .pote-card.laz { background:var(--laz-bg);border-color:rgba(251,146,60,.25); }
+        .pote-icon { width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.85rem;color:white;margin-bottom:.6rem; }
+        .obr .pote-icon{background:var(--obr);} .res .pote-icon{background:var(--res);} .laz .pote-icon{background:var(--laz);}
+        .pote-label { font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted); }
+        .pote-val { font-family:'Space Grotesk',monospace;font-weight:800;font-size:1.2rem;margin:4px 0; }
+        .obr .pote-val{color:var(--obr);} .res .pote-val{color:var(--res);} .laz .pote-val{color:var(--laz);}
+        .pote-meta { font-size:.68rem;color:var(--text-muted);font-weight:600; }
+        .pote-bar-bg  { height:5px;background:rgba(128,128,128,.2);border-radius:3px;overflow:hidden;margin-top:10px; }
+        .pote-bar-fill { height:100%;border-radius:3px;transition:width .8s ease; }
+        .obr .pote-bar-fill{background:var(--obr);} .res .pote-bar-fill{background:var(--res);} .laz .pote-bar-fill{background:var(--laz);}
 
-        /* JARS GRID */
-        .jar-card {
-            position: relative; overflow: hidden;
-            display: flex; flex-direction: column; justify-content: space-between;
-            padding: 1rem; height: 100%;
-        }
-        .jar-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem; font-size: 1.1rem; color: white; }
-        .jar-bar-bg { height: 6px; background: rgba(128,128,128,0.2); border-radius: 3px; overflow: hidden; margin-top: 8px; }
-        .jar-bar-fill { height: 100%; border-radius: 3px; transition: width 1s ease; }
-        
-        /* HEADER */
-        .glass-header {
-            background: var(--card-glass);
-            backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--glass-border);
-            position: sticky; top: 0; z-index: 50;
-        }
+        /* TX LIST */
+        .tx-item { display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:12px;margin-bottom:8px;border:1px solid rgba(128,128,128,.1);background:rgba(255,255,255,.02);transition:.2s;cursor:default; }
+        [data-theme="light"] .tx-item{background:white;border-color:#e2e8f0;}
+        .tx-item:hover{border-color:var(--accent);background:rgba(255,255,255,.05);}
+        .tx-date-box { display:flex;flex-direction:column;align-items:center;justify-content:center;width:40px;height:40px;border-radius:9px;flex-shrink:0;background:rgba(128,128,128,.1);border:1px solid rgba(255,255,255,.05); }
+        .tx-day { font-family:'Space Grotesk',monospace;font-weight:800;font-size:1.05rem;line-height:1; }
+        .tx-month { font-size:.55rem;text-transform:uppercase;font-weight:800;color:var(--text-muted); }
+        .tx-info { flex:1;overflow:hidden; }
+        .tx-desc { font-weight:700;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+        .tx-sub  { font-size:.7rem;color:var(--text-muted);font-weight:500;display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:2px; }
+        .pote-badge { font-size:.6rem;font-weight:800;padding:2px 7px;border-radius:5px;text-transform:uppercase;letter-spacing:.5px; }
+        .badge-obr{background:var(--obr-bg);color:var(--obr);} .badge-res{background:var(--res-bg);color:var(--res);}
+        .badge-laz{background:var(--laz-bg);color:var(--laz);} .badge-in{background:var(--inc-bg);color:var(--inc);}
+        .tx-right { text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px; }
+        .tx-val { font-family:'Space Grotesk',monospace;font-weight:800;font-size:.92rem; }
+        .tx-val.out{color:#f87171;} .tx-val.in{color:var(--inc);}
+        .tx-actions { display:flex;gap:6px;margin-top:2px; }
+        .act { width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.7rem;transition:.2s;border:none; }
+        .act-edit{background:rgba(14,165,233,.15);color:var(--accent);}
+        .act-del{background:rgba(239,68,68,.15);color:#f87171;}
+        .act-edit:hover{background:var(--accent);color:white;} .act-del:hover{background:#ef4444;color:white;}
 
-        /* --- EXTRACT STYLES --- */
-        .tx-card {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(128,128,128,0.1);
-            border-radius: 16px;
-            padding: 12px 14px;
-            margin-bottom: 10px;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .tx-card.clickable { cursor: pointer; }
-        [data-theme="light"] .tx-card { background: white; border-color: #e2e8f0; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-        
-        .tx-card.clickable:hover { 
-            transform: translateY(-1px); 
-            border-color: var(--accent); 
-            background: rgba(255,255,255,0.05);
-        }
+        /* PARCELAMENTOS */
+        .parcela-card { padding:1rem;border-radius:12px;margin-bottom:10px;border:1px solid var(--glass-border);background:rgba(255,255,255,.02); }
+        [data-theme="light"] .parcela-card{background:white;border-color:#e2e8f0;}
+        .parcela-header { display:flex;justify-content:space-between;align-items:center;margin-bottom:10px; }
+        .parcela-nome { font-weight:800;font-size:.88rem; }
+        .parcela-info { font-size:.7rem;color:var(--text-muted);font-weight:600; }
+        .parcela-bar-bg { height:8px;background:rgba(128,128,128,.15);border-radius:4px;overflow:hidden; }
+        .parcela-bar-fill { height:100%;border-radius:4px;background:linear-gradient(90deg,#a78bfa,#818cf8);transition:width .8s ease; }
+        .parcela-pct { font-size:.65rem;color:var(--text-muted);font-weight:700;margin-top:5px;display:flex;justify-content:space-between; }
+        .edit-parcela { background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.7rem;padding:2px 6px;border-radius:4px;transition:.2s; }
+        .edit-parcela:hover{color:var(--accent);background:rgba(14,165,233,.1);}
 
-        .tx-card.is-repass { 
-            border-left: 4px solid #94a3b8; 
-            background: rgba(148, 163, 184, 0.05); 
-            opacity: 0.75; 
-        }
-        
-        .tx-card.is-credit-pending { 
-            border-left: 4px solid #f97316; 
-            background: rgba(249, 115, 22, 0.05);
-        }
-        [data-theme="light"] .tx-card.is-credit-pending { background: #fff7ed; }
+        /* INPUTS */
+        .inp { width:100%;padding:.72rem 1rem;border-radius:.75rem;outline:none;border:1px solid var(--glass-border);font-family:'Inter',sans-serif;font-size:.9rem;font-weight:600;transition:.3s;background:rgba(255,255,255,.07);color:var(--text-main); }
+        [data-theme="light"] .inp{background:white;color:#0f172a;border-color:#e2e8f0;}
+        .inp:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow);}
+        .inp-val{font-size:1.5rem;font-family:'Space Grotesk',monospace;font-weight:800;text-align:center;}
 
-        .tx-main-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-        
-        .tx-date-box { 
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            width: 44px; height: 44px; 
-            background: rgba(128,128,128,0.1); 
-            border-radius: 10px; flex-shrink: 0; 
-            font-family: var(--font-mono); line-height: 1;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        .tx-day { font-size: 1.2rem; font-weight: 800; color: var(--text-main); }
-        .tx-month { font-size: 0.6rem; text-transform: uppercase; font-weight: 800; color: var(--text-muted); margin-top: 2px; }
+        /* TIPO TOGGLE */
+        .tipo-toggle{display:flex;gap:6px;}
+        .tipo-btn{flex:1;padding:.6rem;border-radius:.6rem;border:2px solid transparent;font-weight:800;font-size:.8rem;cursor:pointer;transition:.2s;text-transform:uppercase;letter-spacing:.5px;background:rgba(255,255,255,.05);color:var(--text-muted);}
+        .tipo-btn.active-out{background:rgba(248,113,113,.15);color:#f87171;border-color:#f87171;}
+        .tipo-btn.active-in{background:var(--inc-bg);color:var(--inc);border-color:var(--inc);}
 
-        .tx-info { flex: 1; display: flex; flex-direction: column; justify-content: center; overflow: hidden; gap: 4px; }
-        .tx-title-row { display: flex; align-items: center; gap: 6px; }
-        .tx-place { font-weight: 800; font-size: 0.95rem; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .tx-sub-row { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; color: var(--text-muted); font-weight: 500; flex-wrap: wrap; }
-        
-        .cat-badge { 
-            font-size: 0.65rem; font-weight: 800; padding: 2px 8px; border-radius: 6px; 
-            text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;
-            display: flex; align-items: center; gap: 4px;
-        }
-        
-        .bg-essen { background: var(--c-essen-bg); color: var(--c-essen); }
-        .bg-free { background: var(--c-free-bg); color: var(--c-free); }
-        .bg-repass { background: var(--c-repass-bg); color: var(--c-repass); }
-        .bg-income { background: var(--c-income-bg); color: var(--c-income); }
-        
-        .tx-has-note { color: var(--accent); margin-left: 2px; }
+        /* MODAL */
+        .modal-overlay{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.78);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:15px;}
+        .modal-box{width:100%;max-width:480px;border-radius:20px;padding:24px;max-height:92vh;overflow-y:auto;background:#1e293b;border:1px solid #334155;color:#f8fafc;box-shadow:0 25px 50px rgba(0,0,0,.6);}
+        [data-theme="light"] .modal-box{background:#fff;color:#0f172a;border-color:#e2e8f0;}
+        .form-label{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--text-muted);margin-bottom:5px;display:block;}
+        .form-group{margin-bottom:13px;}
 
-        .tx-right { text-align: right; display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 4px; }
-        .tx-val-row { display: flex; align-items: center; gap: 8px; }
-        .tx-val { font-family: var(--font-mono); font-weight: 800; font-size: 1rem; white-space: nowrap; }
-        
-        .tx-val.pending-credit { color: #f97316; } 
+        /* BUTTONS */
+        .btn-primary{width:100%;padding:.85rem;border-radius:.85rem;border:none;cursor:pointer;font-family:'Outfit',sans-serif;font-weight:800;font-size:.95rem;background:linear-gradient(135deg,#0ea5e9,#3b82f6);color:white;transition:.3s;box-shadow:0 4px 15px rgba(14,165,233,.35);}
+        .btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(14,165,233,.5);}
+        .btn-danger{background:linear-gradient(135deg,#ef4444,#dc2626);box-shadow:0 4px 15px rgba(239,68,68,.3);}
+        .btn-danger:hover{box-shadow:0 6px 20px rgba(239,68,68,.5);}
 
-        .pay-icon { font-size: 1.1rem; }
-        
-        .tx-installments { 
-            font-size: 0.65rem; font-weight: 800; color: #a78bfa; 
-            background: rgba(139, 92, 246, 0.15); padding: 1px 6px; 
-            border-radius: 4px; border: 1px solid rgba(139, 92, 246, 0.3);
-            display: inline-block;
-        }
+        /* CLOUD SHIELD */
+        #cloud-shield{position:fixed;inset:0;z-index:9999;background:#020617;color:white;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+        .shield-spinner{width:40px;height:40px;border:3px solid rgba(14,165,233,.3);border-top-color:#0ea5e9;border-radius:50%;animation:spin .8s linear infinite;}
 
-        .tx-actions { 
-            display: flex; gap: 8px; margin-top: 2px;
-            justify-content: flex-end;
-        }
-        
-        .action-icon { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; font-size: 0.75rem; }
-        
-        .act-edit { background: rgba(56, 189, 248, 0.15); color: #0ea5e9; border: 1px solid rgba(14, 165, 233, 0.2); }
-        .act-del { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
-        
-        .act-pay { background: rgba(249, 115, 22, 0.15); color: #f97316; border: 1px solid rgba(249, 115, 22, 0.3); } 
-        .act-pay.paid { background: rgba(16, 185, 129, 0.15); color: #10b981; border-color: rgba(16, 185, 129, 0.3); }
+        /* FAB */
+        .benai-fab{position:fixed;bottom:24px;right:24px;z-index:90;width:52px;height:52px;border-radius:50%;background:#0ea5e9;color:white;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(14,165,233,.4);transition:transform .2s,box-shadow .2s;font-size:1.1rem;}
+        .benai-fab:hover{transform:scale(1.08);} .benai-fab:active{transform:scale(.96);}
+        .benai-fab-dot{position:absolute;top:3px;right:3px;width:12px;height:12px;border-radius:50%;background:#94a3b8;border:2px solid white;transition:background .3s;}
 
-        .act-edit:hover { background: #0ea5e9; color: white; }
-        .act-del:hover { background: #ef4444; color: white; }
-        .act-pay:hover { background: #f97316; color: white; }
-        .act-pay.paid:hover { background: #10b981; color: white; }
+        /* TOAST */
+        #toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:#1e293b;border:1px solid #334155;color:#f8fafc;padding:10px 20px;border-radius:50px;font-weight:700;font-size:.85rem;opacity:0;transition:all .3s;z-index:200;white-space:nowrap;display:flex;align-items:center;gap:8px;}
+        #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
-        .tx-drawer { 
-            max-height: 0; overflow: hidden; transition: max-height 0.3s ease-in-out, margin 0.3s; 
-            background: rgba(0,0,0,0.2); border-radius: 12px; margin-top: 0;
-        }
-        .tx-card.expanded .tx-drawer { max-height: 200px; margin-top: 10px; padding: 10px; border: 1px solid var(--glass-border); }
-        .tx-note-text { font-size: 0.85rem; color: var(--text-muted); font-style: italic; line-height: 1.4; border-left: 2px solid var(--accent); padding-left: 8px; margin-bottom: 8px; }
+        /* SECTION TITLE */
+        .section-title{font-family:'Outfit',sans-serif;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+        .section-title::after{content:'';flex:1;height:1px;background:var(--glass-border);}
 
-        .debt-progress-container { margin-top: 8px; }
-        .debt-bar-bg { height: 6px; background: rgba(128,128,128,0.2); border-radius: 3px; overflow: hidden; }
-        .debt-bar-fill { height: 100%; background: #a78bfa; border-radius: 3px; }
-        .debt-text { font-size: 0.65rem; color: var(--text-muted); margin-top: 4px; display: flex; justify-content: space-between; font-weight: 700; text-transform: uppercase; }
+        /* FILTER CHIPS */
+        .filter-row{display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap;}
+        .fchip{padding:5px 12px;border-radius:20px;font-size:.7rem;font-weight:700;border:1px solid var(--glass-border);cursor:pointer;transition:.2s;background:rgba(255,255,255,.04);color:var(--text-muted);}
+        .fchip.active{background:var(--accent);color:white;border-color:var(--accent);}
+        [data-theme="light"] .fchip{background:white;}
 
-        .fixed-filters { 
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; 
-            padding-bottom: 15px; margin-bottom: 10px; 
-            border-bottom: 1px solid var(--glass-border);
-        }
-        
-        .filter-group { position: relative; }
-        .filter-icon { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); z-index: 10; font-size: 0.8rem; pointer-events: none; }
-        
-        .fi-cal { color: #38bdf8; }
-        .fi-tag { color: #f59e0b; }
-        .fi-map { color: #ec4899; }
-        .fi-card { color: #10b981; }
-        
-        .filter-select { 
-            width: 100%; background: rgba(15, 23, 42, 0.4); border: 1px solid var(--glass-border); 
-            color: var(--text-main); font-size: 0.7rem; padding: 8px 8px 8px 26px; border-radius: 8px; 
-            outline: none; font-weight: 600; cursor: pointer; appearance: none;
-        }
-        [data-theme="light"] .filter-select { background: white; }
-        .filter-select:hover { border-color: var(--accent); }
-        
-        option { background-color: #1e293b; color: white; }
-        [data-theme="light"] option { background-color: white; color: #0f172a; }
-
-        .ic-pix { color: #2dd4bf; }
-        .ic-cred { color: #a78bfa; }
-        .ic-deb { color: #3b82f6; }
-        .ic-money { color: #10b981; }
-
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 100; display: none; align-items: center; justify-content: center; padding: 15px; }
-        .modal-box { background: #ffffff; border: 1px solid var(--glass-border); width: 100%; max-width: 500px; border-radius: 20px; padding: 25px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto; color: #0f172a; }
-        [data-theme="dark"] .modal-box { background: #1e293b; color: #f8fafc; border-color: #334155; }
-
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; }
-        .status-dot.online { background: #34d399; box-shadow: 0 0 10px #34d399; }
-        .status-dot.offline { background: #94a3b8; }
-        .status-dot.sync { background: #38bdf8; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-
-        /* Report Table */
-        .report-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 10px; }
-        .report-table th { text-align: left; padding: 8px; color: var(--text-muted); font-weight: 700; border-bottom: 1px solid var(--glass-border); font-size: 0.7rem; text-transform: uppercase; }
-        .report-table td { padding: 10px 8px; border-bottom: 1px solid rgba(128,128,128,0.1); font-weight: 600; }
-        .report-surplus { font-family: var(--font-mono); font-weight: 800; }
-        .report-surplus.positive { color: #10b981; }
-        .report-surplus.negative { color: #ef4444; }
-
-    
-        /* ★ BENAI CLOUD FAB ★ */
-        .benai-fab {
-            position: fixed; bottom: 24px; right: 24px; z-index: 90;
-            width: 52px; height: 52px; border-radius: 50%;
-            background: #0ea5e9; color: white;
-            border: none; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 20px rgba(14,165,233,0.4);
-            transition: transform 0.2s, box-shadow 0.2s;
-            font-size: 1.1rem;
-        }
-        .benai-fab:hover { transform: scale(1.08); box-shadow: 0 6px 28px rgba(14,165,233,0.4); }
-        .benai-fab:active { transform: scale(0.96); }
-        .benai-fab-dot {
-            position: absolute; top: 3px; right: 3px;
-            width: 12px; height: 12px; border-radius: 50%;
-            background: #94a3b8; border: 2px solid white;
-            transition: background 0.3s;
-        }
-    
-</style>
+        /* EMPTY STATE */
+        .empty-state{text-align:center;padding:40px 20px;color:var(--text-muted);}
+        .empty-state i{font-size:2.5rem;margin-bottom:12px;opacity:.35;}
+    </style>
 </head>
 <body>
-    <!-- BENAI AUTH GUARD -->
+
     <script src="auth.js"></script>
     <script src="benai-core.js"></script>
 
-
-    <div id="cloud-shield" style="position:fixed; inset:0; z-index:99999; background:#020617; display:flex; flex-direction:column; align-items:center; justify-content:center; color:white;">
-        <div style="width:40px; height:40px; border:4px solid rgba(255,255,255,0.1); border-top-color:#0ea5e9; border-radius:50%; animation:spin 1s linear infinite;"></div>
-        <h2 class="mt-4 font-bold tracking-widest uppercase">Sincronizando</h2>
-        <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+    <div id="cloud-shield">
+        <div class="shield-spinner"></div>
+        <p style="font-family:'Outfit',sans-serif;font-weight:700;opacity:.7;">Sincronizando...</p>
     </div>
 
-    <div id="app-content">
-        
-        <header class="glass-header">
-            <div class="max-w-4xl mx-auto px-4 h-[70px] flex justify-between items-center">
-                <div class="flex items-center gap-4">
-                    <button onclick="window.location.href='index.html'" class="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center border border-white/10 transition">
-                        <i data-lucide="arrow-left" class="w-5 h-5"></i>
-                    </button>
-                    <div>
-                        <h1 class="text-lg font-bold leading-none font-heading flex items-center gap-2">
-                            BENAI <span class="text-sky-500">FIN</span>
-                        </h1>
-                        <p class="text-[10px] opacity-70 font-bold uppercase tracking-widest mt-0.5">Gestão de Potes</p>
-                    </div>
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="openReserveModal()" class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-500 hover:bg-emerald-500 hover:text-white flex items-center justify-center border border-emerald-500/30 transition shadow-lg shadow-emerald-500/10" title="Reserva de Emergência">
-                        <i data-lucide="life-buoy" class="w-5 h-5"></i>
-                    </button>
-                    <button onclick="checkClosing()" class="w-10 h-10 rounded-xl bg-sky-500/20 text-sky-500 hover:bg-sky-500 hover:text-white flex items-center justify-center border border-sky-500/30 transition shadow-lg shadow-sky-500/10" title="Relatório de Fechamento">
-                        <i data-lucide="clipboard-check" class="w-5 h-5"></i>
-                    </button>
-                    <button onclick="openFastActions()" class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-500 hover:bg-amber-500 hover:text-white flex items-center justify-center border border-amber-500/30 transition shadow-lg shadow-amber-500/10">
-                        <i data-lucide="zap" class="w-5 h-5"></i>
-                    </button>
-                    <button onclick="toggleTheme()" class="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center border border-white/10 transition">
-                        <i id="theme-icon" data-lucide="moon" class="w-5 h-5"></i>
-                    </button>
-                    <button onclick="openConfig()" class="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center border border-white/10 transition">
-                        <i data-lucide="settings-2" class="w-5 h-5"></i>
-                    </button>
-
-                </div>
-            </div>
-        </header>
-
-        <main class="max-w-4xl mx-auto px-4 py-6 space-y-6 pb-24">
-
-            <div class="flex justify-center -mt-2 mb-4">
-                <button onclick="openTxModal()" class="btn-action w-full max-w-sm py-4 text-lg rounded-2xl shadow-lg shadow-sky-500/20 transform hover:scale-105 transition">
-                    <i data-lucide="plus-circle" class="w-6 h-6"></i> NOVO MOVIMENTO
-                </button>
-            </div>
-
-            <div class="flex justify-between items-center bg-white/5 p-2 rounded-2xl border border-white/10">
-                <button onclick="changeMonth(-1)" class="w-10 h-10 flex items-center justify-center opacity-60 hover:opacity-100"><i data-lucide="chevron-left"></i></button>
-                <div class="text-center relative">
-                    <h2 id="monthDisplay" class="text-lg font-bold uppercase tracking-widest cursor-pointer">--/--</h2>
-                    <input type="month" id="monthPicker" class="absolute inset-0 opacity-0 cursor-pointer" onchange="setSpecificMonth(this.value)">
-                </div>
-                <button onclick="changeMonth(1)" class="w-10 h-10 flex items-center justify-center opacity-60 hover:opacity-100"><i data-lucide="chevron-right"></i></button>
-            </div>
-
-            <div class="grid grid-cols-3 gap-3">
-                <div class="glass-card p-4 relative overflow-hidden flex flex-col justify-center border-l-4 border-emerald-500">
-                    <p class="text-[9px] font-bold opacity-60 mb-1 uppercase">Saldo Real</p>
-                    <h3 id="dsp-balance-real" class="text-sm md:text-lg font-bold font-mono tracking-tight text-emerald-500">R$ 0,00</h3>
-                </div>
-                <div class="glass-card p-4 relative overflow-hidden flex flex-col justify-center border-l-4 border-red-500">
-                    <p class="text-[9px] font-bold opacity-60 mb-1 uppercase">Gastos Totais</p>
-                    <h3 id="dsp-total-expenses" class="text-sm md:text-lg font-bold font-mono tracking-tight text-red-500">R$ 0,00</h3>
-                </div>
-                <div class="glass-card p-4 relative overflow-hidden flex flex-col justify-center border-l-4 border-sky-500">
-                    <p class="text-[9px] font-bold opacity-60 mb-1 uppercase">Saldo Pessoal</p>
-                    <h3 id="dsp-balance-personal" class="text-sm md:text-lg font-bold font-mono tracking-tight text-sky-500">R$ 0,00</h3>
-                </div>
-            </div>
-
+    <!-- TOP BAR -->
+    <header class="top-bar">
+        <div style="display:flex;align-items:center;gap:10px;">
+            <a href="index.html" class="hbtn" title="Voltar">
+                <i data-lucide="arrow-left" style="width:16px;height:16px;"></i>
+            </a>
             <div>
-                <div class="flex justify-between items-end mb-4 px-1">
-                    <h3 class="text-sm font-bold uppercase tracking-wider flex items-center gap-2"><i data-lucide="layers" class="w-4 h-4 text-sky-500"></i> Meus Potes</h3>
-                    <span class="text-[10px] opacity-60 font-bold">Base: Renda Líquida</span>
-                </div>
-                <div id="jarsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- JS RENDERED -->
-                </div>
-            </div>
-
-            <div class="glass-card overflow-hidden">
-                <div class="p-4">
-                    <div class="fixed-filters">
-                        <div class="filter-group">
-                            <i class="fa-regular fa-calendar filter-icon fi-cal"></i>
-                            <select id="filter-day" class="filter-select" onchange="setFilter('day', this.value)"></select>
-                        </div>
-                        <div class="filter-group">
-                            <i class="fa-solid fa-tag filter-icon fi-tag"></i>
-                            <select id="filter-cat" class="filter-select" onchange="setFilter('cat', this.value)"></select>
-                        </div>
-                        <div class="filter-group">
-                            <i class="fa-solid fa-map-pin filter-icon fi-map"></i>
-                            <select id="filter-place" class="filter-select" onchange="setFilter('place', this.value)"></select>
-                        </div>
-                        <div class="filter-group">
-                            <i class="fa-regular fa-credit-card filter-icon fi-card"></i>
-                            <select id="filter-method" class="filter-select" onchange="setFilter('method', this.value)"></select>
-                        </div>
-                        <div class="col-span-4 mt-1 flex justify-end">
-                            <button onclick="resetFilters()" class="text-[10px] font-bold text-slate-400 hover:text-white uppercase tracking-widest transition">Limpar</button>
-                        </div>
-                    </div>
-
-                    <div id="txList" class="mt-4">
-                        <!-- JS Rendered Cards -->
-                    </div>
-                </div>
-            </div>
-
-        </main>
-    </div>
-
-    <!-- MODAL RESERVE CALCULATOR -->
-    <div id="modal-reserve" class="modal-overlay">
-        <div class="modal-box">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold flex items-center gap-2"><i data-lucide="life-buoy" class="text-emerald-500"></i> Reserva de Emergência</h3>
-                <button onclick="closeModal('modal-reserve')"><i data-lucide="x"></i></button>
-            </div>
-            
-            <div class="mb-4 bg-sky-50 dark:bg-white/5 rounded-xl p-4 border border-sky-100 dark:border-white/10">
-                <div class="flex justify-between items-center mb-2">
-                    <span class="text-xs font-bold uppercase opacity-60">Gasto Mensal (Base)</span>
-                    <input type="text" id="res-base-val" class="input-prime w-28 text-right text-sm font-mono font-bold py-1" oninput="maskMoney(this); calcReserve()">
-                </div>
-                
-                <div class="flex items-center gap-2 mb-4">
-                    <span class="text-xs font-bold uppercase opacity-60">Meta Segura:</span>
-                    <select id="res-months" class="bg-white dark:bg-black/20 border border-slate-200 dark:border-white/20 rounded px-2 py-1 text-xs font-bold" onchange="calcReserve()">
-                        <option value="3">3 Meses (Básico)</option>
-                        <option value="6" selected>6 Meses (Recomendado)</option>
-                        <option value="12">12 Meses (Blindado)</option>
-                    </select>
-                </div>
-
-                <div class="h-px bg-slate-200 dark:bg-white/10 my-3"></div>
-
-                <div class="flex justify-between items-end mb-1">
-                    <span class="text-xs font-bold text-emerald-500 uppercase">Você Tem</span>
-                    <span class="text-xs font-bold text-slate-400 uppercase">Meta Total</span>
-                </div>
-                <div class="flex justify-between items-end mb-2">
-                    <span id="res-current" class="text-xl font-mono font-bold text-emerald-500">R$ 0,00</span>
-                    <span id="res-target" class="text-sm font-mono font-bold opacity-60">R$ 0,00</span>
-                </div>
-                <div class="w-full bg-slate-200 dark:bg-white/10 h-3 rounded-full overflow-hidden">
-                    <div id="res-progress" class="h-full bg-emerald-500 transition-all duration-1000" style="width: 0%"></div>
-                </div>
-                <div class="text-center mt-1 text-[10px] font-bold opacity-60" id="res-pct">0% Concluído</div>
-            </div>
-
-            <div class="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl mb-4">
-                <h4 class="text-xs font-bold text-emerald-500 uppercase mb-2 flex items-center gap-2"><i data-lucide="trending-up"></i> Aporte Rápido</h4>
-                <div class="flex gap-2">
-                    <input type="text" id="res-add-val" class="input-prime text-sm" placeholder="Valor Sobra (R$)" oninput="maskMoney(this)">
-                    <button onclick="saveSurplus()" class="bg-emerald-500 text-white px-4 rounded-lg font-bold text-xs hover:bg-emerald-600 transition">APORTAR</button>
-                </div>
-                <p class="text-[10px] opacity-60 mt-2 italic">Isso criará uma saída "Aporte" no dia de hoje.</p>
+                <h1 style="font-size:1rem;font-weight:800;line-height:1;">BENAI <span style="color:var(--accent);">FIN</span></h1>
+                <p style="font-size:.58rem;color:var(--text-muted);font-weight:700;letter-spacing:.5px;">CONTROLE PESSOAL</p>
             </div>
         </div>
-    </div>
 
-    <!-- MODAL FAST ACTIONS -->
-    <div id="modal-fast-actions" class="modal-overlay">
-        <div class="modal-box">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold flex items-center gap-2"><i data-lucide="zap" class="text-amber-500"></i> Ações Rápidas</h3>
-                <button onclick="closeModal('modal-fast-actions')"><i data-lucide="x"></i></button>
+        <div class="month-nav">
+            <button onclick="changeMonth(-1)"><i data-lucide="chevron-left" style="width:14px;height:14px;"></i></button>
+            <span id="monthLabel">—</span>
+            <button onclick="changeMonth(1)"><i data-lucide="chevron-right" style="width:14px;height:14px;"></i></button>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:8px;">
+            <div class="sdot" id="statusDot"></div>
+            <button onclick="toggleTheme()" class="hbtn">
+                <i id="theme-icon" data-lucide="moon" style="width:16px;height:16px;"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN -->
+    <main style="max-width:680px;margin:0 auto;padding:18px 15px 120px;">
+
+        <!-- RECEITA -->
+        <div class="receita-bar glass">
+            <div>
+                <p style="font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);">Receita do Mês</p>
+                <p id="receitaTotal" class="mono" style="font-size:1.45rem;font-weight:800;color:var(--inc);">R$ 0,00</p>
             </div>
-            
-            <h4 id="fa-month-label" class="text-center font-bold text-xs uppercase mb-4 text-slate-500 border border-dashed border-slate-300 p-2 rounded-lg">Mês de Referência: --/--</h4>
-
-            <div class="flex gap-2 mb-6 p-1 bg-slate-100 dark:bg-white/5 rounded-xl border border-slate-200 dark:border-white/10">
-                <button onclick="switchFastAction('nubank')" id="tab-nubank" class="flex-1 py-2 rounded-lg text-xs font-bold transition bg-white dark:bg-white/10 shadow-sm">PAGAR NUBANK</button>
-                <button onclick="switchFastAction('c6')" id="tab-c6" class="flex-1 py-2 rounded-lg text-xs font-bold transition opacity-50 hover:opacity-100">C6 COMPARTILHADO</button>
+            <div style="text-align:right;">
+                <p style="font-size:.62rem;font-weight:800;color:var(--text-muted);">Saldo Disponível</p>
+                <p id="saldoLivre" class="mono" style="font-size:1.1rem;font-weight:800;color:var(--accent);">R$ 0,00</p>
             </div>
+        </div>
 
-            <div id="fa-nubank-content">
-                <div class="bg-purple-500/10 border border-purple-500/20 rounded-xl p-4 mb-4">
-                    <h4 class="text-sm font-bold text-purple-500 mb-2">Resumo da Fatura Atual</h4>
-                    <div id="nubank-preview-list" class="space-y-1 text-xs opacity-80 mb-3 max-h-32 overflow-y-auto">
-                        <!-- Filled by JS -->
-                    </div>
-                    <div class="flex justify-between items-end border-t border-purple-500/20 pt-2">
-                        <span class="text-xs font-bold uppercase opacity-60">Total Aberto</span>
-                        <span class="text-xl font-mono font-bold text-purple-500" id="nubank-total-display">R$ 0,00</span>
-                    </div>
-                </div>
-                <button onclick="confirmNubankPay()" class="btn-action w-full bg-purple-600 hover:bg-purple-700 shadow-purple-500/30">
-                    <i class="fa-solid fa-check-double"></i> PAGAR FATURA E DAR BAIXA
+        <!-- POTES -->
+        <div class="pote-grid">
+            <div class="pote-card obr glass">
+                <div class="pote-icon"><i class="fa-solid fa-house-chimney"></i></div>
+                <p class="pote-label">Obrigações</p>
+                <p class="pote-val" id="obrVal">R$ 0,00</p>
+                <p class="pote-meta" id="obrMeta">— % da receita</p>
+                <div class="pote-bar-bg"><div class="pote-bar-fill" id="obrBar" style="width:0%"></div></div>
+            </div>
+            <div class="pote-card res glass">
+                <div class="pote-icon"><i class="fa-solid fa-piggy-bank"></i></div>
+                <p class="pote-label">Reserva</p>
+                <p class="pote-val" id="resVal">R$ 0,00</p>
+                <p class="pote-meta" id="resMeta">meta: R$ 0,00</p>
+                <div class="pote-bar-bg"><div class="pote-bar-fill" id="resBar" style="width:0%"></div></div>
+            </div>
+            <div class="pote-card laz glass">
+                <div class="pote-icon"><i class="fa-solid fa-star"></i></div>
+                <p class="pote-label">Lazer</p>
+                <p class="pote-val" id="lazVal">R$ 0,00</p>
+                <p class="pote-meta" id="lazMeta">teto: R$ 0,00</p>
+                <div class="pote-bar-bg"><div class="pote-bar-fill" id="lazBar" style="width:0%"></div></div>
+            </div>
+        </div>
+
+        <!-- NOVO LANÇAMENTO -->
+        <button onclick="openTxModal()" style="width:100%;padding:.95rem;border-radius:1rem;border:none;cursor:pointer;font-family:'Outfit',sans-serif;font-weight:800;font-size:.95rem;background:linear-gradient(135deg,#0ea5e9,#3b82f6);color:white;box-shadow:0 4px 15px rgba(14,165,233,.35);transition:.3s;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:20px;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+            <i data-lucide="plus-circle" style="width:18px;height:18px;"></i> NOVO LANÇAMENTO
+        </button>
+
+        <!-- LANÇAMENTOS -->
+        <div>
+            <div class="section-title">Lançamentos do Mês</div>
+            <div class="filter-row">
+                <button class="fchip active" onclick="setFilter('all')"        id="fAll">Todos</button>
+                <button class="fchip"        onclick="setFilter('in')"         id="fIn">Entradas</button>
+                <button class="fchip"        onclick="setFilter('out')"        id="fOut">Saídas</button>
+                <button class="fchip"        onclick="setFilter('obrigacao')"  id="fObr">Obrigações</button>
+                <button class="fchip"        onclick="setFilter('reserva')"    id="fRes">Reserva</button>
+                <button class="fchip"        onclick="setFilter('lazer')"      id="fLaz">Lazer</button>
+            </div>
+            <div id="txList"></div>
+        </div>
+
+        <!-- PARCELAMENTOS -->
+        <div style="margin-top:30px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                <span class="section-title" style="flex:1;margin-bottom:0;">Parcelamentos</span>
+                <button onclick="openParcelaModal(null)" style="background:none;border:none;color:var(--accent);font-size:.72rem;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:4px;margin-left:8px;">
+                    <i data-lucide="plus" style="width:12px;height:12px;"></i> ADICIONAR
                 </button>
             </div>
-
-            <div id="fa-c6-content" class="hidden">
-                <div class="space-y-4">
-                    <div>
-                        <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Valor Total da Fatura (R$)</label>
-                        <input type="text" id="c6-total" class="input-prime font-mono text-lg font-bold" placeholder="0,00" oninput="maskMoney(this); calcC6Split()">
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Sua Parte (R$)</label>
-                        <input type="text" id="c6-mine" class="input-prime font-mono text-lg font-bold text-sky-500" placeholder="0,00" oninput="maskMoney(this); calcC6Split()">
-                    </div>
-                    <div class="p-3 bg-slate-100 dark:bg-white/5 rounded-xl border border-slate-200 dark:border-white/10 text-center">
-                        <span class="text-[10px] font-bold opacity-60 uppercase block">Parte Dela (Repasse)</span>
-                        <span id="c6-her-part" class="text-lg font-mono font-bold text-slate-500">R$ 0,00</span>
-                    </div>
-                    
-                    <label class="flex items-center gap-3 p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/10 cursor-pointer hover:bg-emerald-500/20 transition">
-                        <input type="checkbox" id="c6-paid-by-her" class="accent-emerald-500 w-4 h-4">
-                        <div class="leading-tight">
-                            <div class="text-xs font-bold text-emerald-600 dark:text-emerald-400">Ela já te transferiu?</div>
-                            <div class="text-[9px] opacity-70">Se sim, a entrada será marcada como PAGA.</div>
-                        </div>
-                    </label>
-
-                    <div class="text-[10px] opacity-60 italic text-center px-4">
-                        Serão criados 3 lançamentos para equilibrar o saldo (Sua Saída + Saída Total + Entrada Dela).
-                    </div>
-                    <button onclick="confirmC6Pay()" class="btn-action w-full">
-                        <i class="fa-solid fa-share-nodes"></i> LANÇAR DIVISÃO
-                    </button>
-                </div>
-            </div>
-
+            <div id="parcelaList"></div>
         </div>
-    </div>
 
-    <!-- MODAL TRANSACTION -->
+    </main>
+
+    <!-- MODAL: TRANSAÇÃO -->
     <div id="modal-tx" class="modal-overlay">
         <div class="modal-box">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold" id="txTitle">Novo Lançamento</h3>
-                <button onclick="closeModal('modal-tx')"><i data-lucide="x"></i></button>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+                <h2 id="txModalTitle" style="font-size:1.1rem;font-weight:800;">Novo Lançamento</h2>
+                <button onclick="closeModal('modal-tx')" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.1rem;">✕</button>
             </div>
-            
-            <form id="txForm" onsubmit="saveTx(event)" class="space-y-4">
-                <input type="hidden" id="txId">
-                
-                <div class="grid grid-cols-2 gap-3 p-1 bg-slate-100 dark:bg-white/5 rounded-xl border border-slate-200 dark:border-white/10">
-                    <button type="button" onclick="setTxType('out')" id="btnOut" class="py-2 rounded-lg text-xs font-bold transition flex-1">SAÍDA (Gasto)</button>
-                    <button type="button" onclick="setTxType('in')" id="btnIn" class="py-2 rounded-lg text-xs font-bold transition flex-1">ENTRADA (Renda)</button>
-                </div>
+            <input type="hidden" id="txId">
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Valor (R$)</label>
-                        <input type="text" id="txVal" class="input-prime font-mono text-lg font-bold" placeholder="0,00" oninput="maskMoney(this); updateInstallmentPreview();" required>
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Data</label>
-                        <input type="date" id="txDate" class="input-prime" required>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Local / Estabelecimento</label>
-                    <input type="text" id="txPlace" class="input-prime" placeholder="Ex: Mercado Angeloni, Posto Shell..." required>
-                </div>
-
-                <div id="catSection">
-                    <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Categoria (Pote)</label>
-                    <div class="flex gap-2">
-                        <select id="txCatUnified" class="input-prime text-sm flex-1">
-                            <!-- Populated with OptGroups -->
-                        </select>
-                        <button type="button" onclick="openCatManager()" class="w-12 rounded-lg bg-slate-200 dark:bg-white/10 border border-slate-300 dark:border-white/20 text-slate-700 dark:text-white flex items-center justify-center hover:bg-slate-300 dark:hover:bg-white/20 transition"><i data-lucide="settings-2" class="w-5 h-5"></i></button>
-                    </div>
-                </div>
-
-                <div id="transportSection">
-                    <button type="button" onclick="document.getElementById('transportFields').classList.toggle('hidden')" class="text-[10px] font-bold text-sky-500 uppercase flex items-center gap-1 mb-2 hover:underline">
-                        <i class="fa-solid fa-car"></i> Opções de Transporte (Uber/99)
-                    </button>
-                    <div id="transportFields" class="hidden grid grid-cols-2 gap-4 mb-2 p-3 bg-sky-500/10 rounded-xl">
-                        <div>
-                            <label class="text-[9px] font-bold opacity-60 uppercase block mb-1">Origem</label>
-                            <input type="text" id="txOrigin" class="input-prime text-xs" placeholder="Ex: Casa">
-                        </div>
-                        <div>
-                            <label class="text-[9px] font-bold opacity-60 uppercase block mb-1">Destino</label>
-                            <input type="text" id="txDest" class="input-prime text-xs" placeholder="Ex: Trabalho">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Pagamento</label>
-                        <select id="txMethod" class="input-prime text-sm" onchange="toggleInstallments()">
-                            <option value="Débito" selected>💳 Débito</option>
-                            <option value="Crédito">💳 Crédito</option>
-                            <option value="Pix">💠 Pix</option>
-                            <option value="Dinheiro">💵 Dinheiro</option>
-                        </select>
-                    </div>
-                    <div class="flex items-end">
-                        <label class="flex items-center gap-2 cursor-pointer p-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 w-full hover:bg-slate-100 dark:hover:bg-white/10 transition h-[42px]">
-                            <input type="checkbox" id="txThirdParty" class="accent-sky-500 w-4 h-4">
-                            <div class="leading-tight">
-                                <div class="text-[10px] font-bold">Mov. Terceiros?</div>
-                            </div>
-                        </label>
-                    </div>
-                </div>
-
-                <div id="installmentsSection" class="hidden">
-                    <div class="flex items-center justify-between mb-1">
-                        <label class="text-[10px] font-bold opacity-60 uppercase text-purple-400" id="installLabel">Repetição / Parcelamento</label>
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" id="txIsSubscription" class="accent-emerald-500 w-3 h-3" onchange="updateInstallmentPreview()">
-                            <span class="text-[10px] font-bold text-emerald-500 uppercase">É Assinatura/Fixo?</span>
-                        </label>
-                    </div>
-                    <div class="flex items-center gap-3 p-3 bg-purple-500/10 border border-purple-500/20 rounded-xl">
-                        <input type="number" id="txInstallments" class="input-prime w-20 text-center font-bold" value="1" min="1" max="60" oninput="updateInstallmentPreview()">
-                        <div class="text-xs opacity-70 font-bold" id="txInstallmentsText">Vezes / Meses</div>
-                    </div>
-                    <div id="txCalcPreview" class="text-[10px] font-bold text-center mt-2 text-purple-400 bg-purple-500/5 p-2 rounded-lg border border-purple-500/10"></div>
-                </div>
-
-                <div>
-                    <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Nota / Detalhes (Opcional)</label>
-                    <textarea id="txNotes" class="input-prime text-sm" rows="3" placeholder="Ex: Jantar com amigos..."></textarea>
-                </div>
-
-                <div class="pt-2 flex gap-3">
-                    <button type="button" id="btnDelete" onclick="deleteTx()" class="hidden px-4 py-3 bg-red-500/10 text-red-500 rounded-xl font-bold text-xs border border-red-500/30 hover:bg-red-500/20"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
-                    <button type="submit" class="btn-action w-full text-sm">CONFIRMAR LANÇAMENTO</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL CATEGORY MANAGER -->
-    <div id="modal-cat-manager" class="modal-overlay" style="z-index: 102;">
-        <div class="modal-box">
-            <div class="flex justify-between items-center mb-4 border-b border-slate-200 dark:border-white/10 pb-2">
-                <h3 class="text-lg font-bold">Gerenciar Categorias</h3>
-                <button onclick="closeModal('modal-cat-manager')"><i data-lucide="x"></i></button>
+            <div class="form-group">
+                <label class="form-label">Valor</label>
+                <input type="text" id="txVal" class="inp inp-val" placeholder="R$ 0,00" oninput="maskMoney(this)" autocomplete="off">
             </div>
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Nova / Editar Categoria</label>
-                    <input id="newCatName" class="input-prime text-sm mb-2" placeholder="Nome (Ex: Cursos)">
-                    <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Pertence ao Pote</label>
-                    <select id="newCatJar" class="input-prime text-sm mb-2">
-                        <!-- Jars -->
-                    </select>
-                    <button type="button" onclick="addCategory()" class="w-full py-2 bg-emerald-500 text-white rounded-lg text-xs font-bold hover:bg-emerald-600 transition">SALVAR CATEGORIA</button>
+            <div class="form-group">
+                <label class="form-label">Data</label>
+                <input type="date" id="txDate" class="inp">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Tipo</label>
+                <div class="tipo-toggle">
+                    <button class="tipo-btn active-out" id="btnOut" onclick="setTipo('out')">⬇ Saída</button>
+                    <button class="tipo-btn"            id="btnIn"  onclick="setTipo('in')">⬆ Entrada</button>
                 </div>
-                
-                <div class="h-px bg-slate-200 dark:bg-white/10 my-2"></div>
-                
-                <div>
-                    <label class="text-[10px] font-bold opacity-60 uppercase block mb-1">Gerenciar Existente</label>
-                    <div class="flex gap-2">
-                        <select id="delCatSelect" class="input-prime text-sm flex-1"></select>
-                        <button type="button" onclick="editCategory()" class="px-3 bg-sky-500/10 text-sky-500 border border-sky-500/20 rounded-lg text-xs font-bold hover:bg-sky-500/20"><i class="fa-solid fa-pencil"></i></button>
-                        <button type="button" onclick="deleteCategory()" class="px-3 bg-red-500/10 text-red-500 border border-red-500/20 rounded-lg text-xs font-bold hover:bg-red-500/20"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                </div>
+            </div>
+            <div class="form-group" id="poteGroup">
+                <label class="form-label">Pote</label>
+                <select id="txPote" class="inp">
+                    <option value="obrigacao">🏠 Obrigação</option>
+                    <option value="reserva">🐷 Reserva</option>
+                    <option value="lazer">⭐ Lazer</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Descrição</label>
+                <input type="text" id="txDesc" class="inp" placeholder="Ex: Aluguel, iFood, Salário...">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Local / Estabelecimento <span style="opacity:.5;font-weight:500;text-transform:none;">(opcional)</span></label>
+                <input type="text" id="txLocal" class="inp" placeholder="Ex: Mercado Condor, Nubank...">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Forma de Pagamento</label>
+                <select id="txPagamento" class="inp">
+                    <option value="pix">⚡ Pix</option>
+                    <option value="debito">💳 Débito</option>
+                    <option value="credito">🔵 Crédito</option>
+                    <option value="dinheiro">💵 Dinheiro</option>
+                </select>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:18px;">
+                <button id="btnDeleteTx" onclick="deleteTx()" class="btn-primary btn-danger" style="display:none;flex:0 0 48px;padding:.85rem 0;align-items:center;justify-content:center;">
+                    <i data-lucide="trash-2" style="width:15px;height:15px;"></i>
+                </button>
+                <button onclick="saveTx()" class="btn-primary" style="flex:1;">SALVAR</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL CONFIG -->
-    <div id="modal-config" class="modal-overlay">
-        <div class="modal-box">
-            <div class="flex justify-between items-center mb-6">
-                <div>
-                    <h3 class="text-xl font-bold">Configuração de Potes</h3>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase mt-1">Definindo para: <span id="cfgMonthLabel" class="text-sky-500">--/--</span></p>
-                </div>
-                <button onclick="closeModal('modal-config')"><i data-lucide="x"></i></button>
+    <!-- MODAL: PARCELA -->
+    <div id="modal-parcela" class="modal-overlay">
+        <div class="modal-box" style="max-width:380px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+                <h2 style="font-size:1.1rem;font-weight:800;">Parcelamento</h2>
+                <button onclick="closeModal('modal-parcela')" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.1rem;">✕</button>
             </div>
-            
-            <div class="space-y-6">
-                <div class="p-4 rounded-xl bg-sky-500/10 border border-sky-500/20">
-                    <label class="text-[10px] font-bold text-sky-500 uppercase block mb-1">Renda Mensal Total</label>
-                    <input type="text" id="cfgIncome" class="input-prime font-mono text-xl" oninput="maskMoney(this)">
-                    
-                    <label class="text-[10px] font-bold text-red-400 uppercase block mt-3 mb-1">Gastos Fixos (Aluguel, Luz, Net...)</label>
-                    <input type="text" id="cfgFixed" class="input-prime font-mono text-lg" oninput="maskMoney(this)">
-                    
-                    <div class="mt-2 text-[10px] text-right font-bold opacity-60">Base para Potes (Renda - Fixos): <span id="cfgBaseCalc">R$ 0,00</span></div>
-                </div>
-
-                <div>
-                    <p class="text-[10px] font-bold opacity-60 uppercase mb-2">Predefinições</p>
-                    <div class="grid grid-cols-3 gap-2">
-                        <button onclick="applyPreset('standard')" class="py-2 px-1 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-[10px] font-bold hover:border-sky-500 transition">EQUILIBRADO</button>
-                        <button onclick="applyPreset('debt')" class="py-2 px-1 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-[10px] font-bold hover:border-red-500 transition">DÍVIDAS</button>
-                        <button onclick="applyPreset('invest')" class="py-2 px-1 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg text-[10px] font-bold hover:border-emerald-500 transition">INVESTIDOR</button>
-                    </div>
-                </div>
-                
-                <div id="jarConfigList" class="space-y-3 max-h-[300px] overflow-y-auto pr-2">
-                    <!-- JS Rendered -->
-                </div>
-
-                <button onclick="saveConfig()" class="btn-action w-full">SALVAR MÊS ATUAL</button>
+            <input type="hidden" id="parcelaId">
+            <div class="form-group">
+                <label class="form-label">Nome</label>
+                <input type="text" id="parcelaNome" class="inp" placeholder="Ex: Celular POCO M7">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:13px;">
+                <div><label class="form-label">Parcela Atual</label><input type="number" id="parcelaAtual" class="inp" min="1" placeholder="3"></div>
+                <div><label class="form-label">Total</label><input type="number" id="parcelaTotal" class="inp" min="1" placeholder="12"></div>
+            </div>
+            <div style="display:flex;gap:10px;">
+                <button id="btnDeleteParcela" onclick="deleteParcela()" class="btn-primary btn-danger" style="display:none;flex:0 0 48px;padding:.85rem 0;align-items:center;justify-content:center;">
+                    <i data-lucide="trash-2" style="width:15px;height:15px;"></i>
+                </button>
+                <button onclick="saveParcela()" class="btn-primary" style="flex:1;">SALVAR</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL CLOUD -->
+    <!-- MODAL: NUVEM -->
     <div id="modal-cloud" class="modal-overlay">
-        <div class="modal-box text-center">
-            <div class="w-16 h-16 bg-sky-500/20 rounded-full flex items-center justify-center mx-auto mb-4 text-sky-500"><i data-lucide="cloud" class="w-8 h-8"></i></div>
-            <h3 class="text-xl font-bold mb-2">Nuvem & Backup</h3>
-            
-            <input type="password" id="manualToken" placeholder="Token GitHub (ghp_...)" class="input-prime text-center text-xs mb-4">
-            
-            <div class="grid grid-cols-2 gap-3 mb-6">
-                <button onclick="saveManualToken()" class="py-2 bg-sky-500 text-white rounded-lg text-xs font-bold hover:bg-sky-600 transition">CONECTAR</button>
-                <button onclick="removeToken()" class="py-2 bg-red-500/10 text-red-500 border border-red-500/20 rounded-lg text-xs font-bold hover:bg-red-500/20 transition">DESCONECTAR</button>
+        <div class="modal-box" style="max-width:360px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+                <h2 style="font-size:1.1rem;font-weight:800;">Nuvem & Backup</h2>
+                <button onclick="closeModal('modal-cloud')" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1.1rem;">✕</button>
             </div>
-            
-            <div class="border-t border-slate-200 dark:border-white/10 pt-4 space-y-3">
-                <button onclick="backupJSON()" class="w-full py-3 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-xs font-bold hover:bg-slate-200 dark:hover:bg-white/10 flex items-center justify-center gap-2"><i data-lucide="download" class="w-4 h-4"></i> DOWNLOAD BACKUP</button>
-                <label class="w-full py-3 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-xs font-bold hover:bg-slate-200 dark:hover:bg-white/10 flex items-center justify-center gap-2 cursor-pointer">
-                    <i data-lucide="upload" class="w-4 h-4"></i> RESTAURAR ARQUIVO
-                    <input type="file" hidden onchange="restoreJSON(this)">
+            <div style="display:flex;flex-direction:column;gap:10px;">
+                <button onclick="forceSync()" style="width:100%;padding:13px;border-radius:12px;border:2px dashed var(--accent);color:var(--accent);background:transparent;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-size:.88rem;">
+                    <i data-lucide="refresh-cw" style="width:15px;height:15px;"></i> SINCRONIZAR
+                </button>
+                <button onclick="doBackup()" style="width:100%;padding:13px;border-radius:12px;border:1px solid var(--glass-border);color:var(--text-main);background:transparent;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-size:.88rem;">
+                    <i data-lucide="download" style="width:15px;height:15px;"></i> BACKUP LOCAL
+                </button>
+                <label style="width:100%;padding:13px;border-radius:12px;border:1px solid var(--glass-border);color:var(--text-main);background:transparent;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-size:.88rem;">
+                    <i data-lucide="upload" style="width:15px;height:15px;"></i> RESTAURAR
+                    <input type="file" hidden onchange="doRestore(this)">
                 </label>
             </div>
-            <button onclick="closeModal('modal-cloud')" class="mt-6 text-xs font-bold opacity-50 hover:opacity-100">FECHAR</button>
         </div>
     </div>
 
-    <!-- MODAL CLOSING REPORT -->
-    <div id="modal-closing" class="modal-overlay">
-        <div class="modal-box">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold flex items-center gap-2"><i data-lucide="clipboard-check" class="text-emerald-500"></i> Fechamento Mensal</h3>
-                <button onclick="closeModal('modal-closing')"><i data-lucide="x"></i></button>
-            </div>
-            
-            <div class="mb-6 p-4 bg-slate-100 dark:bg-white/5 rounded-xl border border-slate-200 dark:border-white/10 text-center">
-                <p class="text-xs uppercase font-bold opacity-60 mb-1">Balanço do Mês</p>
-                <div class="flex justify-center gap-6 items-end">
-                    <div class="text-right">
-                        <span class="block text-[10px] text-emerald-500 font-bold">ENTROU</span>
-                        <span id="rpt-in" class="text-lg font-mono font-bold text-emerald-500">R$ 0,00</span>
-                    </div>
-                    <div class="text-left">
-                        <span class="block text-[10px] text-red-500 font-bold">SAIU</span>
-                        <span id="rpt-out" class="text-lg font-mono font-bold text-red-500">R$ 0,00</span>
-                    </div>
-                </div>
-            </div>
+    <!-- TOAST -->
+    <div id="toast"><i class="fa-solid fa-circle-check" style="color:#34d399;"></i><span id="toast-msg"></span></div>
 
-            <h4 class="text-sm font-bold uppercase opacity-70 mb-3">Performance dos Potes</h4>
-            <div class="overflow-x-auto mb-6">
-                <table class="report-table">
-                    <thead><tr><th>Pote</th><th>Meta</th><th>Gasto</th><th class="text-right">Sobra</th></tr></thead>
-                    <tbody id="rpt-table-body"></tbody>
-                </table>
-            </div>
-
-            <div class="p-4 bg-sky-500/10 border border-sky-500/20 rounded-xl">
-                <h4 class="text-xs font-bold text-sky-500 uppercase mb-2 flex items-center gap-2"><i data-lucide="lightbulb"></i> Consultor Virtual</h4>
-                <p class="text-xs opacity-80 leading-relaxed" id="rpt-advice">Analisando seus dados...</p>
-            </div>
-        </div>
-    </div>
-
-    <div id="toast" class="fixed bottom-6 right-6 bg-emerald-600 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-4 z-[110] translate-x-[150%] transition-transform duration-300"><i data-lucide="check-circle" class="w-5 h-5"></i> <span id="toast-msg" class="text-sm font-bold"></span></div>
+    <!-- FAB -->
+    <button onclick="openCloudModal()" class="benai-fab" title="Nuvem & Backup">
+        <div id="statusDot2" class="benai-fab-dot"></div>
+        <i class="fa-solid fa-cloud"></i>
+    </button>
 
     <script>
-        // --- CONSTANTS ---
-        const DB_KEY = 'BENAI_FIN_V3';
+        const DB_KEY    = 'BENAI_FIN_V4';
         const TOKEN_KEY = 'BENAI_GLOBAL_TOKEN';
         const GIST_DESC = 'BENAI_FINANCE_DB';
-        const GIST_FILENAME = 'finance_db.json';
+        const GIST_FILE = 'finance_db.json';
 
-        const DEFAULT_CATEGORIES = {
-            'income': ['Salário', 'Consultoria', 'Saldo', 'Outros', 'Rendimentos/Dividendos'],
-            'repass': ['Repasses (Terceiros)', 'Repasse (Caixinha)', 'Giro de Caixa (Aplicar)', 'Giro de Caixa (Resgatar)', 'Reembolso', 'Compartilhado', 'Passagem', 'Empréstimo', 'Outros'],
-            'custo_vida': ['Mercado', 'Farmácia', 'Combustível', 'Contas', 'Celular', 'Aluguel', 'Casa', 'Restaurante', 'Cinema', 'Streaming', 'Ifood', 'Uber Lazer', 'Cartão C6 (Lazer)', 'Assinaturas', 'Cuidados Pessoais', 'Emergência', 'Plano Alimentar', 'Bobeiras', 'Pessoal', 'Presentes'],
-            'aporte': ['Aporte', 'Reserva de Emergência', 'CDB', 'FIIs', 'Giro de Caixa'],
-            'projetos': ['Carro Novo', 'Casa Própria', 'Viagem', 'Livros', 'Cursos', 'Mentoria', 'Inglês', 'Faculdade']
-        };
+        let db = { transactions: [], parcelamentos: [], lastUpdated: 0 };
+        let viewDate    = new Date();
+        let activeFilter = 'all';
+        let currentTipo  = 'out';
+        let gistId       = null;
 
-        const JARS_INFO = {
-            'custo_vida': { icon: 'home', color: 'text-blue-500', desc: 'O Chão (Necessidades e Lazer)' },
-            'aporte': { icon: 'trending-up', color: 'text-emerald-500', desc: 'A Pá (Investimentos e Reserva)' },
-            'projetos': { icon: 'rocket', color: 'text-purple-500', desc: 'A Semente (Curto Prazo e Educação)' }
-        };
-
-        let db = {
-            config: { income: 0, fixed: 0, jars: [] },
-            monthlyConfig: {}, // Stores config per month: 'YYYY-MM': { income, fixed, jars }
-            transactions: [],
-            categories: JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)),
-            lastUpdated: 0
-        };
-
-        let viewDate = new Date();
-        let currentType = 'out';
-        let activeFilters = { cat: 'all', place: 'all', method: 'all', day: 'all' };
-        let gistId = null;
-
-        // --- INIT ---
+        // ── INIT ──
         window.onload = async () => {
             initTheme();
             lucide.createIcons();
-            
-            const today = new Date();
-            const y = today.getFullYear();
-            const m = String(today.getMonth() + 1).padStart(2, '0');
-            document.getElementById('monthPicker').value = `${y}-${m}`;
-            setSpecificMonth(`${y}-${m}`);
-
-            const token = localStorage.getItem(TOKEN_KEY);
-            if(token) document.getElementById('manualToken').value = token;
-
+            setTodayDate();
+            updateMonthLabel();
             await initApp();
         };
 
         async function initApp() {
             const shield = document.getElementById('cloud-shield');
             shield.style.display = 'flex';
-            
+            const token = localStorage.getItem(TOKEN_KEY);
+            let loaded = false;
+            if (token) {
+                updateStatus('sync');
+                try { loaded = await pullFromCloud(); } catch(e) { updateStatus('error'); }
+            }
+            if (!loaded) {
+                const local = localStorage.getItem(DB_KEY);
+                if (local) try { db = JSON.parse(local); } catch(e) {}
+                updateStatus(token ? 'error' : 'offline');
+            }
+            if (!db.transactions)  db.transactions  = [];
+            if (!db.parcelamentos) db.parcelamentos = [];
+            shield.style.display = 'none';
+            renderAll();
+        }
+
+        // ── CLOUD ──
+        async function pullFromCloud() {
+            const token = localStorage.getItem(TOKEN_KEY);
+            if (!token) return false;
             try {
-                const token = localStorage.getItem(TOKEN_KEY);
-                let loaded = false;
-                
-                if(token) {
-                    updateStatus('sync');
-                    try { loaded = await pullFromCloud(); } catch(e) { console.error(e); updateStatus('error'); }
-                }
-
-                if(!loaded) {
-                    const local = localStorage.getItem(DB_KEY);
-                    if(local) {
-                        try { 
-                            const parsed = JSON.parse(local);
-                            if(parsed.categories) db = parsed;
-                        } catch(e) {}
-                    } else {
-                        populateDummyData();
-                    }
-                    updateStatus('offline');
-                } else {
-                    updateStatus('online');
-                    toast('Sincronizado!');
-                }
-
-                db = migrateData(db);
-                localStorage.setItem(DB_KEY, JSON.stringify(db));
-
-            } catch (err) {
-                console.error("Critical Init Error:", err);
-                if(!db.config.jars || db.config.jars.length === 0) populateDummyData();
-            } finally {
-                shield.style.display = 'none';
-                renderAll();
-            }
-        }
-
-        function migrateData(data) {
-            if(!data) return { config: { income: 0, fixed: 0, jars: [] }, monthlyConfig:{}, transactions: [], categories: JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)), lastUpdated: 0 };
-            if(!data.categories) data.categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
-            if(!data.categories.repass) data.categories.repass = DEFAULT_CATEGORIES.repass;
-            if(!data.monthlyConfig) data.monthlyConfig = {}; // Ensure monthly config storage
-            
-            // Fix categories for new 3-block system
-            if(data.categories.essen) {
-                data.categories.custo_vida = [...new Set([...(data.categories.essen || []), ...(data.categories.play || [])])];
-                data.categories.aporte = [...new Set([...(data.categories.free || [])])];
-                data.categories.projetos = [...new Set([...(data.categories.long || []), ...(data.categories.edu || [])])];
-                
-                delete data.categories.essen;
-                delete data.categories.play;
-                delete data.categories.free;
-                delete data.categories.long;
-                delete data.categories.edu;
-            }
-            
-            if(!data.categories.income.includes('Rendimentos/Dividendos')) {
-                data.categories.income.push('Rendimentos/Dividendos');
-            }
-
-            // Map old transactions to new jars
-            data.transactions.forEach(t => {
-                if(t.catJar === 'essen' || t.catJar === 'play') t.catJar = 'custo_vida';
-                if(t.catJar === 'free') t.catJar = 'aporte';
-                if(t.catJar === 'long' || t.catJar === 'edu') t.catJar = 'projetos';
-            });
-
-            if(!data.config.jars || data.config.jars.length === 0 || data.config.jars[0].id === 'essen') {
-                data.config.jars = [
-                    {id:'custo_vida', name:'Custo de Vida', type:'fixed'}, 
-                    {id:'aporte', name:'O Aporte', type:'surplus'}, 
-                    {id:'projetos', name:'Projetos', type:'variable'}
-                ];
-            }
-
-            return data;
-        }
-
-        function populateDummyData() {
-            applyPreset('standard'); 
-            db.config.income = 0;
-            db.config.fixed = 0;
-            db.transactions = [];
-            saveData();
-        }
-
-        // --- CONFIG HELPER ---
-        function getMonthConfig(dateObj) {
-            const mStr = dateObj.toISOString().slice(0, 7);
-            // Return specific month config OR fall back to global config
-            if(db.monthlyConfig && db.monthlyConfig[mStr]) return db.monthlyConfig[mStr];
-            return db.config; 
-        }
-
-        // --- FAST ACTIONS LOGIC ---
-        function openFastActions() {
-            const mStr = viewDate.toLocaleDateString('pt-BR', {month:'long', year:'numeric'}).toUpperCase();
-            document.getElementById('fa-month-label').innerText = "REFERÊNCIA: " + mStr;
-            document.getElementById('modal-fast-actions').style.display = 'flex';
-            switchFastAction('nubank'); 
-        }
-
-        function switchFastAction(tab) {
-            const btnNubank = document.getElementById('tab-nubank');
-            const btnC6 = document.getElementById('tab-c6');
-            const contentNubank = document.getElementById('fa-nubank-content');
-            const contentC6 = document.getElementById('fa-c6-content');
-
-            btnNubank.className = "flex-1 py-2 rounded-lg text-xs font-bold transition opacity-50 hover:opacity-100";
-            btnC6.className = "flex-1 py-2 rounded-lg text-xs font-bold transition opacity-50 hover:opacity-100";
-            contentNubank.classList.add('hidden');
-            contentC6.classList.add('hidden');
-
-            if(tab === 'nubank') {
-                btnNubank.className = "flex-1 py-2 rounded-lg text-xs font-bold transition bg-purple-500 text-white shadow-md";
-                contentNubank.classList.remove('hidden');
-                renderNubankPreview();
-            } else {
-                btnC6.className = "flex-1 py-2 rounded-lg text-xs font-bold transition bg-slate-800 text-white shadow-md";
-                contentC6.classList.remove('hidden');
-                document.getElementById('c6-total').value = "";
-                document.getElementById('c6-mine').value = "";
-                document.getElementById('c6-her-part').innerText = "R$ 0,00";
-            }
-        }
-
-        function renderNubankPreview() {
-            const list = document.getElementById('nubank-preview-list');
-            const totalEl = document.getElementById('nubank-total-display');
-            list.innerHTML = '';
-            
-            const mStr = viewDate.toISOString().slice(0, 7);
-            
-            const pending = db.transactions.filter(t => 
-                t.method === 'Crédito' && 
-                t.paid === false &&
-                t.date.startsWith(mStr)
-            );
-
-            let total = 0;
-            if(pending.length === 0) {
-                list.innerHTML = '<div class="text-center py-4 italic">Nenhuma fatura pendente para este mês.</div>';
-            } else {
-                pending.forEach(t => {
-                    total += t.val;
-                    list.innerHTML += `<div class="flex justify-between border-b border-purple-500/10 pb-1"><span>${t.place || 'Compra'}</span> <span>${fmtMoney(t.val)}</span></div>`;
-                });
-            }
-            totalEl.innerText = fmtMoney(total);
-        }
-
-        function confirmNubankPay() {
-            const mStr = viewDate.toISOString().slice(0, 7);
-            let count = 0;
-            
-            db.transactions.forEach(t => {
-                if(t.method === 'Crédito' && t.paid === false && t.date.startsWith(mStr)) {
-                    t.paid = true; 
-                    count++;
-                }
-            });
-
-            if(count > 0) {
-                saveData();
-                renderAll();
-                closeModal('modal-fast-actions');
-                toast(`${count} lançamentos pagos!`);
-            } else {
-                alert("Nada para pagar neste mês.");
-            }
-        }
-
-        function calcC6Split() {
-            const total = parseMoney(document.getElementById('c6-total').value);
-            const mine = parseMoney(document.getElementById('c6-mine').value);
-            const her = Math.max(0, total - mine);
-            document.getElementById('c6-her-part').innerText = fmtMoney(her);
-        }
-
-        function confirmC6Pay() {
-            const total = parseMoney(document.getElementById('c6-total').value);
-            const mine = parseMoney(document.getElementById('c6-mine').value);
-            const her = Math.max(0, total - mine);
-            const paidByHer = document.getElementById('c6-paid-by-her').checked;
-
-            if(total <= 0) return alert("Valor total inválido");
-
-            const date = viewDate.toISOString().split('T')[0]; // Use current view date
-
-            // 1. Minha Parte (Gasto Real)
-            if(mine > 0) {
-                db.transactions.push({
-                    id: Date.now(),
-                    type: 'out',
-                    val: mine,
-                    date: date,
-                    place: 'C6 FATURA (MINHA PARTE)',
-                    method: 'Pix',
-                    catJar: 'custo_vida',
-                    catName: 'Cartão C6 (Lazer)',
-                    notes: 'Parte Benai - Ação Rápida',
-                    thirdParty: false,
-                    paid: true
-                });
-            }
-
-            // 2. Parte Dela (Saída para o Banco)
-            // 3. Parte Dela (Entrada no meu Caixa para repassar)
-            if(her > 0) {
-                // Saída (Pagar Banco)
-                db.transactions.push({
-                    id: Date.now() + 1,
-                    type: 'out',
-                    val: her,
-                    date: date,
-                    place: 'C6 FATURA (REPASSE)',
-                    method: 'Pix',
-                    catJar: 'repass',
-                    catName: 'Repasse (Terceiros)',
-                    notes: 'Parte Talita - Paga ao Banco',
-                    thirdParty: true,
-                    paid: true
-                });
-
-                // Entrada (Recebimento dela)
-                db.transactions.push({
-                    id: Date.now() + 2,
-                    type: 'in',
-                    val: her,
-                    date: date,
-                    place: 'C6 FATURA (PARTE TALITA)',
-                    method: 'Pix',
-                    catJar: 'income',
-                    catName: 'Repasses (Terceiros)',
-                    notes: 'C6 FATURA (PARTE TALITA)',
-                    thirdParty: true,
-                    paid: paidByHer // Se ela já pagou, entra como pago. Senão, pendente.
-                });
-            }
-
-            saveData();
-            renderAll();
-            closeModal('modal-fast-actions');
-            toast('Lançamentos C6 criados!');
-        }
-
-        // --- RESERVE CALCULATOR ---
-        function openReserveModal() {
-            const cfg = getMonthConfig(viewDate);
-            // Use global preference if set, otherwise current month fixed
-            const base = db.config.reserveBase !== undefined ? db.config.reserveBase : (cfg.fixed || 0);
-            document.getElementById('res-base-val').value = fmtMoney(base);
-            
-            calcReserve();
-            document.getElementById('modal-reserve').style.display = 'flex';
-        }
-
-        function calcReserve() {
-            const valStr = document.getElementById('res-base-val').value;
-            const fixed = parseMoney(valStr);
-            
-            // Save preference in memory (persisted on saveData)
-            db.config.reserveBase = fixed;
-
-            const months = parseInt(document.getElementById('res-months').value);
-            const target = fixed * months;
-            
-            let current = 0;
-            db.transactions.forEach(t => {
-                if (t.catJar === 'aporte' && t.paid) {
-                    if (t.type === 'out') current += t.val; // Investment
-                    if (t.type === 'in') current -= t.val; // Withdrawal
-                }
-            });
-            
-            const pct = target > 0 ? (current / target) * 100 : 0;
-            
-            let progressColor = 'bg-red-500';
-            if (pct >= 100) progressColor = 'bg-emerald-500';
-            else if (pct >= 50) progressColor = 'bg-yellow-500';
-
-            document.getElementById('res-current').innerText = fmtMoney(current);
-            document.getElementById('res-target').innerText = fmtMoney(target);
-            document.getElementById('res-progress').className = `h-full transition-all duration-1000 ${progressColor}`;
-            document.getElementById('res-progress').style.width = Math.min(pct, 100) + '%';
-            document.getElementById('res-pct').innerText = pct.toFixed(1) + '% Concluído';
-        }
-
-        function saveSurplus() {
-            const val = parseMoney(document.getElementById('res-add-val').value);
-            if(val <= 0) return alert("Valor inválido");
-            
-            const date = new Date().toISOString().split('T')[0];
-            
-            db.transactions.push({
-                id: Date.now(),
-                type: 'out',
-                val: val,
-                date: date,
-                place: 'RESERVA DE EMERGÊNCIA',
-                method: 'Pix',
-                catJar: 'aporte',
-                catName: 'Reserva de Emergência',
-                notes: 'Aporte Ref. ' + new Date().toLocaleDateString('pt-BR', {month:'long', year:'numeric'}),
-                thirdParty: false,
-                paid: true
-            });
-            
-            saveData();
-            document.getElementById('res-add-val').value = '';
-            calcReserve();
-            toast('Aporte Realizado!');
-            renderAll(); // Refresh main view if visible
-        }
-
-        // --- CORE LOGIC ---
-        function renderAll() {
-            calculateBalances();
-            renderJars();
-            renderTransactions();
-        }
-
-        function calculateBalances() {
-            const mStr = viewDate.toISOString().slice(0, 7);
-            
-            // Entradas do mês
-            const allIn = db.transactions.filter(t => t.type === 'in' && t.date.startsWith(mStr)).reduce((a,b)=>a+b.val,0);
-            
-            // Saídas do mês (incluindo cartão de crédito não pago - TRAVA DO CARTÃO)
-            // O cartão é apenas meio de pagamento, o dinheiro já está comprometido
-            const realOut = db.transactions.filter(t => t.type === 'out' && t.date.startsWith(mStr)).reduce((a,b)=>a+b.val,0);
-            
-            const totalOut = db.transactions
-                .filter(t => t.type === 'out' && t.date.startsWith(mStr) && !isRepassCategory(t.catName) && !t.thirdParty)
-                .reduce((a,b)=>a+b.val,0);
-            
-            document.getElementById('dsp-total-expenses').innerText = fmtMoney(totalOut);
-            document.getElementById('dsp-balance-real').innerText = fmtMoney(allIn - realOut);
-
-            const myIn = db.transactions.filter(t => t.type === 'in' && t.date.startsWith(mStr) && !isRepassCategory(t.catName)).reduce((a,b)=>a+b.val,0);
-            const myOut = db.transactions.filter(t => t.type === 'out' && t.date.startsWith(mStr)).reduce((acc, t) => {
-                    if (isRepassCategory(t.catName) || t.thirdParty) return acc; 
-                    return acc + t.val;
-                }, 0);
-
-            document.getElementById('dsp-balance-personal').innerText = fmtMoney(myIn - myOut);
-        }
-
-        function isRepassCategory(name) {
-            if(!name) return false;
-            const n = name.toLowerCase();
-            return n.includes('repasse') || n.includes('terceiros') || n.includes('reembolso') || n.includes('compartilhado') || n.includes('giro de caixa');
-        }
-
-        function renderJars() {
-            const container = document.getElementById('jarsContainer');
-            container.innerHTML = '';
-            
-            const cfg = getMonthConfig(viewDate); 
-            const mStr = viewDate.toISOString().slice(0, 7);
-            
-            const monthOutTxs = db.transactions.filter(t => t.type === 'out' && t.date.startsWith(mStr));
-            const monthInTxs = db.transactions.filter(t => t.type === 'in' && t.date.startsWith(mStr) && !isRepassCategory(t.catName));
-            
-            const totalIncome = monthInTxs.reduce((a,b)=>a+b.val,0);
-            const fixedCostLimit = cfg.fixed || 0; // Teto de Custo de Vida
-            
-            // O que sobra após o custo de vida fixo vai para Aporte e Projetos
-            const surplus = Math.max(0, totalIncome - fixedCostLimit);
-
-            cfg.jars.forEach(jar => {
-                let jarBg = 'bg-slate-500';
-                if(jar.id === 'custo_vida') jarBg = 'bg-blue-500';
-                if(jar.id === 'aporte') jarBg = 'bg-emerald-500';
-                if(jar.id === 'projetos') jarBg = 'bg-purple-500';
-
-                const info = JARS_INFO[jar.id] || { icon: 'box', color: 'text-slate-500', desc: '' };
-                
-                if (jar.id === 'aporte') {
-                    info.icon = 'lock';
-                    info.desc = 'Intocável (Pague-se Primeiro)';
-                }
-                
-                let limit = 0;
-                if (jar.id === 'custo_vida') {
-                    limit = fixedCostLimit; // Teto Fixo
-                } else if (jar.id === 'aporte') {
-                    limit = surplus * 0.7; // 70% da sobra vai para aporte massivo
-                } else if (jar.id === 'projetos') {
-                    limit = surplus * 0.3; // 30% da sobra para projetos
-                }
-                
-                const spent = monthOutTxs.filter(t => t.catJar === jar.id).reduce((acc, t) => {
-                    if (isRepassCategory(t.catName) || t.thirdParty) return acc; 
-                    return acc + t.val; 
-                }, 0);
-
-                const pct = limit > 0 ? (spent / limit) * 100 : (spent > 0 ? 100 : 0);
-                let barColor = jarBg;
-                if(pct > 100) barColor = 'bg-red-500';
-
-                const leftover = limit - spent;
-                let leftoverHTML = '';
-                if(leftover >= 0) {
-                    leftoverHTML = `<div class="text-[9px] font-bold text-emerald-500 mt-1">Resta: ${fmtMoney(leftover)}</div>`;
-                } else {
-                    leftoverHTML = `<div class="text-[9px] font-bold text-red-500 mt-1">Excedido: ${fmtMoney(Math.abs(leftover))}</div>`;
-                }
-
-                container.innerHTML += `
-                <div class="glass-card jar-card">
-                    <div class="flex justify-between items-start">
-                        <div class="flex gap-3 items-center">
-                            <div class="jar-icon ${jarBg} text-white"><i data-lucide="${info.icon}"></i></div>
-                            <div>
-                                <h4 class="font-bold uppercase tracking-wider text-xs">${jar.name}</h4>
-                                <div class="text-[10px] opacity-60">${info.desc}</div>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-lg font-mono font-bold ${info.color}">${fmtMoney(spent)}</div>
-                            <div class="text-[10px] opacity-60">Meta/Teto: ${fmtMoney(limit)}</div>
-                            ${leftoverHTML}
-                        </div>
-                    </div>
-                    <div class="jar-bar-bg">
-                        <div class="jar-bar-fill ${barColor}" style="width: ${Math.min(pct,100)}%"></div>
-                    </div>
-                </div>`;
-            });
-            
-            renderSnowball(cfg.fixed, mStr);
-            lucide.createIcons();
-        }
-
-        function renderSnowball(fixedCost, mStr) {
-            const container = document.getElementById('jarsContainer');
-            
-            const passiveIncome = db.transactions
-                .filter(t => t.type === 'in' && t.date.startsWith(mStr) && t.catName === 'Rendimentos/Dividendos')
-                .reduce((a,b)=>a+b.val,0);
-                
-            const pct = fixedCost > 0 ? (passiveIncome / fixedCost) * 100 : 0;
-            
-            container.innerHTML += `
-            <div class="glass-card jar-card col-span-1 md:col-span-2 border-l-4 border-sky-500">
-                <div class="flex justify-between items-start">
-                    <div class="flex gap-3 items-center">
-                        <div class="jar-icon bg-sky-500 text-white"><i data-lucide="snowflake"></i></div>
-                        <div>
-                            <h4 class="font-bold uppercase tracking-wider text-xs text-sky-500">Efeito Bola de Neve</h4>
-                            <div class="text-[10px] opacity-60">Renda Passiva vs Custo de Vida</div>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <div class="text-lg font-mono font-bold text-sky-500">${fmtMoney(passiveIncome)}</div>
-                        <div class="text-[10px] opacity-60">Custo de Vida: ${fmtMoney(fixedCost)}</div>
-                    </div>
-                </div>
-                <div class="w-full bg-slate-200 dark:bg-white/10 h-3 rounded-full overflow-hidden mt-3">
-                    <div class="h-full bg-sky-500 transition-all duration-1000" style="width: ${Math.min(pct, 100)}%"></div>
-                </div>
-                <div class="text-center mt-1 text-[10px] font-bold text-sky-500">${pct.toFixed(2)}% da Liberdade Financeira atingida</div>
-            </div>`;
-        }
-
-        function renderTransactions() {
-            const list = document.getElementById('txList');
-            const mStr = viewDate.toISOString().slice(0, 7);
-            
-            let txs = db.transactions.filter(t => t.date.startsWith(mStr));
-            populateFilterOptions(txs);
-
-            if(activeFilters.day !== 'all') txs = txs.filter(t => t.date.endsWith(activeFilters.day));
-            if(activeFilters.cat !== 'all') txs = txs.filter(t => t.catName === activeFilters.cat);
-            if(activeFilters.place !== 'all') txs = txs.filter(t => t.place === activeFilters.place);
-            if(activeFilters.method !== 'all') txs = txs.filter(t => t.method === activeFilters.method);
-
-            list.innerHTML = '';
-
-            if(txs.length === 0) {
-                list.innerHTML = '<div class="text-center py-10 opacity-50 text-xs italic">Nenhum lançamento encontrado.</div>';
-                return;
-            }
-
-            txs.sort((a,b) => new Date(b.date) - new Date(a.date));
-            const monthNames = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"];
-
-            txs.forEach(t => {
-                const isInc = t.type === 'in';
-                const isRepassCat = isRepassCategory(t.catName) || t.thirdParty;
-                const isCredit = t.method === 'Crédito';
-                const isPaid = t.paid !== false; 
-                
-                let colorClass = isInc ? 'text-emerald-500' : 'text-red-400';
-                if (isRepassCat && !isInc) colorClass = 'text-slate-400 line-through decoration-red-500/50'; 
-                if (isCredit && !isPaid) colorClass = 'text-orange-500'; 
-
-                const day = t.date.split('-')[2];
-                const monthIndex = parseInt(t.date.split('-')[1]) - 1;
-                const monthName = monthNames[monthIndex];
-
-                const catLabel = t.catName || 'Geral';
-                const hasNote = t.notes && t.notes.trim().length > 0;
-                
-                let payIcon = "fa-solid fa-credit-card";
-                let payColor = "ic-cred";
-                if(t.method === 'Pix') { payIcon = "fa-solid fa-qrcode"; payColor = "ic-pix"; }
-                else if(t.method === 'Débito') { payIcon = "fa-regular fa-credit-card"; payColor = "ic-deb"; }
-                else if(t.method === 'Dinheiro') { payIcon = "fa-solid fa-money-bill-1"; payColor = "ic-money"; }
-
-                let debtHTML = '';
-                let installBadge = '';
-                const noteMatch = (t.notes || "").match(/\((\d+)\/(\d+)\)/);
-                
-                if(noteMatch) {
-                    const current = parseInt(noteMatch[1]);
-                    const total = parseInt(noteMatch[2]);
-                    
-                    let badgeColor = 'rgba(139, 92, 246, 0.15)';
-                    let textColor = '#a78bfa';
-                    let borderColor = 'rgba(139, 92, 246, 0.3)';
-                    let alertIcon = '';
-                    let debtBarColor = '#a78bfa';
-                    
-                    if (total > 3) {
-                        badgeColor = 'rgba(239, 68, 68, 0.15)';
-                        textColor = '#ef4444';
-                        borderColor = 'rgba(239, 68, 68, 0.3)';
-                        alertIcon = '<i data-lucide="alert-triangle" class="w-3 h-3 inline-block mr-1"></i>';
-                        debtBarColor = '#ef4444';
-                    }
-                    
-                    installBadge = `<div class="tx-installments inline-flex items-center gap-1" style="background: ${badgeColor}; color: ${textColor}; border-color: ${borderColor}">${alertIcon}${noteMatch[0]}</div>`;
-                    
-                    const pct = (current / total) * 100;
-                    const remainingDebt = (total - current) * t.val;
-                    
-                    debtHTML = `
-                    <div class="debt-progress-container">
-                        <div class="debt-bar-bg"><div class="debt-bar-fill" style="width:${pct}%; background: ${debtBarColor}"></div></div>
-                        <div class="debt-text">
-                            <span style="color: ${textColor}">Parcela ${current} de ${total}</span>
-                            <span>Resta: ${fmtMoney(remainingDebt)}</span>
-                        </div>
-                    </div>`;
-                }
-
-                let badgeClass = 'bg-slate-100 text-slate-600';
-                if(t.catJar === 'custo_vida') badgeClass = 'bg-essen';
-                if(t.catJar === 'aporte') badgeClass = 'bg-free';
-                if(t.catJar === 'projetos') badgeClass = 'bg-purple-500 text-white';
-                if(t.catJar === 'repass' || isRepassCat) badgeClass = 'bg-repass';
-                if(t.catJar === 'income') badgeClass = 'bg-income';
-
-                let cardClass = '';
-                if(isRepassCat) cardClass = 'is-repass';
-                else if(isCredit && !isPaid) cardClass = 'is-credit-pending'; 
-                
-                let specialTag = '';
-                if(isRepassCat && !isInc) specialTag = '<span class="text-[9px] bg-slate-100 text-slate-500 px-1 rounded border border-slate-200">Repasse</span>';
-                
-                if(isCredit) {
-                    specialTag += isPaid ? 
-                        ' <span class="text-[9px] bg-emerald-100 text-emerald-700 px-1 rounded border border-emerald-200"><i class="fa-solid fa-check"></i> Pago</span>' : 
-                        ' <span class="text-[9px] bg-orange-100 text-orange-700 px-1 rounded border border-orange-200"><i class="fa-solid fa-clock"></i> Pendente</span>';
-                }
-
-                const catIconClass = getCategoryIcon(t.catName);
-                const clickable = hasNote; 
-                const cursorClass = clickable ? "clickable" : "";
-                const onclickAction = clickable ? "toggleNote(this)" : "";
-
-                let payBtn = '';
-                if (isCredit) {
-                    const payIconClass = isPaid ? 'fa-solid fa-check' : 'fa-regular fa-circle';
-                    const payBtnClass = isPaid ? 'act-pay paid' : 'act-pay';
-                    payBtn = `<div class="action-icon ${payBtnClass}" onclick="event.stopPropagation(); toggleTxPaid(${t.id})" title="${isPaid ? 'Marcar como Pendente' : 'Marcar como Pago'}"><i class="${payIconClass}"></i></div>`;
-                }
-
-                list.innerHTML += `
-                <div class="tx-card ${cursorClass} ${cardClass}" onclick="${onclickAction}">
-                    <div class="tx-main-row">
-                        <div class="tx-date-box">
-                            <span class="tx-day">${day}</span>
-                            <span class="tx-month">${monthName}</span>
-                        </div>
-                        
-                        <div class="tx-info">
-                            <div class="tx-title-row">
-                                <span class="tx-place">${t.place || 'Sem Local'}</span>
-                            </div>
-                            <div class="tx-sub-row">
-                                <span class="cat-badge ${badgeClass}">
-                                    <i class="${catIconClass}"></i> ${catLabel}
-                                    ${hasNote ? '<i class="fa-regular fa-note-sticky tx-has-note"></i>' : ''}
-                                </span>
-                                ${specialTag}
-                            </div>
-                        </div>
-
-                        <div class="tx-right">
-                            <div class="tx-val-row">
-                                <span class="tx-val ${colorClass}">${isInc ? '+' : '-'} ${fmtMoney(t.val)}</span>
-                                <i class="${payIcon} pay-icon ${payColor}"></i>
-                            </div>
-                            ${installBadge}
-                            <div class="tx-actions">
-                                ${payBtn}
-                                <div class="action-icon act-edit" onclick="event.stopPropagation(); editTx(${t.id})"><i class="fa-solid fa-pencil"></i></div>
-                                <div class="action-icon act-del" onclick="event.stopPropagation(); deleteTxLogic(${t.id})"><i class="fa-solid fa-trash"></i></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    ${hasNote ? `
-                    <div class="tx-drawer">
-                        <div class="tx-note-text">"${t.notes.replace(/\(\d+\/\d+\)/, '').trim()}"</div>
-                        ${debtHTML}
-                    </div>` : ''}
-                </div>`;
-            });
-        }
-
-        function toggleTxPaid(id) {
-            const idx = db.transactions.findIndex(t => t.id == id);
-            if(idx > -1) {
-                db.transactions[idx].paid = !db.transactions[idx].paid;
-                saveData();
-                renderAll();
-            }
-        }
-
-        function toggleNote(el) { el.classList.toggle('expanded'); }
-
-        function getCategoryIcon(name) {
-            if(!name) return 'fa-solid fa-tag';
-            const n = name.toLowerCase();
-            if(n.includes('mercado') || n.includes('compra')) return 'fa-solid fa-cart-shopping';
-            if(n.includes('carro') || n.includes('uber') || n.includes('combust') || n.includes('transporte')) return 'fa-solid fa-car';
-            if(n.includes('casa') || n.includes('aluguel') || n.includes('luz') || n.includes('internet')) return 'fa-solid fa-house';
-            if(n.includes('comida') || n.includes('restaurante') || n.includes('ifood')) return 'fa-solid fa-utensils';
-            if(n.includes('saúde') || n.includes('farmácia') || n.includes('médico')) return 'fa-solid fa-heart-pulse';
-            if(n.includes('pet') || n.includes('gato') || n.includes('cachorro')) return 'fa-solid fa-paw';
-            if(n.includes('lazer') || n.includes('cinema') || n.includes('jogo')) return 'fa-solid fa-gamepad';
-            if(n.includes('c6') || n.includes('cartão') || n.includes('nubank')) return 'fa-regular fa-credit-card';
-            if(n.includes('salário') || n.includes('renda')) return 'fa-solid fa-money-bill-wave';
-            if(n.includes('repasse') || n.includes('transferência')) return 'fa-solid fa-arrow-right-arrow-left';
-            if(n.includes('curso') || n.includes('aula') || n.includes('educa')) return 'fa-solid fa-graduation-cap';
-            return 'fa-solid fa-tag';
-        }
-
-        function populateFilterOptions(txs) {
-            const days = new Set();
-            const cats = new Set();
-            const places = new Set();
-            const methods = new Set();
-
-            txs.forEach(t => {
-                days.add(t.date.split('-')[2]);
-                if(t.catName) cats.add(t.catName);
-                if(t.place) places.add(t.place);
-                if(t.method) methods.add(t.method);
-            });
-
-            fillSelect('filter-day', Array.from(days).sort(), activeFilters.day, 'Dia');
-            fillSelect('filter-cat', Array.from(cats).sort(), activeFilters.cat, 'Cat');
-            fillSelect('filter-place', Array.from(places).sort(), activeFilters.place, 'Local');
-            fillSelect('filter-method', Array.from(methods).sort(), activeFilters.method, 'Pgto');
-        }
-
-        function fillSelect(id, items, currentVal, label) {
-            const sel = document.getElementById(id);
-            sel.innerHTML = `<option value="all">${label}: Todos</option>`;
-            items.forEach(i => {
-                const opt = new Option(i, i);
-                if(i === currentVal) opt.selected = true;
-                sel.add(opt);
-            });
-        }
-
-        function setFilter(type, val) {
-            activeFilters[type] = val;
-            renderTransactions(); 
-        }
-
-        function resetFilters() {
-            activeFilters = { cat: 'all', place: 'all', method: 'all', day: 'all' };
-            renderTransactions();
-        }
-
-        function openTxModal(id = null) {
-            document.getElementById('txForm').reset();
-            document.getElementById('txId').value = '';
-            document.getElementById('btnDelete').classList.add('hidden');
-            document.getElementById('installmentsSection').classList.add('hidden');
-            document.getElementById('transportFields').classList.add('hidden');
-            document.getElementById('txIsSubscription').checked = false; 
-            document.getElementById('txCalcPreview').innerText = "";
-            document.getElementById('txCalcPreview').style.display = 'none';
-            
-            const today = new Date();
-            const todayLocal = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
-            document.getElementById('txDate').value = todayLocal;
-            
-            setTxType('out'); 
-            populateUnifiedSelect();
-
-            if(id) {
-                const t = db.transactions.find(x=>x.id == id);
-                if(t) {
-                    document.getElementById('txId').value = t.id;
-                    document.getElementById('txVal').value = fmtMoney(t.val);
-                    document.getElementById('txDate').value = t.date;
-                    document.getElementById('txPlace').value = t.place || '';
-                    document.getElementById('txMethod').value = t.method || 'Débito';
-                    document.getElementById('txNotes').value = t.notes || '';
-                    document.getElementById('txThirdParty').checked = t.thirdParty;
-                    document.getElementById('txOrigin').value = t.origin || '';
-                    document.getElementById('txDest').value = t.destination || '';
-                    
-                    if(t.origin || t.destination) document.getElementById('transportFields').classList.remove('hidden');
-
-                    setTxType(t.type); 
-                    
-                    if (t.type === 'in') document.getElementById('txCatUnified').value = t.catName || '';
-                    else if (t.catJar && t.catName) document.getElementById('txCatUnified').value = `${t.catJar}|${t.catName}`;
-                    
-                    document.getElementById('btnDelete').classList.remove('hidden');
-                }
-            }
-            document.getElementById('modal-tx').style.display = 'flex';
-        }
-
-        function setTxType(t) {
-            currentType = t;
-            const bOut = document.getElementById('btnOut');
-            const bIn = document.getElementById('btnIn');
-            const cSec = document.getElementById('catSection');
-            
-            bOut.className = "py-2 rounded-lg text-xs font-bold transition flex-1 bg-slate-100 dark:bg-white/10 opacity-50";
-            bIn.className = "py-2 rounded-lg text-xs font-bold transition flex-1 bg-slate-100 dark:bg-white/10 opacity-50";
-
-            if(t === 'out') {
-                bOut.className = "py-2 rounded-lg text-xs font-bold transition flex-1 bg-red-500 text-white shadow-lg";
-            } else if (t === 'in') {
-                bIn.className = "py-2 rounded-lg text-xs font-bold transition flex-1 bg-emerald-500 text-white shadow-lg";
-            }
-            
-            cSec.style.display = 'block';
-            populateUnifiedSelect();
-        }
-
-        function toggleInstallments() {
-            document.getElementById('installmentsSection').classList.remove('hidden');
-            updateInstallmentPreview();
-        }
-
-        function updateInstallmentPreview() {
-            const val = parseMoney(document.getElementById('txVal').value);
-            const count = parseInt(document.getElementById('txInstallments').value) || 1;
-            const isSub = document.getElementById('txIsSubscription').checked;
-            const preview = document.getElementById('txCalcPreview');
-            const label = document.getElementById('txInstallmentsText');
-
-            if (count > 1) {
-                preview.style.display = 'block';
-                if (isSub) {
-                    label.innerText = "Meses (Recorrência)";
-                    preview.innerText = `Serão ${count} lançamentos de ${fmtMoney(val)} (Total: ${fmtMoney(val * count)})`;
-                } else {
-                    label.innerText = "Parcelas (Divisão)";
-                    const parc = val / count;
-                    preview.innerText = `Serão ${count} parcelas de ${fmtMoney(parc)} (Total: ${fmtMoney(val)})`;
-                }
-            } else {
-                preview.style.display = 'none';
-                label.innerText = "Vezes / Meses";
-            }
-        }
-
-        function populateUnifiedSelect() {
-            const sel = document.getElementById('txCatUnified');
-            sel.innerHTML = '';
-            
-            if(currentType === 'in') {
-                const incomeCats = (db.categories['income'] || []).sort();
-                incomeCats.forEach(c => { sel.add(new Option(c, c)); });
-            } else {
-                if(db.categories['repass']) {
-                    const repGrp = document.createElement('optgroup');
-                    repGrp.label = "REPASSES / TERCEIROS";
-                    db.categories['repass'].sort().forEach(c => repGrp.appendChild(new Option(c, `repass|${c}`)));
-                    sel.appendChild(repGrp);
-                }
-
-                // Use Monthly Config for Jars
-                const cfg = getMonthConfig(viewDate);
-                cfg.jars.forEach(jar => {
-                    const optGroup = document.createElement('optgroup');
-                    optGroup.label = jar.name.toUpperCase();
-                    // Categories are global for simplicity, but grouped by jar ID
-                    const cats = (db.categories[jar.id] || []).sort();
-                    cats.forEach(c => {
-                        optGroup.appendChild(new Option(c, `${jar.id}|${c}`));
-                    });
-                    sel.appendChild(optGroup);
-                });
-            }
-        }
-
-        function saveTx(e) {
-            e.preventDefault();
-            const id = document.getElementById('txId').value;
-            const valTotal = parseMoney(document.getElementById('txVal').value);
-            if(!valTotal) return alert("Valor inválido");
-
-            const unifiedCat = document.getElementById('txCatUnified').value;
-            let catJar = null;
-            let catName = 'Geral';
-            
-            if(currentType === 'out' && unifiedCat) {
-                const parts = unifiedCat.split('|');
-                catJar = parts[0];
-                catName = parts[1];
-            } else if (currentType === 'in') {
-                catJar = 'income';
-                catName = unifiedCat || 'Entrada';
-            }
-
-            const method = document.getElementById('txMethod').value;
-            const baseDate = document.getElementById('txDate').value;
-            const place = document.getElementById('txPlace').value.toUpperCase();
-            const notes = document.getElementById('txNotes').value;
-            const origin = document.getElementById('txOrigin').value;
-            const dest = document.getElementById('txDest').value;
-            const isTP = document.getElementById('txThirdParty').checked;
-            
-            const count = parseInt(document.getElementById('txInstallments').value) || 1;
-            const isSub = document.getElementById('txIsSubscription').checked;
-
-            let valPerTx = valTotal;
-            if (count > 1 && !isSub) {
-                valPerTx = parseFloat((valTotal / count).toFixed(2));
-            }
-
-            const groupId = Date.now().toString(); 
-            const isCredit = method === 'Crédito';
-            
-            if(currentType === 'out' && catJar === 'aporte') {
-                const allowedInvestments = ['Aporte', 'Reserva de Emergência', 'CDB', 'FIIs', 'Giro de Caixa'];
-                if (!allowedInvestments.includes(catName)) {
-                    if (!confirm(`ALERTA DE SARDINHA!\n\nO pote "Aporte" é intocável para despesas comuns. Você está prestes a gastar dinheiro do seu futuro com "${catName}".\n\nTem certeza que deseja continuar?`)) {
-                        return;
+                const gists = await fetch('https://api.github.com/gists', {
+                    headers: { 'Authorization': `token ${token}` }
+                }).then(r => r.json());
+                const found = gists.find(g => g.description === GIST_DESC);
+                if (found) {
+                    gistId = found.id;
+                    const detail = await fetch(found.url, {
+                        headers: { 'Authorization': `token ${token}` }
+                    }).then(r => r.json());
+                    if (detail.files[GIST_FILE]) {
+                        db = JSON.parse(detail.files[GIST_FILE].content);
+                        localStorage.setItem(DB_KEY, JSON.stringify(db));
+                        updateStatus('online');
+                        return true;
                     }
                 }
-            }
-
-            if(id) {
-                const idx = db.transactions.findIndex(t=>t.id == id);
-                if(idx > -1) {
-                    const oldTx = db.transactions[idx];
-                    db.transactions[idx] = {
-                        ...oldTx,
-                        type: currentType, 
-                        val: valTotal, 
-                        date: baseDate, place, method, notes, catJar, catName,
-                        thirdParty: isTP,
-                        origin: origin, destination: dest,
-                        paid: isCredit ? (oldTx.paid !== undefined ? oldTx.paid : false) : true 
-                    };
-                }
-            } else {
-                for(let i=0; i<count; i++) {
-                    const txId = Date.now() + i;
-                    let txDate = new Date(baseDate + 'T12:00:00');
-                    txDate.setMonth(txDate.getMonth() + i);
-                    const isoDate = txDate.toISOString().split('T')[0];
-                    
-                    let finalNote = notes;
-                    if (count > 1 && !isSub) finalNote += ` (${i+1}/${count})`; 
-                    
-                    db.transactions.push({
-                        id: txId,
-                        groupId: groupId, 
-                        type: currentType,
-                        val: valPerTx,
-                        date: isoDate,
-                        place: place,
-                        method: method,
-                        notes: finalNote,
-                        thirdParty: isTP,
-                        catJar: catJar,
-                        catName: catName,
-                        origin: origin, destination: dest,
-                        paid: !isCredit 
-                    });
-                }
-
-                // Automação Pague-se Primeiro
-                if (currentType === 'in' && !isTP) {
-                    const investVal = valTotal * 0.20;
-                    setTimeout(() => {
-                        if (confirm(`PAGUE-SE PRIMEIRO!\n\nDeseja separar 20% (R$ ${investVal.toFixed(2).replace('.', ',')}) desta entrada para a sua Liberdade Financeira agora?`)) {
-                            db.transactions.push({
-                                id: Date.now() + 100,
-                                groupId: Date.now().toString() + '_aporte',
-                                type: 'out',
-                                val: investVal,
-                                date: baseDate,
-                                place: 'APORTE AUTOMÁTICO',
-                                method: 'Pix',
-                                notes: 'Pague-se Primeiro (20% de ' + place + ')',
-                                thirdParty: false,
-                                catJar: 'aporte',
-                                catName: 'Aporte',
-                                origin: '', destination: '',
-                                paid: true
-                            });
-                            saveData();
-                            renderAll();
-                            toast('Aporte de 20% realizado com sucesso!');
-                        }
-                    }, 500);
-                }
-            }
-
-            saveData();
-            closeModal('modal-tx');
-            renderAll();
-        }
-
-        function deleteTxLogic(id) {
-            const tx = db.transactions.find(t => t.id == id);
-            if(!tx) return;
-
-            let deleteFuture = false;
-            const futureCount = db.transactions.filter(t => t.groupId === tx.groupId && t.groupId && t.date > tx.date).length;
-
-            if (tx.groupId && futureCount > 0) {
-                const choice = confirm(`Este lançamento faz parte de uma série.\n\n[OK] para excluir este e TODOS os futuros.\n[Cancelar] para excluir APENAS este.`);
-                deleteFuture = choice;
-            } else {
-                if(!confirm("Excluir lançamento?")) return;
-            }
-
-            if (deleteFuture) {
-                db.transactions = db.transactions.filter(t => 
-                    !(t.groupId === tx.groupId && t.date >= tx.date)
-                );
-            } else {
-                db.transactions = db.transactions.filter(t => t.id != id);
-            }
-            
-            saveData(); renderAll();
-        }
-        
-        function deleteTx() { deleteTxLogic(document.getElementById('txId').value); closeModal('modal-tx'); }
-        function editTx(id) { openTxModal(id); }
-
-        function openCatManager() {
-            document.getElementById('modal-cat-manager').style.display = 'flex';
-            const jarSel = document.getElementById('newCatJar');
-            jarSel.innerHTML = '';
-            jarSel.add(new Option('Renda / Entradas', 'income'));
-            jarSel.add(new Option('Repasses / Terceiros', 'repass'));
-            
-            const cfg = getMonthConfig(viewDate); // Use monthly config
-            cfg.jars.forEach(j => jarSel.add(new Option(j.name, j.id)));
-            renderDelCatOptions();
-        }
-
-        function renderDelCatOptions() {
-            const sel = document.getElementById('delCatSelect');
-            sel.innerHTML = '';
-            
-            if(db.categories['repass']) {
-                const repGrp = document.createElement('optgroup');
-                repGrp.label = "REPASSES";
-                db.categories['repass'].sort().forEach(c => repGrp.appendChild(new Option(c, `repass|${c}`)));
-                sel.appendChild(repGrp);
-            }
-
-            if(db.categories['income']) {
-                const incGrp = document.createElement('optgroup');
-                incGrp.label = "RENDA";
-                db.categories['income'].sort().forEach(c => incGrp.appendChild(new Option(c, `income|${c}`)));
-                sel.appendChild(incGrp);
-            }
-
-            const cfg = getMonthConfig(viewDate); // Use monthly config
-            cfg.jars.forEach(jar => {
-                const grp = document.createElement('optgroup');
-                grp.label = jar.name;
-                (db.categories[jar.id]||[]).sort().forEach(c => {
-                    grp.appendChild(new Option(c, `${jar.id}|${c}`));
-                });
-                sel.appendChild(grp);
-            });
-        }
-
-        function addCategory() {
-            const name = document.getElementById('newCatName').value.trim();
-            const jar = document.getElementById('newCatJar').value;
-            if(!name) return;
-            if(!db.categories[jar]) db.categories[jar] = [];
-            db.categories[jar].push(name);
-            saveData();
-            document.getElementById('newCatName').value = '';
-            closeModal('modal-cat-manager'); 
-            populateUnifiedSelect(); 
-            toast('Categoria Salva');
-        }
-
-        function editCategory() {
-            const val = document.getElementById('delCatSelect').value;
-            if(!val) return;
-            const [jar, oldName] = val.split('|');
-            const newName = prompt("Novo nome para a categoria:", oldName);
-            
-            if(newName && newName !== oldName) {
-                const idx = db.categories[jar].indexOf(oldName);
-                if(idx > -1) db.categories[jar][idx] = newName;
-                let count = 0;
-                db.transactions.forEach(t => {
-                    if(t.catJar === jar && t.catName === oldName) {
-                        t.catName = newName;
-                        count++;
-                    }
-                });
-                saveData();
-                renderDelCatOptions();
-                populateUnifiedSelect();
-                renderAll();
-                toast(`${count} lançamentos atualizados.`);
-            }
-        }
-
-        function deleteCategory() {
-            const val = document.getElementById('delCatSelect').value;
-            if(!val) return;
-            const [jar, name] = val.split('|');
-            if(confirm(`Excluir "${name}"?`)) {
-                db.categories[jar] = db.categories[jar].filter(c => c !== name);
-                saveData();
-                renderDelCatOptions();
-                populateUnifiedSelect();
-            }
-        }
-
-        function openConfig() {
-            const cfg = getMonthConfig(viewDate);
-            const mStr = viewDate.toLocaleDateString('pt-BR', {month:'long', year:'numeric'}).toUpperCase();
-            
-            document.getElementById('cfgMonthLabel').innerText = mStr;
-            document.getElementById('cfgIncome').value = fmtMoney(cfg.income);
-            document.getElementById('cfgFixed').value = fmtMoney(cfg.fixed);
-            updateBaseCalc();
-            renderJarConfigList(cfg.jars);
-            document.getElementById('modal-config').style.display = 'flex';
-        }
-
-        document.getElementById('cfgIncome').addEventListener('input', updateBaseCalc);
-        document.getElementById('cfgFixed').addEventListener('input', updateBaseCalc);
-
-        function updateBaseCalc() {
-            const inc = parseMoney(document.getElementById('cfgIncome').value);
-            const fix = parseMoney(document.getElementById('cfgFixed').value);
-            document.getElementById('cfgBaseCalc').innerText = fmtMoney(Math.max(0, inc - fix));
-        }
-
-        function renderJarConfigList(jars) {
-            const l = document.getElementById('jarConfigList');
-            l.innerHTML = '';
-            
-            l.innerHTML += `
-                <div class="text-xs text-sky-500 font-bold mb-2">A nova metodologia utiliza 3 blocos principais. O Custo de Vida é definido pelo valor fixo acima. O restante da renda é distribuído entre Aporte e Projetos.</div>
-            `;
-            
-            jars.forEach((j, i) => {
-                const info = JARS_INFO[j.id] || JARS_INFO['custo_vida'];
-                l.innerHTML += `
-                <div class="flex items-center gap-2 p-2 bg-slate-100 dark:bg-white/5 rounded-lg border border-slate-200 dark:border-white/10">
-                    <div class="w-8 h-8 rounded flex items-center justify-center ${info.color.replace('text-','bg-')} text-white"><i data-lucide="${info.icon}"></i></div>
-                    <div class="flex-1">
-                        <div class="text-xs font-bold uppercase">${j.name}</div>
-                        <div class="text-[9px] opacity-50">${info.desc}</div>
-                    </div>
-                    <input class="hidden" id="jar-id-${i}" value="${j.id}">
-                    <input type="text" class="w-24 p-1 rounded bg-white dark:bg-black/20 text-center font-bold text-xs border border-slate-200 dark:border-white/10" value="${j.name}" id="jar-name-${i}">
-                </div>`;
-            });
-            lucide.createIcons();
-        }
-
-        function applyPreset(type) {
-            let newJars = [
-                {id:'custo_vida', name:'Custo de Vida', type:'fixed'}, 
-                {id:'aporte', name:'O Aporte', type:'surplus'}, 
-                {id:'projetos', name:'Projetos', type:'variable'}
-            ];
-            renderJarConfigList(newJars);
-        }
-
-        function addJar() {
-            // Add visual row
-            const id = prompt("ID único do pote (sem espaços, ex: invest):");
-            if(id) {
-                // We need to persist this temporarily in the UI list.
-                // Simpler: Just save current state to DB then re-open config.
-                // OR: Manipulate DOM directly.
-                // Let's modify the underlying object of the *current month* if it exists, or create it.
-                let mStr = viewDate.toISOString().slice(0, 7);
-                if (!db.monthlyConfig[mStr]) db.monthlyConfig[mStr] = JSON.parse(JSON.stringify(db.config)); // Clone global
-                
-                db.monthlyConfig[mStr].jars.push({id: id.toLowerCase(), name: 'Novo Pote', perc: 0});
-                if(!db.categories[id]) db.categories[id] = [];
-                openConfig(); // Re-render
-            }
-        }
-
-        function removeJar(i) {
-            if(confirm("Remover este pote?")) {
-                let mStr = viewDate.toISOString().slice(0, 7);
-                if (!db.monthlyConfig[mStr]) db.monthlyConfig[mStr] = JSON.parse(JSON.stringify(db.config));
-                
-                db.monthlyConfig[mStr].jars.splice(i, 1);
-                openConfig();
-            }
-        }
-
-        function saveConfig() {
-            const mStr = viewDate.toISOString().slice(0, 7);
-            const income = parseMoney(document.getElementById('cfgIncome').value);
-            const fixed = parseMoney(document.getElementById('cfgFixed').value);
-            
-            // Extract Jars from DOM to capture edits
-            const list = document.getElementById('jarConfigList');
-            const newJars = [];
-            const rows = list.querySelectorAll('div.flex'); // Assuming rows are divs
-            
-            // Re-read from current month config to ensure we have base IDs, or use DOM
-            // Since we render inputs with IDs jar-id-i, jar-name-i, jar-perc-i
-            
-            // Find how many items
-            let i = 0;
-            while(document.getElementById(`jar-id-${i}`)) {
-                newJars.push({
-                    id: document.getElementById(`jar-id-${i}`).value,
-                    name: document.getElementById(`jar-name-${i}`).value
-                });
-                i++;
-            }
-
-            db.monthlyConfig[mStr] = { income, fixed, jars: newJars };
-            
-            saveData();
-            closeModal('modal-config');
-            renderAll();
+            } catch(e) { console.error(e); }
+            return false;
         }
 
         async function saveData() {
-            // ★ GUARD — nunca sobrescrever a nuvem com dados vazios
+            // ★ GUARD — nunca sobrescrever nuvem com dados vazios
             if (!db.transactions || db.transactions.length === 0) {
                 const existing = localStorage.getItem(DB_KEY);
                 if (existing) {
                     try {
-                        const parsed = JSON.parse(existing);
-                        if (parsed.transactions && parsed.transactions.length > 0) {
-                            console.warn('[BENAI] saveData bloqueado: db vazio mas localStorage tem dados. Nuvem preservada.');
+                        const p = JSON.parse(existing);
+                        if (p.transactions && p.transactions.length > 0) {
+                            console.warn('[BENAI] saveData bloqueado: dados locais parecem vazios. Nuvem preservada.');
                             return;
                         }
                     } catch(e) {}
@@ -2012,171 +471,287 @@
             }
             db.lastUpdated = Date.now();
             localStorage.setItem(DB_KEY, JSON.stringify(db));
-            
             const token = localStorage.getItem(TOKEN_KEY);
-            if(token) {
-                updateStatus('sync');
-                try {
-                    if(!gistId) {
-                         const s = await fetch('https://api.github.com/gists',{headers:{'Authorization':`token ${token}`}});
-                         const g = await s.json();
-                         const f = g.find(x=>x.description===GIST_DESC);
-                         if(f) gistId = f.id;
-                    }
-                    const body = JSON.stringify({ description: GIST_DESC, public: false, files: { [GIST_FILENAME]: { content: JSON.stringify(db) } } });
-                    let url = 'https://api.github.com/gists'; let method = 'POST';
-                    if(gistId) { url += `/${gistId}`; method = 'PATCH'; }
-                    await fetch(url, { method, headers: {'Authorization': `token ${token}`}, body });
-                    updateStatus('online');
-                } catch(e) { updateStatus('error'); }
-            }
-        }
-
-        async function pullFromCloud() {
-            const token = localStorage.getItem(TOKEN_KEY);
-            const headers = { 'Authorization': `token ${token}` };
-            const res = await fetch('https://api.github.com/gists', { headers });
-            if (!res.ok) throw new Error("API Error");
-            
-            const gists = await res.json();
-            const found = gists.find(g => g.description === GIST_DESC);
-            
-            if (found) {
-                gistId = found.id;
-                const r = await fetch(found.url, { headers });
-                const d = await r.json();
-                if (d.files[GIST_FILENAME]) {
-                    const cloudData = JSON.parse(d.files[GIST_FILENAME].content);
-                    db = migrateData(cloudData);
-                    localStorage.setItem(DB_KEY, JSON.stringify(db));
-                    return true;
+            if (!token) return;
+            updateStatus('sync');
+            try {
+                if (!gistId) {
+                    const list = await fetch('https://api.github.com/gists', {
+                        headers: { 'Authorization': `token ${token}` }
+                    }).then(r => r.json());
+                    const found = list.find(g => g.description === GIST_DESC);
+                    if (found) gistId = found.id;
                 }
-            }
-            return false;
+                const payload = { description: GIST_DESC, public: false, files: { [GIST_FILE]: { content: JSON.stringify(db) } } };
+                const url    = gistId ? `https://api.github.com/gists/${gistId}` : 'https://api.github.com/gists';
+                const method = gistId ? 'PATCH' : 'POST';
+                const res = await fetch(url, { method, headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (res.ok) { if (method === 'POST') { const j = await res.json(); gistId = j.id; } updateStatus('online'); }
+                else updateStatus('error');
+            } catch(e) { updateStatus('error'); }
         }
 
-        // --- CLOSING REPORT ---
-        function checkClosing() {
-            const mStr = viewDate.toISOString().slice(0, 7);
-            const cfg = getMonthConfig(viewDate);
-            const pending = db.transactions.filter(t => t.date.startsWith(mStr) && t.method === 'Crédito' && !t.paid);
-            
-            if (pending.length > 0) {
-                alert(`Atenção: Existem ${pending.length} lançamentos de Crédito não marcados como pagos neste mês.`);
-            }
-            openClosingModal();
+        // ── CASCATA ──
+        function getMonthStr() { return `${viewDate.getFullYear()}-${String(viewDate.getMonth()+1).padStart(2,'0')}`; }
+        function getMonthTxs() { const m = getMonthStr(); return db.transactions.filter(t => t.date.startsWith(m)); }
+
+        function calcCascata() {
+            const txs      = getMonthTxs();
+            const receita  = txs.filter(t => t.tipo === 'in').reduce((a,b) => a+b.val, 0);
+            const obrGasto = txs.filter(t => t.tipo === 'out' && t.pote === 'obrigacao').reduce((a,b) => a+b.val, 0);
+            const resGasto = txs.filter(t => t.tipo === 'out' && t.pote === 'reserva').reduce((a,b) => a+b.val, 0);
+            const lazGasto = txs.filter(t => t.tipo === 'out' && t.pote === 'lazer').reduce((a,b) => a+b.val, 0);
+            const saldoLivre = Math.max(0, receita - obrGasto);
+            return { receita, obrGasto, resGasto, lazGasto, saldoLivre, resMeta: saldoLivre * 0.8, lazTeto: saldoLivre * 0.2 };
         }
 
-        function openClosingModal() {
-            const mStr = viewDate.toISOString().slice(0, 7);
-            const cfg = getMonthConfig(viewDate); 
+        // ── RENDER ──
+        function renderAll() { renderDashboard(); renderTxList(); renderParcelamentos(); }
 
-            // Month Balance (Isolated)
-            const mIn = db.transactions.filter(t => t.type === 'in' && t.date.startsWith(mStr) && !isRepassCategory(t.catName)).reduce((a,b)=>a+b.val,0);
-            const mOut = db.transactions.filter(t => t.type === 'out' && t.date.startsWith(mStr) && !isRepassCategory(t.catName) && !t.thirdParty).reduce((a,b)=>a+b.val,0);
-            
-            document.getElementById('rpt-in').innerText = fmtMoney(mIn);
-            document.getElementById('rpt-out').innerText = fmtMoney(mOut);
+        function renderDashboard() {
+            const { receita, obrGasto, resGasto, lazGasto, saldoLivre, resMeta, lazTeto } = calcCascata();
+            document.getElementById('receitaTotal').innerText = fmtMoney(receita);
+            document.getElementById('saldoLivre').innerText   = fmtMoney(saldoLivre);
 
-            // Jars Analysis
-            const tb = document.getElementById('rpt-table-body');
-            tb.innerHTML = '';
-            
-            const baseBudget = Math.max(0, cfg.income - cfg.fixed);
-            let totalSurplus = 0;
+            document.getElementById('obrVal').innerText  = fmtMoney(obrGasto);
+            document.getElementById('obrMeta').innerText = receita > 0 ? `${((obrGasto/receita)*100).toFixed(0)}% da receita` : '—';
+            document.getElementById('obrBar').style.width = (receita > 0 ? Math.min((obrGasto/receita)*100,100) : 0) + '%';
 
-            cfg.jars.forEach(jar => {
-                let limit = 0;
-                if (jar.id === 'custo_vida') {
-                    limit = cfg.fixed;
-                } else if (jar.id === 'aporte') {
-                    limit = baseBudget * 0.7;
-                } else if (jar.id === 'projetos') {
-                    limit = baseBudget * 0.3;
-                }
-                
-                const spent = db.transactions
-                    .filter(t => t.catJar === jar.id && t.date.startsWith(mStr) && !isRepassCategory(t.catName) && !t.thirdParty)
-                    .reduce((a,b)=>a+b.val,0);
-                
-                const leftover = limit - spent;
-                if (leftover > 0 && jar.id !== 'custo_vida') totalSurplus += leftover;
+            document.getElementById('resVal').innerText  = fmtMoney(resGasto);
+            document.getElementById('resMeta').innerText = `meta: ${fmtMoney(resMeta)}`;
+            document.getElementById('resBar').style.width = (resMeta > 0 ? Math.min((resGasto/resMeta)*100,100) : 0) + '%';
 
-                const colorClass = leftover >= 0 ? 'positive' : 'negative';
-                
-                tb.innerHTML += `
-                <tr>
-                    <td>${jar.name}</td>
-                    <td>${fmtMoney(limit)}</td>
-                    <td>${fmtMoney(spent)}</td>
-                    <td class="text-right report-surplus ${colorClass}">${fmtMoney(leftover)}</td>
-                </tr>`;
-            });
+            document.getElementById('lazVal').innerText  = fmtMoney(lazGasto);
+            document.getElementById('lazMeta').innerText = `teto: ${fmtMoney(lazTeto)}`;
+            document.getElementById('lazBar').style.width = (lazTeto > 0 ? Math.min((lazGasto/lazTeto)*100,100) : 0) + '%';
 
-            // Advice
-            const adviceEl = document.getElementById('rpt-advice');
-            if (totalSurplus > 0) {
-                adviceEl.innerHTML = `
-                    Parabéns! Você tem <strong>${fmtMoney(totalSurplus)}</strong> de sobras nos potes não essenciais.
-                    <button onclick="transferSurplus(${totalSurplus})" class="mt-3 w-full py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-sky-500/30">
-                        <i data-lucide="arrow-right-circle" class="w-4 h-4"></i> TRANSFERIR SOBRA PARA INVESTIMENTOS
-                    </button>
-                `;
-            } else {
-                adviceEl.innerHTML = `Neste mês não houve sobras significativas nos potes de metas.`;
+            // Aviso visual se Lazer ultrapassou o teto
+            document.querySelector('.pote-card.laz').style.borderColor =
+                (lazTeto > 0 && lazGasto > lazTeto) ? 'rgba(248,113,113,.5)' : 'rgba(251,146,60,.25)';
+        }
+
+        function renderTxList() {
+            const MONTHS = ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
+            const PAGTO  = { pix:'<i class="fa-brands fa-pix" style="color:#2dd4bf;" title="Pix"></i>', credito:'<i class="fa-regular fa-credit-card" style="color:#a78bfa;" title="Crédito"></i>', debito:'<i class="fa-solid fa-credit-card" style="color:#3b82f6;" title="Débito"></i>', dinheiro:'<i class="fa-solid fa-money-bill-wave" style="color:#34d399;" title="Dinheiro"></i>' };
+            const BADGE  = { obrigacao:'<span class="pote-badge badge-obr">Obrigação</span>', reserva:'<span class="pote-badge badge-res">Reserva</span>', lazer:'<span class="pote-badge badge-laz">Lazer</span>' };
+
+            let txs = getMonthTxs();
+            if      (activeFilter === 'in')  txs = txs.filter(t => t.tipo === 'in');
+            else if (activeFilter === 'out') txs = txs.filter(t => t.tipo === 'out');
+            else if (['obrigacao','reserva','lazer'].includes(activeFilter)) txs = txs.filter(t => t.pote === activeFilter);
+            txs.sort((a,b) => b.date.localeCompare(a.date));
+
+            const list = document.getElementById('txList');
+            if (txs.length === 0) {
+                list.innerHTML = `<div class="empty-state"><i class="fa-solid fa-receipt"></i><p style="font-weight:700;margin-top:8px;">Nenhum lançamento</p><p style="font-size:.8rem;margin-top:4px;">Toque em "Novo Lançamento" para começar</p></div>`;
+                return;
             }
+            list.innerHTML = txs.map(t => {
+                const [y,m,d] = t.date.split('-');
+                const isIn    = t.tipo === 'in';
+                const badge   = isIn ? '<span class="pote-badge badge-in">Entrada</span>' : (BADGE[t.pote] || '');
+                const local   = t.local ? `<span>📍 ${t.local}</span>` : '';
+                return `
+                <div class="tx-item">
+                    <div class="tx-date-box">
+                        <span class="tx-day">${d}</span>
+                        <span class="tx-month">${MONTHS[parseInt(m)-1]}</span>
+                    </div>
+                    <div class="tx-info">
+                        <div class="tx-desc">${t.desc || '—'}</div>
+                        <div class="tx-sub">${badge} ${PAGTO[t.pagamento]||''} ${local}</div>
+                    </div>
+                    <div class="tx-right">
+                        <span class="tx-val ${isIn?'in':'out'}">${isIn?'+':'−'}${fmtMoney(t.val)}</span>
+                        <div class="tx-actions">
+                            <button class="act act-edit" onclick="editTx('${t.id}')"><i class="fa-solid fa-pencil"></i></button>
+                            <button class="act act-del"  onclick="delTxDirect('${t.id}')"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
 
-            document.getElementById('modal-closing').style.display = 'flex';
+        function renderParcelamentos() {
+            const list = document.getElementById('parcelaList');
+            if (!db.parcelamentos || db.parcelamentos.length === 0) {
+                list.innerHTML = `<div class="empty-state" style="padding:16px;"><p style="font-size:.8rem;">Nenhum parcelamento cadastrado.<br>Use o botão "Adicionar" para registrar suas dívidas.</p></div>`;
+                return;
+            }
+            list.innerHTML = db.parcelamentos.map(p => {
+                const pct    = Math.round((p.atual / p.total) * 100);
+                const restam = p.total - p.atual;
+                return `
+                <div class="parcela-card glass">
+                    <div class="parcela-header">
+                        <div>
+                            <p class="parcela-nome">${p.nome}</p>
+                            <p class="parcela-info">Parcela ${p.atual} de ${p.total}</p>
+                        </div>
+                        <button class="edit-parcela" onclick="openParcelaModal('${p.id}')">
+                            <i class="fa-solid fa-pencil"></i> editar
+                        </button>
+                    </div>
+                    <div class="parcela-bar-bg"><div class="parcela-bar-fill" style="width:${pct}%"></div></div>
+                    <div class="parcela-pct">
+                        <span>${pct}% concluído</span>
+                        <span>${restam} restante${restam!==1?'s':''}</span>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // ── TX MODAL ──
+        function openTxModal() {
+            document.getElementById('txId').value = '';
+            document.getElementById('txVal').value = '';
+            document.getElementById('txDesc').value = '';
+            document.getElementById('txLocal').value = '';
+            document.getElementById('txPote').value = 'obrigacao';
+            document.getElementById('txPagamento').value = 'pix';
+            document.getElementById('btnDeleteTx').style.display = 'none';
+            document.getElementById('txModalTitle').innerText = 'Novo Lançamento';
+            setTodayDate();
+            setTipo('out');
+            openModal('modal-tx');
             lucide.createIcons();
         }
 
-        function transferSurplus(amount) {
-            closeModal('modal-closing');
-            openTxModal();
-            document.getElementById('txVal').value = fmtMoney(amount);
-            setTxType('out');
-            document.getElementById('txCatUnified').value = 'aporte|Aporte';
-            document.getElementById('txPlace').value = 'APORTE DE SOBRAS';
-            document.getElementById('txNotes').value = 'Transferência de sobras do mês';
+        function editTx(id) {
+            const t = db.transactions.find(x => x.id === id);
+            if (!t) return;
+            document.getElementById('txId').value        = t.id;
+            document.getElementById('txVal').value       = fmtMoney(t.val);
+            document.getElementById('txDate').value      = t.date;
+            document.getElementById('txDesc').value      = t.desc || '';
+            document.getElementById('txLocal').value     = t.local || '';
+            document.getElementById('txPote').value      = t.pote || 'obrigacao';
+            document.getElementById('txPagamento').value = t.pagamento || 'pix';
+            document.getElementById('btnDeleteTx').style.display = 'flex';
+            document.getElementById('txModalTitle').innerText = 'Editar Lançamento';
+            setTipo(t.tipo);
+            openModal('modal-tx');
+            lucide.createIcons();
         }
+
+        function saveTx() {
+            const val  = parseMoney(document.getElementById('txVal').value);
+            const desc = document.getElementById('txDesc').value.trim();
+            if (!val || val <= 0) { showToast('Informe um valor válido'); return; }
+            if (!desc)            { showToast('Informe uma descrição'); return; }
+            const id       = document.getElementById('txId').value;
+            const date     = document.getElementById('txDate').value;
+            const pote     = currentTipo === 'out' ? document.getElementById('txPote').value : null;
+            const local    = document.getElementById('txLocal').value.trim();
+            const pagamento= document.getElementById('txPagamento').value;
+            if (id) {
+                const idx = db.transactions.findIndex(x => x.id === id);
+                if (idx > -1) db.transactions[idx] = { ...db.transactions[idx], val, tipo: currentTipo, date, desc, pote, local, pagamento };
+            } else {
+                db.transactions.push({ id: Date.now().toString(), val, tipo: currentTipo, date, desc, pote, local, pagamento });
+            }
+            saveData(); closeModal('modal-tx'); renderAll(); showToast('Lançamento salvo!');
+        }
+
+        function deleteTx() {
+            const id = document.getElementById('txId').value;
+            if (!id || !confirm('Excluir este lançamento?')) return;
+            db.transactions = db.transactions.filter(x => x.id !== id);
+            saveData(); closeModal('modal-tx'); renderAll(); showToast('Removido');
+        }
+
+        function delTxDirect(id) {
+            if (!confirm('Excluir?')) return;
+            db.transactions = db.transactions.filter(x => x.id !== id);
+            saveData(); renderAll(); showToast('Removido');
+        }
+
+        // ── PARCELA MODAL ──
+        function openParcelaModal(id) {
+            if (id) {
+                const p = db.parcelamentos.find(x => x.id === id);
+                if (!p) return;
+                document.getElementById('parcelaId').value    = p.id;
+                document.getElementById('parcelaNome').value  = p.nome;
+                document.getElementById('parcelaAtual').value = p.atual;
+                document.getElementById('parcelaTotal').value = p.total;
+                document.getElementById('btnDeleteParcela').style.display = 'flex';
+            } else {
+                ['parcelaId','parcelaNome','parcelaAtual','parcelaTotal'].forEach(id => document.getElementById(id).value = '');
+                document.getElementById('btnDeleteParcela').style.display = 'none';
+            }
+            openModal('modal-parcela'); lucide.createIcons();
+        }
+
+        function saveParcela() {
+            const nome  = document.getElementById('parcelaNome').value.trim();
+            const atual = parseInt(document.getElementById('parcelaAtual').value);
+            const total = parseInt(document.getElementById('parcelaTotal').value);
+            if (!nome)                  { showToast('Informe o nome'); return; }
+            if (!atual || atual < 1)    { showToast('Parcela atual inválida'); return; }
+            if (!total || total < atual) { showToast('Total inválido'); return; }
+            const id = document.getElementById('parcelaId').value;
+            if (id) {
+                const idx = db.parcelamentos.findIndex(x => x.id === id);
+                if (idx > -1) db.parcelamentos[idx] = { id, nome, atual, total };
+            } else {
+                db.parcelamentos.push({ id: Date.now().toString(), nome, atual, total });
+            }
+            saveData(); closeModal('modal-parcela'); renderParcelamentos(); showToast('Parcelamento salvo!');
+        }
+
+        function deleteParcela() {
+            const id = document.getElementById('parcelaId').value;
+            if (!id || !confirm('Excluir este parcelamento?')) return;
+            db.parcelamentos = db.parcelamentos.filter(x => x.id !== id);
+            saveData(); closeModal('modal-parcela'); renderParcelamentos(); showToast('Removido');
+        }
+
+        // ── HELPERS ──
+        function setTipo(tipo) {
+            currentTipo = tipo;
+            document.getElementById('btnOut').className = `tipo-btn ${tipo==='out'?'active-out':''}`;
+            document.getElementById('btnIn').className  = `tipo-btn ${tipo==='in'?'active-in':''}`;
+            document.getElementById('poteGroup').style.display = tipo === 'out' ? 'block' : 'none';
+        }
+
+        function setTodayDate() { document.getElementById('txDate').value = new Date().toISOString().split('T')[0]; }
+
+        function setFilter(f) {
+            activeFilter = f;
+            const map = { all:'fAll', in:'fIn', out:'fOut', obrigacao:'fObr', reserva:'fRes', lazer:'fLaz' };
+            Object.entries(map).forEach(([key, elId]) => {
+                const el = document.getElementById(elId);
+                if (el) el.classList.toggle('active', key === f);
+            });
+            renderTxList();
+        }
+
+        function changeMonth(d) { viewDate.setMonth(viewDate.getMonth()+d); updateMonthLabel(); renderAll(); }
+        function updateMonthLabel() {
+            const M = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+            document.getElementById('monthLabel').innerText = `${M[viewDate.getMonth()].slice(0,3).toUpperCase()} ${viewDate.getFullYear()}`;
+        }
+
+        function openModal(id)  { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function openCloudModal() { openModal('modal-cloud'); lucide.createIcons(); }
 
         function updateStatus(s) {
-            const d = document.getElementById('statusDot');
-            d.className = 'status-dot ' + (s==='online'?'online':(s==='sync'?'sync':'offline'));
-        }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        function openCloudModal() { document.getElementById('modal-cloud').style.display='flex'; }
-        function saveManualToken() { localStorage.setItem(TOKEN_KEY, document.getElementById('manualToken').value); initApp(); closeModal('modal-cloud'); }
-        function removeToken() { localStorage.removeItem(TOKEN_KEY); location.reload(); }
-        function backupJSON() { const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(db)],{type:"application/json"})); a.download="finance_bkp.json"; a.click(); }
-        
-        function restoreJSON(i) { 
-            const r=new FileReader(); 
-            r.onload=e=>{ 
-                try { 
-                    const recovered = JSON.parse(e.target.result);
-                    db = migrateData(recovered);
-                    saveData(); 
-                    location.reload(); 
-                } catch { alert('Erro'); } 
-            }; 
-            r.readAsText(i.files[0]); 
+            const c = { online:'#34d399', sync:'#38bdf8', error:'#f87171', offline:'#94a3b8' }[s] || '#94a3b8';
+            ['statusDot','statusDot2'].forEach(id => { const el = document.getElementById(id); if(el) el.style.background = c; });
         }
 
-        
-        function changeMonth(d) { viewDate.setMonth(viewDate.getMonth()+d); updateDateDisplay(); renderAll(); }
-        function setSpecificMonth(v) { if(v){ const[y,m]=v.split('-'); viewDate=new Date(y,m-1,1); updateDateDisplay(); renderAll(); } }
-        function updateDateDisplay() { 
-            const str = viewDate.toLocaleDateString('pt-BR', {month:'long', year:'numeric'});
-            document.getElementById('monthDisplay').innerText = str.charAt(0).toUpperCase() + str.slice(1);
+        function forceSync()  { closeModal('modal-cloud'); initApp(); }
+        function doBackup()   { BenaiCore.backupJSON(db, 'finance_backup.json'); }
+        function doRestore(input) {
+            BenaiCore.restoreJSON(input, data => {
+                db = data;
+                if (!db.transactions)  db.transactions  = [];
+                if (!db.parcelamentos) db.parcelamentos = [];
+                saveData(); renderAll(); showToast('Dados restaurados!');
+            });
         }
-
     </script>
-
-    <!-- ★ BENAI CLOUD FAB ★ -->
-    <button onclick="openCloudModal()" class="benai-fab" title="Nuvem &amp; Backup">
-        <div id="statusDot" class="benai-fab-dot"></div>
-        <i class="fa-solid fa-cloud"></i>
-    </button>
 </body>
 </html>
