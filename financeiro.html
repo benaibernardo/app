@@ -302,6 +302,7 @@
 <body>
     <!-- BENAI AUTH GUARD -->
     <script src="auth.js"></script>
+    <script src="benai-core.js"></script>
 
 
     <div id="cloud-shield" style="position:fixed; inset:0; z-index:99999; background:#020617; display:flex; flex-direction:column; align-items:center; justify-content:center; color:white;">
@@ -2161,36 +2162,13 @@
             }; 
             r.readAsText(i.files[0]); 
         }
-        
-        function maskMoney(i) { let v = i.value.replace(/\D/g,''); v = (v/100).toFixed(2) + ''; v = v.replace(".", ","); v = v.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.'); i.value = 'R$ ' + v; }
-        function parseMoney(s) { return parseFloat(s.replace(/[^0-9,]/g,'').replace(',','.')) || 0; }
-        function fmtMoney(n) { return n.toLocaleString('pt-BR', {style:'currency', currency:'BRL'}); }
-        function toast(msg) { const t=document.getElementById('toast-msg'); document.getElementById('toast').style.transform='translateX(0)'; t.innerText=msg; setTimeout(()=>document.getElementById('toast').style.transform='translateX(150%)', 3000); }
+
         
         function changeMonth(d) { viewDate.setMonth(viewDate.getMonth()+d); updateDateDisplay(); renderAll(); }
         function setSpecificMonth(v) { if(v){ const[y,m]=v.split('-'); viewDate=new Date(y,m-1,1); updateDateDisplay(); renderAll(); } }
         function updateDateDisplay() { 
             const str = viewDate.toLocaleDateString('pt-BR', {month:'long', year:'numeric'});
             document.getElementById('monthDisplay').innerText = str.charAt(0).toUpperCase() + str.slice(1);
-        }
-
-        function initTheme() {
-            if(localStorage.getItem('theme') === 'light') {
-                document.documentElement.setAttribute('data-theme', 'light');
-                document.getElementById('theme-icon').setAttribute('data-lucide', 'sun');
-            }
-        }
-        function toggleTheme() {
-            if(document.documentElement.getAttribute('data-theme') === 'light') {
-                document.documentElement.removeAttribute('data-theme');
-                localStorage.setItem('theme', 'dark');
-                document.getElementById('theme-icon').setAttribute('data-lucide', 'moon');
-            } else {
-                document.documentElement.setAttribute('data-theme', 'light');
-                localStorage.setItem('theme', 'light');
-                document.getElementById('theme-icon').setAttribute('data-lucide', 'sun');
-            }
-            lucide.createIcons();
         }
 
     </script>

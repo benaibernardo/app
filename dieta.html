@@ -230,11 +230,43 @@
             transition: background 0.3s;
         }
     
+
+        /* ★ BENAI CORE — classes utilitárias (substituem styles inline) */
+        .food-icon-prot { color: var(--prot); }
+        .food-icon-carb { color: var(--carb); }
+        .food-icon-fat  { color: var(--fat);  }
+        .food-icon-veg  { color: var(--veg);  }
+        .food-icon-fruit { color: var(--fruit); }
+        .icon-primary   { color: var(--primary); }
+        .icon-muted     { color: var(--text-muted); }
+        .d-flex-gap     { display: flex; gap: 12px; }
+        .flex-1         { flex: 1; }
+        .divider-line   { flex: 1; height: 2px; background: var(--border); border-radius: 2px; }
+        .text-center-modal { text-align: center; }
+
+        /* ★ BENAI DIETA — classes estruturais (substituem styles inline restantes) */
+        .meal-header-row  { margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .meal-title       { font-family: var(--font-num); font-weight: 800; color: var(--text); font-size: 1.5rem; }
+        .food-title       { font-size: 1.05rem; font-family: var(--font-num); font-weight: 800; color: var(--text); }
+        .modal-header-row { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .modal-title      { font-weight: 800; font-family: var(--font-num); font-size: 1.2rem; color: var(--text); }
+        .modal-close-btn  { font-size: 1.4rem; cursor: pointer; color: var(--text-muted); }
+        .icon-accent      { color: var(--accent); }
+        .modal-icon-wrap  { width: 60px; height: 60px; background: var(--bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; color: var(--primary); box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
+        .modal-cloud-title { color: var(--text); font-weight: 800; font-family: var(--font-num); font-size: 1.2rem; }
+        .modal-cloud-sub  { font-size: 0.85rem; color: var(--text-muted); margin: 5px 0 20px; }
+        .btn-cloud-sync   { width: 100%; padding: 14px; border-radius: 12px; border: 2px dashed var(--accent); color: var(--accent); background: transparent; font-weight: 800; margin-bottom: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.9rem; }
+        .btn-cloud-action { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--text-muted); color: var(--text); background: transparent; font-weight: 800; margin-bottom: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.9rem; }
+        .btn-cloud-label  { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--text-muted); color: var(--text); background: var(--bg); font-weight: 800; margin-bottom: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.9rem; }
+        .btn-cloud-close  { margin-top: 10px; background: transparent; border: none; color: var(--text-muted); font-weight: 800; cursor: pointer; font-size: 0.9rem; padding: 10px; }
+        .icon-drink       { color: #a16207; }
+        .icon-alert       { color: var(--alert); }
 </style>
 </head>
 <body id="body-lock">
     <!-- BENAI AUTH GUARD -->
     <script src="auth.js"></script>
+    <script src="benai-core.js"></script>
 
 
     
@@ -254,9 +286,9 @@
                 </div>
             </header>
 
-            <div style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
-                <h2 style="font-family: var(--font-num); font-weight: 800; color: var(--text); font-size: 1.5rem;">🔥 Rotina Diária</h2>
-                <div style="flex: 1; height: 2px; background: var(--border); border-radius: 2px;"></div>
+            <div class="meal-header-row">
+                <h2 class="meal-title">🔥 Rotina Diária</h2>
+                <div class="divider-line"></div>
             </div>
 
             <details class="painel-modulo">
@@ -272,34 +304,34 @@
             </details>
 
             <div class="painel-modulo">
-                <h3 style="font-size: 1.05rem; font-family: var(--font-num); font-weight: 800; color: var(--text); margin: 0;"><i class="fa-solid fa-bottle-water" style="color:var(--primary);"></i> Hidratação Meta: 4L</h3>
+                <h3 style="font-size: 1.05rem; font-family: var(--font-num); font-weight: 800; color: var(--text); margin: 0;"><i class="fa-solid fa-bottle-water" class="icon-primary"></i> Hidratação Meta: 4L</h3>
                 <div class="bottle-container">
                     <div class="bottle" id="bottle1" onclick="toggleBottle(1)">
-                        <i class="fa-solid fa-droplet" style="color: var(--text-muted);" id="drop1"></i>
+                        <i class="fa-solid fa-droplet" class="icon-muted" id="drop1"></i>
                         <span class="bottle-label">Garrafa 1<br>(2L)</span>
                     </div>
                     <div class="bottle" id="bottle2" onclick="toggleBottle(2)">
-                        <i class="fa-solid fa-droplet" style="color: var(--text-muted);" id="drop2"></i>
+                        <i class="fa-solid fa-droplet" class="icon-muted" id="drop2"></i>
                         <span class="bottle-label">Garrafa 2<br>(2L)</span>
                     </div>
                 </div>
             </div>
 
             <div class="painel-modulo">
-                <h3 style="font-size: 1.05rem; font-family: var(--font-num); font-weight: 800; color: var(--text); margin: 0 0 18px 0;"><i class="fa-solid fa-brain" style="color:var(--primary);"></i> Rastreador do SNC</h3>
+                <h3 style="font-size: 1.05rem; font-family: var(--font-num); font-weight: 800; color: var(--text); margin: 0 0 18px 0;"><i class="fa-solid fa-brain" class="icon-primary"></i> Rastreador do SNC</h3>
                 
                 <div class="slider-container">
-                    <label><span>Sono Acordar (04:00)</span> <span id="valSono" style="color:var(--primary);">3</span></label>
+                    <label><span>Sono Acordar (04:00)</span> <span id="valSono" class="icon-primary">3</span></label>
                     <input type="range" min="1" max="5" value="3" id="rngSono" oninput="document.getElementById('valSono').innerText = this.value; saveBiofeedback();">
                 </div>
                 
                 <div class="slider-container">
-                    <label><span>Fadiga Pós-Trabalho</span> <span id="valEstresse" style="color:var(--primary);">3</span></label>
+                    <label><span>Fadiga Pós-Trabalho</span> <span id="valEstresse" class="icon-primary">3</span></label>
                     <input type="range" min="1" max="5" value="3" id="rngEstresse" oninput="document.getElementById('valEstresse').innerText = this.value; saveBiofeedback();">
                 </div>
                 
                 <div class="slider-container">
-                    <label><span>Vontade de Compulsão</span> <span id="valCompulsao" style="color:var(--primary);">3</span></label>
+                    <label><span>Vontade de Compulsão</span> <span id="valCompulsao" class="icon-primary">3</span></label>
                     <input type="range" min="1" max="5" value="3" id="rngCompulsao" oninput="document.getElementById('valCompulsao').innerText = this.value; saveBiofeedback();">
                 </div>
             </div>
@@ -315,9 +347,9 @@
 
     <div id="modal-food" class="modal">
         <div class="modal-box">
-            <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
-                <h3 style="font-weight:800; font-family:var(--font-num); font-size:1.2rem; color:var(--text);">Item do Cardápio</h3>
-                <i class="fa-solid fa-xmark" style="font-size:1.4rem; cursor:pointer; color:var(--text-muted);" onclick="closeModal('food')"></i>
+            <div class="modal-header-row">
+                <h3 class="modal-title">Item do Cardápio</h3>
+                <i class="fa-solid fa-xmark" class="modal-close-btn" onclick="closeModal('food')"></i>
             </div>
             
             <input type="hidden" id="edit-meal-idx">
@@ -328,12 +360,12 @@
                 <input type="text" id="inp-name" class="inp-field" placeholder="Ex: Ovos Mexidos">
             </div>
 
-            <div style="display:flex; gap:12px;">
-                <div class="inp-group" style="flex:1;">
+            <div class="d-flex-gap">
+                <div class="inp-group" class="flex-1">
                     <label class="inp-label">Quantidade</label>
                     <input type="text" id="inp-qty" class="inp-field" placeholder="Ex: 3">
                 </div>
-                <div class="inp-group" style="flex:1;">
+                <div class="inp-group" class="flex-1">
                     <label class="inp-label">Unidade</label>
                     <input type="text" id="inp-unit" class="inp-field" placeholder="unid / g / ml">
                 </div>
@@ -353,7 +385,7 @@
             </div>
 
             <div class="inp-group">
-                <label class="inp-label" style="color:var(--accent);">Substituição (Gaveta Oculta)</label>
+                <label class="inp-label" class="icon-accent">Substituição (Gaveta Oculta)</label>
                 <textarea id="inp-sub" class="inp-field" rows="3" placeholder="Detalhes da substituição..."></textarea>
             </div>
 
@@ -363,9 +395,9 @@
 
     <div id="modal-meal" class="modal">
         <div class="modal-box">
-            <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
-                <h3 style="font-weight:800; font-family:var(--font-num); font-size:1.2rem; color:var(--text);">Configurar Refeição</h3>
-                <i class="fa-solid fa-xmark" style="font-size:1.4rem; cursor:pointer; color:var(--text-muted);" onclick="closeModal('meal')"></i>
+            <div class="modal-header-row">
+                <h3 class="modal-title">Configurar Refeição</h3>
+                <i class="fa-solid fa-xmark" class="modal-close-btn" onclick="closeModal('meal')"></i>
             </div>
             
             <input type="hidden" id="edit-meal-idx-only">
@@ -385,27 +417,24 @@
     </div>
 
     <div id="modal-cloud" class="modal">
-        <div class="modal-box" style="text-align:center;">
-            <div style="width:60px; height:60px; background:var(--bg); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px; color:var(--primary); box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);">
+        <div class="modal-box" class="text-center-modal">
+            <div class="modal-icon-wrap">
                 <i data-lucide="database" class="w-8 h-8"></i>
             </div>
-            <h3 style="color:var(--text); font-weight: 800; font-family:var(--font-num); font-size:1.2rem;">Central de Dados</h3>
-            <p style="font-size: 0.85rem; color:var(--text-muted); margin:5px 0 20px;">Sincronização e Backup</p>
+            <h3 class="modal-cloud-title">Central de Dados</h3>
+            <p class="modal-cloud-sub">Sincronização e Backup</p>
 
-            <button onclick="forceSync()" style="width:100%; padding:14px; border-radius:12px; border:2px dashed var(--accent); color:var(--accent); background:transparent; font-weight:800; margin-bottom:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; font-size:0.9rem;">
+            <button onclick="forceSync()" class="btn-cloud-sync">
                 <i class="fa-solid fa-rotate"></i> SINCRONIZAR
             </button>
-
-            <button onclick="backupData()" style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--text-muted); color:var(--text); background:transparent; font-weight:800; margin-bottom:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; font-size:0.9rem;">
+            <button onclick="backupData()" class="btn-cloud-action">
                 <i class="fa-solid fa-download"></i> BACKUP LOCAL (JSON)
             </button>
-            
-            <label style="width:100%; padding:14px; border-radius:12px; border:1px solid var(--text-muted); color:var(--text); background:var(--bg); font-weight:800; margin-bottom:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; font-size:0.9rem;">
+            <label class="btn-cloud-label">
                 <i class="fa-solid fa-upload"></i> RESTAURAR BACKUP
                 <input type="file" hidden onchange="restoreData(this)">
             </label>
-
-            <button onclick="closeModal('cloud')" style="margin-top:10px; background:transparent; border:none; color:var(--text-muted); font-weight:800; cursor:pointer; font-size:0.9rem; padding: 10px;">FECHAR</button>
+            <button onclick="closeModal('cloud')" class="btn-cloud-close">FECHAR</button>
         </div>
     </div>
 
@@ -611,13 +640,13 @@
         // --- RENDER LOGIC ---
         function getFoodIcon(type) {
             switch(type) {
-                case 'prot': return '<i class="fa-solid fa-drumstick-bite" style="color:var(--prot);"></i>';
-                case 'carb': return '<i class="fa-solid fa-wheat-awn" style="color:var(--carb);"></i>';
-                case 'fat': return '<i class="fa-solid fa-droplet" style="color:var(--fat);"></i>';
-                case 'veg': return '<i class="fa-solid fa-carrot" style="color:var(--veg);"></i>';
-                case 'fruit': return '<i class="fa-solid fa-apple-whole" style="color:var(--fruit);"></i>';
-                case 'drink': return '<i class="fa-solid fa-mug-hot" style="color:#a16207;"></i>';
-                case 'alert': return '<i class="fa-solid fa-triangle-exclamation" style="color:var(--alert);"></i>';
+                case 'prot': return '<i class="fa-solid fa-drumstick-bite" class="food-icon-prot"></i>';
+                case 'carb': return '<i class="fa-solid fa-wheat-awn" class="food-icon-carb"></i>';
+                case 'fat': return '<i class="fa-solid fa-droplet" class="food-icon-fat"></i>';
+                case 'veg': return '<i class="fa-solid fa-carrot" class="food-icon-veg"></i>';
+                case 'fruit': return '<i class="fa-solid fa-apple-whole" class="food-icon-fruit"></i>';
+                case 'drink': return '<i class="fa-solid fa-mug-hot" class="icon-drink"></i>';
+                case 'alert': return '<i class="fa-solid fa-triangle-exclamation" class="icon-alert"></i>';
                 default: return '<i class="fa-solid fa-utensils"></i>';
             }
         }
@@ -826,18 +855,6 @@
                 document.documentElement.setAttribute('data-theme', 'dark');
                 document.getElementById('themeIcon').setAttribute('data-lucide', 'sun');
             }
-        }
-        function toggleLocalTheme() {
-            if(document.documentElement.getAttribute('data-theme') === 'dark') {
-                document.documentElement.removeAttribute('data-theme');
-                localStorage.setItem('theme', 'light');
-                document.getElementById('themeIcon').setAttribute('data-lucide', 'moon');
-            } else {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                localStorage.setItem('theme', 'dark');
-                document.getElementById('themeIcon').setAttribute('data-lucide', 'sun');
-            }
-            lucide.createIcons();
         }
     </script>
 

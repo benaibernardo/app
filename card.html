@@ -304,6 +304,7 @@
     <!-- BENAI AUTH GUARD -->
     <script>window.BENAI_ALLOW_GUEST = true;</script>
     <script src="auth.js"></script>
+    <script src="benai-core.js"></script>
 
 
     <div id="cloud-shield">
@@ -1097,13 +1098,6 @@
         }
 
         // --- UTILS ---
-        function maskMoney(i) { let v = i.value.replace(/\D/g,""); v=(v/100).toFixed(2)+""; v=v.replace(".",","); v=v.replace(/(\d)(?=(\d{3})+(?!\d))/g,"$1."); i.value=v; }
-        function parseMoney(s) { 
-            if(typeof s === 'number') return s;
-            if(!s) return 0;
-            const clean = s.replace(/[^0-9,\.]/g, '').replace(/\./g,'').replace(',','.');
-            return parseFloat(clean) || 0; 
-        }
         function fmt(n) { return n.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2}); }
         function fmtDate(d) { return d.split('-').reverse().join('/'); }
         function getMonthKey(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; }

@@ -172,23 +172,6 @@
             transition: filter 0.3s ease;
         }
 
-        /* QUICK NOTE AREA */
-        .quick-note-area {
-            background: transparent;
-            border: none;
-            resize: none;
-            width: 100%;
-            outline: none;
-            font-family: 'Inter', sans-serif;
-            line-height: 1.6;
-        }
-        .qn-btn {
-            padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 700;
-            cursor: pointer; background: rgba(0,0,0,0.05); color: var(--text-secondary);
-            transition: 0.2s;
-        }
-        .qn-btn:hover { background: rgba(0,0,0,0.1); color: var(--text-primary); }
-
         /* SCROLLBAR */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -299,8 +282,8 @@
         <!-- MAIN GRID DASHBOARD -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-            <!-- LEFT COLUMN: PERSONAL LIFE (8 cols) -->
-            <div class="lg:col-span-8 space-y-8">
+            <!-- MAIN COLUMN: PERSONAL LIFE (12 cols) -->
+            <div class="lg:col-span-12 space-y-8">
                 
                 <div class="flex items-center gap-4 mb-2">
                     <div class="p-2 rounded-lg bg-orange-100 dark:bg-orange-500/10 text-orange-500"><i data-lucide="zap" class="w-5 h-5"></i></div>
@@ -390,47 +373,25 @@
                         <p class="text-slate-500 dark:text-slate-400 text-sm font-medium relative z-10">Controle de Viagens</p>
                     </a>
 
-                </div>
-            </div>
-
-            <!-- RIGHT COLUMN: WORK & QUICK NOTE (4 cols) -->
-            <div class="lg:col-span-4 flex flex-col gap-8">
-                
-                <!-- CARD: STUDIO NAI -->
-                <a href="studionai.html" id="card-studio" class="modern-card p-4 flex items-center gap-4 group hover:bg-blue-50 dark:hover:bg-slate-800/80 transition tilt-card">
-                    <div class="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-200 dark:border-blue-500/20 group-hover:bg-blue-600 group-hover:text-white transition">
-                        <i data-lucide="dumbbell" class="w-5 h-5"></i>
-                    </div>
-                    <div>
-                        <h4 class="font-heading text-sm font-bold text-slate-800 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400">Fit Studio</h4>
-                        <p class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase">Biblioteca de Exercícios</p>
-                    </div>
-                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 ml-auto group-hover:text-blue-500 group-hover:translate-x-1 transition"></i>
-                </a>
-
-                <!-- QUICK NOTE WIDGET -->
-                <div id="widget-quick-note" class="modern-card p-5 border-yellow-200 dark:border-yellow-500/20 bg-yellow-50/50 dark:bg-slate-800/80 flex-1 flex flex-col">
-                    <div class="flex justify-between items-center mb-3">
-                        <div class="flex items-center gap-2 text-yellow-600 dark:text-yellow-500">
-                            <i data-lucide="sticky-note" class="w-4 h-4"></i>
-                            <span class="text-xs font-bold uppercase tracking-widest">Quick Note</span>
+                    <!-- STUDIONAI -->
+                    <a href="studionai.html" id="card-studio" class="modern-card p-6 group border-blue-200 dark:border-blue-500/20 hover:bg-white dark:hover:bg-slate-800 tilt-card">
+                        <div class="bg-icon-large group-hover:opacity-10 opacity-[0.05] transition">
+                            <i class="fa-solid fa-dumbbell text-blue-400"></i>
                         </div>
-                        <div id="note-status" class="w-2 h-2 rounded-full bg-green-400 opacity-0 transition"></div>
-                    </div>
-                    
-                    <!-- TOOLS -->
-                    <div class="flex gap-2 mb-2">
-                        <button onclick="insertCheckbox()" class="qn-btn" title="Inserir Checkbox"><i class="fa-regular fa-square-check"></i></button>
-                        <button onclick="insertDate()" class="qn-btn" title="Inserir Data"><i class="fa-regular fa-calendar"></i></button>
-                        <div class="flex-1"></div>
-                        <button onclick="copyNote()" class="qn-btn" title="Copiar"><i class="fa-regular fa-copy"></i></button>
-                        <button onclick="clearNote()" class="qn-btn text-red-400 hover:text-red-500 hover:bg-red-50" title="Limpar"><i class="fa-solid fa-trash"></i></button>
-                    </div>
+                        <div class="flex items-start justify-between mb-4 relative z-10">
+                            <div class="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                                <i data-lucide="dumbbell" class="w-6 h-6"></i>
+                            </div>
+                            <span class="text-[10px] font-bold text-blue-500 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded-md border border-blue-200 dark:border-blue-800">EXERCÍCIOS</span>
+                        </div>
+                        <h3 class="font-heading text-xl font-bold text-slate-800 dark:text-white mb-1 group-hover:text-blue-500 transition relative z-10">StudioNai</h3>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm font-medium relative z-10">Biblioteca de Exercícios</p>
+                    </a>
 
-                    <textarea id="quick-note" class="quick-note-area text-sm text-slate-700 dark:text-slate-300 placeholder-slate-400/50 bg-transparent flex-1 min-h-[150px]" placeholder="Anote aqui..."></textarea>
                 </div>
-
             </div>
+
+
 
         </div>
 
@@ -633,7 +594,6 @@
                 document.getElementById('gk-token').value = t;
             }
             
-            setupQuickNote();
             // setupTiltEffect removed as redundant logic
             updateWeather();
             setupGreeting();
@@ -731,58 +691,6 @@
         }
 
         // --- WIDGETS ---
-        function setupQuickNote() {
-            const noteArea = document.getElementById('quick-note');
-            const status = document.getElementById('note-status');
-            noteArea.value = localStorage.getItem('BENAI_QUICK_NOTE') || '';
-            
-            let timeout;
-            noteArea.addEventListener('input', () => {
-                status.style.opacity = '0.5';
-                status.className = 'w-2 h-2 rounded-full bg-yellow-400 transition';
-                clearTimeout(timeout);
-                timeout = setTimeout(() => {
-                    localStorage.setItem('BENAI_QUICK_NOTE', noteArea.value);
-                    status.className = 'w-2 h-2 rounded-full bg-green-400 opacity-100 transition';
-                    setTimeout(() => status.style.opacity = '0', 1000);
-                }, 1000);
-            });
-        }
-
-        function insertCheckbox() {
-            const note = document.getElementById('quick-note');
-            const start = note.selectionStart;
-            const text = note.value;
-            const before = text.substring(0, start);
-            const after = text.substring(start);
-            note.value = before + "\n☐ " + after;
-            note.focus();
-            note.dispatchEvent(new Event('input')); 
-        }
-
-        function insertDate() {
-            const note = document.getElementById('quick-note');
-            const start = note.selectionStart;
-            const d = new Date().toLocaleDateString('pt-BR');
-            note.value = note.value.substring(0, start) + `[${d}] ` + note.value.substring(start);
-            note.focus();
-            note.dispatchEvent(new Event('input'));
-        }
-
-        function clearNote() {
-            if(confirm('Limpar notas?')) {
-                const note = document.getElementById('quick-note');
-                note.value = '';
-                note.dispatchEvent(new Event('input'));
-            }
-        }
-
-        function copyNote() {
-            const note = document.getElementById('quick-note');
-            note.select();
-            document.execCommand('copy');
-            showToast('Copiado!');
-        }
 
         function setupGreeting() {
             const h = new Date().getHours();
@@ -868,7 +776,7 @@
                 const el = document.getElementById(id);
                 if(el) el.style.display = 'block';
             });
-            document.getElementById('widget-quick-note').style.display = 'flex';
+
 
             if (role === 'guest') {
                 document.getElementById('btn-settings').style.display = 'none';
@@ -879,7 +787,7 @@
                 }
 
                 // Hide Specific Sections
-                document.getElementById('widget-quick-note').style.display = 'none';
+
                 
                 // Load Permissions
                 const savedPerms = localStorage.getItem(PERMS_KEY);
